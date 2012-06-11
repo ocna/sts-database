@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="Bootstrap.php" colors="true">
+    <!-- ALL TEST SUITES -->
+    <testsuites>
+        <testsuite name="Sample Module">
+            <file>models/SampleModule/ExampleClassTest.php</file>
+        </testsuite>
+    </testsuites>
+    <!-- FILTERS -->
+    <filter>
+        <blacklist>
+            <directory suffix=".php">../unit</directory>
+            <directory suffix=".php">/usr/local/zend/share</directory>
+        </blacklist>
+    </filter>
+    <!-- LOGGING AND CODE COVERAGE -->
+    <logging>
+        <log type="coverage-html" target="../../../../build/coverage/sample-module/unit/"
+            title="NavStore-Api" charset="UTF-8" yui="true" highlight="true"
+            lowUpperBound="35" highLowerBound="70" />
+        <log type="coverage-clover" target="../../../../build/logs/sample-module/unit/clover.xml" />
+        <log type="junit" target="../../../../build/logs/sample-module/unit/junit.xml"
+            logIncompleteSkipped="false" />
+    </logging>
+</phpunit>

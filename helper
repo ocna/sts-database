@@ -1,0 +1,40 @@
+#!/bin/sh
+
+action=$1
+item=$2
+argument=$3
+
+case "$action$item" in
+	help )
+	echo "create project <project name> - will initialize a new project"
+	echo "create package <PackageName> - will make an application package folder structure"
+	echo "create module <module-name> - will add a module with the right directories"
+	;;
+	createproject )
+	rm "README.md"
+	echo "# $argument Project" > README.md
+	rm -rf .git
+	git init
+	cp .templates/pre-commit .git/hooks/pre-commit
+	rm .git/hooks/pre-commit.sample
+	cp .templates/jshint-config.json .git/hooks/jshint-config.json
+	chmod 751 .git/hooks/pre-commit
+	git add .
+	git commit -am "Initial commit for $argument project."
+	;;
+	createpackage )
+	mkdir -pv "application/src/$argument"
+	mkdir -pv "application/tests/unit/$argument"
+	mkdir -pv "application/tests/integration/$argument"
+	;;
+	createmodule )
+	mkdir -pv "modules/$argument/config"
+	mkdir -pv "modules/$argument/src"
+	mkdir -pv "modules/$argument/tests/unit"
+	mkdir -pv "modules/$argument/tests/integration"
+	touch "modules/$argument/tests/integration/Bootstrap.php"
+	touch "modules/$argument/tests/unit/Bootstrap.php"
+	cp ".templates/phpunit.xml" "modules/$argument/tests/integration/phpunit.xml"
+	cp ".templates/phpunit.xml" "modules/$argument/tests/unit/phpunit.xml"
+	;;
+esac

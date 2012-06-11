@@ -1,0 +1,39 @@
+# These files are ignored by git
+
+# Build #
+#########################
+/build/
+/build-deploy/*.properties
+
+# Configuration #
+########################
+/build-deploy/config-template/local.*
+/build-deploy/config-template/*/local.*
+/modules/*/config/*
+/application/config/*
+
+# Cache and temp files #
+########################
+.sass-cache
+.svn
+
+# OS generated files #
+######################
+.DS_Store*
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# Zend Studio project files #
+#############################
+.zfproject.xml
+
+# Other #
+#############################
+!README
+.buildpath
+.project
+.settings
+prepend.php
+append.php
+.htaccess

@@ -1,0 +1,138 @@
+#!/bin/bash
+# Author: Jason Fox + Josh Clanton
+# Based on code by Nikolaos Dimopoulos and Remigijus Jarmalavičius
+# Checks the files to be committed for the presence of print_r(), var_dump() and die()
+# Also checks php files with php -lf lint and fatal error checks
+# The array below can be extended for further checks
+
+##--CONFIGURATION--##
+search_for_baddies=0    #Value of 1 will look for checks, value of 0 will not
+php_options="l"        #Typically l for "php -l" but lf for "php -lf"
+
+##--CONFIGURATION--##
+# add to this array of things you want to check for in your testing
+checks[1]="var_dump"
+checks[2]="print_r"
+checks[3]="die"
+##-- an array for retaining the files with problems that shall be unstanged --##
+files_with_problems=()
+##-- temporary variable for adding the file in the above array only once: 0=No(default);1=Yes --##
+file_has_problems=0
+
+if git rev-parse --verify HEAD >/dev/null 2>&1
+then
+    against=HEAD
+else
+    # Initial commit: diff against an empty tree object
+    against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+fi
+
+element_count=${#checks[@]}
+let "element_count = $element_count + 1"
+
+let "js = 1"
+VAR=$(which jshint >&1);
+if [ "$?" == 1 ]; then
+    echo -e "\033[00;33mNOTICE: \033[00m jshint not found, skipping javascript validation!\n"
+    js=0
+fi
+
+ROOT_DIR="$(pwd)/"
+LIST=$(git diff-index --name-only --cached --diff-filter=ACMR ${against})
+ERRORS_BUFFER=""
+for file in $LIST
+do
+    if [ "$file" == '#' ]; then
+        continue
+    fi
+    # the default is the the file hasn't any problems and is kept inside the staging area
+    file_has_problems=0
+    EXTENSION=$(echo "$file" | grep "\.ph")
+    if [ "$EXTENSION" != "" ]; then
+        #check syntax
+        echo -ne "-- \nLinting file: $file "
+        ERRORS=$(php -$php_options $ROOT_DIR$file >&1)
+        # echo $?
+        if [ $? != 0 ]; then
+            if [ "$ERRORS_BUFFER" != "" ]; then
+                ERRORS_BUFFER="$ERRORS_BUFFER\n- $ERRORS"
+            else
+                ERRORS_BUFFER="- $ERRORS"
+            fi
+            echo -e "\033[00;31mERROR\033[00m"
+                echo "$ERRORS"
+	    # this file is bad, mark it for later appending in the list of files with problems
+	    file_has_problems=1		
+        else
+                echo -e "\033[00;32mOK\033[00m"
+        fi  
+        if [ "$search_for_baddies" != 0 ]; then    
+            index=1
+            while [ "$index" -lt "$element_count" ]
+            do
+                #check for baddies
+                echo -ne "Checking $FILE_ACTION file: $file for [${checks[$index]}] - " 
+                ERRORS=$(grep "${checks[$index]}" $ROOT_DIR$file >&1)
+                if [ "$ERRORS" != "" ]; then
+                    if [ "$ERRORS_BUFFER" != "" ]; then
+                        ERRORS_BUFFER="$ERRORS_BUFFER\n- $ERRORS"
+                    else
+                        ERRORS_BUFFER="$ERRORS"
+                    fi
+                    echo -e "\033[00;31mERROR: \033[00m"
+                    echo -e "\033[00;43;30m\"${checks[$index]}\"\033[00m found in file: $file"
+		    # this file is bad, mark it for later appending in the list of files with problems
+		    file_has_problems=1
+                else
+                    echo -e "\033[00;32mOK\033[00m"
+                fi
+                let "index = $index + 1"
+            done
+        fi	
+    fi
+    if [ "$js" == 1 ]; then
+        EXTENSION=$(echo "$file" | grep -e "\.js$")
+        if [ "$EXTENSION" != "" ]; then
+            #check js    
+            echo -ne "-- \nChecking JS for file: $file - "
+            ERRORS=$(jshint $ROOT_DIR$file --config $ROOT_DIR.git/hooks/jshint-config.json >&1)
+            if [ $? != 0 ]; then
+                if [ "$ERRORS_BUFFER" != "" ]; then
+                    ERRORS_BUFFER="$ERRORS_BUFFER\n- $ERRORS"
+                else
+                    ERRORS_BUFFER="- $ERRORS"
+                fi
+                echo -e "\033[00;31mERROR\033[00m"
+                echo "$ERRORS"
+		# this file is bad, mark it for later appending in the list of files with problems
+		file_has_problems=1
+            else
+                echo -e "\033[00;32mOK\033[00m"
+            fi
+        fi
+    fi
+    # if the file has problems, put it on this list
+    if [ "$file_has_problems" == 1 ]; then
+	files_with_problems=("${files_with_problems[@]}" "$ROOT_DIR$file")
+    fi
+done
+##-- Now we are unstaging the files with problems
+for i in "${files_with_problems[@]}"
+do
+	echo -ne "-- \nGit is unstaging the file: $i : "
+        ERRORS=$(git reset $i >&1)
+	if [ $? != 0 ]; then
+		echo -e "\033[00;31mERROR\033[00m"
+                echo " Exit_code=$? $ERRORS"
+	else
+		echo -e "\033[00;32mOK\033[00m"	
+	fi
+done
+if [ "$ERRORS_BUFFER" != "" ]; then
+    echo 
+    echo -e "\033[00;41;30mCan't commit your trash, fix errors first :(\033[00m"
+    exit 1
+else    
+    echo -e "\033[00;42;30mBOOM! Committed successfully :)\033[00m"
+    exit 0
+fi

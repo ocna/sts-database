@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Succeed - Deploy" default="help" basedir="../">
+    <import file="build.xml" />
+    <property file="${basedir}/build-deploy/deploy.properties" />
+    <target name="help" description="Display detailed usage information">
+        <echo>Type "ant -p" to see a list of targets</echo>
+    </target>
+    <target name="deploy" depends="-git-checkout, configure" description="Deploys a specific branch or tag via rsync">
+        <fail unless="rsync.user" message="'rsync.user' variable not set. Please specificy with -Drsync.user=&lt;USER&gt; or add to deploy.properties" />
+        <fail unless="rsync.host" message="'rsync.host' variable not set. Please specificy with -Drsync.host=&lt;HOST&gt; or add to deploy.properties" />
+        <fail unless="rsync.user" message="'rsync.dest' variable not set. Please specificy with -Drsync.dest=&lt;DEST&gt; or add to deploy.properties" />
+        <echo>sync from ${basedir} to ${rsync.user}@${rsync.host}:${rsync.dest}</echo>
+        <exec executable="rsync" failonerror="true">
+            <arg value="--verbose" />
+            <arg value="-rclgz" />
+            <arg value="--exclude-from=${basedir}/build-deploy/deploy.exclude" />
+            <arg value="${basedir}/" />
+            <arg value="${rsync.user}@${rsync.host}:${rsync.dest}" />
+        </exec>
+    </target>
+    <target name="-git-checkout">
+        <fail unless="git.branch" message="'git.branch' variable not set. Please specificy with -Dgit.branch=&lt;BRANCH&gt; or add to deploy.properties" />
+        <exec executable="git" dir="${basedir}" failonerror="true">
+            <arg value="checkout" />
+            <arg value="${git.branch}" />
+        </exec>
+    </target>
+</project>

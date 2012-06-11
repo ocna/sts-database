@@ -1,0 +1,12 @@
+.htaccess
+.git
+.DS_Store
+.buildpath
+.gitignore
+.project
+.settings
+.zfproject.xml
+**/tests/*
+build
+build-deploy
+.templates

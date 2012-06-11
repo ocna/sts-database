@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Build" default="help" basedir="../">
+	<property file="${basedir}/build-deploy/build.properties" />
+
+	<target name="help" description="Display detailed usage information">
+		<echo>Type "ant -p" to see a list of targets</echo>
+	</target>
+
+	<target name="build" depends="prepare, phpunit, phpunit:modules" />
+	<target name="build:full" description="Full build with all tests and source checking." depends="prepare, lint, phpunit, phpunit:modules, phpunit:integration" />
+
+
+	<target name="clean" description="Cleanup build artifacts">
+		<delete dir="${basedir}/build/coverage" />
+		<delete dir="${basedir}/build/logs" />
+		<delete dir="${basedir}/build/docs" />
+	</target>
+
+	<target name="prepare" depends="clean" description="Prepare for build">
+		<mkdir dir="${basedir}/build/coverage" />
+		<mkdir dir="${basedir}/build/logs" />
+		<mkdir dir="${basedir}/build/docs" />
+	</target>
+
+	<target name="phpunit" depends="phpunit:modules" description="Run unit tests with PHPUnit">
+		<exec dir="${basedir}/application/tests/unit/" executable="phpunit" failonerror="true">
+			<arg value="--testdox-html" />
+			<arg path="${basedir}/build/logs/unit/testdox.html" />
+		</exec>
+	</target>
+
+	<target name="phpunit:integration" description="Run intregration tests with PHPUnit">
+
+		<exec dir="${basedir}/application/tests/integration/" executable="phpunit" failonerror="true">
+			<arg value="--testdox-html" />
+			<arg path="${basedir}/build/logs/integration/testdox.html" />
+		</exec>
+	</target>
+
+	<target name="phpunit:modules" description="Runs the unit tests for each module">
+		<exec dir="${basedir}/modules/sample-module/tests/unit/" executable="phpunit" failonerror="true">
+			<arg value="--testdox-html" />
+			<arg path="${basedir}/build/logs/sample-module/unit/testdox.html" />
+		</exec>
+	</target>
+
+
+	<target name="configure" description="Configure application.">
+		<fail unless="env" message="'env' variable not set. Please specificy with -Denv=&lt;ENV&gt; or add to build.properties" />
+
+	</target>
+
+	<target name="remove-config">
+		<delete dir="${basedir}/config" />
+		<delete>
+			<fileset dir="${basedir}/core/config" includes="config.xml" />
+		</delete>
+	</target>
+
+	<target name="lint">
+		<apply executable="php" failonerror="true">
+			<arg value="-l" />
+			<fileset dir="${basedir}/">
+				<include name="**/*.ph*" />
+			</fileset>
+		</apply>
+	</target>
+
+	<target name="git-setup" description="Installs and configures pre-commit hook script.">
+		<mkdir dir="${basedir}/tmp" />
+		<exec executable="git" dir="${basedir}/tmp" failonerror="true">
+			<arg value="clone" />
+			<arg value="git@github.com:naviance/skeleton.git" />
+			<arg value="." />
+		</exec>
+		<copy file="${basedir}/.templates/pre-commit" tofile="${basedir}/.git/hooks/pre-commit" overwrite="true" />
+		<copy file="${basedir}/.templates/jshint-config.json" tofile="${basedir}/.git/hooks/jshint-config.json" overwrite="true" />
+		<exec executable="chmod" dir="${basedir}/.git/hooks" failonerror="true">
+			<arg value="751" />
+			<arg value="pre-commit" />
+		</exec>
+		<delete dir="${basedir}/tmp" />
+	</target>
+</project>
+

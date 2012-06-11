@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="Bootstrap.php" colors="true">
+	<!-- ALL TEST SUITES -->
+	<testsuites>
+	</testsuites>
+	<!-- FILTERS -->
+	<filter>
+	</filter>
+	<!-- LOGGING AND CODE COVERAGE -->
+	<logging>
+	</logging>
+</phpunit>
