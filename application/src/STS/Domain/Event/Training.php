@@ -7,9 +7,9 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class Training extends Entity
 {
+	protected $occuredInArea;
 
-
-    protected $occuredAt;
+    protected $occuredAtLocation;
     
 
 }
