@@ -26,6 +26,9 @@ class Member extends Entity
     /**
      * @Column(type="boolean")
      */
+    
+    protected $contactDetails;
+    
     protected $isDeceased;
     /**
      * @ManyToMany(targetEntity="Presentation", inversedBy="attendedBy")

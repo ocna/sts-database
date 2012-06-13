@@ -25,6 +25,8 @@ class Presentation extends Entity
      */
     protected $numberOfStudents;
 
+    protected $occuredAt;
+    
     public function __construct()
     {
         $this->attendedBy = new ArrayCollection();
