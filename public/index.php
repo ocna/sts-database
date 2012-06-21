@@ -1,18 +1,15 @@
 <?php
-require_once 'Zend/Application.php';
-require_once 'Zend/Config/Ini.php';
-require_once 'Zend/Loader/Autoloader.php';
-ini_set('display_errors', 1);
-// Define path to application directory
-defined('APPLICATION_PATH') || define('APPLICATION_PATH', realpath(dirname(__FILE__) . '/../application'));
-defined('ROOT_PATH') || define('ROOT_PATH', realpath(dirname(__FILE__) . '/../'));
-// Set include paths
+ini_set('display_exceptions', 1);
+defined('APPLICATION_PATH') || define('APPLICATION_PATH', realpath(dirname(__FILE__) . '/../application/'));
+defined('VENDOR_PATH') || define('VENDOR_PATH', realpath(dirname(__FILE__) . '/../vendor/'));
 set_include_path(implode(PATH_SEPARATOR, array(
-    APPLICATION_PATH . '/src' , get_include_path()
+    APPLICATION_PATH , VENDOR_PATH , get_include_path()
 )));
-// Build Zend Application
-$config = new \Zend_Config_Ini(APPLICATION_PATH . '/config/application.ini', 'all');
-$application = new \Zend_Application('all', $config);
-$application->bootstrap();
-$application->run();
-
+require_once 'autoload.php';
+spl_autoload_unregister(array(
+    'Zend_Loader_Autoloader' , 'autoload'
+));
+$config = new Zend_Config_Ini(APPLICATION_PATH . '/config/application.ini', 'all');
+$application = new Zend_Application('all', $config);
+$application->bootstrap()
+    ->run();

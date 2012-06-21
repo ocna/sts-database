@@ -1,0 +1,29 @@
+<?php echo $this->doctype()?>
+<html>
+<head>
+    <?php echo $this->headTitle()?>
+    <?php echo $this->headMeta()?>
+    <?php echo $this->headLink()?>
+    <?php echo $this->headStyle()?>
+    <?php echo $this->headScript()?>
+    <base href="/" />
+</head>
+
+<body>
+	<?php echo $this->layout()->appHeader?>
+	<div class="container menu">
+		<?php echo $this->layout()->menu?>
+		
+	</div>
+		<div class="container page">
+		<div class="container-fluid">
+		<?php echo $this->layout()->pageHeader?>
+		<?php echo $this->layout()->content?>
+		<?php echo $this->layout()->pageFooter?>
+		</div>
+	</div>
+	<div class="container">
+	<?php echo $this->layout()->appFooter?>
+	</div>
+</body>
+</html>

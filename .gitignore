@@ -4,6 +4,8 @@
 #########################
 /build/
 /build-deploy/*.properties
+/vendor/
+/bin/
 
 # Configuration #
 ########################

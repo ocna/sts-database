@@ -1,0 +1,9 @@
+# behat.yml
+default:
+  paths:
+    features: '%behat.paths.base%/../../features'
+    bootstrap:  '%behat.paths.features%/bootstrap'
+  extensions:
+    Behat\MinkExtension\Extension:
+      base_url: 'dev.sts.ovariancancer.org'
+      goutte: ~

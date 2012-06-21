@@ -1,0 +1,13 @@
+{
+  "require":{
+    "behat/behat":"*",
+    "behat/mink":"*",
+    "behat/mink-extension":"*",
+    "behat/mink-sahi-driver": "*",
+    "behat/mink-goutte-driver":"*",
+    "breerly/zf1": "1.11.*"
+  },
+  "config":{
+    "bin-dir":"bin/"
+  }
+}

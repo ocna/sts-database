@@ -6,9 +6,15 @@
 		<echo>Type "ant -p" to see a list of targets</echo>
 	</target>
 
-	<target name="build" depends="prepare, phpunit, phpunit:modules" />
+	<target name="build:quick" depends="prepare, phpunit, behat" />
+	<target name="build" depends="composer, build:quick" />
 	<target name="build:full" description="Full build with all tests and source checking." depends="prepare, lint, phpunit, phpunit:modules, phpunit:integration" />
 
+	<target name="composer" description="installs dependencies">
+		<exec dir="${basedir}" executable="composer" failonerror="true">
+			<arg value="update" />
+		</exec>
+	</target>
 
 	<target name="clean" description="Cleanup build artifacts">
 		<delete dir="${basedir}/build/coverage" />
@@ -22,7 +28,7 @@
 		<mkdir dir="${basedir}/build/docs" />
 	</target>
 
-	<target name="phpunit" depends="phpunit:modules" description="Run unit tests with PHPUnit">
+	<target name="phpunit" description="Run unit tests with PHPUnit">
 		<exec dir="${basedir}/application/tests/unit/" executable="phpunit" failonerror="true">
 			<arg value="--testdox-html" />
 			<arg path="${basedir}/build/logs/unit/testdox.html" />
@@ -30,10 +36,16 @@
 	</target>
 
 	<target name="phpunit:integration" description="Run intregration tests with PHPUnit">
-
 		<exec dir="${basedir}/application/tests/integration/" executable="phpunit" failonerror="true">
 			<arg value="--testdox-html" />
 			<arg path="${basedir}/build/logs/integration/testdox.html" />
+		</exec>
+	</target>
+
+	<target name="behat" description="Runs BDD tests with Behat">
+		<exec dir="${basedir}" executable="bin/behat" failonerror="true">
+			<arg value="--config" />
+			<arg value="${basedir}/application/config/behat.yml" />
 		</exec>
 	</target>
 
@@ -47,7 +59,8 @@
 
 	<target name="configure" description="Configure application.">
 		<fail unless="env" message="'env' variable not set. Please specificy with -Denv=&lt;ENV&gt; or add to build.properties" />
-
+		<copy file="${basedir}/build-deploy/config-templates/${env}.application.ini" tofile="${basedir}/application/config/application.ini" overwrite="true" />
+		<copy file="${basedir}/build-deploy/config-templates/behat.yml" tofile="${basedir}/application/config/behat.yml" overwrite="true" />
 	</target>
 
 	<target name="remove-config">

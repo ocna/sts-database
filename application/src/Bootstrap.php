@@ -1,13 +1,12 @@
 <?php
-class Bootstrap extends \Zend_Application_Bootstrap_Bootstrap
+class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 {
-
-    public function _initRegisterDefaultNamespaces()
-    {
-        $autoloader = \Zend_Loader_Autoloader::getInstance();
-        $autoloader->registerNamespace('Zend_');
-        $autoloader->registerNamespace('HelloWorld_');
-    }
+//     public function _initRegisterDefaultNamespaces()
+//     {
+//         $autoloader = \Zend_Loader_Autoloader::getInstance();
+//         $autoloader->registerNamespace('Zend_');
+//         $autoloader->registerNamespace('HelloWorld_');
+//     }
 
     public function _initViewSettings()
     {
@@ -62,5 +61,8 @@ class Bootstrap extends \Zend_Application_Bootstrap_Bootstrap
         $this->bootstrap('frontController');
         $front = $this->getResource('frontController');
         $front->registerPlugin($errorControllerPlugin);
+        if ($this->_options['resources']['frontController']['params']['displayExceptions'] == 1) {
+            $front->throwExceptions(true);
+        }
     }
 }
