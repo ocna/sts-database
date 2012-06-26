@@ -1,0 +1,20 @@
+body {
+	background-color: #B8DFE6;
+	background-image: url(/img/bg.jpg);
+	background-repeat: no-repeat;
+}
+
+.page {
+	background-color: #fff;
+	-webkit-border-radius: 7px;
+	-moz-border-radius: 7px;
+	border-radius: 7px;
+	-moz-background-clip: padding;
+	-webkit-background-clip: padding-box;
+	background-clip: padding-box;
+}
+
+.menu {
+	margin-top: 2em;
+	margin-bottom: .8em;
+}

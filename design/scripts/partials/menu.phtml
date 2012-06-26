@@ -1,0 +1,37 @@
+<?php
+/**
+ * STS Source File
+ * @author jason
+ * @copyright STS 2012 
+ * @package 
+ * @subpackage 
+ */
+
+    // loop root level (only has Home, but later may have an Admin root page?)
+    foreach ($this->container as $page) {
+        
+        $isActive = $page->isActive(false);
+                $liClass = $isActive ? ' class="active"' : '';
+                if(count($page)>0){
+                    ?>
+                    <li class="dropdown . $liClass"><a href="#" class="dropdown-toggle"
+                    data-toggle="dropdown"> <?php echo $page->label?> <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                    <?php foreach ($page as $page){
+                        $isActive = $page->isActive(false);
+                        $liClass = $isActive ? ' class="active"' : '';
+                        echo '<li ' . $liClass . '>' . $this->menu()->htmlify($page).'</li>';
+                    }
+                        ?>
+                    </ul></li><?php                     
+                }else{
+                echo '<li ' . $liClass . '>' . $this->menu()->htmlify($page).'</li>';
+                    
+                }
+                
+        
+
+    }
+    ?>
+

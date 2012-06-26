@@ -1,13 +1,19 @@
 {
-  "require":{
-    "behat/behat":"*",
-    "behat/mink":"*",
-    "behat/mink-extension":"*",
-    "behat/mink-sahi-driver": "*",
-    "behat/mink-goutte-driver":"*",
-    "breerly/zf1": "1.11.*"
-  },
-  "config":{
-    "bin-dir":"bin/"
-  }
+   "require":{
+      "behat/behat":"2.4.0",
+      "behat/mink":"*",
+      "behat/mink-extension":"*",
+      "behat/mink-sahi-driver":"*",
+      "behat/mink-goutte-driver":"*",
+      "breerly/zf1":"1.11.*",
+      "EHER/PHPUnit": "*"
+   },
+   "config":{
+      "bin-dir":"bin/"
+   },
+   "autoload":{
+      "psr-0":{
+         "STS":"application/src"
+      }
+   }
 }
