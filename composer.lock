@@ -1,5 +1,5 @@
 {
-    "hash": "e33c0c7cd2a0262c0dd5565a74c4ebe2",
+    "hash": "c6ac17ed5080d08b32ebccdfc0bffd07",
     "packages": [
         {
             "package": "EHER/PHPUnit",
@@ -45,6 +45,27 @@
         {
             "package": "breerly/zf1",
             "version": "1.11.11"
+        },
+        {
+            "package": "doctrine/common",
+            "version": "dev-master",
+            "alias-pretty-version": "2.3.x-dev",
+            "alias-version": "2.3.9999999.9999999-dev"
+        },
+        {
+            "package": "doctrine/common",
+            "version": "dev-master",
+            "source-reference": "8df9cdf3b921a3b59bbba51d5ba9063509ef6a1a"
+        },
+        {
+            "package": "doctrine/mongodb",
+            "version": "dev-master",
+            "source-reference": "b5c5d0499f4db2531de6eea54d38b75e485ceef4"
+        },
+        {
+            "package": "doctrine/mongodb-odm",
+            "version": "dev-master",
+            "source-reference": "61fe79e074c8cf9d5bf2f072263f081038b406ee"
         },
         {
             "package": "fabpot/goutte",

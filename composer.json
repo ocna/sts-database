@@ -6,7 +6,8 @@
       "behat/mink-sahi-driver":"*",
       "behat/mink-goutte-driver":"*",
       "breerly/zf1":"1.11.*",
-      "EHER/PHPUnit": "*"
+      "EHER/PHPUnit": "*",
+      "doctrine/mongodb-odm": "*"
    },
    "config":{
       "bin-dir":"bin/"
