@@ -6,7 +6,7 @@ class DefaultAuthFacadeTest extends PHPUnit_Framework_TestCase
     const BASIC_USER_PASSWORD = 'abc123';
     const BAD_BASIC_USER_EMAIL = 'not.user@email.com';
     const BAD_BASIC_USER_PASSWORD = 'badpass';
-    const BASIC_USER_ROLE = 1;
+    const BASIC_USER_ROLE = 'member';
     private $authFacade;
 
     protected function setUp()
@@ -54,8 +54,6 @@ class DefaultAuthFacadeTest extends PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf('\STS\Core\User\UserDTO', $userDTO);
         $this->assertEquals($userDTO->getEmail(), self::BASIC_USER_EMAIL);
-        $this->assertEquals($userDTO->getPassword(), self::BASIC_USER_PASSWORD);
         $this->assertEquals($userDTO->getRole(), self::BASIC_USER_ROLE);
-        $this->assertGreaterThan($userDTO->getLastLogin(), time() - (1 * 60));
     }
 }

@@ -5,6 +5,7 @@ class Main_Login extends Zend_Form
     public function init()
     {
         $this->setMethod('post');
+        $this->setAction('index/login');
         // Add an email element
         $this->addElement('text', 'email', array(
             'label' => 'Email address:' , 
