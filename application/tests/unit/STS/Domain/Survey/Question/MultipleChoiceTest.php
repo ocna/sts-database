@@ -34,9 +34,9 @@ class MultipleAnswerTest extends PHPUnit_Framework_TestCase {
     }
     private function getQuestionObject() {
         $question = new MultipleChoice();
-        $question->addChoice(1, "Choice 1");
-        $question->addChoice(2, "Choice 2");
-        $question->addChoice(3, "Choice 3");
+        $question->addChoice(1, "Choice 1")
+                 ->addChoice(2, "Choice 2")
+                 ->addChoice(3, "Choice 3");
         return $question;
     }
 }

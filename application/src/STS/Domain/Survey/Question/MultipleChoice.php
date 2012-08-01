@@ -9,6 +9,7 @@ class MultipleChoice extends Question {
     protected $responses;
     public function addChoice($choiceId, $choicePrompt) {
         $this->choices[$choiceId] = $choicePrompt;
+        return $this;
     }
     public function getChoice($choiceId) {
         if ($this->choiceExists($choiceId)) {
@@ -20,6 +21,7 @@ class MultipleChoice extends Question {
     public function addResponse($choiceId, AbstractResponse $response) {
         if ($this->choiceExists($choiceId)) {
             $this->responses[$choiceId] = $response;
+            return $this;
         } else {
             throw new \InvalidArgumentException('Choice does not exist.');
         }
