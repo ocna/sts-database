@@ -2,9 +2,13 @@
 namespace STS\Domain\Survey;
 
 class Question {
+    const BOTH = 0;
+    const BEFORE = 1;
+    const AFTER = 2;
 
     protected $id;
     protected $prompt;
+    protected $asked;
     public function getId() {
         return $this->id;
     }
@@ -18,5 +22,11 @@ class Question {
     public function setPrompt($prompt) {
         $this->prompt = $prompt;
         return $this;
+    }
+    public function isAsked($asked = 0) {
+        $this->asked = $asked;
+    }
+    public function whenAsked() {
+        return $this->asked;
     }
 }

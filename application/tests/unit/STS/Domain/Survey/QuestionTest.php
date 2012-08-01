@@ -11,8 +11,14 @@ class QuestionTest extends PHPUnit_Framework_TestCase {
         $question = new Question();
         $this->assertNull($question->getId());
         $this->assertNull($question->getPrompt());
-        $question->setId(self::ID)->setPrompt(self::PROMPT);
+        $this->assertEquals(0, $question->whenAsked());
+        $question->setId(self::ID)
+                 ->setPrompt(self::PROMPT)
+                 ->isAsked(Question::BEFORE);
         $this->assertEquals(self::ID, $question->getId());
         $this->assertEquals(self::PROMPT, $question->getPrompt());
+        $this->assertEquals(1, $question->whenAsked());
+        $question->isAsked(Question::AFTER);
+        $this->assertEquals(2, $question->whenAsked());
     }
 }
