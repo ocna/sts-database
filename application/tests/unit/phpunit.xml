@@ -2,8 +2,8 @@
 <phpunit bootstrap="Bootstrap.php" colors="true">
     <!-- ALL TEST SUITES -->
     <testsuites>
-        <testsuite name="Api">
-            <directory>STS/Core/Api</directory>
+        <testsuite name="Domain">
+            <directory>STS/Domain</directory>
         </testsuite>
     </testsuites>
     <!-- FILTERS -->
