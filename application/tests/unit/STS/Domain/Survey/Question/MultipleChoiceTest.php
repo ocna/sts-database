@@ -1,5 +1,7 @@
 <?php
+use STS\Domain\Survey\Question;
 use STS\Domain\Survey\Response\PairResponse;
+use STS\Domain\Survey\Response\SingleResponse;
 use STS\Domain\Survey\Question\MultipleChoice;
 
 class MultipleAnswerTest extends PHPUnit_Framework_TestCase {
@@ -30,6 +32,27 @@ class MultipleAnswerTest extends PHPUnit_Framework_TestCase {
     public function throwExceptionForGivingAResponseToNonExistantChoice() {
         $question = $this->getQuestionObject();
         $response = new PairResponse(4, 10);
+        $question->addResponse(4, $response);
+    }
+    /**
+     * @test
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Question expects a response single.
+     */
+    public function throwExceptionPassingResponsePairToSingleQuestion() {
+        $question = $this->getQuestionObject();
+        $response = new PairResponse(4, 10);
+        $question->isAsked(Question::AFTER);
+        $question->addResponse(4, $response);
+    }
+    /**
+     * @test
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Question expects a response pair.
+     */
+    public function throwExceptionPassingResponseSingleToPairQuestion() {
+        $question = $this->getQuestionObject();
+        $response = new SingleResponse(4);
         $question->addResponse(4, $response);
     }
     private function getQuestionObject() {

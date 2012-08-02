@@ -25,6 +25,7 @@ class Question {
     }
     public function isAsked($asked = 0) {
         $this->asked = $asked;
+        return $this;
     }
     public function whenAsked() {
         return $this->asked;

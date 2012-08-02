@@ -5,6 +5,9 @@
         <testsuite name="Domain">
             <directory>STS/Domain</directory>
         </testsuite>
+        <testsuite name="Core">
+            <directory>STS/Core</directory>
+        </testsuite>
     </testsuites>
     <!-- FILTERS -->
     <filter>

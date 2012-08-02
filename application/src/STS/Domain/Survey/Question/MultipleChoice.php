@@ -1,5 +1,7 @@
 <?php
 namespace STS\Domain\Survey\Question;
+use STS\Domain\Survey\Response\PairResponse;
+
 use STS\Domain\Survey\AbstractResponse;
 use STS\Domain\Survey\Question;
 
@@ -19,6 +21,11 @@ class MultipleChoice extends Question {
         }
     }
     public function addResponse($choiceId, AbstractResponse $response) {
+        if($this->asked != self::BOTH && $response instanceof PairResponse){
+            throw new \InvalidArgumentException('Question expects a response single.');
+        }elseif ($this->asked == self::BOTH && ! $response instanceof PairResponse){
+            throw new \InvalidArgumentException('Question expects a response pair.');
+        }
         if ($this->choiceExists($choiceId)) {
             $this->responses[$choiceId] = $response;
             return $this;
