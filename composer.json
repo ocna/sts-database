@@ -1,13 +1,13 @@
 {
+   "minimum-stability": "dev",
    "require":{
-      "behat/behat":"2.4.0",
-      "behat/mink":"*",
+      "behat/behat":"*",
+      "behat/mink":"1.4.0",
       "behat/mink-extension":"*",
       "behat/mink-sahi-driver":"*",
       "behat/mink-goutte-driver":"*",
       "breerly/zf1":"1.11.*",
-      "EHER/PHPUnit": "*",
-      "doctrine/mongodb-odm": "*"
+      "EHER/PHPUnit": "*"
    },
    "config":{
       "bin-dir":"bin/"

@@ -39,3 +39,4 @@ Thumbs.db
 prepend.php
 append.php
 .htaccess
+.ant-targets-build.xml

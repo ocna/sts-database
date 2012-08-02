@@ -10,6 +10,7 @@
         </testsuite>
         <testsuite name="Domain">
             <directory>STS/Domain</directory>
+
         </testsuite>
     </testsuites>
     <!-- FILTERS -->
