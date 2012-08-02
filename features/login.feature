@@ -7,8 +7,9 @@ Feature: Login
         Given I am on "/index/login"
         When I fill in "email" with "<email>"
         And I fill in "password" with "<password>"
-        And I press "loginButton"
-        Then I should see "Welcome"
+        And I press "submit"
+        Then I should be on "/index/home"
+        And I should see "Welcome"
         And I should see "<name>"
         And I should see "Logout"
         
@@ -23,7 +24,7 @@ Feature: Login
         Given I am on "/index/login"
         When I fill in "email" with "<email>"
         And I fill in "password" with "<password>"
-        And I press "loginButton"
+        And I press "submit"
         Then I should see "Your email or password is invalid, please check them and try again. If you are having trouble logging in click here to reset your password."
         
         Examples:

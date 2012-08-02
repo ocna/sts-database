@@ -95,5 +95,17 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $view->navigation()
             ->menu()
             ->setPartial('partials/menu.phtml');
+        
+//         $this->_acl = Security\AclFactory::getDefaultInstance();
+//         $this->bootstrap('view');
+//         $view = $this->getResource('view');
+//         $config = new Zend_Config_Xml(APPLICATION_PATH . '/../design/config/navigation.xml', 'nav');
+//         $navigation = new Zend_Navigation($config->toArray());
+        
+//         $securityOtterNamespace = new \Zend_Session_Namespace('securityOtterNamespace');
+//         $role = $securityOtterNamespace->userRole;
+//         $view->navigation($navigation)
+//         ->setAcl($this->_acl)
+//         ->setRole($role);
     }
 }

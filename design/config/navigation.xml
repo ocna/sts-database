@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
     <nav>
-        <label>Dashboard</label>
+        <label>Home</label>
         <module>main</module>
-        <controller>index</controller>
+        <controller>home</controller>
         <action>index</action>
         <pages>
             <presentations>
@@ -72,4 +72,10 @@
             </tools>
         </pages>
     </nav>
+    <email>
+                        <label>Email</label>
+                        <module>tools</module>
+                        <controller>index</controller>
+                        <action>email</action>
+                    </email>
 </config>
