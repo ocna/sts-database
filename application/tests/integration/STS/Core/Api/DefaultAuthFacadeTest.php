@@ -3,6 +3,7 @@ use STS\Core\Api\DefaultAuthFacade;
 class DefaultAuthFacadeTest extends PHPUnit_Framework_TestCase
 {
     const BASIC_USER_EMAIL = 'member.user@email.com';
+    const BASIC_USER_NAME = 'muser';
     const BASIC_USER_PASSWORD = 'abc123';
     const BAD_BASIC_USER_EMAIL = 'not.user@email.com';
     const BAD_BASIC_USER_PASSWORD = 'badpass';

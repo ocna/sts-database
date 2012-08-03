@@ -7,15 +7,13 @@ class Main_Login extends Zend_Form
         $this->setMethod('post');
         $this->setAction('index/login');
         // Add an email element
-        $this->addElement('text', 'email', array(
-            'label' => 'Email address:' , 
+        $this->addElement('text', 'userName', array(
+            'label' => 'User Name:' , 
             'required' => true , 
             'filters' => array(
                 'StringTrim'
             ) , 
-            'validators' => array(
-                'EmailAddress'
-            )
+         
         ));
         // Add the comment element
         $this->addElement('password', 'password', array(
