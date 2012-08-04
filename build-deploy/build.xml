@@ -6,14 +6,15 @@
 		<echo>Type "ant -p" to see a list of targets</echo>
 	</target>
 
-	<target name="build:quick" depends="prepare, phpunit, behat" />
-	<target name="build" depends="composer, build:quick" />
+	<target name="build" depends="prepare, phpunit, behat" />
 	<target name="build:full" description="Full build with all tests and source checking." depends="prepare, lint, phpunit, phpunit:modules, phpunit:integration" />
 
-	<target name="composer" description="installs dependencies">
+	<target name="install" description="Installs application from checkout.">
+		<fail unless="env" message="'env' variable not set. Please specificy with -Denv=&lt;ENV&gt; or add to build.properties" />
 		<exec dir="${basedir}" executable="composer" failonerror="true">
-			<arg value="update" />
+			<arg value="install" />
 		</exec>
+		<antcall target="configure:behat"></antcall>
 	</target>
 
 	<target name="clean" description="Cleanup build artifacts">
