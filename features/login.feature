@@ -4,8 +4,8 @@ Feature: Login
     I need to provide my credentials to login
     
     Scenario Outline: Generic valid user login
-        Given I am on "/index/login"
-        When I fill in "email" with "<email>"
+        Given I am on "/login"
+        When I fill in "userName" with "<userName>"
         And I fill in "password" with "<password>"
         And I press "submit"
         Then I should be on "/index/home"
@@ -14,23 +14,16 @@ Feature: Login
         And I should see "Logout"
         
         Examples:
-            | email                         | password  | name              |
-            | member.user@email.com         | abc123    | Member User       |
-            | facilitator.user@email.com    | abc123    | Facilitator User  |
-            | coordinator.user@email.com    | abc123    | Coordinator User  |
-            | admin.user@email.com          | abc123    | Admin User        |
+            | userName                      | password  | name              |
+            | muser					        | abc123    | Member User       |
             
     Scenario Outline: Invalid login credentials
         Given I am on "/index/login"
-        When I fill in "email" with "<email>"
+        When I fill in "userName" with "<userName>"
         And I fill in "password" with "<password>"
         And I press "submit"
         Then I should see "Your email or password is invalid, please check them and try again. If you are having trouble logging in click here to reset your password."
         
         Examples:
-            | email                         | password      |
-            | member.user@email.com         |               |
-            |                               | abc123        |
-            |                               |               |
-            | coordinator.user@email.com    | badpass       |
-            | not email                     | abc123        |
+            | userName                      | password      |
+            | muser         				| badpass		|

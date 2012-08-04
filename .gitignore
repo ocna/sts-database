@@ -3,7 +3,9 @@
 # Build #
 #########################
 /build/
-/build-deploy/*.properties
+/build-deploy/stg.deploy.properties
+/build-deploy/beta.deploy.properties
+/build-deploy/prod.deploy.properties
 /vendor/
 /bin/
 
@@ -40,3 +42,4 @@ prepend.php
 append.php
 .htaccess
 .ant-targets-build.xml
+*.pem
