@@ -60,14 +60,14 @@
 	<target name="configure" description="Configure application.">
 		<fail unless="env" message="'env' variable not set. Please specificy with -Denv=&lt;ENV&gt; or add to build.properties" />
 		<copy file="${basedir}/build-deploy/config-templates/${env}.application.ini" tofile="${basedir}/application/config/application.ini" overwrite="true" />
+	</target>
+	
+	<target name="configure:behat" depends="configure" description="Configure application for behat.">
 		<copy file="${basedir}/build-deploy/config-templates/behat.yml" tofile="${basedir}/application/config/behat.yml" overwrite="true" />
 	</target>
 
 	<target name="remove-config">
-		<delete dir="${basedir}/config" />
-		<delete>
-			<fileset dir="${basedir}/core/config" includes="config.xml" />
-		</delete>
+		<delete dir="${basedir}/application/config" />
 	</target>
 
 	<target name="lint">
