@@ -4,6 +4,7 @@
     <testsuites>
         <testsuite name="Core">
             <directory>STS/Core</directory>
+            <file>STS/CoreTest.php</file>
         </testsuite>
         <testsuite name="Web">
             <directory>STS/Web</directory>
