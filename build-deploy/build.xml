@@ -7,7 +7,7 @@
 	</target>
 
 	<target name="build" depends="prepare, phpunit, behat" />
-	<target name="build:full" description="Full build with all tests and source checking." depends="prepare, lint, phpunit, phpunit:modules, phpunit:integration" />
+	<target name="build:full" description="Full build with all tests and source checking." depends="prepare, phpunit, phpunit:modules, phpunit:integration, behat" />
 
 	<target name="install" description="Installs application from checkout.">
 		<fail unless="env" message="'env' variable not set. Please specificy with -Denv=&lt;ENV&gt; or add to build.properties" />
@@ -46,7 +46,7 @@
 	<target name="behat" description="Runs BDD tests with Behat">
 		<exec dir="${basedir}" executable="${basedir}/bin/behat" failonerror="true">
 			<arg value="--config" />
-			<arg value="${basedir}/application/config/behat.yml" />
+			<arg value="${basedir}/tests/functional/config/behat.yml" />
 		</exec>
 	</target>
 
@@ -64,7 +64,7 @@
 	</target>
 	
 	<target name="configure:behat" depends="configure" description="Configure application for behat.">
-		<copy file="${basedir}/build-deploy/config-templates/behat.yml" tofile="${basedir}/application/config/behat.yml" overwrite="true" />
+		<copy file="${basedir}/build-deploy/config-templates/behat.yml" tofile="${basedir}/tests/functional/config/behat.yml" overwrite="true" />
 	</target>
 
 	<target name="remove-config">

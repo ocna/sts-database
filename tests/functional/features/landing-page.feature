@@ -5,8 +5,8 @@ Feature: Landing Page
     
     Scenario: Accessing the page landing page
         Given I am on homepage
-        And I should see "Welcome to the Survivors Teaching Students online program management system"
-        Then I should see "Login"
+        Then I should see "Welcome to the Survivors Teaching Students online program management system"
+        And I should see "Login"
         And I should see "User Name"
         And I should see "Password"
         And I should see "Welcome to the Survivors Teaching Students"

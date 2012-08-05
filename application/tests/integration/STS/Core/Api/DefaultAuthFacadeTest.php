@@ -20,14 +20,14 @@ class DefaultAuthFacadeTest extends PHPUnit_Framework_TestCase
      */
     public function successfulAuthenticationOfBasicUser()
     {
-        $userDTO = $this->authFacade->authenticate(self::BASIC_USER_EMAIL, self::BASIC_USER_PASSWORD);
+        $userDTO = $this->authFacade->authenticate(self::BASIC_USER_NAME, self::BASIC_USER_PASSWORD);
         $this->assertValidUserDTO($userDTO);
     }
 
     /**
      * @test
      * @expectedException \STS\Core\Api\ApiException
-     * @expectedExceptionMessage User not found for given email.
+     * @expectedExceptionMessage User not found for given user name.
      * @expectedExceptionCode -104
      */
     public function throwApiExceptionForInvalidUser()
@@ -43,7 +43,7 @@ class DefaultAuthFacadeTest extends PHPUnit_Framework_TestCase
      */
     public function throwApiExceptionForInvalidUserPassword()
     {
-        $this->authFacade->authenticate(self::BASIC_USER_EMAIL, self::BAD_BASIC_USER_PASSWORD);
+        $this->authFacade->authenticate(self::BASIC_USER_NAME, self::BAD_BASIC_USER_PASSWORD);
     }
 
     private function loadFacadeInstance()
@@ -54,7 +54,7 @@ class DefaultAuthFacadeTest extends PHPUnit_Framework_TestCase
     private function assertValidUserDTO($userDTO)
     {
         $this->assertInstanceOf('\STS\Core\User\UserDTO', $userDTO);
-        $this->assertEquals($userDTO->getEmail(), self::BASIC_USER_EMAIL);
+        $this->assertEquals($userDTO->getUserName(), self::BASIC_USER_NAME);
         $this->assertEquals($userDTO->getRole(), self::BASIC_USER_ROLE);
     }
 }

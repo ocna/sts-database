@@ -9,13 +9,12 @@ online program management system</h2>
 <div class="well span4">
 <h3>Login</h3>
 <?php echo $this->form;
-if ($this->loginError):?>
-<div class="alert"><?php echo $this->loginError;?></div>
+if ($this->loginError) :
+?>
+<div class="alert"><?php echo $this->loginError; ?></div>
     
-<?php endif;?>
-
+<?php endif; ?>
 <!-- Forgot Password? Click <a href="/default/index/forgot-password">here.</a> -->
 </div>
-
 </div>
 <br>

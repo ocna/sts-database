@@ -1,5 +1,5 @@
 {
-    "hash": "dd23b394980c44b4353f0b1c2467e364",
+    "hash": "532773039031ca2052f1cbe5f50e09b4",
     "packages": [
         {
             "package": "EHER/PHPUnit",
@@ -28,14 +28,12 @@
         {
             "package": "behat/mink-extension",
             "version": "dev-master",
-            "source-reference": "7cc6e98ec9161280cfb944a9bd98a1358ac416e8",
-            "commit-date": "1343851539"
+            "source-reference": "26a7d073348ab445ef654713f8656954f9467d0d",
+            "commit-date": "1344108318"
         },
         {
             "package": "behat/mink-goutte-driver",
-            "version": "dev-master",
-            "source-reference": "192e58dfd26098385218d65637426c26d148d9b0",
-            "commit-date": "1343123643"
+            "version": "v1.0.3"
         },
         {
             "package": "behat/mink-sahi-driver",
@@ -44,12 +42,24 @@
             "commit-date": "1341477311"
         },
         {
+            "package": "behat/mink-selenium2-driver",
+            "version": "dev-master",
+            "source-reference": "aad26bdb19f904b1990048750fc33c7b6f7f2e0e",
+            "commit-date": "1343748582"
+        },
+        {
             "package": "behat/sahi-client",
             "version": "v1.0.1"
         },
         {
             "package": "breerly/zf1",
             "version": "1.11.11"
+        },
+        {
+            "package": "emagister/zend-form-decorators-bootstrap",
+            "version": "dev-master",
+            "source-reference": "27543fa2483a9968c4e2f5b225a8e4e95bcd08e9",
+            "commit-date": "1344142360"
         },
         {
             "package": "fabpot/goutte",
@@ -68,6 +78,12 @@
         {
             "package": "guzzle/parser",
             "version": "v2.8.2"
+        },
+        {
+            "package": "instaclick/php-webdriver",
+            "version": "dev-master",
+            "source-reference": "v1.0.5",
+            "commit-date": "1343829434"
         },
         {
             "package": "kriswallsmith/buzz",

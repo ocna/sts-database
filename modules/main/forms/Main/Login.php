@@ -5,7 +5,7 @@ class Main_Login extends Zend_Form
     public function init()
     {
         $this->setMethod('post');
-        $this->setAction('index/login');
+        $this->setAction('/session/login');
         // Add an email element
         $this->addElement('text', 'userName', array(
             'label' => 'User Name:' , 
@@ -29,9 +29,9 @@ class Main_Login extends Zend_Form
                 )
             )
         ));
-        $this->addElement('checkbox', 'remember', array(
-            'label' => 'Remember Me:'
-        ));
+//         $this->addElement('checkbox', 'remember', array(
+//             'label' => 'Remember Me:'
+//         ));
         $this->addElement('submit', 'submit', array(
             'ignore' => true , 'label' => 'Login'
         ));

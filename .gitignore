@@ -15,6 +15,7 @@
 /build-deploy/config-template/*/local.*
 /modules/*/config/*
 /application/config/*
+/tests/functional/config/*
 
 # Cache and temp files #
 ########################

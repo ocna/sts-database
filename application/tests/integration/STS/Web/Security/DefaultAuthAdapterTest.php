@@ -3,9 +3,9 @@ use STS\Web\Security\DefaultAuthAdapter;
 use STS\Core\User\UserDTO;
 class DefaultAuthAdapterTest extends PHPUnit_Framework_TestCase
 {
-    const BASIC_USER_EMAIL = 'member.user@email.com';
+    const BASIC_USER_NAME = 'muser';
     const BASIC_USER_PASSWORD = 'abc123';
-    const BAD_BASIC_USER_EMAIL = 'not.user@email.com';
+    const BAD_BASIC_USER_NAME = 'buser';
     const BAD_BASIC_USER_PASSWORD = 'badpass';
 
     /**
@@ -13,7 +13,7 @@ class DefaultAuthAdapterTest extends PHPUnit_Framework_TestCase
      */
     public function successfullAuthentication()
     {
-        $defaultAuthAdapter = DefaultAuthAdapter::getDefaultInstance(self::BASIC_USER_EMAIL, self::BASIC_USER_PASSWORD);
+        $defaultAuthAdapter = DefaultAuthAdapter::getDefaultInstance(self::BASIC_USER_NAME, self::BASIC_USER_PASSWORD);
         $authResult = $defaultAuthAdapter->authenticate();
         $this->assertInstanceOf('\Zend_Auth_Result', $authResult);
         $this->assertInstanceOf('STS\Core\User\UserDTO', $authResult->getIdentity());
@@ -25,7 +25,7 @@ class DefaultAuthAdapterTest extends PHPUnit_Framework_TestCase
      */
     public function failedAuthenticationOnUser()
     {
-        $defaultAuthAdapter = DefaultAuthAdapter::getDefaultInstance(self::BAD_BASIC_USER_EMAIL, self::BASIC_USER_PASSWORD);
+        $defaultAuthAdapter = DefaultAuthAdapter::getDefaultInstance(self::BAD_BASIC_USER_NAME, self::BASIC_USER_PASSWORD);
         $authResult = $defaultAuthAdapter->authenticate();
         $this->assertInstanceOf('\Zend_Auth_Result', $authResult);
         $this->assertNull($authResult->getIdentity());
@@ -37,7 +37,7 @@ class DefaultAuthAdapterTest extends PHPUnit_Framework_TestCase
      */
     public function failedAuthenticationOnPassword()
     {
-        $defaultAuthAdapter = DefaultAuthAdapter::getDefaultInstance(self::BASIC_USER_EMAIL, self::BAD_BASIC_USER_PASSWORD);
+        $defaultAuthAdapter = DefaultAuthAdapter::getDefaultInstance(self::BASIC_USER_NAME, self::BAD_BASIC_USER_PASSWORD);
         $authResult = $defaultAuthAdapter->authenticate();
         $this->assertInstanceOf('\Zend_Auth_Result', $authResult);
         $this->assertNull($authResult->getIdentity());
