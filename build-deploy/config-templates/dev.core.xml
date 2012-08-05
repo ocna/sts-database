@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<all>
+		<modules>
+			<default>
+				<db>
+					<mongodb>
+                        <host>localhost</host>
+                        <port>27017</port>
+                        <username></username>
+                        <password></password>
+                        <dbname>sts-development</dbname>
+                    </mongodb>
+				</db>
+			</default>
+		</modules>
+	</all>
+</config>
