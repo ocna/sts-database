@@ -7,8 +7,8 @@
 					<mongodb>
                         <host>localhost</host>
                         <port>27017</port>
-                        <username></username>
-                        <password></password>
+                        <username>sts</username>
+                        <password>localdev</password>
                         <dbname>sts-development</dbname>
                     </mongodb>
 				</db>

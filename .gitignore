@@ -44,3 +44,4 @@ append.php
 .htaccess
 .ant-targets-build.xml
 *.pem
+*.ant-targets-*.xml
