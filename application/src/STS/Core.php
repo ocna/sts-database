@@ -15,7 +15,7 @@ class Core
     {
         switch ($key) {
             case 'AuthFacade':
-                $facade = DefaultAuthFacade::getDefaultInstance();
+                $facade = DefaultAuthFacade::getDefaultInstance($this->config);
                 break;
             default:
                 throw new \InvalidArgumentException("Class does not exist ($key)");

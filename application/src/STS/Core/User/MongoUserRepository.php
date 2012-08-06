@@ -1,19 +1,29 @@
 <?php
 namespace STS\Core\User;
+use STS\Domain\User;
 use STS\Domain\User\UserRepository;
 
 class MongoUserRepository implements UserRepository
 {
-    public function __construct($mongoDb){
-        
+
+    private $mongoDb;
+    public function __construct($mongoDb)
+    {
+        $this->mongoDb = $mongoDb;
     }
-    
     public function load($id)
     {
-        // TODO: Auto-generated method stub
+        $userData = $this->mongoDb->user->findOne(array(
+                "_id" => $id
+            ));
+        $user = $this->mapData($userData);
+        return $userData['_id'] === NULL ? null : $user;
     }
-    public function find($criteria)
+    private function mapData($userData)
     {
-        // TODO: Auto-generated method stub
+        $user = new User();
+        $user->setId($userData['_id'])->setUserName($userData['_id'])->setEmail($userData['email'])
+            ->setPassword($userData['pw'])->setSalt($userData['salt'])->setRole($userData['role']);
+        return $user;
     }
 }

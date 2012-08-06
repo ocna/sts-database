@@ -6,26 +6,41 @@
  * @subpackage	Api
  */
 namespace STS\Core\Api;
+use STS\Core\User\MongoUserRepository;
 use STS\Core\User\UserDTOAssembler;
 use STS\Domain\User;
 use STS\Core\Api\DefaultAuthFacade;
 
 class DefaultAuthFacade implements AuthFacade
 {
-    function authenticate($userName, $password)
+
+    private $userRepository;
+    public function __construct($userRepository)
     {
-        if ($userName != 'muser') {
+        $this->userRepository = $userRepository;
+    }
+    public function authenticate($userName, $password)
+    {
+        $user = $this->userRepository->load($userName);
+        if ($user === null) {
             throw new ApiException('User not found for given user name.', ApiException::FAILURE_USER_NOT_FOUND);
         }
-        if ($password != 'abc123') {
+        if ($user->getPassword() != $this->hashPassword($user, $password)) {
             throw new ApiException('Credentials are invalid for given user.', ApiException::FAILURE_CREDENTIAL_INVALID);
         }
-        $user = new User();
-        $user->setId(1)->setEmail('member.user@email.com')->setUserName('muser')->setRole('member');
         return UserDTOAssembler::toDTO($user);
     }
-    public static function getDefaultInstance()
+    private function hashPassword($user, $password)
     {
-        return new DefaultAuthFacade();
+        return md5($user->getSalt() . $password);
+    }
+    public static function getDefaultInstance($config)
+    {
+        $mongoConfig = $config->modules->default->db->mongodb;
+        $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
+        $mongo = new \Mongo('mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port);
+        $mongoDb = $mongo->selectDB($mongoConfig->dbname);
+        $userRepository = new MongoUserRepository($mongoDb);
+        return new DefaultAuthFacade($userRepository);
     }
 }

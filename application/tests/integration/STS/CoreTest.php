@@ -11,4 +11,18 @@ class CoreTest extends PHPUnit_Framework_TestCase
         $core = Core::getDefaultInstance();
         $this->assertInstanceOf('STS\Core', $core);
     }
+    /**
+     * @test
+     */
+    public function getCorrectCoreObjectsForParameters()
+    {
+        $core = $core = Core::getDefaultInstance();
+        $loadableObjects = array(
+            'AuthFacade'
+        );
+        foreach ($loadableObjects as $key) {
+            $instance = $core->load($key);
+            $this->assertInstanceOf('STS\Core\Api\\' . $key, $instance);
+        }
+    }
 }

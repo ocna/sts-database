@@ -12,20 +12,7 @@ class CoreTest extends PHPUnit_Framework_TestCase
         $core = $this->getValidCoreWithMockedDeps();
         $this->assertInstanceOf('STS\Core', $core);
     }
-    /**
-     * @test
-     */
-    public function getCorrectCoreObjectsForParameters()
-    {
-        $core = $this->getValidCoreWithMockedDeps();
-        $loadableObjects = array(
-            'AuthFacade'
-        );
-        foreach ($loadableObjects as $key) {
-            $instance = $core->load($key);
-            $this->assertInstanceOf('STS\Core\Api\\' . $key, $instance);
-        }
-    }
+    
     /**
      * @test
      * @expectedException \InvalidArgumentException

@@ -1,5 +1,5 @@
 {
-    "hash": "532773039031ca2052f1cbe5f50e09b4",
+    "hash": "586a0ebeee576b744e082e772446662e",
     "packages": [
         {
             "package": "EHER/PHPUnit",
@@ -90,6 +90,12 @@
             "version": "dev-master",
             "source-reference": "2ba5da13b1b03590f0164b3fb61578078d671fcc",
             "commit-date": "1341070218"
+        },
+        {
+            "package": "mockery/mockery",
+            "version": "dev-master",
+            "source-reference": "ab9e69db2756a58dd5dee4dac03ba335c4d6c174",
+            "commit-date": "1341775591"
         },
         {
             "package": "symfony/browser-kit",
