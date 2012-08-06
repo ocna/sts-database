@@ -14,7 +14,8 @@
       "behat/mink-selenium2-driver":"*",
       "breerly/zf1":"1.11.*",
       "EHER/PHPUnit":"*",
-      "emagister/zend-form-decorators-bootstrap":"*"
+      "emagister/zend-form-decorators-bootstrap":"*",
+      "mockery/mockery": "*"
    },
    "minimum-stability":"dev",
    "config":{
@@ -22,7 +23,7 @@
    },
    "autoload":{
       "psr-0":{
-         "STS":"application/src"
+         "STS":["application/src","application/tests/unit"]
       }
    }
 }
