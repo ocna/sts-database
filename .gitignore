@@ -11,8 +11,9 @@
 
 # Configuration #
 ########################
-/build-deploy/config-template/local.*
-/build-deploy/config-template/*/local.*
+/build-deploy/config-templates/dev.*
+/build-deploy/config-templates/stg.*
+/build-deploy/config-templates/beta.*
 /modules/*/config/*
 /application/config/*
 /tests/functional/config/*
