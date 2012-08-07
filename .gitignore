@@ -46,3 +46,4 @@ append.php
 .ant-targets-build.xml
 *.pem
 *.ant-targets-*.xml
+environment-details.md
