@@ -6,63 +6,73 @@ class User extends Entity
 {
 
     private $email;
-    private $userName;
     private $password;
     private $role;
     private $salt;
-    private $member;
+    private $firstName;
+    private $lastName;
+    private $legacyId;
     public function getEmail()
     {
         return $this->email;
-    }
-    public function getUserName()
-    {
-        return $this->userName;
-    }
-    public function getPassword()
-    {
-        return $this->password;
-    }
-    public function getRole()
-    {
-        return $this->role;
-    }
-    public function getSalt()
-    {
-        return $this->salt;
-    }
-    public function getMember()
-    {
-        return $this->member;
     }
     public function setEmail($email)
     {
         $this->email = $email;
         return $this;
     }
-    public function setUserName($userName)
+    public function getPassword()
     {
-        $this->userName = $userName;
-        return $this;
+        return $this->password;
     }
     public function setPassword($password)
     {
         $this->password = $password;
         return $this;
     }
+    public function getRole()
+    {
+        return $this->role;
+    }
     public function setRole($role)
     {
         $this->role = $role;
         return $this;
+    }
+    public function getSalt()
+    {
+        return $this->salt;
     }
     public function setSalt($salt)
     {
         $this->salt = $salt;
         return $this;
     }
-    public function setMember($member)
+    public function getFirstName()
     {
-        $this->member = $member;
+        return $this->firstName;
+    }
+    public function setFirstName($firstName)
+    {
+        $this->firstName = $firstName;
+        return $this;
+    }
+    public function getLastName()
+    {
+        return $this->lastName;
+    }
+    public function setLastName($lastName)
+    {
+        $this->lastName = $lastName;
+        return $this;
+    }
+    public function getLegacyId()
+    {
+        return $this->legacyId;
+    }
+    public function setLegacyId($legacyId)
+    {
+        $this->legacyId = $legacyId;
         return $this;
     }
 }

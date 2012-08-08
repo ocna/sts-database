@@ -22,8 +22,9 @@ class MongoUserRepository implements UserRepository
     private function mapData($userData)
     {
         $user = new User();
-        $user->setId($userData['_id'])->setUserName($userData['_id'])->setEmail($userData['email'])
-            ->setPassword($userData['pw'])->setSalt($userData['salt'])->setRole($userData['role']);
+        $user->setId($userData['_id'])->setLegacyId($userData['legacyid'])->setEmail($userData['email'])
+            ->setPassword($userData['pw'])->setSalt($userData['salt'])->setRole($userData['role'])
+            ->setFirstName($userData['fname'])->setLastName($userData['lname']);
         return $user;
     }
 }

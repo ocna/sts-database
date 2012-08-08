@@ -14,7 +14,14 @@ abstract class AbstractBaseController extends \Zend_Controller_Action
         $this->view->layout()->menu = $this->view
             ->partial('partials/main-menu.phtml', array(
                     'nav' => $this->view->navigation($container)->menu()->setPartial('partials/menu.phtml'),
-                    'authenticated' => $this->auth->hasIdentity()
+                    'authenticated' => $this->auth->hasIdentity(), 'userName' => $this->getFormatedName()
             ));
+    }
+    private function getFormatedName()
+    {
+        if ($this->auth->hasIdentity()) {
+            return ucfirst($this->auth->getIdentity()->getFirstName()) . ' '
+                            . ucfirst($this->auth->getIdentity()->getLastName());
+        }
     }
 }
