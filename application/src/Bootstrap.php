@@ -12,6 +12,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         return $view;
     }
 
+
+    
+
     public function _initModules()
     {
         $this->bootstrap('frontController');

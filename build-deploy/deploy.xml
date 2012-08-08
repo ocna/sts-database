@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Succeed - Deploy" default="help" basedir="../">
     <import file="build.xml" />
-    <property file="${basedir}/build-deploy/deploy.properties" />
+    <property file="${basedir}/build-deploy/${env}.deploy.properties" />
     <target name="help" description="Display detailed usage information">
         <echo>Type "ant -p" to see a list of targets</echo>
     </target>

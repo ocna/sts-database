@@ -5,17 +5,15 @@ class Main_Login extends Zend_Form
     public function init()
     {
         $this->setMethod('post');
-        $this->setAction('index/login');
+        $this->setAction('/session/login');
         // Add an email element
-        $this->addElement('text', 'email', array(
-            'label' => 'Email address:' , 
+        $this->addElement('text', 'userName', array(
+            'label' => 'User Name:' , 
             'required' => true , 
             'filters' => array(
                 'StringTrim'
             ) , 
-            'validators' => array(
-                'EmailAddress'
-            )
+         
         ));
         // Add the comment element
         $this->addElement('password', 'password', array(
@@ -31,9 +29,9 @@ class Main_Login extends Zend_Form
                 )
             )
         ));
-        $this->addElement('checkbox', 'remember', array(
-            'label' => 'Remember Me:'
-        ));
+//         $this->addElement('checkbox', 'remember', array(
+//             'label' => 'Remember Me:'
+//         ));
         $this->addElement('submit', 'submit', array(
             'ignore' => true , 'label' => 'Login'
         ));
