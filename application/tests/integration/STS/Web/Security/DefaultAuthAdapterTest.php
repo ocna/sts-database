@@ -1,14 +1,11 @@
 <?php
+use STS\TestUtilities\UserTestCase;
 use STS\Web\Security\DefaultAuthAdapter;
 use STS\Core\User\UserDTO;
 use STS\Core;
 
-class DefaultAuthAdapterTest extends PHPUnit_Framework_TestCase
+class DefaultAuthAdapterTest extends UserTestCase
 {
-    const BASIC_USER_NAME = 'muser';
-    const BASIC_USER_PASSWORD = 'abc123';
-    const BAD_BASIC_USER_NAME = 'buser';
-    const BAD_BASIC_USER_PASSWORD = 'badpass';
     /**
      * @test
      */

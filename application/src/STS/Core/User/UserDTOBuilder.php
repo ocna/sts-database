@@ -2,19 +2,22 @@
 namespace STS\Core\User;
 use STS\Core\User\UserDTO;
 
-class UserDTOBuilder {
+class UserDTOBuilder
+{
 
     private $id = null;
     private $email = null;
-    private $userName = null;
+    private $firstName = null;
+    private $lastName = null;
     private $role = null;
-    private $memberId = null;
+    private $legacyId = null;
     /**
      * sets up the id UserDTOBuilder property
      *
      * @return $userDTOBuilder object
      */
-    public function withId($id) {
+    public function withId($id)
+    {
         $this->id = $id;
         return $this;
     }
@@ -23,12 +26,19 @@ class UserDTOBuilder {
      *
      * @return $userDTOBuilder object
      */
-    public function withEmail($email) {
+    public function withEmail($email)
+    {
         $this->email = $email;
         return $this;
     }
-    public function withUserName($userName) {
-        $this->userName = $userName;
+    public function withFirstName($firstName)
+    {
+        $this->firstName = $firstName;
+        return $this;
+    }
+    public function withLastName($lastName)
+    {
+        $this->lastName = $lastName;
         return $this;
     }
     /**
@@ -36,20 +46,22 @@ class UserDTOBuilder {
      *
      * @return $userDTOBuilder object
      */
-    public function withRole($role) {
+    public function withRole($role)
+    {
         $this->role = $role;
         return $this;
     }
-    public function withMemberId($memberId) {
-        $this->memberId = $memberId;
+    public function withLegacyId($legacyId)
+    {
+        $this->legacyId = $legacyId;
         return $this;
     }
     /**
      *
      * @return $userDTO object
      */
-    public function build() {
-        return new UserDTO($this->id, $this->email, $this->userName, $this->role,
-                $this->memberId);
+    public function build()
+    {
+        return new UserDTO($this->id, $this->email, $this->firstName, $this->lastName, $this->role, $this->legacyId);
     }
 }

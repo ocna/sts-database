@@ -1,6 +1,7 @@
 <?php
 namespace STS;
 use STS\Core\Api\DefaultAuthFacade;
+use STS\Core\Api\DefaultSchoolFacade;
 
 class Core
 {
@@ -16,6 +17,9 @@ class Core
         switch ($key) {
             case 'AuthFacade':
                 $facade = DefaultAuthFacade::getDefaultInstance($this->config);
+                break;
+            case 'SchoolFacade':
+                $facade = DefaultSchoolFacade::getDefaultInstance($this->config);
                 break;
             default:
                 throw new \InvalidArgumentException("Class does not exist ($key)");

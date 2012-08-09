@@ -32,7 +32,7 @@ class DefaultAuthFacade implements AuthFacade
     }
     private function hashPassword($user, $password)
     {
-        return md5($user->getSalt() . $password);
+        return sha1($user->getSalt() . $password);
     }
     public static function getDefaultInstance($config)
     {
