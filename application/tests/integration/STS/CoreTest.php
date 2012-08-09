@@ -18,7 +18,7 @@ class CoreTest extends PHPUnit_Framework_TestCase
     {
         $core = $core = Core::getDefaultInstance();
         $loadableObjects = array(
-            'AuthFacade'
+            'AuthFacade','SchoolFacade'
         );
         foreach ($loadableObjects as $key) {
             $instance = $core->load($key);
