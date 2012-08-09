@@ -2,6 +2,7 @@
 namespace STS;
 use STS\Core\Api\DefaultAuthFacade;
 use STS\Core\Api\DefaultSchoolFacade;
+use STS\Core\Api\DefaultMemberFacade;
 
 class Core
 {
@@ -20,6 +21,9 @@ class Core
                 break;
             case 'SchoolFacade':
                 $facade = DefaultSchoolFacade::getDefaultInstance($this->config);
+                break;
+            case 'MemberFacade':
+                $facade = DefaultMemberFacade::getDefaultInstance($this->config);
                 break;
             default:
                 throw new \InvalidArgumentException("Class does not exist ($key)");

@@ -1,3 +1,15 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+    	$('input.tag').tagedit({
+    		autocompleteURL : "/presentation/member",
+    		checkNewEntriesCaseSensitive: true
+    		});
+    	$( "#appendedInputButton" ).datepicker();
+    	$("#date-btn").click(function(){
+    		$( "#appendedInputButton" ).datepicker( "show" );
+    		})
+    });
+</script>
 <div class="page-header">
     <h1>New Presentation
         <small>Enter presentation and survey details here.</small>
@@ -8,9 +20,7 @@
         <div class="control-group">
             <label class="control-label" for="location">Location</label>
             <div class="controls">
-                <select class="span4">
-                    <option>Albany Medical College</option>
-                </select>
+            <?php echo $this->element; ?>
             </div>
         </div>
         <div class="control-group">
@@ -21,22 +31,38 @@
                 </select>
             </div>
         </div>
+        
+        
         <div class="control-group">
-            <label class="control-label" for="date">Presentation Date</label>
+            <label class="control-label" for="appendedInputButton">Append with button</label>
             <div class="controls">
-                <div class="input-append date" id="dp3" data-date="10/05/2012" data-date-format="mm/dd/yyyy">
-                    <input class="span2" size="16" type="text" value="10/05/2012" />
-                    <span class="add-on"><i class="icon-calendar"></i></span>
-                </div>
+              <div class="input-append">
+                <input class="span2" id="appendedInputButton" size="16" type="text"><button id="date-btn" class="btn" type="button"><i class="icon-calendar"></i></button>
+              </div>
             </div>
-        </div>
+          </div>
+          
+      
         <div class="control-group">
             <label class="control-label" for="textarea">Notes</label>
             <div class="controls">
                 <textarea class="span4 input-xlarge" id="textarea" rows="5"></textarea>
             </div>
         </div>
+    
+    
+    
+    <div class="control-group">
+            <label class="control-label" for="type">Members Attending</label>
+            <div class="controls">
+<input  type="text" name="tag[]" value="" class="tag"/>
+            <p class="help-block">Begin typing names to search for members...</p>
+            </div>
+        </div>
     </fieldset>
+    
+  
+    
     <h2>Survey Results</h2>
     <fieldset class="well">
         <h3>1. In general, I have a basic understanding of ovarian cancer including:</h3>

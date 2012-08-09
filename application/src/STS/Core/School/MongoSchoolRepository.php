@@ -13,7 +13,7 @@ class MongoSchoolRepository implements SchoolRepository
     }
     public function find()
     {
-        $schools = $this->mongoDb->school->find();
+        $schools = $this->mongoDb->school->find()->sort(array('name'=>1));
         $returnData = array();
         foreach ($schools as $schoolData) {
             $returnData[] = $this->mapData($schoolData);

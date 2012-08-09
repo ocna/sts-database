@@ -80,13 +80,16 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $view->doctype('HTML5');
         $view->headTitle('STS Online Management System');
         $view->headLink()
+            ->appendStylesheet('/css/jquery-ui-1.8.16.custom.css')
+            ->appendStylesheet('/css/jquery.tagedit.css')
             ->appendStylesheet('/css/bootstrap.min.css')
-            ->appendStylesheet('/css/datepicker.css')
             ->appendStylesheet('/css/styles.css');
         $view->headScript()
             ->appendFile('//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js')
-            ->appendFile('/js/bootstrap.min.js')
-            ->appendFile('/js/bootstrap-datepicker.js');
+            ->appendFile('//ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js')
+            ->appendFile('/js/jquery.tagedit.js')
+            ->appendFile('/js/jquery.autoGrowInput.js')
+            ->appendFile('/js/bootstrap.min.js');
     }
 
     protected function _initNavigation()

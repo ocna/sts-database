@@ -58,8 +58,8 @@
         {
             "package": "emagister/zend-form-decorators-bootstrap",
             "version": "dev-master",
-            "source-reference": "27543fa2483a9968c4e2f5b225a8e4e95bcd08e9",
-            "commit-date": "1344142360"
+            "source-reference": "355f1d724048ea2a6de62d240010264d34a282c1",
+            "commit-date": "1344484255"
         },
         {
             "package": "fabpot/goutte",
@@ -130,8 +130,8 @@
         {
             "package": "symfony/console",
             "version": "dev-master",
-            "source-reference": "v2.1.0-RC1",
-            "commit-date": "1343512949"
+            "source-reference": "d68f45aaf4f5d074c3ac7c0f2d27951a11ecc04c",
+            "commit-date": "1344326863"
         },
         {
             "package": "symfony/css-selector",
@@ -226,8 +226,8 @@
         {
             "package": "symfony/yaml",
             "version": "dev-master",
-            "source-reference": "v2.1.0-RC1",
-            "commit-date": "1342347231"
+            "source-reference": "6b3eb66a7c4495dcaa35a64dd93c8ba8c29f35d8",
+            "commit-date": "1344325256"
         }
     ],
     "packages-dev": null,
