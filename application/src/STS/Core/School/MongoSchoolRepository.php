@@ -13,7 +13,9 @@ class MongoSchoolRepository implements SchoolRepository
     }
     public function find()
     {
-        $schools = $this->mongoDb->school->find()->sort(array('name'=>1));
+        $schools = $this->mongoDb->school->find()->sort(array(
+                'name' => 1
+            ));
         $returnData = array();
         foreach ($schools as $schoolData) {
             $returnData[] = $this->mapData($schoolData);
@@ -23,7 +25,8 @@ class MongoSchoolRepository implements SchoolRepository
     private function mapData($schoolData)
     {
         $school = new School();
-        $school->setId($schoolData['_id'])->setLegacyId($schoolData['legacyid'])->setName($schoolData['name']);
+        $school->setId($schoolData['_id']->__toString())->setLegacyId($schoolData['legacyid'])
+            ->setName($schoolData['name']);
         return $school;
     }
 }

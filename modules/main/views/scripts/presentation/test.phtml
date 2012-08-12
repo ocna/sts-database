@@ -1,6 +1,6 @@
 <script type="text/javascript">
     $(document).ready(function() {
-    	$('input.tag').tagedit({
+    	$('input.tdag').tagedit({
     		autocompleteURL : "/presentation/member",
     		checkNewEntriesCaseSensitive: true
     		});
@@ -37,11 +37,22 @@
             <label class="control-label" for="appendedInputButton">Append with button</label>
             <div class="controls">
               <div class="input-append">
-                <input class="span2" id="appendedInputButton" size="16" type="text"><button id="date-btn" class="btn" type="button"><i class="icon-calendar"></i></button>
+                <input class="span2" id="appendedInputButton" size="16" type="text">
+           <button id="date-btn" class="btn" type="button">
+                <i class="icon-calendar"></i></button>
               </div>
             </div>
           </div>
           
+      
+      <div class="control-group">
+            <label class="control-label" for="appendedInputButton">Append with button</label>
+            <div class="controls">
+              <div class="input-append">
+                <input class="span2" id="appendedInputButton" size="16" type="text"><button class="btn" type="button"><i class="icon-calendar"></i></button>
+              </div>
+            </div>
+          </div>
       
         <div class="control-group">
             <label class="control-label" for="textarea">Notes</label>
@@ -55,7 +66,7 @@
     <div class="control-group">
             <label class="control-label" for="type">Members Attending</label>
             <div class="controls">
-<input  type="text" name="tag[]" value="" class="tag"/>
+                <input  type="text" name="tag[]" value="" class="tag"/>
             <p class="help-block">Begin typing names to search for members...</p>
             </div>
         </div>

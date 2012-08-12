@@ -1,0 +1,46 @@
+<fieldset id="fieldset-<?php echo $this->element->getId(); ?>">
+    <div class="control-group inline well">
+    <legend><?php echo $this->element->getLegend(); ?></legend>
+    
+    <div class="controls row">
+    <div class="span3">Pre-Test</div>
+    <div class="span3">Post-Test</div>
+    </div>
+    <?php
+    $labelId = count($this->asks) == 1 ? '_'.$this->asks[0] : '_pre';
+    
+     foreach ($this->pairs as $id) : ?>
+    <div class="control-group inline survey-pair">
+        <label class="control-label" for="inlineCheckboxes"><?php echo  $this->element->getElement($id.$labelId)->getLabel()?></label>
+        <div class="controls row">
+            <div class="span3">
+            <?php 
+            if(in_array('pre', $this->asks)){
+                $element= $this->element->getElement("{$id}_pre");
+                $element->removeDecorator('Zend_Form_Decorator_Label');
+                $element->removeDecorator('Twitter_Bootstrap_Form_Decorator_Wrapper');
+                $element->removeDecorator('Zend_Form_Decorator_HtmlTag');
+                echo $element;
+            }else{
+                echo '<span class="na"><h6>n/a</h6></span>';
+            }
+            ?>
+            </div>
+            <div class="span3">
+            <?php            
+            if(in_array('post', $this->asks)){
+                $element= $this->element->getElement("{$id}_post");
+                $element->removeDecorator('Zend_Form_Decorator_Label');
+                $element->removeDecorator('Twitter_Bootstrap_Form_Decorator_Wrapper');
+                $element->removeDecorator('Zend_Form_Decorator_HtmlTag');
+                echo $element;
+            }else{
+                echo '<span class="na"><h6>n/a</h6></span>';
+            }
+            ?>
+            </div>
+        </div>
+    </div>    
+    <?php endforeach; ?>
+</fieldset>
+

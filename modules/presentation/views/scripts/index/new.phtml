@@ -1,0 +1,30 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+    	
+       
+        window.onbeforeunload = function (e) {
+            var e = e || window.event;
+            // For IE and Firefox prior to version 4
+            if (e) {
+                e.returnValue = 'Please be sure you have double checked your work, and that you want to navigate away!';
+            }
+            // For Safari
+            return 'Please be sure you have double checked your work, and that you want to navigate away!';
+        };
+        
+    	$('input.membersAttended').tagedit({
+    		autocompleteURL : "/search/member",
+    		checkNewEntriesCaseSensitive: true
+    		});
+    	$( "#dateOfPresentation" ).datepicker();
+    	$("#dateOfPresentationButton").click(function(){
+    		$( "#dateOfPresentation" ).datepicker( "show" );
+    		})
+    });
+</script>
+<div class="page-header">
+    <h1>New Presentation
+        <small>Enter presentation and survey details here.</small>
+    </h1>
+</div>
+<?php echo $this->form; ?>

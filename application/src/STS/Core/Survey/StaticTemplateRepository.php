@@ -57,7 +57,7 @@ class StaticTemplateRepository implements TemplateRepository
             ),
             9 => array(
                     'type' => 'ShortAnswer', 'asked' => 2,
-                    'prompt' => 'How can the presentation be more effective in conveying survivorsÕ experiences, the importance of the symptoms or difficulties in diagnosis?'
+                    'prompt' => "How can the presentation be more effective in conveying survivors' experiences, the importance of the symptoms or difficulties in diagnosis?"
             )
     );
     public function load($id)

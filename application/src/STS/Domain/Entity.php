@@ -11,6 +11,9 @@ class Entity
     }
     public function setId($id)
     {
+        if (is_object($id)) {
+            throw new \InvalidArgumentException('Id must be a string value.');
+        }
         $this->id = $id;
         return $this;
     }
