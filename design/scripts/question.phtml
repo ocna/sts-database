@@ -8,9 +8,12 @@
     </div>
     <?php
     $labelId = count($this->asks) == 1 ? '_'.$this->asks[0] : '_pre';
-    
-     foreach ($this->pairs as $id) : ?>
-    <div class="control-group inline survey-pair">
+     foreach ($this->pairs as $id) : 
+     $preError = (in_array('pre', $this->asks)) ? $this->element->getElement($id.'_pre')->hasErrors(): false;
+     $postError = (in_array('post', $this->asks)) ? $this->element->getElement($id.'_post')->hasErrors() : false;
+     $hasErrors = ($preError|| $postError);
+     ?>
+    <div class="control-group inline survey-pair <?php echo (($hasErrors) ? ' error' : '') ?>">
         <label class="control-label" for="inlineCheckboxes"><?php echo  $this->element->getElement($id.$labelId)->getLabel()?></label>
         <div class="controls row">
             <div class="span3">

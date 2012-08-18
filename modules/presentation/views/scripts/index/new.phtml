@@ -14,7 +14,10 @@
         
     	$('input.membersAttended').tagedit({
     		autocompleteURL : "/search/member",
-    		checkNewEntriesCaseSensitive: true
+    		checkNewEntriesCaseSensitive: true,
+    		allowEdit: false,
+    		allowAdd: false,
+    		addedPostfix: ''
     		});
     	$( "#dateOfPresentation" ).datepicker();
     	$("#dateOfPresentationButton").click(function(){
@@ -27,4 +30,9 @@
         <small>Enter presentation and survey details here.</small>
     </h1>
 </div>
+<?php foreach ($this->storedMembers as $key => $value): ?>
+    <input type="text" name="membersAttended[<?php echo $key ?>]" class="membersAttended" value="<?php echo $value ?>"/>
+<?php endforeach;?>
 <?php echo $this->form; ?>
+
+   

@@ -16,42 +16,63 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
         //Location
         $this
             ->addElement('select', 'location', array(
-                'label' => 'Location', 'dimension' => 4, 'MultiOptions' => $this->schools, 'required'=>true
+                    'label' => 'Location', 'dimension' => 4, 'MultiOptions' => $this->schools, 'required' => true,
+                    'validators' => array(
+                        new \Zend_Validate_NotEmpty(\Zend_Validate_NotEmpty::ZERO)
+                    )
             ));
         //PresentationType
         $this
             ->addElement('select', 'presentationType', array(
-                'label' => 'Presentation Type', 'dimension' => 2, 'MultiOptions' => $this->presentationTypes
+                    'label' => 'Presentation Type', 'dimension' => 2, 'MultiOptions' => $this->presentationTypes,
+                    'required' => true,
+                    'validators' => array(
+                        new \Zend_Validate_NotEmpty(\Zend_Validate_NotEmpty::ZERO)
+                    )
             ));
         //Date
         $this
             ->addElement('text', 'dateOfPresentation', array(
                     'label' => 'Date of Presentation', 'dimension' => 2,
+                    'validators' => array(
+                            new Zend_Validate_Date(
+                                            array(
+                                                'format' => 'MM/dd/yyyy'
+                                            ))
+                    ), 'required' => true,
                     'append' => array(
                         'name' => 'dateOfPresentationButton', 'label' => '', 'icon' => 'calendar'
                     )
-            // '<i class="icon-calendar"></i>'
             ));
         //Notes
         $this
             ->addElement('textarea', 'notes', array(
-                'label' => 'Notes', 'dimension' => 4, 'rows' => 5, 'required'=>true
+                'label' => 'Notes', 'dimension' => 4, 'rows' => 5
             ));
         //MembersAttended
         $this
             ->addElement('text', 'membersAttended[]', array(
                     'label' => 'Members Attended', 'class' => 'membersAttended', 'isArray' => true,
-                    'description' => 'Begin typing names to search for and add members...'
+                    'description' => 'Begin typing names to search for and add members...',
+                    'validators' => array(
+                        new \Zend_Validate_NotEmpty(\Zend_Validate_NotEmpty::EMPTY_ARRAY)
+                    )
             ));
         //Participants
         $this
             ->addElement('text', 'participants', array(
-                'label' => 'Number of Participants', 'dimension' => 1
+                    'label' => 'Number of Participants', 'dimension' => 1, 'required' => true,
+                    'validators' => array(
+                        'int'
+                    )
             ));
         //FormsReturned
         $this
             ->addElement('text', 'formsReturned', array(
-                'label' => 'Number of Forms Returned', 'dimension' => 1
+                    'label' => 'Number of Forms Returned', 'dimension' => 1, 'required' => true,
+                    'validators' => array(
+                        'int'
+                    )
             ));
         //SurveyForm
         $this->buildSurveyForm();
@@ -73,7 +94,6 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
     }
     public function buildSurveyForm()
     {
-        
         $questionNumber = 1;
         foreach ($this->surveyTemplate->getQuestions() as $questionId => $question) {
             $questionName = "q_{$questionId}";
@@ -95,7 +115,6 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
                     'pre', 'post'
                 );
             }
-            
             if ($question instanceof MultipleChoice) {
                 foreach ($question->getChoices() as $choiceId => $choice) {
                     $name = $questionName . "_c_$choiceId";
@@ -103,7 +122,10 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
                     foreach ($asks as $ask) {
                         $this
                             ->addElement('text', $name . "_$ask", array(
-                                'label' => $choice, 'dimension' => 1
+                                    'label' => $choice, 'dimension' => 1, 'required' => true,
+                                    'validators' => array(
+                                        'int'
+                                    )
                             ));
                         $elements[] = $name . "_$ask";
                     }
@@ -114,7 +136,7 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
                 foreach ($asks as $ask) {
                     $this
                         ->addElement('textarea', $name . "_$ask", array(
-                            'label' => '', 'dimension' => 3, 'rows' => 10
+                            'label' => '', 'dimension' => 3, 'rows' => 10, 'required' => true
                         ));
                     $elements[] = $name . "_$ask";
                 }

@@ -18,13 +18,24 @@ class Presentation_IndexController extends SecureBaseController
         $request = $this->getRequest();
         $form = $this->getForm();
         if ($this->getRequest()->isPost()) {
-            if ($form->isValid($request->getPost())) {
+            $postData = $request->getPost();
+            if (!is_array($postData['membersAttended'])) {
+                $form->getElement('membersAttended[]')
+                    ->addErrors(array(
+                        'Please enter at least one member.'
+                    ))->markAsError();
+                $membersValid = false;
             } else {
+                $this->view->storedMembers = $postData['membersAttended'];
+                $membersValid = true;
+            }
+            if ($form->isValid($postData) && $membersValid) {
+                //process the form
+                die('lets do it!');
             }
         }
         $this->view->form = $form;
     }
-    
     private function getForm()
     {
         $schoolFacade = $this->core->load('SchoolFacade');
