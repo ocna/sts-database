@@ -5,9 +5,12 @@ use STS\Domain\Entity;
 class Member extends Entity
 {
 
-    protected $legacyId;
-    protected $firstName;
-    protected $lastName;
+    private $legacyId;
+    private $firstName;
+    private $lastName;
+    private $presentsFor = array();
+    private $facilitatesFor = array();
+    private $coordinatesFor = array();
     public function getFirstName()
     {
         return $this->firstName;
@@ -34,5 +37,48 @@ class Member extends Entity
     {
         $this->legacyId = $legacyId;
         return $this;
+    }
+    public function canPresentForArea($area)
+    {
+        $this->presentsFor[] = $area;
+        return $this;
+    }
+    public function getPresentsForAreas()
+    {
+        return $this->presentsFor;
+    }
+    public function canFacilitateForArea($area)
+    {
+        $this->facilitatesFor[] = $area;
+        return $this;
+    }
+    public function getFacilitatesForAreas()
+    {
+        return $this->facilitatesFor;
+    }
+    public function canCoordinateForArea($area)
+    {
+        $this->coordinatesFor[] = $area;
+        return $this;
+    }
+    public function getCoordinatesForAreas()
+    {
+        return $this->coordinatesFor;
+    }
+    public function getAllAssociatedAreas()
+    {
+        $areas = array();
+        $this->addUniqueElements($areas, $this->presentsFor);
+        $this->addUniqueElements($areas, $this->facilitatesFor);
+        $this->addUniqueElements($areas, $this->coordinatesFor);
+        return $areas;
+    }
+    
+    private function addUniqueElements(&$array, $elements){
+        foreach ($elements as $element){
+            if (!in_array($element, $array)){
+                $array[]= $element;
+            }
+        }
     }
 }
