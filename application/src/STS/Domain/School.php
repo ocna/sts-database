@@ -7,6 +7,16 @@ class School extends Entity
 
     private $legacyId;
     private $name;
+    private $area;
+    public function getArea()
+    {
+        return $this->area;
+    }
+    public function setArea($area)
+    {
+        $this->area = $area;
+        return $this;
+    }
     public function getLegacyId()
     {
         return $this->legacyId;

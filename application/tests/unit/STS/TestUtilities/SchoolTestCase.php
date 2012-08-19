@@ -10,11 +10,15 @@ class SchoolTestCase extends \PHPUnit_Framework_TestCase
     protected function getValidSchool()
     {
         $school = new School();
-        $school->setId(self::ID)->setLegacyId(self::LEGACY_ID)->setName(self::NAME);
+        $area = \Mockery::mock('STS\Domain\Location\Area');
+        $school->setId(self::ID)->setLegacyId(self::LEGACY_ID)->setName(self::NAME)->setArea($area);
         return $school;
     }
     protected function assertValidSchool($school)
     {
-        $this->assertEquals($this->getValidSchool(), $school);
+        $this->assertEquals($school->getId(), self::ID);
+        $this->assertEquals($school->getLegacyId(), self::LEGACY_ID);
+        $this->assertEquals($school->getName(), self::NAME);
+        $this->assertInstanceOf('STS\Domain\Location\Area', $school->getArea());
     }
 }
