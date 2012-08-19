@@ -1,15 +1,27 @@
 <?php
-namespace STS\Domain\Location\Region;
-use STS\Domain\Entity\Entity;
-use Doctrine\Common\Collections\ArrayCollection;
-class Region extends Entity
-{
-    protected $name;
-    protected $areas;
+namespace STS\Domain\Location;
 
-    public function __construct()
+class Region
+{
+
+    private $name;
+    private $legacyId;
+    public function getName()
     {
-        parent::construct();
-        $this->areas = new ArrayCollection();
+        return $this->name;
+    }
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
+    public function getLegacyId()
+    {
+        return $this->legacyId;
+    }
+    public function setLegacyId($legacyId)
+    {
+        $this->legacyId = $legacyId;
+        return $this;
     }
 }

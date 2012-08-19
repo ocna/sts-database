@@ -48,3 +48,4 @@ append.php
 *.pem
 *.ant-targets-*.xml
 environment-details.md
+data/
