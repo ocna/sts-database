@@ -11,7 +11,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
     public function searchForMembersByName()
     {
         $facade = $this->loadFacadeInstance();
-        $members = $facade->searchForMembersByName('member te');
+        $members = $facade->searchForMembersByNameWithSpec('member te', null);
         $this->assertTrue(is_array($members));
         $this->assertValidMemberDto($members[0]);
         

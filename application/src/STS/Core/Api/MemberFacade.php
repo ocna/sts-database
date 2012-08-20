@@ -2,5 +2,5 @@
 namespace STS\Core\Api;
 interface MemberFacade
 {
-    public function searchForMembersByName($searchString);
+    public function searchForMembersByNameWithSpec($searchString, $spec);
 }
