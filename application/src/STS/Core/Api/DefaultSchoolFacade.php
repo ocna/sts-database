@@ -22,7 +22,7 @@ class DefaultSchoolFacade implements SchoolFacade
                     $schools[] = $school;
                 }
             }
-        }else{
+        } else {
             $schools = $allSchools;
         }
         $schoolDtos = array();

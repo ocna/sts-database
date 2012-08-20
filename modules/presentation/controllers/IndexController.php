@@ -1,4 +1,5 @@
 <?php
+use STS\Domain\School\Specification\MemberSchoolSpecification;
 use STS\Domain\Presentation;
 use STS\Core;
 use STS\Web\Controller\SecureBaseController;
@@ -7,10 +8,12 @@ class Presentation_IndexController extends SecureBaseController
 {
 
     private $core;
+    private $user;
     public function init()
     {
         parent::init();
         $this->core = Core::getDefaultInstance();
+        $this->user = $this->auth->getIdentity();
     }
     public function newAction()
     {
@@ -38,8 +41,7 @@ class Presentation_IndexController extends SecureBaseController
     }
     private function getForm()
     {
-        $schoolFacade = $this->core->load('SchoolFacade');
-        $schools = $schoolFacade->getAllSchools();
+        $schools = $this->getSchoolsVisableToMember();
         $schoolsArray = array(
             ''
         );
@@ -57,5 +59,15 @@ class Presentation_IndexController extends SecureBaseController
                                 'surveyTemplate' => $surveyTemplate
                         ));
         return $form;
+    }
+    private function getSchoolsVisableToMember()
+    {
+        $schoolFacade = $this->core->load('SchoolFacade');
+        $schoolSpec = null;
+        if ($this->user->getAssociatedMemberId()) {
+            $memberFacade = $this->core->load('MemberFacade');
+            $schoolSpec = $memberFacade->getMemberSchoolSpecForId($this->user->getAssociatedMemberId());
+        }
+        return $schoolFacade->getSchoolsForSpecification($schoolSpec);
     }
 }

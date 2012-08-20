@@ -10,7 +10,8 @@ class UserDTO
     private $lastName;
     private $role;
     private $legacyId;
-    public function __construct($id, $email, $firstName, $lastName, $role, $legacyId)
+    private $associatedMemberId;
+    public function __construct($id, $email, $firstName, $lastName, $role, $legacyId, $associatedMemberId)
     {
         $this->id = $id;
         $this->email = $email;
@@ -18,6 +19,7 @@ class UserDTO
         $this->lastName = $lastName;
         $this->role = $role;
         $this->legacyId = $legacyId;
+        $this->associatedMemberId = $associatedMemberId;
     }
     public function getEmail()
     {
@@ -42,5 +44,8 @@ class UserDTO
     public function getId()
     {
         return $this->id;
+    }
+    public function getAssociatedMemberId(){
+        return $this->associatedMemberId;
     }
 }

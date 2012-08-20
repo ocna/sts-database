@@ -30,9 +30,10 @@
         <small>Enter presentation and survey details here.</small>
     </h1>
 </div>
-<?php foreach ($this->storedMembers as $key => $value): ?>
+<?php if ($this->storedMembers) : ?>
+<?php foreach ($this->storedMembers as $key => $value) : ?>
     <input type="text" name="membersAttended[<?php echo $key ?>]" class="membersAttended" value="<?php echo $value ?>"/>
-<?php endforeach;?>
+<?php endforeach; ?>
+<?php endif; ?>
 <?php echo $this->form; ?>
-
    

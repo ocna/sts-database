@@ -18,6 +18,7 @@ class UserDTOAssembler
         $userDTOBuilder->withLastName($user->getLastName());
         $userDTOBuilder->withRole($user->getRole());
         $userDTOBuilder->withLegacyId($user->getLegacyId());
+        $userDTOBuilder->withAssociatedMemberId($user->getAssociatedMemberId());
         return $userDTOBuilder->build();
     }
 }

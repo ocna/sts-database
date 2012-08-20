@@ -25,6 +25,9 @@ class MongoUserRepository implements UserRepository
         $user->setId($userData['_id'])->setLegacyId($userData['legacyid'])->setEmail($userData['email'])
             ->setPassword($userData['pw'])->setSalt($userData['salt'])->setRole($userData['role'])
             ->setFirstName($userData['fname'])->setLastName($userData['lname']);
+        if (array_key_exists('member_id', $userData)) {
+            $user->setAssociatedMemberId($userData['member_id']['_id']->__toString());
+        }
         return $user;
     }
 }

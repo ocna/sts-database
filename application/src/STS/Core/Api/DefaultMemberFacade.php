@@ -1,5 +1,7 @@
 <?php
 namespace STS\Core\Api;
+use STS\Domain\School\Specification\MemberSchoolSpecification;
+use STS\Domain\Member\Specification\MemberByMemberAreaSpecification;
 use STS\Core\Member\MemberDto;
 use STS\Core\Api\MemberFacade;
 use STS\Core\Member\MongoMemberRepository;
@@ -31,6 +33,16 @@ class DefaultMemberFacade implements MemberFacade
                             $member->getLastName());
         }
         return $memberDtos;
+    }
+    public function getMemberByMemberAreaSpecForId($id)
+    {
+        $member = $this->memberRepository->load($id);
+        return new MemberByMemberAreaSpecification($member);
+    }
+    public function getMemberSchoolSpecForId($id)
+    {
+        $member = $this->memberRepository->load($id);
+        return new MemberSchoolSpecification($member);
     }
     public static function getDefaultInstance($config)
     {
