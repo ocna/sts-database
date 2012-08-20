@@ -1,4 +1,6 @@
 <?php
+use STS\Core\Api\ApiException;
+
 use STS\Domain\School\Specification\MemberSchoolSpecification;
 use STS\Domain\Presentation;
 use STS\Core;
@@ -22,7 +24,7 @@ class Presentation_IndexController extends SecureBaseController
         $form = $this->getForm();
         if ($this->getRequest()->isPost()) {
             $postData = $request->getPost();
-            if (!is_array($postData['membersAttended'])) {
+            if (!array_key_exists('membersAttended', $postData) || !is_array($postData['membersAttended'])) {
                 $form->getElement('membersAttended[]')
                     ->addErrors(array(
                         'Please enter at least one member.'
@@ -33,8 +35,20 @@ class Presentation_IndexController extends SecureBaseController
                 $membersValid = true;
             }
             if ($form->isValid($postData) && $membersValid) {
-                //process the form
-                die('lets do it!');
+                try {
+                    $this->savePresentation($postData);
+                    $this
+                        ->setFlashMessageAndRedirect('You have successfully completed the presentation and survey entry process!', 'success', array(
+                            'module' => 'main', 'controller' => 'home', 'action' => 'index'
+                        ));
+                } catch (ApiException $e) {
+                    $this
+                        ->setFlashMessageAndUpdateLayout('An error occured while saving this information: '
+                                        . $e->getMessage(), 'error');
+                }
+            } else {
+                $this
+                    ->setFlashMessageAndUpdateLayout('It looks like you missed some information, please make the corrections below.', 'error');
             }
         }
         $this->view->form = $form;
@@ -69,5 +83,9 @@ class Presentation_IndexController extends SecureBaseController
             $schoolSpec = $memberFacade->getMemberSchoolSpecForId($this->user->getAssociatedMemberId());
         }
         return $schoolFacade->getSchoolsForSpecification($schoolSpec);
+    }
+    
+    private function savePresentation($postData){
+        throw new ApiException('Well the saving part has not been finished!');
     }
 }
