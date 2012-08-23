@@ -58,8 +58,8 @@
         {
             "package": "emagister/zend-form-decorators-bootstrap",
             "version": "dev-master",
-            "source-reference": "27543fa2483a9968c4e2f5b225a8e4e95bcd08e9",
-            "commit-date": "1344142360"
+            "source-reference": "e6cd954621ff4bc74f1bd583b8108d2f14fb96f2",
+            "commit-date": "1344725800"
         },
         {
             "package": "fabpot/goutte",
@@ -130,8 +130,8 @@
         {
             "package": "symfony/console",
             "version": "dev-master",
-            "source-reference": "v2.1.0-RC1",
-            "commit-date": "1343512949"
+            "source-reference": "3b66f1056f5ac37146d3b755964e8a43a205f2f5",
+            "commit-date": "1344349441"
         },
         {
             "package": "symfony/css-selector",
@@ -154,8 +154,8 @@
         {
             "package": "symfony/dependency-injection",
             "version": "dev-master",
-            "source-reference": "v2.1.0-RC1",
-            "commit-date": "1343997870"
+            "source-reference": "98fa735a7ef5dc07c43bfe6faa4367a983b6ba6f",
+            "commit-date": "1344599303"
         },
         {
             "package": "symfony/dom-crawler",
@@ -178,7 +178,7 @@
         {
             "package": "symfony/event-dispatcher",
             "version": "dev-master",
-            "source-reference": "v2.1.0-RC1",
+            "source-reference": "v2.1.0-BETA4",
             "commit-date": "1342739894"
         },
         {
@@ -226,8 +226,8 @@
         {
             "package": "symfony/yaml",
             "version": "dev-master",
-            "source-reference": "v2.1.0-RC1",
-            "commit-date": "1342347231"
+            "source-reference": "6b3eb66a7c4495dcaa35a64dd93c8ba8c29f35d8",
+            "commit-date": "1344325256"
         }
     ],
     "packages-dev": null,

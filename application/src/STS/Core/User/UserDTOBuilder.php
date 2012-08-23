@@ -11,6 +11,7 @@ class UserDTOBuilder
     private $lastName = null;
     private $role = null;
     private $legacyId = null;
+    private $associatedMemberId = null;
     /**
      * sets up the id UserDTOBuilder property
      *
@@ -56,12 +57,17 @@ class UserDTOBuilder
         $this->legacyId = $legacyId;
         return $this;
     }
+    
+    public function withAssociatedMemberId($id){
+        $this->associatedMemberId = $id;
+        return $this;
+    }
     /**
      *
      * @return $userDTO object
      */
     public function build()
     {
-        return new UserDTO($this->id, $this->email, $this->firstName, $this->lastName, $this->role, $this->legacyId);
+        return new UserDTO($this->id, $this->email, $this->firstName, $this->lastName, $this->role, $this->legacyId, $this->associatedMemberId);
     }
 }

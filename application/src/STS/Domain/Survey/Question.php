@@ -1,33 +1,44 @@
 <?php
 namespace STS\Domain\Survey;
 
-class Question {
+class Question
+{
     const BOTH = 0;
     const BEFORE = 1;
     const AFTER = 2;
 
-    protected $id;
-    protected $prompt;
+    protected $id = null;
+    protected $prompt = null;
     protected $asked;
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
-    public function setId($id) {
+    public function setId($id)
+    {
         $this->id = $id;
         return $this;
     }
-    public function getPrompt() {
+    public function getPrompt()
+    {
         return $this->prompt;
     }
-    public function setPrompt($prompt) {
+    public function setPrompt($prompt)
+    {
         $this->prompt = $prompt;
         return $this;
     }
-    public function isAsked($asked = 0) {
+    public function isAsked($asked = 0)
+    {
         $this->asked = $asked;
         return $this;
     }
-    public function whenAsked() {
+    public function whenAsked()
+    {
         return $this->asked;
+    }
+    public function getType()
+    {
+        return constant(get_class($this) . '::QUESTION_TYPE');
     }
 }

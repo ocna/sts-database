@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<all>
+		<modules>
+			<default>
+				<db>
+					<mongodb>
+                        <host></host>
+                        <port></port>
+                        <username></username>
+                        <password></password>
+                        <dbname></dbname>
+                    </mongodb>
+				</db>
+			</default>
+		</modules>
+	</all>
+</config>

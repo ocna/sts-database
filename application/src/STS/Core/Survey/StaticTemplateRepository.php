@@ -6,27 +6,25 @@ use STS\Domain\Survey\Question\MultipleChoice;
 use STS\Domain\Survey\Question\ShortAnswer;
 use STS\Domain\Survey\Question\TrueFalse;
 
-class StaticTemplateRepository implements TemplateRepository {
+class StaticTemplateRepository implements TemplateRepository
+{
 
     private $templateData = array(
             1 => array(
                     'type' => 'MultipleChoice', 'asked' => 0,
                     'prompt' => 'In general, I have a basic understanding of ovarian cancer including:',
                     'choices' => array(
-                            1 => 'Risk factors', 2 => 'Signs and symptoms',
-                            3 => 'Diagnostic protocols'
+                        1 => 'Risk factors', 2 => 'Signs and symptoms', 3 => 'Diagnostic protocols'
                     )
             ),
             2 => array(
-                    'type' => 'TrueFalse', 'asked' => 0,
-                    'prompt' => 'Women are screened regularly for ovarian cancer.'
+                'type' => 'TrueFalse', 'asked' => 0, 'prompt' => 'Women are screened regularly for ovarian cancer.'
             ),
             3 => array(
                     'type' => 'MultipleChoice', 'asked' => 0,
                     'prompt' => 'A family history of which of the following raises the risk of ovarian cancer:',
                     'choices' => array(
-                            4 => 'Breast cancer', 5 => 'Ovarian cancer',
-                            6 => 'Uterine cancer', 7 => 'Colon cancer',
+                            4 => 'Breast cancer', 5 => 'Ovarian cancer', 6 => 'Uterine cancer', 7 => 'Colon cancer',
                             8 => 'Lung cancer'
                     )
             ),
@@ -34,8 +32,7 @@ class StaticTemplateRepository implements TemplateRepository {
                     'type' => 'MultipleChoice', 'asked' => 0,
                     'prompt' => 'A personal history of which of the following raises the risk of ovarian cancer:',
                     'choices' => array(
-                            4 => 'Breast cancer', 9 => 'Never having children',
-                            10 => 'Cervical cancer',
+                            4 => 'Breast cancer', 9 => 'Never having children', 10 => 'Cervical cancer',
                             11 => 'Birth control pill use'
                     )
             ),
@@ -43,8 +40,7 @@ class StaticTemplateRepository implements TemplateRepository {
                     'type' => 'MultipleChoice', 'asked' => 0,
                     'prompt' => 'Studies have shown that women diagnosed with ovarian cancer generally have a better likelihood of prolonged survival if treated by:',
                     'choices' => array(
-                            12 => 'A gynecologist', 13 => 'An oncologist',
-                            14 => 'A gynecologic oncologist'
+                        12 => 'A gynecologist', 13 => 'An oncologist', 14 => 'A gynecologic oncologist'
                     )
             ),
             6 => array(
@@ -61,17 +57,18 @@ class StaticTemplateRepository implements TemplateRepository {
             ),
             9 => array(
                     'type' => 'ShortAnswer', 'asked' => 2,
-                    'prompt' => 'How can the presentation be more effective in conveying survivorsÕ experiences, the importance of the symptoms or difficulties in diagnosis?'
+                    'prompt' => "How can the presentation be more effective in conveying survivors' experiences, the importance of the symptoms or difficulties in diagnosis?"
             )
     );
-    public function load($id) {
+    public function load($id)
+    {
         if ($id != 1) {
-            throw new \InvalidArgumentException(
-                    'Template not found for given id.');
+            throw new \InvalidArgumentException('Template not found for given id.');
         }
         return $this->buildTemplate();
     }
-    private function buildTemplate() {
+    private function buildTemplate()
+    {
         $template = new Template();
         $template->setId(1);
         foreach ($this->templateData as $questionId => $questionData) {
@@ -86,8 +83,7 @@ class StaticTemplateRepository implements TemplateRepository {
                     $question = new ShortAnswer();
                     break;
             }
-            $question->setId($questionId)->isAsked($questionData['asked'])
-                     ->setPrompt($questionData['prompt']);
+            $question->setId($questionId)->isAsked($questionData['asked'])->setPrompt($questionData['prompt']);
             if (array_key_exists('choices', $questionData)) {
                 foreach ($questionData['choices'] as $choiceId => $choice) {
                     $question->addChoice($choiceId, $choice);

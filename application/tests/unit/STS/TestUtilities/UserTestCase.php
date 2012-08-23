@@ -15,12 +15,13 @@ class UserTestCase extends \PHPUnit_Framework_TestCase
     const BASIC_USER_ROLE = 'member';
     const VALID_FIRST_NAME = 'Member';
     const VALID_LAST_NAME = 'User';
+    const ASSOCIATED_MEMBER_ID = '502314eec6464712c1e705cc';
     protected function getValidUser()
     {
         $user = new User();
         $user->setId(self::BASIC_USER_NAME)->setEmail(self::BASIC_USER_EMAIL)->setPassword(self::PASSWORD)
             ->setSalt(self::SALT)->setFirstName(self::VALID_FIRST_NAME)->setLastName(self::VALID_LAST_NAME)
-            ->setLegacyId(self::VALID_LEGACY_ID)->setRole(self::BASIC_USER_ROLE);
+            ->setLegacyId(self::VALID_LEGACY_ID)->setRole(self::BASIC_USER_ROLE)->setAssociatedMemberId(self::ASSOCIATED_MEMBER_ID);
         return $user;
     }
     protected function assertValidUser($user)
@@ -34,5 +35,6 @@ class UserTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::VALID_LAST_NAME, $user->getLastName());
         $this->assertEquals(self::BASIC_USER_ROLE, $user->getRole());
         $this->assertEquals(self::VALID_LEGACY_ID, $user->getLegacyId());
+        $this->assertEquals(self::ASSOCIATED_MEMBER_ID, $user->getAssociatedMemberId());
     }
 }

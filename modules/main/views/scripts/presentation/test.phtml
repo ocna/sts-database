@@ -1,0 +1,118 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+    	$('input.tdag').tagedit({
+    		autocompleteURL : "/presentation/member",
+    		checkNewEntriesCaseSensitive: true
+    		});
+    	$( "#appendedInputButton" ).datepicker();
+    	$("#date-btn").click(function(){
+    		$( "#appendedInputButton" ).datepicker( "show" );
+    		})
+    });
+</script>
+<div class="page-header">
+    <h1>New Presentation
+        <small>Enter presentation and survey details here.</small>
+    </h1>
+</div>
+<form class="form-horizontal">
+    <fieldset>
+        <div class="control-group">
+            <label class="control-label" for="location">Location</label>
+            <div class="controls">
+            <?php echo $this->element; ?>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="type">Presentation Type</label>
+            <div class="controls">
+                <select class="span2">
+                    <option>MED</option>
+                </select>
+            </div>
+        </div>
+        
+        
+        <div class="control-group">
+            <label class="control-label" for="appendedInputButton">Append with button</label>
+            <div class="controls">
+              <div class="input-append">
+                <input class="span2" id="appendedInputButton" size="16" type="text">
+           <button id="date-btn" class="btn" type="button">
+                <i class="icon-calendar"></i></button>
+              </div>
+            </div>
+          </div>
+          
+      
+      <div class="control-group">
+            <label class="control-label" for="appendedInputButton">Append with button</label>
+            <div class="controls">
+              <div class="input-append">
+                <input class="span2" id="appendedInputButton" size="16" type="text"><button class="btn" type="button"><i class="icon-calendar"></i></button>
+              </div>
+            </div>
+          </div>
+      
+        <div class="control-group">
+            <label class="control-label" for="textarea">Notes</label>
+            <div class="controls">
+                <textarea class="span4 input-xlarge" id="textarea" rows="5"></textarea>
+            </div>
+        </div>
+    
+    
+    
+    <div class="control-group">
+            <label class="control-label" for="type">Members Attending</label>
+            <div class="controls">
+                <input  type="text" name="tag[]" value="" class="tag"/>
+            <p class="help-block">Begin typing names to search for members...</p>
+            </div>
+        </div>
+    </fieldset>
+    
+  
+    
+    <h2>Survey Results</h2>
+    <fieldset class="well">
+        <h3>1. In general, I have a basic understanding of ovarian cancer including:</h3>
+        <br>
+        <div class="control-group form-inline">
+            <label class="control-label" for="appendedInputButton">Risk Factors</label>
+            <div class="controls">
+              <div class="">
+                <input class="span2" id="appendedInputButton" size="16" type="text">
+                <input class="span2"  size="16" type="text">
+              </div>
+            </div>
+          </div>
+          
+          <div class="control-group form-inline">
+            <label class="control-label" for="appendedInputButton">Signs and symptoms</label>
+            <div class="controls">
+              <div class="">
+                <input class="span2" id="appendedInputButton" size="16" type="text">
+                <input class="span2"  size="16" type="text">
+              </div>
+            </div>
+          </div>
+          
+          <div class="control-group form-inline">
+            <label class="control-label" for="appendedInputButton">Diagnostic protocols</label>
+            <div class="controls">
+              <div class="">
+                <input class="span2" id="appendedInputButton" size="16" type="text">
+                <input class="span2"  size="16" type="text">
+              </div>
+            </div>
+          </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save changes</button>
+            <button class="btn">Cancel</button>
+        </div>
+    </fieldset>
+</form>
+<div class="alert">
+    Right now this page has not been built out...
+</div>

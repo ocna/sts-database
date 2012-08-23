@@ -70,7 +70,7 @@ class StaticTemplateRepositoryTest extends PHPUnit_Framework_TestCase {
                 ),
                 9 => array(
                         'type' => 'ShortAnswer', 'asked' => 2,
-                        'prompt' => 'How can the presentation be more effective in conveying survivorsÕ experiences, the importance of the symptoms or difficulties in diagnosis?'
+                        'prompt' => 'How can the presentation be more effective in conveying survivors\' experiences, the importance of the symptoms or difficulties in diagnosis?'
                 )
         );
         foreach ($templateData as $index => $questionData) {

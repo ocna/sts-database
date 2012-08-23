@@ -18,3 +18,7 @@ body {
 	margin-top: 2em;
 	margin-bottom: .8em;
 }
+
+.survey-pair:hover{
+	background-color: #eef;
+}

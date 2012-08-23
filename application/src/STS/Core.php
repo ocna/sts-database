@@ -1,6 +1,10 @@
 <?php
 namespace STS;
 use STS\Core\Api\DefaultAuthFacade;
+use STS\Core\Api\DefaultSchoolFacade;
+use STS\Core\Api\DefaultMemberFacade;
+use STS\Core\Api\DefaultSurveyFacade;
+use STS\Core\Api\DefaultPresentationFacade;
 
 class Core
 {
@@ -16,6 +20,18 @@ class Core
         switch ($key) {
             case 'AuthFacade':
                 $facade = DefaultAuthFacade::getDefaultInstance($this->config);
+                break;
+            case 'SchoolFacade':
+                $facade = DefaultSchoolFacade::getDefaultInstance($this->config);
+                break;
+            case 'MemberFacade':
+                $facade = DefaultMemberFacade::getDefaultInstance($this->config);
+                break;
+            case 'SurveyFacade':
+                $facade = DefaultSurveyFacade::getDefaultInstance($this->config);
+                break;
+            case 'PresentationFacade':
+                $facade = DefaultPresentationFacade::getDefaultInstance($this->config);
                 break;
             default:
                 throw new \InvalidArgumentException("Class does not exist ($key)");
