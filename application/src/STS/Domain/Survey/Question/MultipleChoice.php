@@ -6,6 +6,7 @@ use STS\Domain\Survey\Question;
 
 class MultipleChoice extends Question
 {
+    const QUESTION_TYPE = 'MultipleChoice';
 
     protected $choices;
     protected $responses;

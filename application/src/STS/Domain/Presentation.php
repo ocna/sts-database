@@ -17,6 +17,31 @@ class Presentation extends Entity
     private $location;
     private $members = array();
     private $survey;
+    private $enteredByUserId;
+    public function toArray()
+    {
+        $array = array(
+                'id' => $this->id, 'entered_by_user_id' => $this->enteredByUserId, 'type' => $this->type,
+                'notes' => $this->notes, 'nforms' => $this->numberOfFormsReturned, 'date' => $this->date,
+                'nparticipants' => $this->numberOfParticipants, 'school_id' => $this->location->getId(),
+                'survey_id' => $this->survey->getId()
+        );
+        $members = array();
+        foreach ($this->members as $member) {
+            $members[] = $member->getId();
+        }
+        $array['members'] = $members;
+        return $array;
+    }
+    public function getEnteredByUserId()
+    {
+        return $this->enteredByUserId;
+    }
+    public function setEnteredByUserId($enteredByUserId)
+    {
+        $this->enteredByUserId = $enteredByUserId;
+        return $this;
+    }
     public function getType()
     {
         return $this->type;

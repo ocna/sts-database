@@ -23,14 +23,15 @@ class PresentationTest extends PresentationTestCase
         $presentation = $this->createValidObject();
         $this->assertValidObject($presentation);
     }
-    
     /**
      * @test
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Supplied presentation type is not recognized.
      */
-    public function throwExceptionForInvalidPresentationType(){
+    public function throwExceptionForInvalidPresentationType()
+    {
         $presentation = $this->createValidObject();
         $presentation->setType('bad');
     }
+    
 }

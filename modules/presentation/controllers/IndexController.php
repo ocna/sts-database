@@ -1,6 +1,5 @@
 <?php
 use STS\Core\Api\ApiException;
-
 use STS\Domain\School\Specification\MemberSchoolSpecification;
 use STS\Domain\Presentation;
 use STS\Core;
@@ -35,6 +34,7 @@ class Presentation_IndexController extends SecureBaseController
                 $membersValid = true;
             }
             if ($form->isValid($postData) && $membersValid) {
+                $this->savePresentation($postData);
                 try {
                     $this->savePresentation($postData);
                     $this
@@ -84,8 +84,25 @@ class Presentation_IndexController extends SecureBaseController
         }
         return $schoolFacade->getSchoolsForSpecification($schoolSpec);
     }
-    
-    private function savePresentation($postData){
-        throw new ApiException('Well the saving part has not been finished!');
+    private function savePresentation($postData)
+    {
+        //Get User
+        $userId = $this->auth->getIdentity()->getId();
+        $templateId = 1;
+        //First Save Survey Built
+        $surveyFacade = $this->core->load('SurveyFacade');
+        $surveyData = array();
+        foreach ($postData as $key => $value) {
+            if (substr($key, 0, 2) == 'q_') {
+                $surveyData[$key] = $value;
+            }
+        }
+        $surveyId = $surveyFacade->saveSurvey($userId, $templateId, $surveyData);
+        //Then Save Presentation
+        $presentationFacade = $this->core->load('PresentationFacade');
+        $members = array_keys($postData['membersAttended']);
+        $presentationFacade
+            ->savePresentation($userId, $postData['location'], $postData['presentationType'], $postData['dateOfPresentation'], $postData['notes'], $members, $postData['participants'], $postData['formsReturned'], $surveyId);
+        return true;
     }
 }

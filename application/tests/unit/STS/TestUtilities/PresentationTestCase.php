@@ -4,6 +4,7 @@ use STS\Domain\Presentation;
 
 class PresentationTestCase extends \PHPUnit_Framework_TestCase
 {
+    const ENTERED_BY_USER_ID = 'muser';
     const ID = '50234bc4fe65f50a9579a8cd';
     const TYPE = 'med';
     const DATE = '2012-05-10 11:55:23';
@@ -18,7 +19,7 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         );
         $survey = $this->getMockBuilder('STS\Domain\Survey')->disableOriginalConstructor()->getMock();
         $presentation = new Presentation();
-        $presentation->setId(self::ID)->setLocation($school)->setType(self::TYPE)->setDate(self::DATE)
+        $presentation->setEnteredByUserId(self::ENTERED_BY_USER_ID)->setId(self::ID)->setLocation($school)->setType(self::TYPE)->setDate(self::DATE)
             ->setNotes(self::NOTES)->setMembers($members)->setNumberOfParticipants(self::PARTICIPANTS)
             ->setNumberOfFormsReturned(self::FORMS)->setSurvey($survey);
         return $presentation;
@@ -26,6 +27,7 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
     protected function assertValidObject($presentation)
     {
         $this->assertEquals(self::ID, $presentation->getId());
+        $this->assertEquals(self::ENTERED_BY_USER_ID, $presentation->getEnteredByUserId());
         $this->assertEquals(self::TYPE, $presentation->getType());
         $this->assertEquals(self::DATE, $presentation->getDate());
         $this->assertEquals(self::NOTES, $presentation->getNotes());

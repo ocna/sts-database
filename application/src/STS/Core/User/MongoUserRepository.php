@@ -16,8 +16,7 @@ class MongoUserRepository implements UserRepository
         $userData = $this->mongoDb->user->findOne(array(
                 "_id" => $id
             ));
-        $user = $this->mapData($userData);
-        return $userData['_id'] === NULL ? null : $user;
+        return $userData['_id'] === NULL ? null : $this->mapData($userData);
     }
     private function mapData($userData)
     {
