@@ -12,7 +12,7 @@
         <echo>sync from ${basedir} to ${rsync.user}@${rsync.host}:${rsync.dest}</echo>
         <exec executable="rsync" failonerror="true">
             <arg value="--verbose" />
-            <arg value="-rclgz" />
+            <arg value="-rclgzd" />
             <arg value="--exclude-from=${basedir}/build-deploy/deploy.exclude" />
             <arg value="${basedir}/" />
             <arg value="${rsync.user}@${rsync.host}:${rsync.dest}" />

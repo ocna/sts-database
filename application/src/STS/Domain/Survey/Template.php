@@ -2,7 +2,7 @@
 namespace STS\Domain\Survey;
 use STS\Domain\Survey;
 
-class Template {
+class Template{
 
     private $id;
     private $questions = array();
@@ -19,6 +19,10 @@ class Template {
     }
     public function getQuestion($index) {
         return $this->questions[$index];
+    }
+    
+    public function getQuestions(){
+        return $this->questions;
     }
     public function createSurveyInstance() {
         $survey = new Survey($this->questions);

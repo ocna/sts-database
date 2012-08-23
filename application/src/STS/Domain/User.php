@@ -12,6 +12,7 @@ class User extends Entity
     private $firstName;
     private $lastName;
     private $legacyId;
+    private $associatedMemberId;
     public function getEmail()
     {
         return $this->email;
@@ -73,6 +74,13 @@ class User extends Entity
     public function setLegacyId($legacyId)
     {
         $this->legacyId = $legacyId;
+        return $this;
+    }
+    public function getAssociatedMemberId(){
+        return $this->associatedMemberId;
+    }
+    public function setAssociatedMemberId($associatedMemberId){
+        $this->associatedMemberId = $associatedMemberId;
         return $this;
     }
 }

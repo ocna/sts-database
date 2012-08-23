@@ -1,7 +1,7 @@
 <?php
 use STS\Core;
 
-class CoreTest extends PHPUnit_Framework_TestCase
+class CoreTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
@@ -18,7 +18,7 @@ class CoreTest extends PHPUnit_Framework_TestCase
     {
         $core = $core = Core::getDefaultInstance();
         $loadableObjects = array(
-            'AuthFacade','SchoolFacade'
+            'AuthFacade', 'SchoolFacade', 'MemberFacade', 'SurveyFacade', 'PresentationFacade'
         );
         foreach ($loadableObjects as $key) {
             $instance = $core->load($key);

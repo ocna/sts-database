@@ -1,6 +1,7 @@
 <?php
 use STS\TestUtilities\SchoolTestCase;
 use STS\Core\School\SchoolDto;
+
 class SchoolDtoTest extends SchoolTestCase
 {
     /**
@@ -14,6 +15,7 @@ class SchoolDtoTest extends SchoolTestCase
     private function assertValidSchoolDto($dto)
     {
         $this->assertInstanceOf('STS\Core\School\SchoolDto', $dto);
+        $this->assertTrue(is_string($dto->getId()));
         $this->assertEquals(self::ID, $dto->getId());
         $this->assertEquals(self::LEGACY_ID, $dto->getLegacyId());
         $this->assertEquals(self::NAME, $dto->getName());

@@ -5,6 +5,7 @@ use STS\Domain\Survey\Question;
 use STS\Domain\Survey\Response\PairResponse;
 
 class ShortAnswer extends Question {
+    const QUESTION_TYPE = 'ShortAnswer';
     protected $response = null;
     
     public function setResponse(AbstractResponse $response){

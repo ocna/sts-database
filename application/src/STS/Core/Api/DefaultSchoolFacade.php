@@ -12,9 +12,19 @@ class DefaultSchoolFacade implements SchoolFacade
     {
         $this->schoolRepository = $schoolRepository;
     }
-    public function getAllSchools()
+    public function getSchoolsForSpecification($spec)
     {
-        $schools = $this->schoolRepository->find();
+        $allSchools = $this->schoolRepository->find();
+        if ($spec !== null) {
+            $schools = array();
+            foreach ($allSchools as $school) {
+                if ($spec->isSatisfiedBy($school)) {
+                    $schools[] = $school;
+                }
+            }
+        } else {
+            $schools = $allSchools;
+        }
         $schoolDtos = array();
         foreach ($schools as $school) {
             $schoolDtos[] = new SchoolDto($school->getId(), $school->getLegacyId(), $school->getName());

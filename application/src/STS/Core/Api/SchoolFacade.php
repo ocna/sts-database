@@ -2,5 +2,5 @@
 namespace STS\Core\Api;
 interface SchoolFacade
 {
-    public function getAllSchools();
+    public function getSchoolsForSpecification($spec);
 }

@@ -8,10 +8,10 @@ class DefaultSchoolFacadeTest extends SchoolTestCase
     /**
      * @test
      */
-    public function findAllSchools()
+    public function findAllSchoolsPerSpec()
     {
         $facade = $this->loadFacadeInstance();
-        $schools = $facade->getAllSchools();
+        $schools = $facade->getSchoolsForSpecification(null);
         $this->assertTrue(is_array($schools));
         $this->assertInstanceOf('STS\Core\School\SchoolDTO', $schools[0]);
     }
