@@ -34,7 +34,6 @@ class Presentation_IndexController extends SecureBaseController
                 $membersValid = true;
             }
             if ($form->isValid($postData) && $membersValid) {
-                $this->savePresentation($postData);
                 try {
                     $this->savePresentation($postData);
                     $this
