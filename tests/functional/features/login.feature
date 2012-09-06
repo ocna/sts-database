@@ -8,7 +8,7 @@ Feature: Login
         When I fill in "userName" with "<userName>"
         And I fill in "password" with "<password>"
         And I press "submit"
-        Then I should see "Your email or password is invalid, please check them and try again."
+        Then I should see "Your username or password is invalid, please check them and try again."
         
         Examples:
             | userName                      | password      |

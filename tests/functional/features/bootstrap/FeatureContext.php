@@ -11,9 +11,14 @@ class FeatureContext extends MinkContext
 {
     public function __construct(array $parameters)
     {
-        var_dump($parameters);
-        die;
-        
+    }
+    
+    /**
+     * @Given /^I am logged out$/
+     */
+    public function iAmLoggedOut()
+    {
+        $this->visit('/session/logout');
     }
     /**
      * @Given /^the following areas exist:$/

@@ -1,4 +1,5 @@
 <?php
+use STS\Web\Security\AclFactory;
 
 class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 {
@@ -77,9 +78,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $view->headTitle('STS Online Management System');
         $view->headLink()->appendStylesheet('/css/jquery-ui-1.8.16.custom.css')
             ->appendStylesheet('/css/jquery.tagedit.css')->appendStylesheet('/css/bootstrap.min.css')
+            ->appendStylesheet('/css/font-awesome.css')->appendStylesheet('/css/font-awesome-ie7.css')
             ->appendStylesheet('/css/styles.css');
-        $view->headScript()->appendFile('/js/jquery-1.8.0.min.js')
-            ->appendFile('/js/jquery-ui-1.8.23.custom.min.js')
+        $view->headScript()->appendFile('/js/jquery-1.8.0.min.js')->appendFile('/js/jquery-ui-1.8.23.custom.min.js')
             ->appendFile('/js/jquery.tagedit.js')->appendFile('/js/jquery.autoGrowInput.js')
             ->appendFile('/js/bootstrap.min.js');
     }
@@ -90,17 +91,10 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $view = $layout->getView();
         $config = new Zend_Config_Xml(APPLICATION_PATH . '/../design/config/navigation.xml');
         $navigation = new Zend_Navigation($config);
-        $view->navigation($navigation);
+        $acl = AclFactory::buildAcl();
+        $auth = \Zend_Auth::getInstance();
+        $role = $auth->hasIdentity() ? $auth->getIdentity()->getRole() : null;
+        $view->navigation($navigation)->setAcl($acl)->setRole($role);
         $view->navigation()->menu()->setPartial('partials/menu.phtml');
-        //         $this->_acl = Security\AclFactory::getDefaultInstance();
-        //         $this->bootstrap('view');
-        //         $view = $this->getResource('view');
-        //         $config = new Zend_Config_Xml(APPLICATION_PATH . '/../design/config/navigation.xml', 'nav');
-        //         $navigation = new Zend_Navigation($config->toArray());
-        //         $securityOtterNamespace = new \Zend_Session_Namespace('securityOtterNamespace');
-        //         $role = $securityOtterNamespace->userRole;
-        //         $view->navigation($navigation)
-        //         ->setAcl($this->_acl)
-        //         ->setRole($role);
     }
 }

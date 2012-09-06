@@ -12,7 +12,7 @@ class UserTestCase extends \PHPUnit_Framework_TestCase
     const BASIC_USER_PASSWORD = 'hambone';
     const BAD_BASIC_USER_NAME = 'notuser';
     const BAD_BASIC_USER_PASSWORD = 'badpass';
-    const BASIC_USER_ROLE = 'member';
+    const BASIC_USER_ROLE = 'admin';
     const VALID_FIRST_NAME = 'Member';
     const VALID_LAST_NAME = 'User';
     const ASSOCIATED_MEMBER_ID = '502314eec6464712c1e705cc';
