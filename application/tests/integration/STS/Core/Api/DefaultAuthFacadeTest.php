@@ -39,6 +39,33 @@ class DefaultAuthFacadeTest extends UserTestCase
     {
         $this->authFacade->authenticate(self::BASIC_USER_NAME, self::BAD_BASIC_USER_PASSWORD);
     }
+    /**
+     * @test
+     */
+    public function successfulAuthenticationOfFacilitatorUser()
+    {
+        $userDTO = $this->authFacade->authenticate('fuser', self::BASIC_USER_PASSWORD);
+        $this->assertEquals($userDTO->getId(), 'fuser');
+        $this->assertEquals($userDTO->getRole(), 'facilitator');
+    }
+    /**
+     * @test
+     */
+    public function successfulAuthenticationOfCoordinatorUser()
+    {
+        $userDTO = $this->authFacade->authenticate('cuser', self::BASIC_USER_PASSWORD);
+        $this->assertEquals($userDTO->getId(), 'cuser');
+        $this->assertEquals($userDTO->getRole(), 'coordinator');
+    }
+    /**
+     * @test
+     */
+    public function successfulAuthenticationOfAdminUser()
+    {
+        $userDTO = $this->authFacade->authenticate('auser', self::BASIC_USER_PASSWORD);
+        $this->assertEquals($userDTO->getId(), 'auser');
+        $this->assertEquals($userDTO->getRole(), 'admin');
+    }
     private function loadFacadeInstance()
     {
         $core = Core::getDefaultInstance();

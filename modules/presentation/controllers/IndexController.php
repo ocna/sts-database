@@ -14,7 +14,7 @@ class Presentation_IndexController extends SecureBaseController
     {
         parent::init();
         $this->core = Core::getDefaultInstance();
-        $this->user = $this->auth->getIdentity();
+        $this->user = $this->getAuth()->getIdentity();
     }
     public function newAction()
     {

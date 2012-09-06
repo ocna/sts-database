@@ -1,10 +1,11 @@
 <?php
 namespace STS\Web\Controller;
+use STS\Web\Security\AuthAware;
 
-abstract class AbstractBaseController extends \Zend_Controller_Action
+abstract class AbstractBaseController extends \Zend_Controller_Action implements AuthAware
 {
 
-    protected $auth;
+    private $auth;
     protected $flashMessenger = null;
     protected $flashMessengerNamespace = 'flashMessagesPulseNamespace';
     protected $flashMessengerPartialLayout = 'partials/flash-message.phtml';
@@ -13,19 +14,27 @@ abstract class AbstractBaseController extends \Zend_Controller_Action
         $this->flashMessenger = $this->_helper->getHelper('FlashMessenger');
         parent::init();
         $container = null;
-        $this->view->navigation()->getContainer()->findOneByLabel('Home');
-        $this->auth = \Zend_Auth::getInstance();
+//         $this->view->navigation()->getContainer()->findOneByLabel('Home');
+        $this->setAuth(\Zend_Auth::getInstance());
         $this->view->layout()->menu = $this->view
             ->partial('partials/main-menu.phtml', array(
                     'nav' => $this->view->navigation($container)->menu()->setPartial('partials/menu.phtml'),
-                    'authenticated' => $this->auth->hasIdentity(), 'userName' => $this->getFormatedName()
+                    'authenticated' => $this->getAuth()->hasIdentity(), 'userName' => $this->getFormatedName()
             ));
+    }
+    public function setAuth(\Zend_Auth $auth)
+    {
+        $this->auth = $auth;
+    }
+    public function getAuth()
+    {
+        return $this->auth;
     }
     private function getFormatedName()
     {
-        if ($this->auth->hasIdentity()) {
-            return ucfirst($this->auth->getIdentity()->getFirstName()) . ' '
-                            . ucfirst($this->auth->getIdentity()->getLastName());
+        if ($this->getAuth()->hasIdentity()) {
+            return ucfirst($this->getAuth()->getIdentity()->getFirstName()) . ' '
+                            . ucfirst($this->getAuth()->getIdentity()->getLastName());
         }
     }
     protected function buildAndSetFlashMessage($message, $messageType)
@@ -45,7 +54,7 @@ abstract class AbstractBaseController extends \Zend_Controller_Action
                 $flashClass = 'alert-info';
                 break;
             case 'warning':
-                $title = ' Darn... ';
+                $title = ' Warning... ';
                 $flashClass = 'alert-warning';
                 break;
             default:
