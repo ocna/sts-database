@@ -8,10 +8,8 @@ class IndexController extends AbstractBaseController {
     {
         parent::preDispatch();
     
-        $securityPulseNamespace = new \Zend_Session_Namespace('securityPulseNamespace');
-        $isAuthenticated = isset($securityPulseNamespace->authenticated)?$securityPulseNamespace->authenticated:false;
     
-        if($this->auth
+        if($this->getAuth()
                  ->hasIdentity()) {
             $this->_redirect('/main/home');
         } else {
