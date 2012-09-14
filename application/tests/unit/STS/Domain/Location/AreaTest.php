@@ -1,5 +1,5 @@
 <?php
-use STS\TestUtilities\AreaTestCase;
+use STS\TestUtilities\Location\AreaTestCase;
 
 class AreaTest extends AreaTestCase
 {

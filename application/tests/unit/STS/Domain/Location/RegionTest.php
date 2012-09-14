@@ -1,5 +1,5 @@
 <?php
-use STS\TestUtilities\RegionTestCase;
+use STS\TestUtilities\Location\RegionTestCase;
 
 class RegionTest extends RegionTestCase
 {

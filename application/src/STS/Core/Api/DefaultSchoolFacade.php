@@ -1,5 +1,7 @@
 <?php
 namespace STS\Core\Api;
+use STS\Core\School\SchoolDTOAssembler;
+
 use STS\Core\School\SchoolDto;
 use STS\Core\Api\SchoolFacade;
 use STS\Core\School\MongoSchoolRepository;
@@ -27,7 +29,7 @@ class DefaultSchoolFacade implements SchoolFacade
         }
         $schoolDtos = array();
         foreach ($schools as $school) {
-            $schoolDtos[] = new SchoolDto($school->getId(), $school->getLegacyId(), $school->getName());
+            $schoolDtos[] = SchoolDTOAssembler::toDTO($school);
         }
         return $schoolDtos;
     }

@@ -1,5 +1,5 @@
 <?php
-namespace STS\TestUtilities;
+namespace STS\TestUtilities\Location;
 use STS\Domain\Location\Region;
 
 class RegionTestCase extends \PHPUnit_Framework_TestCase

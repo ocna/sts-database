@@ -8,6 +8,36 @@ class School extends Entity
     private $legacyId;
     private $name;
     private $area;
+    private $type;
+    private $address;
+    private $notes;
+    public function getNotes()
+    {
+        return $this->notes;
+    }
+    public function setNotes($notes)
+    {
+        $this->notes = $notes;
+        return $this;
+    }
+    public function getAddress()
+    {
+        return $this->address;
+    }
+    public function setAddress($address)
+    {
+        $this->address = $address;
+        return $this;
+    }
+    public function getType()
+    {
+        return $this->type;
+    }
+    public function setType($type)
+    {
+        $this->type = $type;
+        return $this;
+    }
     public function getArea()
     {
         return $this->area;
