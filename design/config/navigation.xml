@@ -21,5 +21,14 @@
 		<controller>index</controller>
 		<action>index</action>
 		<resource>admin</resource>
+		<pages>
+			<school>
+				<label>Schools</label>
+				<module>admin</module>
+				<controller>school</controller>
+				<action>index</action>
+				<resource>school</resource>
+			</school>
+		</pages>
 	</admin>
 </config>
