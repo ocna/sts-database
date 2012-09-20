@@ -4,6 +4,8 @@ use STS\Domain\Entity;
 
 class School extends Entity
 {
+    const TYPE_SCHOOL = 'School';
+    const TYPE_HOSPITAL = 'Hospital';
 
     private $legacyId;
     private $name;
@@ -64,5 +66,17 @@ class School extends Entity
     {
         $this->name = $name;
         return $this;
+    }
+    public static function getTypes()
+    {
+        $reflected = new \ReflectionClass('STS\Domain\School');
+        $constants = $reflected->getConstants();
+        $types = array();
+        foreach ($constants as $key => $value) {
+            if (substr($key, 0, 5) == 'TYPE_') {
+                $types[] = $value;
+            }
+        }
+        return $types;
     }
 }

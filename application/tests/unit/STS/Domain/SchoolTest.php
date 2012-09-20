@@ -12,4 +12,12 @@ class SchoolTest extends SchoolTestCase
         $school = $this->getValidSchool();
         $this->assertValidSchool($school);
     }
+    
+    
+    /**
+     * @test
+     */
+    public function getValidTypes(){
+        $this->assertEquals(array('School', 'Hospital'), School::getTypes());
+    }
 }

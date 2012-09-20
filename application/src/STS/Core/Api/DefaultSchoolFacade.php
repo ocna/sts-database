@@ -1,7 +1,7 @@
 <?php
 namespace STS\Core\Api;
+use STS\Domain\School;
 use STS\Core\School\SchoolDTOAssembler;
-
 use STS\Core\School\SchoolDto;
 use STS\Core\Api\SchoolFacade;
 use STS\Core\School\MongoSchoolRepository;
@@ -32,6 +32,10 @@ class DefaultSchoolFacade implements SchoolFacade
             $schoolDtos[] = SchoolDTOAssembler::toDTO($school);
         }
         return $schoolDtos;
+    }
+    public function getSchoolTypes()
+    {
+        return School::getTypes();
     }
     public static function getDefaultInstance($config)
     {
