@@ -10,15 +10,33 @@ use Behat\MinkExtension\Context\MinkContext;
 class FeatureContext extends MinkContext
 {
     public function __construct(array $parameters)
-    {
-    }
-    
+    {}
     /**
      * @Given /^I am logged out$/
      */
     public function iAmLoggedOut()
     {
         $this->visit('/session/logout');
+    }
+    /**
+     * @Given /^I am logged in as user with role "([^"]*)"$/
+     */
+    public function iAmLoggedInAsUserWithRole($role)
+    {
+        $roles = array(
+                'admin' => array(
+                    'un' => 'auser', 'pw' => 'hambone'
+                ), 'coordinator' => array(
+                    'un' => 'cuser', 'pw' => 'hambone'
+                ), 'facilitator' => array(
+                    'un' => 'fuser', 'pw' => 'hambone'
+                )
+        );
+        $this->visit('/session/logout');
+        $this->iAmOnHomepage();
+        $this->fillField('userName', $roles[$role]['un']);
+        $this->fillField('password', $roles[$role]['pw']);
+        $this->pressButton('submit');
     }
     /**
      * @Given /^the following areas exist:$/
