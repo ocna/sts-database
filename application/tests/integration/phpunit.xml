@@ -1,25 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit bootstrap="Bootstrap.php" colors="true">
-    <!-- ALL TEST SUITES -->
-    <testsuites>
-        <testsuite name="Core">
-            <directory>STS/Core</directory>
-            <file>STS/CoreTest.php</file>
-        </testsuite>
-        <testsuite name="Web">
-            <directory>STS/Web</directory>
-        </testsuite>
-        <testsuite name="Domain">
-            <directory>STS/Domain</directory>
-        </testsuite>
-    </testsuites>
-    <!-- FILTERS -->
-    <filter>
-        <blacklist>
-            <directory suffix=".php">../integration</directory>
-        </blacklist>
-    </filter>
-    <!-- LOGGING AND CODE COVERAGE -->
-    <logging>
-    </logging>
+	<!-- ALL TEST SUITES -->
+	<testsuites>
+		<testsuite name="STS">
+			<include>
+				<directory>STS</directory>
+			</include>
+		</testsuite>
+	</testsuites>
+	<!-- FILTERS -->
+	<filter>
+		<blacklist>
+			<directory suffix=".php">../integration</directory>
+		</blacklist>
+	</filter>
+	<!-- LOGGING AND CODE COVERAGE -->
+	<logging>
+	</logging>
 </phpunit>
