@@ -1,8 +1,16 @@
 <?php
 namespace STS\Core\Api;
+use STS\Core\Location\AreaDto;
+use STS\Core\Location\RegionDto;
 
 class DefaultLocationFacade implements LocationFacade
 {
+
+    private $mongoDb;
+    public function __construct($mongoDb)
+    {
+        $this->mongoDb = $mongoDb;
+    }
     public function getStates()
     {
         return array(
@@ -22,14 +30,33 @@ class DefaultLocationFacade implements LocationFacade
     }
     public function getAllAreas()
     {
-        // TODO: Auto-generated method stub
+        $areas = $this->mongoDb->area->find()->sort(array(
+                'name' => 1
+            ));
+        $returnData = array();
+        foreach ($areas as $area) {
+            $returnData[] = new AreaDto($area['_id']->__toString(), $area['name'], $area['legacyid'], $area['city'],
+                            $area['state'], $area['region']['name']);
+        }
+        return $returnData;
     }
     public function getAllRegions()
     {
-        // TODO: Auto-generated method stub
+        $regions = $this->mongoDb->area->distinct('region');
+        $returnData = array();
+        foreach ($regions as $region) {
+            $returnData[] = new RegionDto($region['legacyid'], $region['name']);
+        }
+        return $returnData;
     }
     public static function getDefaultInstance($config)
     {
-        return new DefaultLocationFacade();
+        $mongoConfig = $config->modules->default->db->mongodb;
+        $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
+        $mongo = new \Mongo(
+                        'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/'
+                                        . $mongoConfig->dbname);
+        $mongoDb = $mongo->selectDB($mongoConfig->dbname);
+        return new DefaultLocationFacade($mongoDb);
     }
 }

@@ -13,6 +13,22 @@ class School extends Entity
     private $type;
     private $address;
     private $notes;
+    public function toMongoArray()
+    {
+        $areaId = new \MongoId($this->area->getId());
+        $array = array(
+                'id' => $this->id, 'name' => $this->name, 'type' => $this->type, 'notes' => $this->notes,
+                'legacyid' => $this->legacyId, 'area_id' => array(
+                    '_id' => $areaId
+                ),
+                'address' => array(
+                        'line_one' => $this->address->getLineOne(), 'line_two' => $this->address->getLineTwo(),
+                        'city' => $this->address->getCity(), 'state' => $this->address->getState(),
+                        'zip' => $this->address->getZip()
+                )
+        );
+        return $array;
+    }
     public function getNotes()
     {
         return $this->notes;
@@ -37,6 +53,10 @@ class School extends Entity
     }
     public function setType($type)
     {
+        if (is_int($type)) {
+            $types = self::getTypes();
+            $type = $types[$type];
+        }
         $this->type = $type;
         return $this;
     }

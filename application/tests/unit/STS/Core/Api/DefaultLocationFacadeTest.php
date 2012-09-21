@@ -8,7 +8,7 @@ class DefaultLocationFacadeTest extends \PHPUnit_Framework_TestCase
      */
     public function getValidStates()
     {
-        $facade = new DefaultLocationFacade();
+        $facade = $this->getFacadeWithMockedDeps();
         $states = $facade->getStates();
         $this->assertEquals($this->getStates(), $states);
     }
@@ -28,5 +28,11 @@ class DefaultLocationFacadeTest extends \PHPUnit_Framework_TestCase
                 'VA' => "Virginia", 'WA' => "Washington", 'WV' => "West Virginia", 'WI' => "Wisconsin",
                 'WY' => "Wyoming"
         );
+    }
+    private function getFacadeWithMockedDeps()
+    {
+        $mongoDb = Mockery::mock('MongoDB');
+        $facade = new DefaultLocationFacade($mongoDb);
+        return $facade;
     }
 }

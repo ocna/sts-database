@@ -25,6 +25,35 @@ class Admin_SchoolController extends SecureBaseController
     public function newAction()
     {
         $this->view->form = $this->getForm();
+        $request = $this->getRequest();
+        $form = $this->getForm();
+        if ($this->getRequest()->isPost()) {
+            $postData = $request->getPost();
+            if ($form->isValid($postData)) {
+                try {
+                    $this->saveSchool($postData);
+                    $this
+                        ->setFlashMessageAndRedirect("The new school: \"{$postData['name']}\" has been created!", 'success', array(
+                            'module' => 'admin', 'controller' => 'school', 'action' => 'index'
+                        ));
+                } catch (ApiException $e) {
+                    $this
+                        ->setFlashMessageAndUpdateLayout('An error occured while saving this information: '
+                                        . $e->getMessage(), 'error');
+                }
+            } else {
+                $this
+                    ->setFlashMessageAndUpdateLayout('It looks like you missed some information, please make the corrections below.', 'error');
+            }
+        }
+        $this->view->form = $form;
+    }
+    private function saveSchool($postData)
+    {
+        
+        $this->schoolFacade
+            ->saveSchool($postData['name'], $postData['area'], $postData['schoolType'], $postData['notes'], $postData['addressLineOne'], $postData['addressLineTwo'], $postData['city'], $postData['state'], $postData['zip']);
+        return true;
     }
     private function getForm()
     {
@@ -33,13 +62,23 @@ class Admin_SchoolController extends SecureBaseController
         ), $this->locationFacade->getStates());
         $areasArray = array_merge(array(
             ''
-        ), array());
+        ), $this->getAreasArray());
         $schoolTypesArray = array_merge(array(
             ''
         ), $this->schoolFacade->getSchoolTypes());
-        $form = new \Admin_School(array(
-            'states' => $statesArray, 'schoolTypes' => $schoolTypesArray, 'areas' => $areasArray
-        ));
+        $form = new \Admin_School(
+                        array(
+                            'states' => $statesArray, 'schoolTypes' => $schoolTypesArray, 'areas' => $areasArray
+                        ));
         return $form;
+    }
+    private function getAreasArray()
+    {
+        $areaDtos = $this->locationFacade->getAllAreas();
+        $areaArray = array();
+        foreach ($areaDtos as $dto) {
+            $areaArray[$dto->getId()] = $dto->getName();
+        }
+        return $areaArray;
     }
 }

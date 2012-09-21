@@ -19,7 +19,7 @@ class Admin_School extends Twitter_Bootstrap_Form_Horizontal
         //area
         $this
             ->addElement('select', 'area', array(
-                    'label' => 'Region - Area', 'dimension' => 2, 'MultiOptions' => $this->areas, 'required' => true,
+                    'label' => 'Area', 'dimension' => 2, 'MultiOptions' => $this->areas, 'required' => true,
                     'validators' => array(
                         new \Zend_Validate_NotEmpty(\Zend_Validate_NotEmpty::ZERO)
                     )
@@ -40,11 +40,11 @@ class Admin_School extends Twitter_Bootstrap_Form_Horizontal
         //address
         $this
             ->addElement('text', 'addressLineOne', array(
-                'label' => 'Street Address', 'dimension' => 4, 'required' => true
+                'label' => 'Address 1', 'dimension' => 4, 'required' => true
             ));
         $this
             ->addElement('text', 'addressLineTwo', array(
-                'label' => '_', 'dimension' => 4, 'required' => false
+                'label' => 'Address 2', 'dimension' => 4, 'required' => false
             ));
         $this
             ->addElement('text', 'city', array(
