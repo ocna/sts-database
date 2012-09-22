@@ -14,6 +14,19 @@ class MongoSchoolRepository implements SchoolRepository
     {
         $this->mongoDb = $mongoDb;
     }
+    public function load($id)
+    {
+        $schoolData = $this->mongoDb->school->findOne(array(
+                '_id' => new \MongoId($id)
+            ));
+        
+        if ($schoolData==null){
+            throw new \InvalidArgumentException("School not found with given id: $id");
+        }
+        
+        $school = $this->mapData($schoolData);
+        return $school;
+    }
     public function find()
     {
         $schools = $this->mongoDb->school->find()->sort(array(

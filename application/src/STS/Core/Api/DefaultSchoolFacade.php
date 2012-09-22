@@ -16,6 +16,12 @@ class DefaultSchoolFacade implements SchoolFacade
     {
         $this->schoolRepository = $schoolRepository;
     }
+    public function getSchoolById($id){
+        $school = $this->schoolRepository->load($id);
+        $schoolDto = SchoolDTOAssembler::toDTO($school);
+        return $schoolDto;
+    }
+    
     public function getSchoolsForSpecification($spec)
     {
         $allSchools = $this->schoolRepository->find();

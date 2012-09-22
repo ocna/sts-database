@@ -22,6 +22,16 @@ class Admin_SchoolController extends SecureBaseController
                 'title' => 'Schools', 'add' => 'Add New School', 'addRoute' => '/admin/school/new'
             ));
     }
+    public function viewAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $dto = $this->schoolFacade->getSchoolById($id);
+        $this->view->layout()->pageHeader = $this->view
+            ->partial('partials/page-header.phtml', array(
+                'title' => $dto->getName()
+            ));
+        $this->view->school = $dto;
+    }
     public function newAction()
     {
         $this->view->form = $this->getForm();
@@ -50,7 +60,6 @@ class Admin_SchoolController extends SecureBaseController
     }
     private function saveSchool($postData)
     {
-        
         $this->schoolFacade
             ->saveSchool($postData['name'], $postData['area'], $postData['schoolType'], $postData['notes'], $postData['addressLineOne'], $postData['addressLineTwo'], $postData['city'], $postData['state'], $postData['zip']);
         return true;

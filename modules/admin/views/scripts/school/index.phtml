@@ -18,12 +18,7 @@ $columns = array('name'=>'Name', 'type'=>'Type','regionName'=>'Region', 'areaNam
 			echo "<td>{$object->$method()}</td>";
 			}?>
 			<td style="text-align:right;">
-			<!-- 
-			<a class="btn btn-small" href="#"><i class="icon-pencil"></i> Edit</a>
-			<a class="btn btn-small" href="#"><i class="icon-lock"></i> Reset Password</a>
-			<a class="btn btn-small btn-danger" href="#"><i class="icon-trash icon-white"></i></a>
-			 -->
-			
+			<a class="btn btn-mini" href="/admin/school/view?id=<?php echo $object->getId()?>"><i class="icon-info-sign"></i> Details</a>
 			</td>
 		<?php }?>	
 		</tr>

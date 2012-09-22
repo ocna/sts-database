@@ -38,7 +38,7 @@ class DefaultSchoolFacadeTest extends \PHPUnit_Framework_TestCase
     {
         $facade = new DefaultSchoolFacade($this->getMockSchoolRepository());
         $types = $facade->getSchoolTypes();
-        $this->assertEquals(School::getTypes(), $types);
+        $this->assertEquals(array('School'=>'School', 'Hospital'=>'Hospital'), $types);
     }
     private function getMockSchoolRepository()
     {
