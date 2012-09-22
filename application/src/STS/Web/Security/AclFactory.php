@@ -11,6 +11,7 @@ class AclFactory
     const RESOURCE_MEMBER = 'member';
     const RESOURCE_USER = 'user';
     const RESOURCE_SCHOOL = 'school';
+    const RESOURCE_SEARCH = 'search';
     
     public static function buildAcl()
     {
@@ -22,12 +23,14 @@ class AclFactory
         //Add Resources
         $acl->addResource(self::RESOURCE_ADMIN);
         $acl->addResource(self::RESOURCE_PRESENTATION);
+        $acl->addResource(self::RESOURCE_SEARCH);
         $acl->addResource(self::RESOURCE_MEMBER, self::RESOURCE_ADMIN);
         $acl->addResource(self::RESOURCE_USER, self::RESOURCE_ADMIN);
         $acl->addResource(self::RESOURCE_SCHOOL, self::RESOURCE_ADMIN);
         //Establish Rules
         $acl->allow(self::ROLE_ADMIN);
         $acl->allow(self::ROLE_FACILITATOR, self::RESOURCE_PRESENTATION);
+        $acl->allow(self::ROLE_FACILITATOR, self::RESOURCE_SEARCH);
         return $acl;
     }
 }
