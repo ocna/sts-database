@@ -2,7 +2,7 @@
 namespace STS\Core\School;
 use STS\Domain\School;
 
-class SchoolDTOAssembler
+class SchoolDtoAssembler
 {
     public static function toDTO($school)
     {
