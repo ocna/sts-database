@@ -2,7 +2,7 @@
 namespace STS\Core\Api;
 use STS\Domain\Location\Address;
 use STS\Domain\School;
-use STS\Core\School\SchoolDTOAssembler;
+use STS\Core\School\SchoolDtoAssembler;
 use STS\Core\School\SchoolDto;
 use STS\Core\Api\SchoolFacade;
 use STS\Core\School\MongoSchoolRepository;
@@ -16,12 +16,12 @@ class DefaultSchoolFacade implements SchoolFacade
     {
         $this->schoolRepository = $schoolRepository;
     }
-    public function getSchoolById($id){
+    public function getSchoolById($id)
+    {
         $school = $this->schoolRepository->load($id);
-        $schoolDto = SchoolDTOAssembler::toDTO($school);
+        $schoolDto = SchoolDtoAssembler::toDTO($school);
         return $schoolDto;
     }
-    
     public function getSchoolsForSpecification($spec)
     {
         $allSchools = $this->schoolRepository->find();
@@ -37,7 +37,7 @@ class DefaultSchoolFacade implements SchoolFacade
         }
         $schoolDtos = array();
         foreach ($schools as $school) {
-            $schoolDtos[] = SchoolDTOAssembler::toDTO($school);
+            $schoolDtos[] = SchoolDtoAssembler::toDTO($school);
         }
         return $schoolDtos;
     }
