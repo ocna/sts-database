@@ -11,7 +11,7 @@ class Search_MemberController extends SecureBaseController
     {
         parent::init();
         $this->core = Core::getDefaultInstance();
-        $this->user = $this->auth->getIdentity();
+        $this->user = $this->getAuth()->getIdentity();
     }
     public function indexAction()
     {
@@ -30,7 +30,7 @@ class Search_MemberController extends SecureBaseController
     {
         $facade = $this->core->load('MemberFacade');
         $memberSpec = null;
-        if ($this->user->getAssociatedMemberId()) {
+        if ($this->user->getAssociatedMemberId() && $this->user->getRole() != 'admin') {
             $memberFacade = $this->core->load('MemberFacade');
             $memberSpec = $facade->getMemberByMemberAreaSpecForId($this->user->getAssociatedMemberId());
         }

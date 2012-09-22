@@ -11,6 +11,7 @@ class AclFactoryTest extends \PHPUnit_Framework_TestCase
     const RESOURCE_MEMBER = 'member';
     const RESOURCE_USER = 'user';
     const RESOURCE_SCHOOL = 'school';
+    const RESOURCE_SEARCH = 'search';
     /**
      * @test
      */
@@ -30,6 +31,7 @@ class AclFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($acl->isAllowed(self::ROLE_ADMIN, self::RESOURCE_USER));
         $this->assertTrue($acl->isAllowed(self::ROLE_ADMIN, self::RESOURCE_SCHOOL));
         $this->assertTrue($acl->isAllowed(self::ROLE_ADMIN, self::RESOURCE_ADMIN));
+        $this->assertTrue($acl->isAllowed(self::ROLE_ADMIN, self::RESOURCE_SEARCH));
     }
     /**
      * @test
@@ -38,6 +40,7 @@ class AclFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $acl = AclFactory::buildAcl();
         $this->assertTrue($acl->isAllowed(self::ROLE_COORDINATOR, self::RESOURCE_PRESENTATION));
+        $this->assertTrue($acl->isAllowed(self::ROLE_COORDINATOR, self::RESOURCE_SEARCH));
         $this->assertFalse($acl->isAllowed(self::ROLE_COORDINATOR, self::RESOURCE_MEMBER));
         $this->assertFalse($acl->isAllowed(self::ROLE_COORDINATOR, self::RESOURCE_USER));
         $this->assertFalse($acl->isAllowed(self::ROLE_COORDINATOR, self::RESOURCE_SCHOOL));
@@ -50,6 +53,7 @@ class AclFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $acl = AclFactory::buildAcl();
         $this->assertTrue($acl->isAllowed(self::ROLE_FACILITATOR, self::RESOURCE_PRESENTATION));
+        $this->assertTrue($acl->isAllowed(self::ROLE_FACILITATOR, self::RESOURCE_SEARCH));
         $this->assertFalse($acl->isAllowed(self::ROLE_FACILITATOR, self::RESOURCE_MEMBER));
         $this->assertFalse($acl->isAllowed(self::ROLE_FACILITATOR, self::RESOURCE_USER));
         $this->assertFalse($acl->isAllowed(self::ROLE_FACILITATOR, self::RESOURCE_SCHOOL));
