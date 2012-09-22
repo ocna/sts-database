@@ -5,6 +5,7 @@ use STS\Core\Api\DefaultSchoolFacade;
 use STS\Core\Api\DefaultMemberFacade;
 use STS\Core\Api\DefaultSurveyFacade;
 use STS\Core\Api\DefaultPresentationFacade;
+use STS\Core\Api\DefaultLocationFacade;
 
 class Core
 {
@@ -32,6 +33,9 @@ class Core
                 break;
             case 'PresentationFacade':
                 $facade = DefaultPresentationFacade::getDefaultInstance($this->config);
+                break;
+            case 'LocationFacade':
+                $facade = DefaultLocationFacade::getDefaultInstance($this->config);
                 break;
             default:
                 throw new \InvalidArgumentException("Class does not exist ($key)");

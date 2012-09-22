@@ -18,11 +18,11 @@ class CoreTest extends \PHPUnit_Framework_TestCase
     {
         $core = $core = Core::getDefaultInstance();
         $loadableObjects = array(
-            'AuthFacade', 'SchoolFacade', 'MemberFacade', 'SurveyFacade', 'PresentationFacade'
+            'AuthFacade', 'SchoolFacade', 'MemberFacade', 'SurveyFacade', 'PresentationFacade', 'LocationFacade'
         );
         foreach ($loadableObjects as $key) {
             $instance = $core->load($key);
-            $this->assertInstanceOf('STS\Core\Api\\' . $key, $instance);
+            $this->assertInstanceOf('STS\Core\Api\\' . $key, $instance, $key);
         }
     }
 }

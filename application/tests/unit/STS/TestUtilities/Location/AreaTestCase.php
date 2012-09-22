@@ -1,5 +1,5 @@
 <?php
-namespace STS\TestUtilities;
+namespace STS\TestUtilities\Location;
 use STS\Domain\Location\Area;
 use \Mockery;
 

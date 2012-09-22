@@ -1,5 +1,8 @@
 <?php
 namespace STS\Core\Api;
+use STS\Domain\Location\Address;
+use STS\Domain\School;
+use STS\Core\School\SchoolDtoAssembler;
 use STS\Core\School\SchoolDto;
 use STS\Core\Api\SchoolFacade;
 use STS\Core\School\MongoSchoolRepository;
@@ -8,9 +11,16 @@ class DefaultSchoolFacade implements SchoolFacade
 {
 
     private $schoolRepository;
+    private $areaRepository;
     public function __construct($schoolRepository)
     {
         $this->schoolRepository = $schoolRepository;
+    }
+    public function getSchoolById($id)
+    {
+        $school = $this->schoolRepository->load($id);
+        $schoolDto = SchoolDtoAssembler::toDTO($school);
+        return $schoolDto;
     }
     public function getSchoolsForSpecification($spec)
     {
@@ -27,9 +37,25 @@ class DefaultSchoolFacade implements SchoolFacade
         }
         $schoolDtos = array();
         foreach ($schools as $school) {
-            $schoolDtos[] = new SchoolDto($school->getId(), $school->getLegacyId(), $school->getName());
+            $schoolDtos[] = SchoolDtoAssembler::toDTO($school);
         }
         return $schoolDtos;
+    }
+    public function getSchoolTypes()
+    {
+        return array_combine(School::getTypes(), School::getTypes());
+    }
+    public function saveSchool($name, $areaId, $schoolType, $notes, $addressLineOne, $addressLineTwo, $city, $state,
+                    $zip)
+    {
+        $address = new Address();
+        $address->setLineOne($addressLineOne)->setLineTwo($addressLineTwo)->setCity($city)->setState($state)
+            ->setZip($zip);
+        $school = new School();
+        $area = $this->schoolRepository->loadAreaById($areaId);
+        $school->setName($name)->setNotes($notes)->setType($schoolType)->setNotes($notes)->setAddress($address)
+            ->setArea($area);
+        return $this->schoolRepository->save($school);
     }
     public static function getDefaultInstance($config)
     {

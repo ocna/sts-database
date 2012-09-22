@@ -1,8 +1,6 @@
 <?php
 use STS\Domain\Member;
-
 use STS\Domain\School\Specification\MemberSchoolSpecification;
-
 use STS\Domain\School;
 use STS\Domain\Location\Area;
 use STS\Core\Api\DefaultSchoolFacade;
@@ -19,14 +17,13 @@ class DefaultSchoolFacadeTest extends \PHPUnit_Framework_TestCase
         $schoolDtos = $facade->getSchoolsForSpecification(null);
         $this->assertCount(2, $schoolDtos);
     }
-    
-    
     /**
      * @test
      */
-    public function validGetSchoolsPerMemberSpec(){
+    public function validGetSchoolsPerMemberSpec()
+    {
         $facade = new DefaultSchoolFacade($this->getMockSchoolRepository());
-        $member =  new Member();
+        $member = new Member();
         $areaA = new Area();
         $spec = new MemberSchoolSpecification($member->canPresentForArea($areaA->setId(11)));
         $schoolDtos = $facade->getSchoolsForSpecification($spec);
@@ -34,7 +31,15 @@ class DefaultSchoolFacadeTest extends \PHPUnit_Framework_TestCase
         $dto = $schoolDtos[0];
         $this->assertEquals(1, $dto->getId());
     }
-    
+    /**
+     * @test 
+     */
+    public function getCorrectTypes()
+    {
+        $facade = new DefaultSchoolFacade($this->getMockSchoolRepository());
+        $types = $facade->getSchoolTypes();
+        $this->assertEquals(array('School'=>'School', 'Hospital'=>'Hospital'), $types);
+    }
     private function getMockSchoolRepository()
     {
         $areaA = new Area();
@@ -44,7 +49,8 @@ class DefaultSchoolFacadeTest extends \PHPUnit_Framework_TestCase
         $schoolA->setId(1)->setArea($areaA->setId(11));
         $schoolB->setId(2)->setArea($areaB->setId(22));
         $schoolRepository = \Mockery::mock('STS\Core\School\MongoSchoolRepository');
-        $schoolRepository->shouldReceive('find')->withNoArgs()->andReturn(array(
+        $schoolRepository->shouldReceive('find')->withNoArgs()
+            ->andReturn(array(
                 $schoolA, $schoolB
             ));
         return $schoolRepository;
