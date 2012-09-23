@@ -13,6 +13,12 @@ class MongoMemberRepository implements MemberRepository
     {
         $this->mongoDb = $mongoDb;
     }
+    public function find()
+    {
+    }
+    public function save($member)
+    {
+    }
     public function searchByName($searchString)
     {
         $regex = new \MongoRegex("/$searchString/i");

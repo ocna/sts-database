@@ -43,7 +43,7 @@ class DefaultSchoolFacade implements SchoolFacade
     }
     public function getSchoolTypes()
     {
-        return array_combine(School::getTypes(), School::getTypes());
+        return School::getAvailableTypes();
     }
     public function saveSchool($name, $areaId, $schoolType, $notes, $addressLineOne, $addressLineTwo, $city, $state,
                     $zip)
@@ -53,7 +53,7 @@ class DefaultSchoolFacade implements SchoolFacade
             ->setZip($zip);
         $school = new School();
         $area = $this->schoolRepository->loadAreaById($areaId);
-        $school->setName($name)->setNotes($notes)->setType($schoolType)->setNotes($notes)->setAddress($address)
+        $school->setName($name)->setNotes($notes)->setType(School::getAvailableType($schoolType))->setNotes($notes)->setAddress($address)
             ->setArea($area);
         return $this->schoolRepository->save($school);
     }

@@ -8,13 +8,20 @@ use STS\Web\Controller\SecureBaseController;
 class Presentation_IndexController extends SecureBaseController
 {
 
-    private $core;
     private $user;
+    private $presentationFacade;
+    private $surveyFacade;
+    private $memberFacade;
+    private $schoolFacade;
     public function init()
     {
         parent::init();
-        $this->core = Core::getDefaultInstance();
+        $core = Core::getDefaultInstance();
         $this->user = $this->getAuth()->getIdentity();
+        $this->presentationFacade = $core->load('PresentationFacade');
+        $this->surveyFacade = $core->load('SurveyFacade');
+        $this->memberFacade = $core->load('MemberFacade');
+        $this->schoolFacade = $core->load('SchoolFacade');
     }
     public function newAction()
     {
@@ -63,9 +70,8 @@ class Presentation_IndexController extends SecureBaseController
         }
         $typesArray = array_merge(array(
             ''
-        ), Presentation::getTypes());
-        $surveyFacade = $this->core->load('SurveyFacade');
-        $surveyTemplate = $surveyFacade->getSurveyTemplate(1);
+        ), $this->presentationFacade->getPresentationTypes());
+        $surveyTemplate = $this->surveyFacade->getSurveyTemplate(1);
         $form = new \Presentation_Presentation(
                         array(
                                 'schools' => $schoolsArray, 'presentationTypes' => $typesArray,
@@ -75,13 +81,11 @@ class Presentation_IndexController extends SecureBaseController
     }
     private function getSchoolsVisableToMember()
     {
-        $schoolFacade = $this->core->load('SchoolFacade');
         $schoolSpec = null;
         if ($this->user->getAssociatedMemberId()) {
-            $memberFacade = $this->core->load('MemberFacade');
-            $schoolSpec = $memberFacade->getMemberSchoolSpecForId($this->user->getAssociatedMemberId());
+            $schoolSpec = $this->memberFacade->getMemberSchoolSpecForId($this->user->getAssociatedMemberId());
         }
-        return $schoolFacade->getSchoolsForSpecification($schoolSpec);
+        return $this->schoolFacade->getSchoolsForSpecification($schoolSpec);
     }
     private function savePresentation($postData)
     {
@@ -89,18 +93,16 @@ class Presentation_IndexController extends SecureBaseController
         $userId = $this->auth->getIdentity()->getId();
         $templateId = 1;
         //First Save Survey Built
-        $surveyFacade = $this->core->load('SurveyFacade');
         $surveyData = array();
         foreach ($postData as $key => $value) {
             if (substr($key, 0, 2) == 'q_') {
                 $surveyData[$key] = $value;
             }
         }
-        $surveyId = $surveyFacade->saveSurvey($userId, $templateId, $surveyData);
+        $surveyId = $this->surveyFacade->saveSurvey($userId, $templateId, $surveyData);
         //Then Save Presentation
-        $presentationFacade = $this->core->load('PresentationFacade');
         $members = array_keys($postData['membersAttended']);
-        $presentationFacade
+        $this->presentationFacade
             ->savePresentation($userId, $postData['location'], $postData['presentationType'], $postData['dateOfPresentation'], $postData['notes'], $members, $postData['participants'], $postData['formsReturned'], $surveyId);
         return true;
     }

@@ -9,11 +9,15 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
     const LEGACY_ID = 0;
     const FIRST_NAME = 'Member';
     const LAST_NAME = 'TestMember';
+    const TYPE = 'Survivor';
+    const NOTES = 'This is an interesting note!';
+    const DECEASED = true;
+    
     protected function getValidMember()
     {
         $member = new Member();
         $member->setId(self::ID)->setLegacyId(self::LEGACY_ID)->setFirstName(self::FIRST_NAME)
-            ->setLastName(self::LAST_NAME);
+            ->setLastName(self::LAST_NAME)->setNotes(self::NOTES)->hasPassedAway()->setType(self::TYPE);
         return $member;
     }
     protected function getValidMemberDto()
@@ -25,6 +29,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf('STS\Domain\Member', $member);
         $this->assertEquals($this->getValidMember(), $member);
+        $this->assertEquals(self::TYPE, $member->getType());
     }
     protected function assertValidMemberDto($memberDto)
     {

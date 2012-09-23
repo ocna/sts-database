@@ -16,7 +16,8 @@ class DefaultPresentationFacade implements PresentationFacade
     {
         $this->presentationRepository = $presentationRepository;
     }
-    public function savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId)
+    public function savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants,
+                    $forms, $surveyId)
     {
         $school = new School();
         $school->setId($schoolId);
@@ -30,10 +31,15 @@ class DefaultPresentationFacade implements PresentationFacade
         $survey = $template->createSurveyInstance();
         $survey->setId($surveyId);
         $presentation = new Presentation();
-        $presentation->setEnteredByUserId($enteredByUserId)->setLocation($school)->setType($typeCode)->setDate($date)->setNotes($notes)
+        $presentation->setEnteredByUserId($enteredByUserId)->setLocation($school)
+            ->setType(Presentation::getAvailableType($typeCode))->setDate($date)->setNotes($notes)
             ->setNumberOfParticipants($participants)->setNumberOfFormsReturned($forms)->setSurvey($survey)
             ->setMembers($members);
         return $this->presentationRepository->save($presentation);
+    }
+    public function getPresentationTypes()
+    {
+        return Presentation::getAvailableTypes();
     }
     public static function getDefaultInstance($config)
     {

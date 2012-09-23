@@ -14,6 +14,12 @@ class DefaultMemberFacade implements MemberFacade
     {
         $this->memberRepository = $memberRepository;
     }
+    public function getMemberById($id)
+    {
+    }
+    public function getAllMembers()
+    {
+    }
     public function searchForMembersByNameWithSpec($searchString, $spec)
     {
         $foundMembers = $this->memberRepository->searchByName($searchString);

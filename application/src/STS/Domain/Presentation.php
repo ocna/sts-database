@@ -2,14 +2,18 @@
 namespace STS\Domain;
 use STS\Domain\Entity;
 
-class Presentation extends Entity
+class Presentation extends EntityWithTypes
 {
+    
+    const TYPE_MED = 'MED';
+    const TYPE_PA = 'PA';
+    const TYPE_NP = 'NP';
+    const TYPE_NS = 'NS';
+    const TYPE_RES_OBGYN = 'RES OBGYN';
+    const TYPE_RES_INT = 'RES INT';
+    const TYPE_OTHER = 'OTHER';
 
-    private $types = array(
-            'med' => 'MED', 'pa' => 'PA', 'np' => 'NP', 'ns' => 'NS', 'resobgyn' => 'RES OBGYN', 'resint' => 'RES INT',
-            'other' => 'OTHER'
-    );
-    private $type;
+    
     private $date;
     private $notes;
     private $numberOfParticipants;
@@ -42,18 +46,7 @@ class Presentation extends Entity
         $this->enteredByUserId = $enteredByUserId;
         return $this;
     }
-    public function getType()
-    {
-        return $this->type;
-    }
-    public function setType($type)
-    {
-        if (!key_exists($type, $this->types)) {
-            throw new \InvalidArgumentException('Supplied presentation type is not recognized.');
-        }
-        $this->type = $type;
-        return $this;
-    }
+    
     public function getDate()
     {
         return $this->date;
@@ -117,9 +110,5 @@ class Presentation extends Entity
         $this->survey = $survey;
         return $this;
     }
-    public static function getTypes()
-    {
-        $presentation = new Presentation();
-        return $presentation->types;
-    }
+    
 }

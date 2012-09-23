@@ -1,8 +1,8 @@
 <?php
 namespace STS\Domain;
-use STS\Domain\Entity;
+use STS\Domain\EntityWithTypes;
 
-class School extends Entity
+class School extends EntityWithTypes
 {
     const TYPE_SCHOOL = 'School';
     const TYPE_HOSPITAL = 'Hospital';
@@ -10,7 +10,6 @@ class School extends Entity
     private $legacyId;
     private $name;
     private $area;
-    private $type;
     private $address;
     private $notes;
     public function toMongoArray()
@@ -18,7 +17,8 @@ class School extends Entity
         $areaId = new \MongoId($this->area->getId());
         $array = array(
                 'id' => $this->id, 'name' => $this->name, 'type' => $this->type, 'notes' => $this->notes,
-                'legacyid' => $this->legacyId, 'area_id' => array(
+                'legacyid' => $this->legacyId,
+                'area_id' => array(
                     '_id' => $areaId
                 ),
                 'address' => array(
@@ -47,19 +47,6 @@ class School extends Entity
         $this->address = $address;
         return $this;
     }
-    public function getType()
-    {
-        return $this->type;
-    }
-    public function setType($type)
-    {
-        if (is_int($type)) {
-            $types = self::getTypes();
-            $type = $types[$type];
-        }
-        $this->type = $type;
-        return $this;
-    }
     public function getArea()
     {
         return $this->area;
@@ -86,17 +73,5 @@ class School extends Entity
     {
         $this->name = $name;
         return $this;
-    }
-    public static function getTypes()
-    {
-        $reflected = new \ReflectionClass('STS\Domain\School');
-        $constants = $reflected->getConstants();
-        $types = array();
-        foreach ($constants as $key => $value) {
-            if (substr($key, 0, 5) == 'TYPE_') {
-                $types[] = $value;
-            }
-        }
-        return $types;
     }
 }
