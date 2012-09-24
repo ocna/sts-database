@@ -7,6 +7,16 @@ class MemberTest extends MemberTestCase
     /**
      * @test
      */
+    public function getValidTypes()
+    {
+        $this
+            ->assertEquals(array(
+                'TYPE_CAREGIVER' => 'Caregiver', 'TYPE_FAMILY_MEMBER' => 'Family Member', 'TYPE_SURVIVOR' => 'Survivor'
+            ), Member::getAvailableTypes());
+    }
+    /**
+     * @test
+     */
     public function createValidObject()
     {
         $member = $this->getValidMember();

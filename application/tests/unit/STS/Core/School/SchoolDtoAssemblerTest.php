@@ -3,18 +3,16 @@ use STS\Domain\Location\Address;
 use STS\Domain\Location\Region;
 use STS\Domain\Location\Area;
 use STS\Domain\School;
-use STS\Core\School\SchoolDTOAssembler;
+use STS\Core\School\SchoolDtoAssembler;
 use STS\TestUtilities\SchoolTestCase;
 use STS\TestUtilities\Location\AreaTestCase;
 use STS\TestUtilities\Location\RegionTestCase;
 use STS\TestUtilities\Location\AddressTestCase;
 
-class SchoolDTOAssemblerTest extends SchoolTestCase
+class SchoolDtoAssemblerTest extends SchoolTestCase
 {
     /**
      * @test
-     * @group core
-     * @group school
      */
     public function getValidSchoolDTOFromSchoolDomainObject()
     {
@@ -29,19 +27,17 @@ class SchoolDTOAssemblerTest extends SchoolTestCase
         $school = new School();
         $school->setId(SchoolTestCase::ID)->setLegacyId(SchoolTestCase::LEGACY_ID)->setName(SchoolTestCase::NAME)
             ->setType(SchoolTestCase::TYPE)->setNotes(SchoolTestCase::NOTES)->setArea($area)->setAddress($address);
-        $schoolDTO = SchoolDTOAssembler::toDTO($school);
+        $schoolDTO = SchoolDtoAssembler::toDTO($school);
         $this->assertValidSchoolDto($schoolDTO);
     }
     /**
      * @test
-     * @group core
-     * @group school
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Instance of \STS\Domain\School not
      * provided.
      */
     public function throwExceptionIfSchoolDomainObjectIsNotPassed()
     {
-        $schoolDTO = SchoolDTOAssembler::toDTO(null);
+        $schoolDTO = SchoolDtoAssembler::toDTO(null);
     }
 }

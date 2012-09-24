@@ -1,9 +1,12 @@
 <?php
 namespace STS\Domain;
-use STS\Domain\Entity;
+use STS\Domain\EntityWithTypes;
 
-class Member extends Entity
+class Member extends EntityWithTypes
 {
+    const TYPE_CAREGIVER = 'Caregiver';
+    const TYPE_FAMILY_MEMBER = 'Family Member';
+    const TYPE_SURVIVOR = 'Survivor';
 
     private $legacyId;
     private $firstName;
@@ -11,6 +14,46 @@ class Member extends Entity
     private $presentsFor = array();
     private $facilitatesFor = array();
     private $coordinatesFor = array();
+    private $notes;
+    private $deceased = false;
+    private $address;
+    private $associatedUserId = null;
+    public function getAssociatedUserId()
+    {
+        return $this->associatedUserId;
+    }
+    public function setAssociatedUserId($associatedUserId)
+    {
+        $this->associatedUserId = $associatedUserId;
+        return $this;
+    }
+    public function getAddress()
+    {
+        return $this->address;
+    }
+    public function setAddress($address)
+    {
+        $this->address = $address;
+        return $this;
+    }
+    public function hasPassedAway()
+    {
+        $this->deceased = true;
+        return $this;
+    }
+    public function isDeceased()
+    {
+        return $this->deceased;
+    }
+    public function getNotes()
+    {
+        return $this->notes;
+    }
+    public function setNotes($notes)
+    {
+        $this->notes = $notes;
+        return $this;
+    }
     public function getFirstName()
     {
         return $this->firstName;
@@ -73,11 +116,11 @@ class Member extends Entity
         $this->addUniqueElements($areas, $this->coordinatesFor);
         return $areas;
     }
-    
-    private function addUniqueElements(&$array, $elements){
-        foreach ($elements as $element){
-            if (!in_array($element, $array)){
-                $array[]= $element;
+    private function addUniqueElements(&$array, $elements)
+    {
+        foreach ($elements as $element) {
+            if (!in_array($element, $array)) {
+                $array[] = $element;
             }
         }
     }

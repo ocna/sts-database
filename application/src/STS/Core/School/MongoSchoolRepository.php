@@ -19,11 +19,9 @@ class MongoSchoolRepository implements SchoolRepository
         $schoolData = $this->mongoDb->school->findOne(array(
                 '_id' => new \MongoId($id)
             ));
-        
-        if ($schoolData==null){
+        if ($schoolData == null) {
             throw new \InvalidArgumentException("School not found with given id: $id");
         }
-        
         $school = $this->mapData($schoolData);
         return $school;
     }

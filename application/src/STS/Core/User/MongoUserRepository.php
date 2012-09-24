@@ -16,7 +16,10 @@ class MongoUserRepository implements UserRepository
         $userData = $this->mongoDb->user->findOne(array(
                 "_id" => $id
             ));
-        return $userData['_id'] === NULL ? null : $this->mapData($userData);
+        if ($userData == null) {
+            throw new \InvalidArgumentException("User not found with given id: $id");
+        }
+        return $this->mapData($userData);
     }
     private function mapData($userData)
     {

@@ -17,17 +17,10 @@ class SchoolTest extends SchoolTestCase
      */
     public function getValidTypes()
     {
-        $this->assertEquals(array(
-                'School', 'Hospital'
-            ), School::getTypes());
+        $this
+            ->assertEquals(array(
+                'TYPE_SCHOOL' => 'School', 'TYPE_HOSPITAL' => 'Hospital'
+            ), School::getAvailableTypes());
     }
-    /**
-     * @test
-     */
-    public function validSetTypeNumerically()
-    {
-        $school = new School();
-        $school->setType(0);
-        $this->assertEquals(School::TYPE_SCHOOL, $school->getType());
-    }
+    
 }

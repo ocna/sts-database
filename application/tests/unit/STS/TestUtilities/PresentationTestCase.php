@@ -6,7 +6,7 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
 {
     const ENTERED_BY_USER_ID = 'muser';
     const ID = '50234bc4fe65f50a9579a8cd';
-    const TYPE = 'med';
+    const TYPE = 'MED';
     const DATE = '2012-05-10 11:55:23';
     const NOTES = 'The presentation went quite well I must say.';
     const PARTICIPANTS = 203;

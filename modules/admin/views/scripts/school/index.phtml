@@ -11,7 +11,8 @@ $columns = array('name'=>'Name', 'type'=>'Type','regionName'=>'Region', 'areaNam
 		</tr>
 	</thead>
 	<tbody>
-	<?php	foreach ($this->objects as $object) {?>
+	<?php	foreach ($this->objects as $object) {
+	    ?>
 		<tr>
 		<?php foreach ($columns as $get=>$title){
 		    $method = 'get' . ucfirst($get);

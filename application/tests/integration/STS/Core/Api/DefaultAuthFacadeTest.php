@@ -72,10 +72,4 @@ class DefaultAuthFacadeTest extends UserTestCase
         $facade = $core->load('AuthFacade');
         return $facade;
     }
-    private function assertValidUserDTO($userDTO)
-    {
-        $this->assertInstanceOf('\STS\Core\User\UserDTO', $userDTO);
-        $this->assertEquals($userDTO->getId(), self::BASIC_USER_NAME);
-        $this->assertEquals($userDTO->getRole(), self::BASIC_USER_ROLE);
-    }
 }

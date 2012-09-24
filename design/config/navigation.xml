@@ -29,6 +29,13 @@
 				<action>index</action>
 				<resource>school</resource>
 			</school>
+			<member>
+				<label>Members</label>
+				<module>admin</module>
+				<controller>member</controller>
+				<action>index</action>
+				<resource>member</resource>
+			</member>
 		</pages>
 	</admin>
 </config>
