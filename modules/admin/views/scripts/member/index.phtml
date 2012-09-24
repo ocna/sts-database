@@ -1,0 +1,27 @@
+<?php
+$columns = array('lastName'=>'LastName', 'type'=>'Type', 'addressCity'=>'City', 'addressState'=>'State');
+?>
+<table class="table table-striped table-bordered">
+	<thead>
+		<tr>
+		<?php foreach ($columns as $title){
+			echo "<th>$title</th>";
+			}?>
+			<th style="text-align:right;">Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php	foreach ($this->objects as $object) {
+	    ?>
+		<tr>
+		<?php foreach ($columns as $get=>$title){
+		    $method = 'get' . ucfirst($get);
+			echo "<td>{$object->$method()}</td>";
+			}?>
+			<td style="text-align:right;">
+			<a class="btn btn-mini" href="/admin/school/view?id=<?php echo $object->getId()?>"><i class="icon-info-sign"></i> Details</a>
+			</td>
+		<?php }?>	
+		</tr>
+	</tbody>
+</table>

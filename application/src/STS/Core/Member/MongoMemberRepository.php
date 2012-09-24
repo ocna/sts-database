@@ -15,23 +15,22 @@ class MongoMemberRepository implements MemberRepository
     }
     public function find()
     {
+        $memberData = $this->mongoDb->member->find()->sort(array(
+                'lname' => 1
+            ));
+        return $this->mapMultiple($memberData);
     }
     public function save($member)
-    {
-    }
+    {}
     public function searchByName($searchString)
     {
         $regex = new \MongoRegex("/$searchString/i");
-        $members = $this->mongoDb->member->find(array(
+        $memberData = $this->mongoDb->member->find(array(
                 'fullname' => $regex
             ))->sort(array(
                 'lname' => 1
             ));
-        $returnData = array();
-        foreach ($members as $memberData) {
-            $returnData[] = $this->mapData($memberData);
-        }
-        return $returnData;
+        return $this->mapMultiple($memberData);
     }
     public function load($id)
     {
@@ -40,6 +39,14 @@ class MongoMemberRepository implements MemberRepository
                 '_id' => $mongoId
             ));
         return $this->mapData($memberData);
+    }
+    private function mapMultiple($memberData)
+    {
+        $objects = array();
+        foreach ($memberData as $data) {
+            $objects[] = $this->mapData($data);
+        }
+        return $objects;
     }
     private function mapData($memberData)
     {

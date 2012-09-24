@@ -14,6 +14,7 @@ class Admin_MemberController extends SecureBaseController
     }
     public function indexAction()
     {
+        $this->view->objects = $this->memberFacade->getAllMembers();
         $this->view->layout()->pageHeader = $this->view
             ->partial('partials/page-header.phtml', array(
                 'title' => 'Members'

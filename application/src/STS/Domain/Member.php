@@ -15,11 +15,25 @@ class Member extends EntityWithTypes
     private $facilitatesFor = array();
     private $coordinatesFor = array();
     private $notes;
-    private $isDeceased = false;
-    
-    public function hasPassedAway(){
-        $this->isDeceased = true;
+    private $deceased = false;
+    private $address;
+    public function getAddress()
+    {
+        return $this->address;
+    }
+    public function setAddress($address)
+    {
+        $this->address = $address;
         return $this;
+    }
+    public function hasPassedAway()
+    {
+        $this->deceased = true;
+        return $this;
+    }
+    public function isDeceased()
+    {
+        return $this->deceased;
     }
     public function getNotes()
     {

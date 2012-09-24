@@ -1,5 +1,6 @@
 <?php
 namespace STS\Core\Api;
+use STS\Core\Member\MemberDtoAssembler;
 use STS\Domain\School\Specification\MemberSchoolSpecification;
 use STS\Domain\Member\Specification\MemberByMemberAreaSpecification;
 use STS\Core\Member\MemberDto;
@@ -15,10 +16,11 @@ class DefaultMemberFacade implements MemberFacade
         $this->memberRepository = $memberRepository;
     }
     public function getMemberById($id)
-    {
-    }
+    {}
     public function getAllMembers()
     {
+        $members = $this->memberRepository->find();
+        return $this->getArrayOfDtos($members);
     }
     public function searchForMembersByNameWithSpec($searchString, $spec)
     {
@@ -33,12 +35,7 @@ class DefaultMemberFacade implements MemberFacade
         } else {
             $members = $foundMembers;
         }
-        $memberDtos = array();
-        foreach ($members as $member) {
-            $memberDtos[] = new MemberDto($member->getId(), $member->getLegacyId(), $member->getFirstName(),
-                            $member->getLastName());
-        }
-        return $memberDtos;
+        return $this->getArrayOfDtos($members);
     }
     public function getMemberByMemberAreaSpecForId($id)
     {
@@ -60,5 +57,13 @@ class DefaultMemberFacade implements MemberFacade
         $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $memberRepository = new MongoMemberRepository($mongoDb);
         return new DefaultMemberFacade($memberRepository);
+    }
+    private function getArrayOfDtos($array)
+    {
+        $dtos = array();
+        foreach ($array as $member) {
+            $dtos[] = MemberDtoAssembler::toDTO($member);
+        }
+        return $dtos;
     }
 }
