@@ -61,7 +61,7 @@ class MongoMemberRepository implements MemberRepository
             $member->setNotes($memberData['notes']);
         }
         if (array_key_exists('user_id', $memberData)) {
-            $member->setAssociatedUserId($memberData['user_id']['_id']);
+            $member->setAssociatedUserId($memberData['user_id']);
         }
         if (array_key_exists('deceased', $memberData) && $memberData['user_id'] == true) {
             $member->hasPassedAway();

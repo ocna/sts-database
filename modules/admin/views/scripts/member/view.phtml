@@ -1,0 +1,34 @@
+<dl class="dl-horizontal">
+  <dt>Type:</dt>
+  <dd><?php echo $this->member->getType() ? $this->member->getType() : '-'; ?></dd>
+  <dt>Notes:</dt>
+  <dd>
+  <?php echo $this->member->getNotes() ? $this->member->getNotes() : '-'; ?>
+  </dd>
+  <dt>Address:</dt>
+  <dd><address>
+  <?php echo $this->member->getAddressLineOne() ? $this->member->getAddressLineOne() : '-' ?><br>
+    <?php echo $this->member->getAddressLineTwo() ? $this->member->getAddressLineTwo().'<br>' : '' ?>
+  <?php echo $this->member->getAddressCity() ? $this->member->getAddressCity().',':''?> <?php echo $this->member->getAddressState() ?> <?php echo $this->member->getAddressZip() ?><br>
+</address></dd>
+</dl>
+<br>
+
+<?php if($this->user):?>
+<div class="alert alert-info">
+<h4>System User Details</h4>
+<small class="muted">This member has an account to access this system, thier details are below:</small>
+<dl class="dl-horizontal">
+<dt>System Role:</dt>
+  <dd><?php echo $this->user->getRole() ? $this->user->getRole() : '-'; ?></dd>
+  <dt>Username:</dt>
+  <dd><?php echo $this->user->getId() ? $this->user->getId() : '-'; ?></dd>
+  <dt>Email Address:</dt>
+  <dd><?php echo $this->user->getEmail() ? '<a href="mailto:'.$this->user->getEmail().'">'.$this->user->getEmail().'</a>' : '-'; ?></dd>
+  </dl>
+</div>
+<?php endif;?>
+<div class="well">
+<div class="btn-toolbar">
+<a class="btn" href="/admin/member">Go Back</a>
+</div></div>

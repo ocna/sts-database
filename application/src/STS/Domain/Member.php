@@ -17,7 +17,7 @@ class Member extends EntityWithTypes
     private $notes;
     private $deceased = false;
     private $address;
-    private $associatedUserId;
+    private $associatedUserId = null;
     public function getAssociatedUserId()
     {
         return $this->associatedUserId;

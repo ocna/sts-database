@@ -17,10 +17,6 @@ class MemberDto
     private $addressState;
     private $addressZip;
     private $associatedUserId;
-    public function getAssociatedUserId()
-    {
-        return $this->associatedUserId;
-    }
     public function __construct($id, $legacyId, $firstName, $lastName, $type, $notes, $deceased, $addressLineOne,
                     $addressLineTwo, $addressCity, $addressState, $addressZip, $associatedUserId)
     {
@@ -37,6 +33,10 @@ class MemberDto
         $this->addressState = $addressState;
         $this->addressZip = $addressZip;
         $this->associatedUserId = $associatedUserId;
+    }
+    public function getAssociatedUserId()
+    {
+        return $this->associatedUserId;
     }
     public function getlegacyId()
     {

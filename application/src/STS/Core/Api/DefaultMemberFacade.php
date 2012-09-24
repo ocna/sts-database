@@ -16,7 +16,10 @@ class DefaultMemberFacade implements MemberFacade
         $this->memberRepository = $memberRepository;
     }
     public function getMemberById($id)
-    {}
+    {
+        $member = $this->memberRepository->load($id);
+        return MemberDtoAssembler::toDTO($member);
+    }
     public function getAllMembers()
     {
         $members = $this->memberRepository->find();

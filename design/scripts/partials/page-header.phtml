@@ -1,7 +1,16 @@
+<?php
+if ($this->label) {
+    $label = $this->label;
+    $labelHtml = "<span class=\"label {$label['class']}\">{$label['title']}</span> ";
+} else {
+    $labelHtml = "";
+}
+?>
 <div class="page-header">
-	<h1><?php echo $this->title ?>
-	<?php if ($this->add){?>
-	<a href="<?php echo $this->addRoute ?>" class="btn btn-large btn-success pull-right"><i class="icon-plus icon-white"></i> <?php echo $this->add ?></a>
-	<?php }?>
+	<h1 class="<?php echo $this->titleClass; ?>"><?php echo $labelHtml . $this->title ?>
+	<?php if ($this->add) { ?>
+	<a href="<?php echo $this->addRoute ?>" class="btn btn-large btn-success pull-right"><i class="icon-plus icon-white"></i> <?php echo $this
+        ->add ?></a>
+	<?php } ?>
 	</h1>
 </div>

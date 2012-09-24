@@ -14,11 +14,21 @@ body {
 	background-clip: padding-box;
 }
 
+h1 span.label {
+	font-size: 30px;
+	padding: 1px 7px 1px;
+	line-height: 30px;
+}
+
 .menu {
 	margin-top: 2em;
 	margin-bottom: .8em;
 }
 
-.survey-pair:hover{
+.survey-pair:hover {
 	background-color: #eef;
+}
+
+.deceased {
+	text-decoration: line-through;
 }
