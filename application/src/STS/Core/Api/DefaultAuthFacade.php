@@ -21,9 +21,10 @@ class DefaultAuthFacade implements AuthFacade
     }
     public function authenticate($userName, $password)
     {
-        $user = $this->userRepository->load($userName);
-        if ($user === null) {
-            throw new ApiException('User not found for given user name.', ApiException::FAILURE_USER_NOT_FOUND);
+        try {
+            $user = $this->userRepository->load($userName);
+        } catch (\InvalidArgumentException $e) {
+            throw new ApiException('User not found for given user name.', ApiException::FAILURE_USER_NOT_FOUND, $e);
         }
         if ($user->getPassword() != $this->hashPassword($user, $password)) {
             throw new ApiException('Credentials are invalid for given user.', ApiException::FAILURE_CREDENTIAL_INVALID);

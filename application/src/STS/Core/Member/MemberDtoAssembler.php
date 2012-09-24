@@ -16,6 +16,7 @@ class MemberDtoAssembler
         $deceased = $member->isDeceased();
         $type = $member->getType();
         $notes = $member->getNotes();
+        $associatedUserId = $member->getAssociatedUserId();
         if ($address = $member->getAddress()) {
             $addressLineOne = $address->getLineOne();
             $addressLineTwo = $address->getLineTwo();
@@ -30,6 +31,6 @@ class MemberDtoAssembler
             $addressZip = null;
         }
         return new MemberDto($id, $legacyId, $firstName, $lastName, $type, $notes, $deceased, $addressLineOne,
-                        $addressLineTwo, $addressCity, $addressState, $addressZip);
+                        $addressLineTwo, $addressCity, $addressState, $addressZip, $associatedUserId);
     }
 }

@@ -17,6 +17,16 @@ class Member extends EntityWithTypes
     private $notes;
     private $deceased = false;
     private $address;
+    private $associatedUserId;
+    public function getAssociatedUserId()
+    {
+        return $this->associatedUserId;
+    }
+    public function setAssociatedUserId($associatedUserId)
+    {
+        $this->associatedUserId = $associatedUserId;
+        return $this;
+    }
     public function getAddress()
     {
         return $this->address;

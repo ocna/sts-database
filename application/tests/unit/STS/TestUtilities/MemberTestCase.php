@@ -9,17 +9,18 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
     const ID = '50234bc4fe65f50a9579a8cd';
     const LEGACY_ID = 0;
     const FIRST_NAME = 'Member';
-    const LAST_NAME = 'TestMember';
+    const LAST_NAME = 'User';
     const TYPE = 'Survivor';
     const NOTES = 'This is an interesting note!';
     const DECEASED = true;
+    const ASSOCIATED_USER_ID = 'muser';
     protected function getValidMember()
     {
         $member = new Member();
         $address = \Mockery::mock('STS\Domain\Location\Address');
         $member->setId(self::ID)->setLegacyId(self::LEGACY_ID)->setFirstName(self::FIRST_NAME)
             ->setLastName(self::LAST_NAME)->setNotes(self::NOTES)->hasPassedAway()->setType(self::TYPE)
-            ->setAddress($address);
+            ->setAddress($address)->setAssociatedUserId(self::ASSOCIATED_USER_ID);
         return $member;
     }
     protected function assertValidMember($member)
@@ -36,7 +37,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
     {
         $memberDto = new MemberDto(self::ID, self::LEGACY_ID, self::FIRST_NAME, self::LAST_NAME, self::TYPE,
                         self::NOTES, self::DECEASED, AddressTestCase::LINE_ONE, AddressTestCase::LINE_TWO,
-                        AddressTestCase::CITY, AddressTestCase::STATE, AddressTestCase::ZIP);
+                        AddressTestCase::CITY, AddressTestCase::STATE, AddressTestCase::ZIP, self::ASSOCIATED_USER_ID);
         return $memberDto;
     }
     protected function assertValidMemberDto($dto)
@@ -55,5 +56,6 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(AddressTestCase::CITY, $dto->getAddressCity());
         $this->assertEquals(AddressTestCase::STATE, $dto->getAddressState());
         $this->assertEquals(AddressTestCase::ZIP, $dto->getAddressZip());
+        $this->assertEquals(self::ASSOCIATED_USER_ID, $dto->getAssociatedUserId());
     }
 }
