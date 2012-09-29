@@ -66,50 +66,54 @@ class Admin_MemberController extends SecureBaseController
             $validations[] = $form->getElement('lastName')->isValid($postData['lastName']);
             $validations[] = $form->getElement('memberType')->isValid($postData['memberType']);
             $validations[] = $form->getElement('role')->isValid($postData['role']);
-            if ($postData['role'] != '0') {
-                //if role is not member, validate that a username and email has been entered
-                $validations[] = $form->getElement('systemUserEmail')->isValid($postData['systemUserEmail']);
-                $validations[] = $form->getElement('systemUsername')->isValid($postData['systemUsername']);
-            } else {
-                //else validate presents for
-                if (!array_key_exists('presentsFor', $postData) || !is_array($postData['presentsFor'])) {
-                    $form->getElement('presentsFor[]')
-                        ->addErrors(array(
-                            'Please enter at least one area.'
-                        ))->markAsError();
-                    $validations[] = false;
+            $validations[] = $form->getElement('memberStatus')->isValid($postData['memberStatus']);
+            if($postData['memberStatus']=='STATUS_ACTIVE'){
+                //if member has been marked active, validate any relevant system user information
+                if ($postData['role'] != '0') {
+                    //if role is not member, validate that a username and email has been entered
+                    $validations[] = $form->getElement('systemUserEmail')->isValid($postData['systemUserEmail']);
+                    $validations[] = $form->getElement('systemUsername')->isValid($postData['systemUsername']);
                 } else {
-                    $this->view->storedPresentsFor = $postData['presentsFor'];
-                    $validations[] = true;
+                    //else validate presents for
+                    if (!array_key_exists('presentsFor', $postData) || !is_array($postData['presentsFor'])) {
+                        $form->getElement('presentsFor[]')
+                            ->addErrors(array(
+                                'Please enter at least one area.'
+                            ))->markAsError();
+                        $validations[] = false;
+                    } else {
+                        $this->view->storedPresentsFor = $postData['presentsFor'];
+                        $validations[] = true;
+                    }
+                }
+                if ($postData['role'] == 'ROLE_COORDINATOR') {
+                    //if role is coordinator, validate regions
+                    if (!array_key_exists('coordinatesFor', $postData) || !is_array($postData['coordinatesFor'])) {
+                        $form->getElement('coordinatesFor[]')
+                            ->addErrors(array(
+                                'Please enter at least one region.'
+                            ))->markAsError();
+                        $validations[] = false;
+                    } else {
+                        $this->view->storedCoordinatesFor = $postData['coordinatesFor'];
+                        $validations[] = true;
+                    }
+                }
+                if ($postData['role'] == 'ROLE_FACILITATOR') {
+                    //if role is facilitator, validate areas
+                    if (!array_key_exists('facilitatesFor', $postData) || !is_array($postData['facilitatesFor'])) {
+                        $form->getElement('facilitatesFor[]')
+                            ->addErrors(array(
+                                'Please enter at least one area.'
+                            ))->markAsError();
+                        $validations[] = false;
+                    } else {
+                        $this->view->storedFacilitatesFor = $postData['facilitatesFor'];
+                        $validations[] = true;
+                    }
                 }
             }
-            if ($postData['role'] == 'ROLE_COORDINATOR') {
-                //if role is coordinator, validate regions
-                if (!array_key_exists('coordinatesFor', $postData) || !is_array($postData['coordinatesFor'])) {
-                    $form->getElement('coordinatesFor[]')
-                        ->addErrors(array(
-                            'Please enter at least one region.'
-                        ))->markAsError();
-                    $validations[] = false;
-                } else {
-                    $this->view->storedCoordinatesFor = $postData['coordinatesFor'];
-                    $validations[] = true;
-                }
-            }
-            if ($postData['role'] == 'ROLE_FACILITATOR') {
-                //if role is facilitator, validate areas
-                if (!array_key_exists('facilitatesFor', $postData) || !is_array($postData['facilitatesFor'])) {
-                    $form->getElement('facilitatesFor[]')
-                        ->addErrors(array(
-                            'Please enter at least one area.'
-                        ))->markAsError();
-                    $validations[] = false;
-                } else {
-                    $this->view->storedFacilitatesFor = $postData['facilitatesFor'];
-                    $validations[] = true;
-                }
-            }
-            if (!in_array('false', $validations)) {
+            if (!in_array(false, $validations)) {
                 try {
                     //todo this is where you save the new member
                     //todo determine success message
@@ -137,7 +141,7 @@ class Admin_MemberController extends SecureBaseController
             $data = array(
                     'firstName' => $member->getFirstName(), 'lastName' => $member->getLastName(),
                     'deceased' => $member->isDeceased(), 'city' => $member->getAddressCity(),
-                    'state' => $member->getAddressState()
+                    'state' => $member->getAddressState(), 'status'=>$member->getStatus()
             );
             if ($member->getAssociatedUserId() != null) {
                 $user = $this->userFacade->findUserById($member->getAssociatedUserId());
@@ -203,9 +207,10 @@ class Admin_MemberController extends SecureBaseController
         $memberTypesArray = array_merge(array(
             ''
         ), $this->memberFacade->getMemberTypes());
+        $memberStatusesArray = $this->memberFacade->getMemberStatuses();
         $form = new \Admin_Member(
                         array(
-                            'states' => $statesArray, 'roles' => $rolesArray, 'memberTypes' => $memberTypesArray
+                            'states' => $statesArray, 'roles' => $rolesArray, 'memberTypes' => $memberTypesArray, 'memberStatuses' => $memberStatusesArray
                         ));
         return $form;
     }

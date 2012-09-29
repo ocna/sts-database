@@ -7,6 +7,18 @@ use \Mockery;
 
 class DefaultMemberFacadeTest extends \PHPUnit_Framework_TestCase
 {
+
+    /**
+     * @test
+     */
+    public function validGetMemberStatuses(){
+        $facade = new DefaultMemberFacade($this->getMockMemberRepository());
+        $this
+            ->assertEquals(array(
+                'STATUS_ACTIVE' => 'Active', 'STATUS_INACTIVE' => 'Inactive', 'STATUS_DECEASED' => 'Deceased'
+            ), $facade->getMemberStatuses());
+    }
+    
     /**
      * @test
      */

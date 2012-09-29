@@ -14,6 +14,17 @@ class MemberTest extends MemberTestCase
                 'TYPE_CAREGIVER' => 'Caregiver', 'TYPE_FAMILY_MEMBER' => 'Family Member', 'TYPE_SURVIVOR' => 'Survivor'
             ), Member::getAvailableTypes());
     }
+
+    /**
+     * @test
+     */
+    public function getValidStatuses()
+    {
+        $this
+            ->assertEquals(array(
+                'STATUS_ACTIVE' => 'Active', 'STATUS_INACTIVE' => 'Inactive', 'STATUS_DECEASED' => 'Deceased'
+            ), Member::getAvailableStatuses());
+    }
     /**
      * @test
      */

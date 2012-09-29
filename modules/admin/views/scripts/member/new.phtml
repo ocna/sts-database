@@ -27,12 +27,27 @@ $(document).ready(function() {
 
     registerTaggerHelpPopover()
 
+    showRightFormPartsForStatus($('#memberStatus').val())
+
+    $('#memberStatus').change(function(e){
+        showRightFormPartsForStatus(this.value);
+    })
+
     showRightFormPartsForRole($('#role').val())
     
     $('#role').change(function(e){
         showRightFormPartsForRole(this.value)
-        })
-    });
+    })
+
+});
+
+    function showRightFormPartsForStatus(status){
+        if(status == 'STATUS_ACTIVE'){
+            systemUser('on');
+        }else{
+            systemUser('off');
+        }
+    }
 
     function showRightFormPartsForRole(role){
         if(role == 'ROLE_ADMIN'){
@@ -57,6 +72,14 @@ $(document).ready(function() {
             coordinators('off')
         }
 
+    }
+
+    function systemUser(flip){
+        if(flip == 'on'){
+            $('#fieldset-systemUser').show();
+        }else if (flip == 'off'){
+            $('#fieldset-systemUser').hide();
+        }
     }
     
     function userDetails(flip){

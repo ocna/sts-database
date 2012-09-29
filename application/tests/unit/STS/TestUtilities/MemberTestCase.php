@@ -14,14 +14,14 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
     const LAST_NAME = 'User';
     const TYPE = 'Survivor';
     const NOTES = 'This is an interesting note!';
-    const DECEASED = true;
+    const STATUS = 'Deceased';
     const ASSOCIATED_USER_ID = 'muser';
     protected function getValidMember()
     {
         $member = new Member();
         $address = \Mockery::mock('STS\Domain\Location\Address');
         $member->setId(self::ID)->setLegacyId(self::LEGACY_ID)->setFirstName(self::FIRST_NAME)
-            ->setLastName(self::LAST_NAME)->setNotes(self::NOTES)->hasPassedAway()->setType(self::TYPE)
+            ->setLastName(self::LAST_NAME)->setNotes(self::NOTES)->setStatus(self::STATUS)->setType(self::TYPE)
             ->setAddress($address)->setAssociatedUserId(self::ASSOCIATED_USER_ID);
         foreach ($this->getTestAreas() as $area) {
             $member->canPresentForArea($area);
@@ -37,13 +37,14 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
         $expectedMember->setAddress($member->getAddress());
         $this->assertEquals($expectedMember, $member);
         $this->assertEquals(self::TYPE, $member->getType());
+        $this->assertEquals(self::STATUS, $member->getStatus());
         $this->assertTrue($member->isDeceased());
         $this->assertInstanceOf('STS\Domain\Location\Address', $member->getAddress());
     }
     protected function getValidMemberDto()
     {
         $memberDto = new MemberDto(self::ID, self::LEGACY_ID, self::FIRST_NAME, self::LAST_NAME, self::TYPE,
-                        self::NOTES, self::DECEASED, AddressTestCase::LINE_ONE, AddressTestCase::LINE_TWO,
+                        self::NOTES, self::STATUS, AddressTestCase::LINE_ONE, AddressTestCase::LINE_TWO,
                         AddressTestCase::CITY, AddressTestCase::STATE, AddressTestCase::ZIP, self::ASSOCIATED_USER_ID,
                         $this->getValidPresentsForAreasArray(), $this->getValidFacilitatesForAreasArray(),
                         $this->getValidCoordinatesForAreasArray(), $this->getValidCoordinatesForRegionsArray());
@@ -59,6 +60,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::LAST_NAME, $dto->getLastName());
         $this->assertEquals(self::TYPE, $dto->getType());
         $this->assertEquals(self::NOTES, $dto->getNotes());
+        $this->assertEquals(self::STATUS, $dto->getStatus());
         $this->assertTrue($dto->isDeceased());
         $this->assertEquals(AddressTestCase::LINE_ONE, $dto->getAddressLineOne());
         $this->assertEquals(AddressTestCase::LINE_TWO, $dto->getAddressLineTwo());

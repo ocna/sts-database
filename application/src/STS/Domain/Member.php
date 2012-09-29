@@ -8,6 +8,10 @@ class Member extends EntityWithTypes
     const TYPE_FAMILY_MEMBER = 'Family Member';
     const TYPE_SURVIVOR = 'Survivor';
 
+    const STATUS_ACTIVE = 'Active';
+    const STATUS_INACTIVE = 'Inactive';
+    const STATUS_DECEASED = 'Deceased';
+
     private $legacyId;
     private $firstName;
     private $lastName;
@@ -18,6 +22,43 @@ class Member extends EntityWithTypes
     private $deceased = false;
     private $address;
     private $associatedUserId = null;
+    private $status;
+
+    public function getStatus(){
+        return $this->status;
+    }
+
+    public static function getAvailableStatuses()
+    {
+        $reflected = new \ReflectionClass(get_called_class());
+        $statuses = array();
+        foreach ($reflected->getConstants() as $key => $value) {
+            if (substr($key, 0, 7) == 'STATUS_') {
+                $statuses[$key] = $value;
+            }
+        }
+        return $statuses;
+    }
+    public static function getAvailableStatus($key)
+    {
+        if (substr($key, 0, 7) != 'STATUS_') {
+            throw new \InvalidArgumentException('Type key must begin with "STATUS_".');
+        }
+        if (!array_key_exists($key, static::getAvailableTypes())) {
+            throw new \InvalidArgumentException('No such status with given key.');
+        }
+        $reflected = new \ReflectionClass(get_called_class());
+        return $reflected->getConstant($key);
+    }
+    public function setStatus($status)
+    {
+        if ($status !== null && !in_array($status, static::getAvailableStatuses(), true)) {
+            throw new \InvalidArgumentException('No such status with given value.');
+        }
+        $this->status = $status;
+        return $this;
+    }
+
     public function getAssociatedUserId()
     {
         return $this->associatedUserId;
@@ -38,12 +79,16 @@ class Member extends EntityWithTypes
     }
     public function hasPassedAway()
     {
-        $this->deceased = true;
+        $this->setStatus(self::STATUS_DECEASED);
         return $this;
     }
     public function isDeceased()
     {
-        return $this->deceased;
+        if($this->getStatus()==self::STATUS_DECEASED){
+            return true;
+        }else{
+            return false;
+        }
     }
     public function getNotes()
     {

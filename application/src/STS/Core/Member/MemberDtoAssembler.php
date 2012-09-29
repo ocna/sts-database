@@ -13,7 +13,7 @@ class MemberDtoAssembler
         $legacyId = $member->getLegacyId();
         $firstName = $member->getFirstName();
         $lastName = $member->getLastName();
-        $deceased = $member->isDeceased();
+        $status = $member->getStatus();
         $type = $member->getType();
         $notes = $member->getNotes();
         $associatedUserId = $member->getAssociatedUserId();
@@ -34,7 +34,7 @@ class MemberDtoAssembler
         $facilitatesForAreas = self::getAreaNamesArray($member->getFacilitatesForAreas());
         $coordinatesForAreas = self::getAreaNamesArray($member->getCoordinatesForAreas());
         $coordinatesForRegions = self::getRegionNamesForAreas($member->getCoordinatesForAreas());
-        return new MemberDto($id, $legacyId, $firstName, $lastName, $type, $notes, $deceased, $addressLineOne,
+        return new MemberDto($id, $legacyId, $firstName, $lastName, $type, $notes, $status, $addressLineOne,
                         $addressLineTwo, $addressCity, $addressState, $addressZip, $associatedUserId,
                         $presentsForAreas, $facilitatesForAreas, $coordinatesForAreas, $coordinatesForRegions);
     }

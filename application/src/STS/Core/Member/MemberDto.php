@@ -10,7 +10,6 @@ class MemberDto
     private $lastName;
     private $type;
     private $notes;
-    private $deceased = false;
     private $addressLineOne;
     private $addressLineTwo;
     private $addressCity;
@@ -21,7 +20,8 @@ class MemberDto
     private $facilitatesForAreas;
     private $coordinatesForAreas;
     private $coordinatesForRegions;
-    public function __construct($id, $legacyId, $firstName, $lastName, $type, $notes, $deceased, $addressLineOne,
+    private $status;
+    public function __construct($id, $legacyId, $firstName, $lastName, $type, $notes, $status, $addressLineOne,
                     $addressLineTwo, $addressCity, $addressState, $addressZip, $associatedUserId, $presentsForAreas,
                     $facilitatesForAreas, $coordinatesForAreas, $coordinatesForRegions)
     {
@@ -31,7 +31,7 @@ class MemberDto
         $this->legacyId = $legacyId;
         $this->type = $type;
         $this->notes = $notes;
-        $this->deceased = $deceased;
+        $this->status = $status;
         $this->addressLineOne = $addressLineOne;
         $this->addressLineTwo = $addressLineTwo;
         $this->addressCity = $addressCity;
@@ -109,6 +109,9 @@ class MemberDto
     }
     public function isDeceased()
     {
-        return $this->deceased;
+        return $this->status == 'Deceased';
+    }
+    public function getStatus(){
+        return $this->status;
     }
 }
