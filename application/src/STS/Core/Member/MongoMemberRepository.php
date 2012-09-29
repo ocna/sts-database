@@ -63,8 +63,8 @@ class MongoMemberRepository implements MemberRepository
         if (array_key_exists('user_id', $memberData)) {
             $member->setAssociatedUserId($memberData['user_id']);
         }
-        if (array_key_exists('deceased', $memberData) && $memberData['user_id'] == true) {
-            $member->hasPassedAway();
+        if (array_key_exists('status', $memberData)) {
+            $member->setStatus($memberData['status']);
         }
         if (array_key_exists('address', $memberData)) {
             $address = new Address();
