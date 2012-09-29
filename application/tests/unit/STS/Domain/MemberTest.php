@@ -84,14 +84,7 @@ class MemberTest extends MemberTestCase
     public function assertAllAssociatedAreasReturnUniqueAreas()
     {
         $member = $this->getValidMember();
-        $area = \Mockery::mock('STS\Domain\Location\Area');
-        $otherArea = \Mockery::mock('STS\Domain\Location\Area');
-        $member->canPresentForArea($area);
-        $member->canFacilitateForArea($area);
-        $member->canFacilitateForArea($otherArea);
-        $member->canCoordinateForArea($area);
         $areas = $member->getAllAssociatedAreas();
         $this->assertCount(2, $areas);
-        $this->assertEquals($areas[0], $area);
     }
 }

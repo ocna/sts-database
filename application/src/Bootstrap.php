@@ -82,7 +82,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
             ->appendStylesheet('/css/styles.css');
         $view->headScript()->appendFile('/js/jquery-1.8.0.min.js')->appendFile('/js/jquery-ui-1.8.23.custom.min.js')
             ->appendFile('/js/jquery.tagedit.js')->appendFile('/js/jquery.autoGrowInput.js')
-            ->appendFile('/js/bootstrap.min.js');
+            ->appendFile('/js/bootstrap.min.js')
+            ->appendFile('/js/application.js');
     }
     protected function _initNavigation()
     {

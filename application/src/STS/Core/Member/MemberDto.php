@@ -17,8 +17,13 @@ class MemberDto
     private $addressState;
     private $addressZip;
     private $associatedUserId;
+    private $presentsForAreas;
+    private $facilitatesForAreas;
+    private $coordinatesForAreas;
+    private $coordinatesForRegions;
     public function __construct($id, $legacyId, $firstName, $lastName, $type, $notes, $deceased, $addressLineOne,
-                    $addressLineTwo, $addressCity, $addressState, $addressZip, $associatedUserId)
+                    $addressLineTwo, $addressCity, $addressState, $addressZip, $associatedUserId, $presentsForAreas,
+                    $facilitatesForAreas, $coordinatesForAreas, $coordinatesForRegions)
     {
         $this->id = $id;
         $this->firstName = $firstName;
@@ -33,6 +38,26 @@ class MemberDto
         $this->addressState = $addressState;
         $this->addressZip = $addressZip;
         $this->associatedUserId = $associatedUserId;
+        $this->presentsForAreas = $presentsForAreas;
+        $this->facilitatesForAreas = $facilitatesForAreas;
+        $this->coordinatesForAreas = $coordinatesForAreas;
+        $this->coordinatesForRegions = $coordinatesForRegions;
+    }
+    public function getCoordinatesForRegions()
+    {
+        return $this->coordinatesForRegions;
+    }
+    public function getCoordinatesForAreas()
+    {
+        return $this->coordinatesForAreas;
+    }
+    public function getFacilitatesForAreas()
+    {
+        return $this->facilitatesForAreas;
+    }
+    public function getPresentsForAreas()
+    {
+        return $this->presentsForAreas;
     }
     public function getAssociatedUserId()
     {

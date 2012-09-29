@@ -15,6 +15,7 @@
 /build-deploy/config-templates/stg.*
 /build-deploy/config-templates/beta.*
 /build-deploy/config-templates/test.*
+/build-deploy/config-templates/prod.*
 /modules/*/config/*
 /application/config/*
 /tests/functional/config/*
