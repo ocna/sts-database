@@ -30,6 +30,11 @@ class DefaultMemberFacade implements MemberFacade
     public function getMemberTypes(){
         return Member::getAvailableTypes();
     }
+
+    public function getMemberStatuses(){
+        return Member::getAvailableStatuses();
+    }
+    
     public function searchForMembersByNameWithSpec($searchString, $spec)
     {
         $foundMembers = $this->memberRepository->searchByName($searchString);

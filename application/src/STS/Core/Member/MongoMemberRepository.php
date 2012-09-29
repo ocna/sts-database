@@ -65,6 +65,8 @@ class MongoMemberRepository implements MemberRepository
         }
         if (array_key_exists('status', $memberData)) {
             $member->setStatus($memberData['status']);
+        }else{
+            $member->setStatus(Member::STATUS_ACTIVE);
         }
         if (array_key_exists('address', $memberData)) {
             $address = new Address();
