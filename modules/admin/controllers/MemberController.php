@@ -5,7 +5,6 @@ use STS\Web\Controller\SecureBaseController;
 
 class Admin_MemberController extends SecureBaseController
 {
-
     protected $memberFacade;
     protected $userFacade;
     protected $locationFacade;
@@ -67,7 +66,6 @@ class Admin_MemberController extends SecureBaseController
             $validations[] = $form->getElement('lastName')->isValid($postData['lastName']);
             $validations[] = $form->getElement('memberType')->isValid($postData['memberType']);
             $validations[] = $form->getElement('role')->isValid($postData['role']);
-            var_dump($postData['role']);
             if ($postData['role'] != '0') {
                 //if role is not member, validate that a username and email has been entered
                 $validations[] = $form->getElement('systemUserEmail')->isValid($postData['systemUserEmail']);

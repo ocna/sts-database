@@ -7,7 +7,7 @@ $(document).ready(function() {
         allowEdit: false,
         allowAdd: false,
         addedPostfix: ''
-        });
+    });
 
     $('input.facilitatesFor').tagedit({
         autocompleteURL : "/search/area",
@@ -15,7 +15,7 @@ $(document).ready(function() {
         allowEdit: false,
         allowAdd: false,
         addedPostfix: ''
-        });
+    });
 
     $('input.coordinatesFor').tagedit({
         autocompleteURL : "/search/region",
@@ -23,17 +23,18 @@ $(document).ready(function() {
         allowEdit: false,
         allowAdd: false,
         addedPostfix: ''
-        });
+    });
+
+    registerTaggerHelpPopover()
 
     showRightFormPartsForRole($('#role').val())
     
     $('#role').change(function(e){
         showRightFormPartsForRole(this.value)
         })
-});
+    });
 
     function showRightFormPartsForRole(role){
-        console.log(role)
         if(role == 'ROLE_ADMIN'){
             userDetails('on')
             presenters('off')
@@ -55,6 +56,7 @@ $(document).ready(function() {
             facilitators('off')
             coordinators('off')
         }
+
     }
     
     function userDetails(flip){
@@ -88,6 +90,7 @@ $(document).ready(function() {
             $('#coordinatesForControlGroup').hide();
         }
     }
+
 </script>
 <div class="page-header">
     <h1>New Member
