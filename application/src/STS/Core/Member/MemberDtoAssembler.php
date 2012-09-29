@@ -30,7 +30,32 @@ class MemberDtoAssembler
             $addressState = null;
             $addressZip = null;
         }
+        $presentsForAreas = self::getAreaNamesArray($member->getPresentsForAreas());
+        $facilitatesForAreas = self::getAreaNamesArray($member->getFacilitatesForAreas());
+        $coordinatesForAreas = self::getAreaNamesArray($member->getCoordinatesForAreas());
+        $coordinatesForRegions = self::getRegionNamesForAreas($member->getCoordinatesForAreas());
         return new MemberDto($id, $legacyId, $firstName, $lastName, $type, $notes, $deceased, $addressLineOne,
-                        $addressLineTwo, $addressCity, $addressState, $addressZip, $associatedUserId);
+                        $addressLineTwo, $addressCity, $addressState, $addressZip, $associatedUserId,
+                        $presentsForAreas, $facilitatesForAreas, $coordinatesForAreas, $coordinatesForRegions);
+    }
+    private static function getAreaNamesArray($areas)
+    {
+        $areaArray = array();
+        foreach ($areas as $area) {
+            $areaArray[$area->getId()] = $area->getName();
+        }
+        return $areaArray;
+    }
+    private static function getRegionNamesForAreas($areas)
+    {
+        $regionArray = array();
+        foreach ($areas as $area) {
+            if ($region = $area->getRegion()) {
+                if (!in_array($region->getName(), $regionArray)) {
+                    $regionArray[] = $region->getName();
+                }
+            }
+        }
+        return $regionArray;
     }
 }

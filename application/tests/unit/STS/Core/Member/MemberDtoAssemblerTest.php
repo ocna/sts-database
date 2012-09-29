@@ -12,13 +12,11 @@ class MemberDtoAssemblerTest extends MemberTestCase
      */
     public function getValidSchoolDTOFromSchoolDomainObject()
     {
+        $member = $this->getValidMember();
         $address = new Address();
         $address->setLineOne(AddressTestCase::LINE_ONE)->setLineTwo(AddressTestCase::LINE_TWO)
             ->setZip(AddressTestCase::ZIP)->setState(AddressTestCase::STATE)->setCity(AddressTestCase::CITY);
-        $member = new Member();
-        $member->setId(MemberTestCase::ID)->setLegacyId(MemberTestCase::LEGACY_ID)->setAssociatedUserId(MemberTestCase::ASSOCIATED_USER_ID)
-            ->setFirstName(MemberTestCase::FIRST_NAME)->setLastName(MemberTestCase::LAST_NAME)
-            ->setNotes(MemberTestCase::NOTES)->hasPassedAway()->setType(MemberTestCase::TYPE)->setAddress($address);
+        $member->setAddress($address);
         $dto = MemberDtoAssembler::toDTO($member);
         $this->assertValidMemberDto($dto);
     }

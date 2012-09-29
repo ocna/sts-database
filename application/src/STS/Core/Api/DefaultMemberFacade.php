@@ -6,6 +6,7 @@ use STS\Domain\Member\Specification\MemberByMemberAreaSpecification;
 use STS\Core\Member\MemberDto;
 use STS\Core\Api\MemberFacade;
 use STS\Core\Member\MongoMemberRepository;
+use STS\Domain\Member;
 
 class DefaultMemberFacade implements MemberFacade
 {
@@ -24,6 +25,10 @@ class DefaultMemberFacade implements MemberFacade
     {
         $members = $this->memberRepository->find();
         return $this->getArrayOfDtos($members);
+    }
+    
+    public function getMemberTypes(){
+        return Member::getAvailableTypes();
     }
     public function searchForMembersByNameWithSpec($searchString, $spec)
     {

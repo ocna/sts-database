@@ -1,0 +1,120 @@
+<script type="text/javascript">
+$(document).ready(function() {
+
+    $('input.presentsFor').tagedit({
+        autocompleteURL : "/search/area",
+        checkNewEntriesCaseSensitive: true,
+        allowEdit: false,
+        allowAdd: false,
+        addedPostfix: ''
+    });
+
+    $('input.facilitatesFor').tagedit({
+        autocompleteURL : "/search/area",
+        checkNewEntriesCaseSensitive: true,
+        allowEdit: false,
+        allowAdd: false,
+        addedPostfix: ''
+    });
+
+    $('input.coordinatesFor').tagedit({
+        autocompleteURL : "/search/region",
+        checkNewEntriesCaseSensitive: true,
+        allowEdit: false,
+        allowAdd: false,
+        addedPostfix: ''
+    });
+
+    registerTaggerHelpPopover()
+
+    showRightFormPartsForRole($('#role').val())
+    
+    $('#role').change(function(e){
+        showRightFormPartsForRole(this.value)
+        })
+    });
+
+    function showRightFormPartsForRole(role){
+        if(role == 'ROLE_ADMIN'){
+            userDetails('on')
+            presenters('off')
+            facilitators('off')
+            coordinators('off')
+        }else if (role == 'ROLE_COORDINATOR'){
+            userDetails('on')
+            presenters('off')
+            facilitators('off')
+            coordinators('on')
+        }else if (role == 'ROLE_FACILITATOR'){
+            userDetails('on')
+            presenters('off')
+            facilitators('on')
+            coordinators('off')
+        }else{
+            userDetails('off')
+            presenters('on')
+            facilitators('off')
+            coordinators('off')
+        }
+
+    }
+    
+    function userDetails(flip){
+        if(flip == 'on'){
+            $('#systemUsernameControlGroup').show();
+            $('#systemUserEmailControlGroup').show();
+        }else if (flip == 'off'){
+            $('#systemUsernameControlGroup').hide();
+            $('#systemUserEmailControlGroup').hide();
+        }
+    }
+    
+    function presenters(flip){
+        if(flip == 'on'){
+            $('#presentsForControlGroup').show();
+        }else if (flip == 'off'){
+            $('#presentsForControlGroup').hide();
+        }
+    }
+    function facilitators(flip){
+        if(flip == 'on'){
+            $('#facilitatesForControlGroup').show();
+        }else if (flip == 'off'){
+            $('#facilitatesForControlGroup').hide();
+        }
+    }
+    function coordinators(flip){
+        if(flip == 'on'){
+            $('#coordinatesForControlGroup').show();
+        }else if (flip == 'off'){
+            $('#coordinatesForControlGroup').hide();
+        }
+    }
+
+</script>
+<div class="page-header">
+    <h1>New Member
+        <small>Enter new member details here.</small>
+    </h1>
+</div>
+
+<?php if ($this->storedPresentsFor) : ?>
+<?php foreach ($this->storedPresentsFor as $key => $value) : ?>
+    <input type="text" name="presentsFor[<?php echo $key ?>]" class="presentsFor" value="<?php echo $value ?>"/>
+<?php endforeach; ?>
+<?php endif; ?>
+
+<?php if ($this->storedCoordinatesFor) : ?>
+<?php foreach ($this->storedCoordinatesFor as $key => $value) : ?>
+    <input type="text" name="coordinatesFor[<?php echo $key ?>]" class="coordinatesFor" value="<?php echo $value ?>"/>
+<?php endforeach; ?>
+<?php endif; ?>
+
+<?php if ($this->storedFacilitatesFor) : ?>
+<?php foreach ($this->storedFacilitatesFor as $key => $value) : ?>
+    <input type="text" name="facilitatesFor[<?php echo $key ?>]" class="facilitatesFor" value="<?php echo $value ?>"/>
+<?php endforeach; ?>
+<?php endif; ?>
+
+
+<?php echo $this->form; ?>
