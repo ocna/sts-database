@@ -24,6 +24,37 @@ class Member extends EntityWithTypes
     private $associatedUserId = null;
     private $status;
 
+
+    public function toMongoArray()
+    {
+        $facilitatesFor = array();
+        foreach($this->facilitatesFor as $area){
+            $facilitatesFor[] = array("_id" => new \MongoId($area->getId()));
+        }
+        $presentsFor= array();
+        foreach($this->presentsFor as $area){
+            $presentsFor[] = array("_id" => new \MongoId($area->getId()));
+        }
+        $coordinatesFor = array();
+        foreach($this->coordinatesFor as $area){
+            $coordinatesFor[] = array("_id" => new \MongoId($area->getId()));
+        }
+        $array = array(
+                'id' => $this->id, 'fname' => $this->firstName, 'lname'=>$this->lastName, 'type' => $this->type, 'notes' => $this->notes,
+                'legacyid' => $this->legacyId, 'status'=>$this->status, 'fullname' => $this->getFullName(),
+                'user_id' => $this->associatedUserId,
+                'address' => array(
+                        'line_one' => $this->address->getLineOne(), 'line_two' => $this->address->getLineTwo(),
+                        'city' => $this->address->getCity(), 'state' => $this->address->getState(),
+                        'zip' => $this->address->getZip()
+                ),
+                'facilitates_for' => $facilitatesFor,
+                'presents_for'=> $presentsFor,
+                'coordinates_for'=> $coordinatesFor
+        );
+        return $array;
+    }
+
     public function getStatus(){
         return $this->status;
     }
@@ -44,7 +75,7 @@ class Member extends EntityWithTypes
         if (substr($key, 0, 7) != 'STATUS_') {
             throw new \InvalidArgumentException('Type key must begin with "STATUS_".');
         }
-        if (!array_key_exists($key, static::getAvailableTypes())) {
+        if (!array_key_exists($key, static::getAvailableStatuses())) {
             throw new \InvalidArgumentException('No such status with given key.');
         }
         $reflected = new \ReflectionClass(get_called_class());
@@ -168,5 +199,8 @@ class Member extends EntityWithTypes
                 $array[] = $element;
             }
         }
+    }
+    private function getFullName(){
+        return $this->firstName . ' '. $this->lastName;
     }
 }

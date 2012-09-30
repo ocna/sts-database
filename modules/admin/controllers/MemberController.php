@@ -3,6 +3,7 @@ use STS\Web\Security\AclFactory;
 use STS\Core;
 use STS\Web\Controller\SecureBaseController;
 use STS\Core\Api\ApiException;
+use STS\Domain\Member;
 
 class Admin_MemberController extends SecureBaseController
 {
@@ -126,14 +127,20 @@ class Admin_MemberController extends SecureBaseController
                     }
 
                     //save new member
+                    $newMemberDto = $this->saveNewMember($postData);
 
-                    //getTempPassword
+                    if ($postData['role'] != '0') {
+                        //getTempPassword
+                        $tempPassword = $this->authFacade->generateTempPassword();
 
-                    //save new system user
+                        //save new system user
+                        $systemUserDto = $this->saveNewUser($postData, $newMemberDto, $tempPassword);
 
-                    //send Notification
+                        //send Notification
+                        $this->sendNotificationOfNewAccount($systemUserDto, $tempPassword);
+                    }
 
-                    //todo determine success message
+                    $successMessage = "The new member \"{$postData['firstName']} {$postData['lastName']}\" has been successfully saved.";
                     $this
                         ->setFlashMessageAndRedirect($successMessage, 'success', array(
                             'module' => 'admin', 'controller' => 'member', 'action' => 'index'
@@ -149,6 +156,39 @@ class Admin_MemberController extends SecureBaseController
             }
         }
         $this->view->form = $form;
+    }
+
+    private function saveNewMember($data){
+
+        if($data['memberStatus']=='STATUS_ACTIVE'){
+            if($data['role']=='ROLE_ADMIN'){
+                $userId = $data['systemUsername'];
+                $presentsFor = array();
+                $facilitatesFor =array();
+                $coordinatesFor= array();
+            }elseif($data['role']=='ROLE_FACILITATOR'){
+                $userId = $data['systemUsername'];
+                $presentsFor = array();
+                $facilitatesFor = array_keys($data['facilitatsFor']);
+                $coordinatesFor= array();
+            }elseif($data['role']=='ROLE_COORDINATOR'){
+                $userId = $data['systemUsername'];
+                $presentsFor = array();
+                $facilitatesFor =array();
+                $coordinatesFor = $this->getAreasForRegionsArray(array_keys($data['coordinatesFor']));
+            }else{
+                $presentsFor = array_keys($data['presentsFor']);
+                $facilitatesFor =array();
+                $coordinatesFor= array();
+                $userId = null;
+            }
+        }else{
+            $presentsFor = array();
+            $facilitatesFor =array();
+            $coordinatesFor= array();
+            $userId = null;
+        }
+        return $this->memberFacade->saveMember($data['firstName'], $data['lastName'], Member::getAvailableType($data['memberType']), Member::getAvailableStatus($data['memberStatus']), $data['notes'], $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $data['addressLineOne'], $data['addressLineTwo'], $data['city'], $data['state'], $data['zip']);
     }
     private function getMembersArray()
     {
@@ -230,5 +270,14 @@ class Admin_MemberController extends SecureBaseController
                             'states' => $statesArray, 'roles' => $rolesArray, 'memberTypes' => $memberTypesArray, 'memberStatuses' => $memberStatusesArray
                         ));
         return $form;
+    }
+
+    private function getAreasForRegionsArray($array){
+        $dtos = $this->locationFacade->getAreasForRegions($array);
+        $keys = array();
+        foreach($dtos as $dto){
+            $keys[] = $dto->getId();
+        }
+        return $keys;
     }
 }
