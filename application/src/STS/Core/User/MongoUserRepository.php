@@ -33,6 +33,24 @@ class MongoUserRepository implements UserRepository
         return $users;
     }
 
+    public function save($user){
+         if (!$user instanceof User) {
+            throw new \InvalidArgumentException('Instance of User expected.');
+        }
+        $array = $user->toMongoArray();
+        $array['dateCreated'] = new \MongoDate();
+        $results = $this->mongoDb->user
+            ->update(array(
+                '_id' => $array['_id']
+            ), $array, array(
+                'upsert' => 1, 'safe' => 1
+            ));
+        if (array_key_exists('upserted', $results)) {
+            $user->setId($results['upserted']->__toString());
+        }
+        return $user;
+    }
+
     private function mapData($userData)
     {
         $user = new User();
