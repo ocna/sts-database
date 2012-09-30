@@ -71,7 +71,7 @@ class School extends EntityWithTypes
     }
     public function setName($name)
     {
-        $this->name = $name;
+        $this->name = trim(preg_replace('/\s+/', ' ', $name));
         return $this;
     }
 }

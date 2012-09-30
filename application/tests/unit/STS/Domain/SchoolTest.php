@@ -23,4 +23,18 @@ class SchoolTest extends SchoolTestCase
             ), School::getAvailableTypes());
     }
     
+    /**
+     * @test
+     */
+    public function confirmSanitiezedName(){
+        $school = $this->getValidSchool();
+
+        $bad = ' Name with   spaces  and leading    trailing space ';
+        $good = 'Name with spaces and leading trailing space';
+
+        $this->assertEquals($good, $school->getName($school->setName($bad)));
+    }
+    
+
+
 }

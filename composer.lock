@@ -1,10 +1,6 @@
 {
-    "hash": "586a0ebeee576b744e082e772446662e",
+    "hash": "eb694254d2365f1d19315701bf44de5f",
     "packages": [
-        {
-            "package": "EHER/PHPUnit",
-            "version": "1.6"
-        },
         {
             "package": "behat/behat",
             "version": "v2.4.4"
@@ -64,14 +60,8 @@
         {
             "package": "emagister/zend-form-decorators-bootstrap",
             "version": "dev-master",
-            "source-reference": "e6cd954621ff4bc74f1bd583b8108d2f14fb96f2",
-            "commit-date": "1344725800"
-        },
-        {
-            "package": "fabpot/goutte",
-            "version": "dev-master",
-            "alias-pretty-version": "1.0.x-dev",
-            "alias-version": "1.0.9999999.9999999-dev"
+            "source-reference": "83e91f5ca7144b8aca6e5246a4a9a30108db9a3b",
+            "commit-date": "1349032633"
         },
         {
             "package": "fabpot/goutte",
@@ -108,6 +98,48 @@
             "version": "dev-master",
             "source-reference": "b6adea3c241798c5afcbe2a2ac9294ce635a096f",
             "commit-date": "1348513062"
+        },
+        {
+            "package": "phpunit/php-code-coverage",
+            "version": "1.2.x-dev",
+            "source-reference": "52affc96c87c0e01e62a1a97fa10f4f1d9810e15",
+            "commit-date": "1349011284"
+        },
+        {
+            "package": "phpunit/php-file-iterator",
+            "version": "dev-master",
+            "source-reference": "1.3.2",
+            "commit-date": "1348340841"
+        },
+        {
+            "package": "phpunit/php-text-template",
+            "version": "dev-master",
+            "source-reference": "1.1.2",
+            "commit-date": "1348422648"
+        },
+        {
+            "package": "phpunit/php-timer",
+            "version": "dev-master",
+            "source-reference": "1.0.3",
+            "commit-date": "1348423019"
+        },
+        {
+            "package": "phpunit/php-token-stream",
+            "version": "dev-master",
+            "source-reference": "1.1.4",
+            "commit-date": "1348424514"
+        },
+        {
+            "package": "phpunit/phpunit",
+            "version": "3.7.x-dev",
+            "source-reference": "cb9425bead6e1340fe595b064b119e7fcb3e7cf5",
+            "commit-date": "1348842786"
+        },
+        {
+            "package": "phpunit/phpunit-mock-objects",
+            "version": "1.2.x-dev",
+            "source-reference": "cab48c8bca4ca1b264fe45ec380293555f7c8530",
+            "commit-date": "1348211215"
         },
         {
             "package": "symfony/browser-kit",
