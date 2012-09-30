@@ -20,6 +20,18 @@ class AclFactoryTest extends \PHPUnit_Framework_TestCase
         $acl = AclFactory::buildAcl();
         $this->assertTrue($acl instanceof \Zend_Acl);
     }
+    
+    /*
+     * @test
+     */
+    public function validGetAvailableRoles(){
+        $roles = AclFactory::getAvailableRoles();
+        
+        foreach ($roles as $key => $value){
+            $this->assertEquals($value, AclFactory::getAvailablRole($key));
+        }
+    }
+    
     /**
      * @test
      */

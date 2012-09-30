@@ -19,7 +19,7 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
     {
         
         $schoolId='502314eec6464712c1e7060e';
-        $typeCode='np';
+        $typeCode='TYPE_NP';
         $date='08/09/2012';
         $notes ='These are some notes!';
         $memberIds = array('50318d42066b83068e5d9452');

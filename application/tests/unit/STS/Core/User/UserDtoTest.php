@@ -15,10 +15,4 @@ class UserDtoTest extends UserTestCase
                         self::ASSOCIATED_MEMBER_ID);
         $this->assertValidUserDto($userDto);
     }
-    private function assertValidUserDto($userDto)
-    {
-        $this->assertEquals($userDto->getId(), self::BASIC_USER_NAME);
-        $this->assertEquals($userDto->getAssociatedMemberId(), self::ASSOCIATED_MEMBER_ID);
-        $this->assertEquals($userDto->getEmail(), self::BASIC_USER_EMAIL);
-    }
 }

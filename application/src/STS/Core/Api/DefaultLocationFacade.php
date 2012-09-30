@@ -40,6 +40,33 @@ class DefaultLocationFacade implements LocationFacade
         }
         return $returnData;
     }
+    public function searchAreasByName($term)
+    {
+        $regex = new \MongoRegex("/$term/i");
+        $areas = $this->mongoDb->area->find(array(
+                'name' => $regex
+            ))->sort(array(
+                'name' => 1
+            ));
+        $returnData = array();
+        foreach ($areas as $area) {
+            $returnData[] = new AreaDto($area['_id']->__toString(), $area['name'], $area['legacyid'], $area['city'],
+                            $area['state'], $area['region']['name']);
+        }
+        return $returnData;
+    }
+
+    public function getAreasForRegions($regions){
+        $query = array('region.name'=>array('$in'=> $regions));
+        $areas = $this->mongoDb->area->find($query);
+        $returnData = array();
+        foreach ($areas as $area) {
+            $returnData[] = new AreaDto($area['_id']->__toString(), $area['name'], $area['legacyid'], $area['city'],
+                            $area['state'], $area['region']['name']);
+        }
+        return $returnData;
+    }
+    
     public function getAllRegions()
     {
         $regions = $this->mongoDb->area->distinct('region');

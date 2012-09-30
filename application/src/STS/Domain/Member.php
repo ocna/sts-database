@@ -1,9 +1,17 @@
 <?php
 namespace STS\Domain;
-use STS\Domain\Entity;
+use STS\Domain\EntityWithTypes;
 
-class Member extends Entity
+class Member extends EntityWithTypes
 {
+    const TYPE_CAREGIVER = 'Caregiver';
+    const TYPE_FAMILY_MEMBER = 'Family Member';
+    const TYPE_SURVIVOR = 'Survivor';
+    const TYPE_SYSTEM_USER = 'System User';
+
+    const STATUS_ACTIVE = 'Active';
+    const STATUS_INACTIVE = 'Inactive';
+    const STATUS_DECEASED = 'Deceased';
 
     private $legacyId;
     private $firstName;
@@ -11,6 +19,118 @@ class Member extends Entity
     private $presentsFor = array();
     private $facilitatesFor = array();
     private $coordinatesFor = array();
+    private $notes;
+    private $deceased = false;
+    private $address;
+    private $associatedUserId = null;
+    private $status;
+
+
+    public function toMongoArray()
+    {
+        $facilitatesFor = array();
+        foreach($this->facilitatesFor as $area){
+            $facilitatesFor[] = array("_id" => new \MongoId($area->getId()));
+        }
+        $presentsFor= array();
+        foreach($this->presentsFor as $area){
+            $presentsFor[] = array("_id" => new \MongoId($area->getId()));
+        }
+        $coordinatesFor = array();
+        foreach($this->coordinatesFor as $area){
+            $coordinatesFor[] = array("_id" => new \MongoId($area->getId()));
+        }
+        $array = array(
+                'id' => $this->id, 'fname' => $this->firstName, 'lname'=>$this->lastName, 'type' => $this->type, 'notes' => $this->notes,
+                'legacyid' => $this->legacyId, 'status'=>$this->status, 'fullname' => $this->getFullName(),
+                'user_id' => $this->associatedUserId,
+                'address' => array(
+                        'line_one' => $this->address->getLineOne(), 'line_two' => $this->address->getLineTwo(),
+                        'city' => $this->address->getCity(), 'state' => $this->address->getState(),
+                        'zip' => $this->address->getZip()
+                ),
+                'facilitates_for' => $facilitatesFor,
+                'presents_for'=> $presentsFor,
+                'coordinates_for'=> $coordinatesFor
+        );
+        return $array;
+    }
+
+    public function getStatus(){
+        return $this->status;
+    }
+
+    public static function getAvailableStatuses()
+    {
+        $reflected = new \ReflectionClass(get_called_class());
+        $statuses = array();
+        foreach ($reflected->getConstants() as $key => $value) {
+            if (substr($key, 0, 7) == 'STATUS_') {
+                $statuses[$key] = $value;
+            }
+        }
+        return $statuses;
+    }
+    public static function getAvailableStatus($key)
+    {
+        if (substr($key, 0, 7) != 'STATUS_') {
+            throw new \InvalidArgumentException('Type key must begin with "STATUS_".');
+        }
+        if (!array_key_exists($key, static::getAvailableStatuses())) {
+            throw new \InvalidArgumentException('No such status with given key.');
+        }
+        $reflected = new \ReflectionClass(get_called_class());
+        return $reflected->getConstant($key);
+    }
+    public function setStatus($status)
+    {
+        if ($status !== null && !in_array($status, static::getAvailableStatuses(), true)) {
+            throw new \InvalidArgumentException('No such status with given value.');
+        }
+        $this->status = $status;
+        return $this;
+    }
+
+    public function getAssociatedUserId()
+    {
+        return $this->associatedUserId;
+    }
+    public function setAssociatedUserId($associatedUserId)
+    {
+        $this->associatedUserId = $associatedUserId;
+        return $this;
+    }
+    public function getAddress()
+    {
+        return $this->address;
+    }
+    public function setAddress($address)
+    {
+        $this->address = $address;
+        return $this;
+    }
+    public function hasPassedAway()
+    {
+        $this->setStatus(self::STATUS_DECEASED);
+        return $this;
+    }
+    public function isDeceased()
+    {
+        if($this->getStatus()==self::STATUS_DECEASED){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    public function getNotes()
+    {
+        return $this->notes;
+    }
+    public function setNotes($notes)
+    {
+        $this->notes = $notes;
+        return $this;
+    }
     public function getFirstName()
     {
         return $this->firstName;
@@ -73,12 +193,15 @@ class Member extends Entity
         $this->addUniqueElements($areas, $this->coordinatesFor);
         return $areas;
     }
-    
-    private function addUniqueElements(&$array, $elements){
-        foreach ($elements as $element){
-            if (!in_array($element, $array)){
-                $array[]= $element;
+    private function addUniqueElements(&$array, $elements)
+    {
+        foreach ($elements as $element) {
+            if (!in_array($element, $array)) {
+                $array[] = $element;
             }
         }
+    }
+    private function getFullName(){
+        return $this->firstName . ' '. $this->lastName;
     }
 }

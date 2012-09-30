@@ -11,10 +11,18 @@ class DefaultMemberFacadeTest extends MemberTestCase
     public function searchForMembersByName()
     {
         $facade = $this->loadFacadeInstance();
-        $members = $facade->searchForMembersByNameWithSpec('member te', null);
-        $this->assertTrue(is_array($members));
-        $this->assertValidMemberDto($members[0]);
-        
+        $members = $facade->searchForMembersByNameWithSpec('member us', null);
+        $this->assertTrue(is_array($members), 'The search did not return an array!');
+        $this->assertValidMemberDto($members[0], 'The first returned member is different than expected!');
+    }
+    /**
+     * @test 
+     */
+    public function getValidMemberById()
+    {
+        $facade = $this->loadFacadeInstance();
+        $memberDto = $facade->getMemberById(self::ID);
+        $this->assertValidMemberDto($memberDto);
     }
     private function loadFacadeInstance()
     {

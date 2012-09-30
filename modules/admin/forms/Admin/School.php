@@ -22,7 +22,7 @@ class Admin_School extends Twitter_Bootstrap_Form_Horizontal
                     'label' => 'Area', 'dimension' => 2, 'MultiOptions' => $this->areas, 'required' => true,
                     'validators' => array(
                         new \Zend_Validate_NotEmpty(\Zend_Validate_NotEmpty::ZERO)
-                    )
+                    ), 'description' => 'The Region for this School will be automatically updated based on the area.'
             ));
         //type
         $this

@@ -6,6 +6,8 @@ use STS\Core\Api\DefaultMemberFacade;
 use STS\Core\Api\DefaultSurveyFacade;
 use STS\Core\Api\DefaultPresentationFacade;
 use STS\Core\Api\DefaultLocationFacade;
+use STS\Core\Api\DefaultUserFacade;
+use STS\Core\Api\DefaultMailerFacade;
 
 class Core
 {
@@ -36,6 +38,12 @@ class Core
                 break;
             case 'LocationFacade':
                 $facade = DefaultLocationFacade::getDefaultInstance($this->config);
+                break;
+            case 'UserFacade':
+                $facade = DefaultUserFacade::getDefaultInstance($this->config);
+                break;
+            case 'MailerFacade':
+                $facade = DefaultMailerFacade::getDefaultInstance();
                 break;
             default:
                 throw new \InvalidArgumentException("Class does not exist ($key)");

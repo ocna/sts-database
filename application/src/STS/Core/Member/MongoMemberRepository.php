@@ -2,6 +2,7 @@
 namespace STS\Core\Member;
 use STS\Domain\Location\Area;
 use STS\Domain\Location\Region;
+use STS\Domain\Location\Address;
 use STS\Domain\Member;
 use STS\Domain\Member\MemberRepository;
 
@@ -13,19 +14,43 @@ class MongoMemberRepository implements MemberRepository
     {
         $this->mongoDb = $mongoDb;
     }
+    public function find()
+    {
+        $memberData = $this->mongoDb->member->find()->sort(array(
+                'lname' => 1
+            ));
+        return $this->mapMultiple($memberData);
+    }
+    public function save($member)
+    {
+        if (!$member instanceof Member) {
+            throw new \InvalidArgumentException('Instance of Member expected.');
+        }
+        $array = $member->toMongoArray();
+
+        $id = array_shift($array);
+        $array['dateCreated'] = new \MongoDate();
+        $results = $this->mongoDb->member
+            ->update(array(
+                '_id' => new \MongoId($id)
+            ), $array, array(
+                'upsert' => 1, 'safe' => 1
+            ));
+        if (array_key_exists('upserted', $results)) {
+            $member->setId($results['upserted']->__toString());
+        }
+        return $member;
+    }
+
     public function searchByName($searchString)
     {
         $regex = new \MongoRegex("/$searchString/i");
-        $members = $this->mongoDb->member->find(array(
+        $memberData = $this->mongoDb->member->find(array(
                 'fullname' => $regex
             ))->sort(array(
                 'lname' => 1
             ));
-        $returnData = array();
-        foreach ($members as $memberData) {
-            $returnData[] = $this->mapData($memberData);
-        }
-        return $returnData;
+        return $this->mapMultiple($memberData);
     }
     public function load($id)
     {
@@ -35,11 +60,40 @@ class MongoMemberRepository implements MemberRepository
             ));
         return $this->mapData($memberData);
     }
+    private function mapMultiple($memberData)
+    {
+        $objects = array();
+        foreach ($memberData as $data) {
+            $objects[] = $this->mapData($data);
+        }
+        return $objects;
+    }
     private function mapData($memberData)
     {
         $member = new Member();
         $member->setId($memberData['_id']->__toString())->setLegacyId($memberData['legacyid'])
             ->setFirstName($memberData['fname'])->setLastName($memberData['lname']);
+        if (array_key_exists('type', $memberData)) {
+            $member->setType($memberData['type']);
+        }
+        if (array_key_exists('notes', $memberData)) {
+            $member->setNotes($memberData['notes']);
+        }
+        if (array_key_exists('user_id', $memberData)) {
+            $member->setAssociatedUserId($memberData['user_id']);
+        }
+        if (array_key_exists('status', $memberData)) {
+            $member->setStatus($memberData['status']);
+        }else{
+            $member->setStatus(Member::STATUS_ACTIVE);
+        }
+        if (array_key_exists('address', $memberData)) {
+            $address = new Address();
+            $address->setLineOne($memberData['address']['line_one'])->setLineTwo($memberData['address']['line_two'])
+                ->setCity($memberData['address']['city'])->setState($memberData['address']['state'])
+                ->setZip($memberData['address']['zip']);
+            $member->setAddress($address);
+        }
         if (array_key_exists('presents_for', $memberData)) {
             foreach ($memberData['presents_for'] as $area) {
                 $areaId = $area['_id'];
@@ -60,7 +114,7 @@ class MongoMemberRepository implements MemberRepository
         }
         return $member;
     }
-    private function loadAreaById($areaId)
+    public function loadAreaById($areaId)
     {
         $mongoId = new \MongoId($areaId);
         $areaData = $this->mongoDb->area->findOne(array(

@@ -22,21 +22,6 @@ class MongoSurveyRepositoryTest extends SurveyTestCase
         $repo = $this->getRepoWithMockedDeps();
         $repo->save(null);
     }
-    /**
-     * @test
-     */
-    public function validSaveNewSurvey()
-    {
-        $this->markTestIncomplete();
-        $repo = $this->getRepoWithMockedDeps();
-        $survey = $this->getValidSurvey();
-        $savedSurvey = $repo->save($survey);
-        $this->assertInstanceOf('STS\Domain\Survey', $savedSurvey);
-        $this->assertEquals(100, $savedSurvey->getId());
-        $expected = $survey->toArray();
-        $actual = $savedSurvey->toArray();
-        $this->assertEquals($expected['questions'], $actual['questions']);
-    }
     private function getRepoWithMockedDeps()
     {
         $mongoDb = \Mockery::mock('MongoDB');

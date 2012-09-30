@@ -7,6 +7,27 @@ class MemberTest extends MemberTestCase
     /**
      * @test
      */
+    public function getValidTypes()
+    {
+        $this
+            ->assertEquals(array(
+                'TYPE_CAREGIVER' => 'Caregiver', 'TYPE_FAMILY_MEMBER' => 'Family Member', 'TYPE_SURVIVOR' => 'Survivor', 'TYPE_SYSTEM_USER'=>'System User'
+            ), Member::getAvailableTypes());
+    }
+
+    /**
+     * @test
+     */
+    public function getValidStatuses()
+    {
+        $this
+            ->assertEquals(array(
+                'STATUS_ACTIVE' => 'Active', 'STATUS_INACTIVE' => 'Inactive', 'STATUS_DECEASED' => 'Deceased'
+            ), Member::getAvailableStatuses());
+    }
+    /**
+     * @test
+     */
     public function createValidObject()
     {
         $member = $this->getValidMember();
@@ -74,14 +95,7 @@ class MemberTest extends MemberTestCase
     public function assertAllAssociatedAreasReturnUniqueAreas()
     {
         $member = $this->getValidMember();
-        $area = \Mockery::mock('STS\Domain\Location\Area');
-        $otherArea = \Mockery::mock('STS\Domain\Location\Area');
-        $member->canPresentForArea($area);
-        $member->canFacilitateForArea($area);
-        $member->canFacilitateForArea($otherArea);
-        $member->canCoordinateForArea($area);
         $areas = $member->getAllAssociatedAreas();
         $this->assertCount(2, $areas);
-        $this->assertEquals($areas[0], $area);
     }
 }

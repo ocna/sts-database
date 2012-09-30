@@ -12,7 +12,6 @@ class AclFactory
     const RESOURCE_USER = 'user';
     const RESOURCE_SCHOOL = 'school';
     const RESOURCE_SEARCH = 'search';
-    
     public static function buildAcl()
     {
         $acl = new \Zend_Acl();
@@ -32,5 +31,27 @@ class AclFactory
         $acl->allow(self::ROLE_FACILITATOR, self::RESOURCE_PRESENTATION);
         $acl->allow(self::ROLE_FACILITATOR, self::RESOURCE_SEARCH);
         return $acl;
+    }
+    public static function getAvailableRoles()
+    {
+        $reflected = new \ReflectionClass(get_called_class());
+        $roles = array();
+        foreach ($reflected->getConstants() as $key => $value) {
+            if (substr($key, 0, 5) == 'ROLE_') {
+                $types[$key] = $value;
+            }
+        }
+        return $types;
+    }
+    public static function getAvailableRole($key)
+    {
+        if (substr($key, 0, 5) != 'ROLE_') {
+            throw new \InvalidArgumentException('Role key must begin with "ROLE_".');
+        }
+        if (!array_key_exists($key, static::getAvailableRoles())) {
+            throw new \InvalidArgumentException('No such role with given key.');
+        }
+        $reflected = new \ReflectionClass(get_called_class());
+        return $reflected->getConstant($key);
     }
 }
