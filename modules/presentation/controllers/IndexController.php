@@ -82,7 +82,7 @@ class Presentation_IndexController extends SecureBaseController
     private function getSchoolsVisableToMember()
     {
         $schoolSpec = null;
-        if ($this->user->getAssociatedMemberId()) {
+        if ($this->user->getAssociatedMemberId() && $this->user->getRole() != 'admin') {
             $schoolSpec = $this->memberFacade->getMemberSchoolSpecForId($this->user->getAssociatedMemberId());
         }
         return $this->schoolFacade->getSchoolsForSpecification($schoolSpec);
