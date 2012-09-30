@@ -22,7 +22,26 @@ class MongoMemberRepository implements MemberRepository
         return $this->mapMultiple($memberData);
     }
     public function save($member)
-    {}
+    {
+        if (!$member instanceof Member) {
+            throw new \InvalidArgumentException('Instance of Member expected.');
+        }
+        $array = $member->toMongoArray();
+
+        $id = array_shift($array);
+        $array['dateCreated'] = new \MongoDate();
+        $results = $this->mongoDb->member
+            ->update(array(
+                '_id' => new \MongoId($id)
+            ), $array, array(
+                'upsert' => 1, 'safe' => 1
+            ));
+        if (array_key_exists('upserted', $results)) {
+            $member->setId($results['upserted']->__toString());
+        }
+        return $member;
+    }
+
     public function searchByName($searchString)
     {
         $regex = new \MongoRegex("/$searchString/i");
@@ -95,7 +114,7 @@ class MongoMemberRepository implements MemberRepository
         }
         return $member;
     }
-    private function loadAreaById($areaId)
+    public function loadAreaById($areaId)
     {
         $mongoId = new \MongoId($areaId);
         $areaData = $this->mongoDb->area->findOne(array(

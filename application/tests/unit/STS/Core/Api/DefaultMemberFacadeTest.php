@@ -4,9 +4,30 @@ use STS\Domain\Member;
 use STS\Core\Api\DefaultMemberFacade;
 use STS\Domain\Location\Area;
 use \Mockery;
+use STS\TestUtilities\MemberTestCase;
+use STS\TestUtilities\Location\AddressTestCase;
 
-class DefaultMemberFacadeTest extends \PHPUnit_Framework_TestCase
+class DefaultMemberFacadeTest extends MemberTestCase
 {
+
+
+
+    /**
+     * @test
+     */
+    public function validSaveNewMember(){
+        $facade = new DefaultMemberFacade($this->getMockMemberRepoForSave());
+        $presentsFor = array_keys($this->getValidPresentsForAreasArray());
+        $facilitatesFor = array_keys($this->getValidFacilitatesForAreasArray());
+        $coordinatesFor = array_keys($this->getValidCoordinatesForAreasArray());
+        $newMemberDto = $facade->saveMember(self::FIRST_NAME, self::LAST_NAME, self::TYPE, self::STATUS, self::NOTES, 
+        $presentsFor, $facilitatesFor, $coordinatesFor, self::ASSOCIATED_USER_ID, 
+        AddressTestCase::LINE_ONE, AddressTestCase::LINE_TWO, AddressTestCase::CITY, AddressTestCase::STATE,
+                    AddressTestCase::ZIP);
+
+        $this->assertValidMemberDto($newMemberDto);
+    }
+    
 
     /**
      * @test
@@ -83,4 +104,14 @@ class DefaultMemberFacadeTest extends \PHPUnit_Framework_TestCase
             ));
         return $memberRepository;
     }
+
+    private function getMockMemberRepoForSave(){
+        $memberRepository = \Mockery::mock('STS\Core\Member\MongoMemberRepository');
+        $memberRepository->shouldReceive('save')->withAnyArgs()->andReturn($this->getValidMember());
+        $areas = $this->getTestAreas();
+        $memberRepository->shouldReceive('loadAreaById')->withAnyArgs()->andReturn($areas[0], $areas[1],$areas[0], $areas[1],$areas[0], $areas[1]);
+        return $memberRepository;
+    }
+
+
 }

@@ -11,7 +11,7 @@ class MemberTest extends MemberTestCase
     {
         $this
             ->assertEquals(array(
-                'TYPE_CAREGIVER' => 'Caregiver', 'TYPE_FAMILY_MEMBER' => 'Family Member', 'TYPE_SURVIVOR' => 'Survivor'
+                'TYPE_CAREGIVER' => 'Caregiver', 'TYPE_FAMILY_MEMBER' => 'Family Member', 'TYPE_SURVIVOR' => 'Survivor', 'TYPE_SYSTEM_USER'=>'System User'
             ), Member::getAvailableTypes());
     }
 
