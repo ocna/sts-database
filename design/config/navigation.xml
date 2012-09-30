@@ -13,6 +13,12 @@
 				<controller>index</controller>
 				<action>new</action>
 			</new>
+			<list>
+				<label>List Presentations</label>
+				<module>presentation</module>
+				<controller>index</controller>
+				<action>index</action>
+			</list>
 		</pages>
 	</presentation>
 	<admin>

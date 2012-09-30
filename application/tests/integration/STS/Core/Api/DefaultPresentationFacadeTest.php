@@ -17,7 +17,7 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
      */
     public function savePresentation()
     {
-        
+        $this->markTestSkipped();
         $schoolId='502314eec6464712c1e7060e';
         $typeCode='TYPE_NP';
         $date='08/09/2012';

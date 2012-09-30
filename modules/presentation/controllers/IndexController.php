@@ -23,6 +23,20 @@ class Presentation_IndexController extends SecureBaseController
         $this->memberFacade = $core->load('MemberFacade');
         $this->schoolFacade = $core->load('SchoolFacade');
     }
+
+    public function indexAction(){
+        $this->view->layout()->pageHeader = $this->view->partial('partials/page-header.phtml', array(
+            'title' => 'Presentations'
+        ));
+
+        if($this->user->getRole() != 'admin'){
+            $this->view->inProgress = true;
+        }else{
+            $this->view->inProgress = false;
+        }
+
+    }
+
     public function newAction()
     {
         $this->view->form = $this->getForm();
