@@ -70,12 +70,26 @@ class Admin_MemberController extends SecureBaseController {
             $validations[] = $form->getElement('memberType')->isValid($postData['memberType']);
             $validations[] = $form->getElement('role')->isValid($postData['role']);
             $validations[] = $form->getElement('memberStatus')->isValid($postData['memberStatus']);
+            $validations[] = $form->getElement('addressLineOne')->isValid($postData['addressLineOne']);
+            $validations[] = $form->getElement('addressLineTwo')->isValid($postData['addressLineTwo']);
+            $validations[] = $form->getElement('city')->isValid($postData['city']);
+            $validations[] = $form->getElement('state')->isValid($postData['state']);
+            $validations[] = $form->getElement('zip')->isValid($postData['zip']);
+
             if ($postData['memberStatus'] == 'STATUS_ACTIVE') {
                 //if member has been marked active, validate any relevant system user information
                 if ($postData['role'] != '0') {
                     //if role is not member, validate that a username and email has been entered and that they are unique
                     $validations[] = $form->getElement('systemUserEmail')->isValid($postData['systemUserEmail']);
                     $validations[] = $form->getElement('systemUsername')->isValid($postData['systemUsername']);
+                    $validations[] = $form->getElement('tempPassword')->isValid($postData['tempPassword']);
+                    $validations[] = $form->getElement('tempPasswordConfirm')->isValid($postData['tempPasswordConfirm']);
+                    if($postData['tempPassword']!=$postData['tempPasswordConfirm']){
+                        $form->getElement('tempPasswordConfirm')->addErrors(array(
+                            'The two passwords do not match!'
+                        ))->markAsError();
+                        $validations[] = false;
+                    }
                 } else {
                     //else validate presents for
                     if (!array_key_exists('presentsFor', $postData) || !is_array($postData['presentsFor'])) {
@@ -127,14 +141,12 @@ class Admin_MemberController extends SecureBaseController {
                     $newMemberDto = $this->saveNewMember($postData);
                     $successMessage = "The new member \"{$postData['firstName']} {$postData['lastName']}\" has been successfully saved.";
                     if ($postData['role'] != '0') {
-                        //getTempPassword
-                        $tempPassword = $this->authFacade->generateTemporaryPassword();
                         //save new system user
+                        $tempPassword = $postData['tempPassword'];
                         $systemUserDto = $this->saveNewUser($postData, $newMemberDto, $tempPassword);
-                        //send Notification
-                        $this->sendNotificationOfNewAccount($systemUserDto, $tempPassword);
+                        $successMessage .= " The new user with username: \"{$systemUserDto->getId()}\" and password: \"$tempPassword\" may now access the system. Please write this down.";
                     }
-                    $successMessage .= " An email with the username and temporary password has been sent to \"{$systemUserDto->getEmail()}\".";
+                    
                     $this->setFlashMessageAndRedirect($successMessage, 'success', array(
                         'module' => 'admin',
                         'controller' => 'member',

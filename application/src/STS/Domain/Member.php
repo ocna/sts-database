@@ -7,6 +7,7 @@ class Member extends EntityWithTypes
     const TYPE_CAREGIVER = 'Caregiver';
     const TYPE_FAMILY_MEMBER = 'Family Member';
     const TYPE_SURVIVOR = 'Survivor';
+    const TYPE_SYSTEM_USER = 'System User';
 
     const STATUS_ACTIVE = 'Active';
     const STATUS_INACTIVE = 'Inactive';

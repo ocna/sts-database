@@ -1,4 +1,5 @@
 <?php
+
 class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
     protected $memberTypes;
     protected $states;
@@ -82,7 +83,7 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
         ));
         //role
         $this->addElement('select', 'role', array(
-            'label' => 'Type',
+            'label' => 'Role',
             'dimension' => 2,
             'MultiOptions' => $this->roles,
             'required' => true,
@@ -102,7 +103,34 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
             'label' => 'Username',
             'dimension' => 2,
             'required' => true,
-            'description' => 'The username and a temporary password will be emailed to the system user\'s email address above upon save.'
+        ));
+        //password
+        $this->addElement('password', 'tempPassword', array(
+            'label' => 'Password',
+            'dimension' => 2,
+            'required' => true,
+            'description' => 'The password should be between 6 and 12 charactars and be letters and numbers of any case. For example: "N0tSecUr3".',
+            'validators' => array(
+                new \Zend_Validate_Alnum() ,
+                new \Zend_Validate_StringLength(array(
+                    'min' => 6,
+                    'max' => 12
+                ))
+            )
+        ));
+        //password confirm
+        $this->addElement('password', 'tempPasswordConfirm', array(
+            'label' => 'Confirm',
+            'dimension' => 2,
+            'required' => true,
+            'validators' => array(
+
+                new \Zend_Validate_Alnum() ,
+                new \Zend_Validate_StringLength(array(
+                    'min' => 6,
+                    'max' => 12
+                ))
+            )
         ));
         //Presents For
         $this->addElement('text', 'presentsFor[]', array(
@@ -138,7 +166,8 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
             'role',
             'systemUserEmail',
             'systemUsername',
-            'systemUserEmail',
+            'tempPassword',
+            'tempPasswordConfirm',
             'presentsFor[]',
             'facilitatesFor[]',
             'coordinatesFor[]'
