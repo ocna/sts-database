@@ -14,9 +14,23 @@ class DefaultUserFacade implements UserFacade
     }
     public function findUserById($id)
     {
-        $user = $this->userRepository->load($id);
-        return UserDTOAssembler::toDTO($user);
+        try{
+            $user = $this->userRepository->load($id);
+            return UserDTOAssembler::toDTO($user);
+        }catch(\InvalidArgumentException $e){
+            return array();
+        }
     }
+
+    public function findUserByEmail($email){
+        $users = $this->userRepository->find(array('email'=>$email));
+        if(empty($users)){
+            return array();
+        }else{
+            return UserDTOAssembler::toDTO($users[0]);
+        }
+    }
+
     public static function getDefaultInstance($config)
     {
         $mongoConfig = $config->modules->default->db->mongodb;

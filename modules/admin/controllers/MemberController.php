@@ -2,6 +2,7 @@
 use STS\Web\Security\AclFactory;
 use STS\Core;
 use STS\Web\Controller\SecureBaseController;
+use STS\Core\Api\ApiException;
 
 class Admin_MemberController extends SecureBaseController
 {
@@ -70,7 +71,7 @@ class Admin_MemberController extends SecureBaseController
             if($postData['memberStatus']=='STATUS_ACTIVE'){
                 //if member has been marked active, validate any relevant system user information
                 if ($postData['role'] != '0') {
-                    //if role is not member, validate that a username and email has been entered
+                    //if role is not member, validate that a username and email has been entered and that they are unique
                     $validations[] = $form->getElement('systemUserEmail')->isValid($postData['systemUserEmail']);
                     $validations[] = $form->getElement('systemUsername')->isValid($postData['systemUsername']);
                 } else {
@@ -115,7 +116,23 @@ class Admin_MemberController extends SecureBaseController
             }
             if (!in_array(false, $validations)) {
                 try {
-                    //todo this is where you save the new member
+                    if ($postData['role'] != '0') {
+                        if($this->userFacade->findUserById($postData['systemUsername']) != array()){
+                            throw new ApiException("A system user with the username: \"{$postData['systemUsername']}\" already exists. System users must have a unique email and username.");
+                        }
+                        if($this->userFacade->findUserByEmail($postData['systemUserEmail']) != array()){
+                            throw new ApiException("A system user with the email address: \"{$postData['systemUserEmail']}\" already exists. System users must have a unique email and username.");
+                        }
+                    }
+
+                    //save new member
+
+                    //getTempPassword
+
+                    //save new system user
+
+                    //send Notification
+
                     //todo determine success message
                     $this
                         ->setFlashMessageAndRedirect($successMessage, 'success', array(

@@ -21,6 +21,18 @@ class MongoUserRepository implements UserRepository
         }
         return $this->mapData($userData);
     }
+
+    public function find($criteria){
+        $userData = $this->mongoDb->user->find($criteria);
+        $users = array();
+        if ($userData != null) {
+            foreach ($userData as $data) {
+                $users[] = $this->mapData($data);
+            }
+        }
+        return $users;
+    }
+
     private function mapData($userData)
     {
         $user = new User();
