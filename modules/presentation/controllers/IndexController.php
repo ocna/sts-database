@@ -90,7 +90,7 @@ class Presentation_IndexController extends SecureBaseController
     private function savePresentation($postData)
     {
         //Get User
-        $userId = $this->auth->getIdentity()->getId();
+        $userId = $this->user->getId();
         $templateId = 1;
         //First Save Survey Built
         $surveyData = array();
