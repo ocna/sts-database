@@ -1,6 +1,12 @@
 {
-    "hash": "eb694254d2365f1d19315701bf44de5f",
+    "hash": "7165daa4c0cdb2d4682702b7c73053f3",
     "packages": [
+        {
+            "package": "amazonwebservices/aws-sdk-for-php",
+            "version": "dev-master",
+            "source-reference": "help",
+            "commit-date": "1348703818"
+        },
         {
             "package": "behat/behat",
             "version": "v2.4.4"
@@ -132,8 +138,8 @@
         {
             "package": "phpunit/phpunit",
             "version": "3.7.x-dev",
-            "source-reference": "cb9425bead6e1340fe595b064b119e7fcb3e7cf5",
-            "commit-date": "1348842786"
+            "source-reference": "3fd1406999216d4c5d699674a78c48c88fab766b",
+            "commit-date": "1349125539"
         },
         {
             "package": "phpunit/phpunit-mock-objects",

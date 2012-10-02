@@ -15,7 +15,8 @@
       "breerly/zf1":"1.11.*",
       "phpunit/phpunit":"*",
       "emagister/zend-form-decorators-bootstrap":"*",
-      "mockery/mockery": "*"
+      "mockery/mockery": "*", 
+      "amazonwebservices/aws-sdk-for-php": "*"
    },
    "minimum-stability":"dev",
    "config":{

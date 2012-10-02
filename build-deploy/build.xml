@@ -62,6 +62,7 @@
 		<fail unless="env" message="'env' variable not set. Please specificy with -Denv=&lt;ENV&gt; or add to build.properties" />
 		<copy file="${basedir}/build-deploy/config-templates/${env}.application.ini" tofile="${basedir}/application/config/application.ini" overwrite="true" />
 		<copy file="${basedir}/build-deploy/config-templates/${env}.core.xml" tofile="${basedir}/application/config/core.xml" overwrite="true" />
+		<copy file="${basedir}/build-deploy/config-templates/${env}.aws.config.inc.php" tofile="${basedir}/vendor/amazonwebservices/aws-sdk-for-php/config.inc.php" overwrite="true" />
 	</target>
 	
 	<target name="configure:behat" depends="configure" description="Configure application for behat.">
