@@ -1,7 +1,7 @@
 <?php
 namespace STS\Core\Service;
-interface MessageService{
 
+interface MessageService
+{
     public function sendMessageToUser($message, $user);
 }
-
