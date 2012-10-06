@@ -41,6 +41,10 @@ class DefaultPresentationFacade implements PresentationFacade
     {
         return Presentation::getAvailableTypes();
     }
+
+    public function getPresentationsForUserId($userId){
+        
+    }
     public static function getDefaultInstance($config)
     {
         $mongoConfig = $config->modules->default->db->mongodb;
