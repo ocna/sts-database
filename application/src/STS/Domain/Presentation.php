@@ -1,6 +1,7 @@
 <?php
 namespace STS\Domain;
 use STS\Domain\Entity;
+use STS\Domain\School\Specification\MemberSchoolSpecification;
 
 class Presentation extends EntityWithTypes
 {
@@ -111,4 +112,14 @@ class Presentation extends EntityWithTypes
         return $this;
     }
     
+    public function isAccessableByMemberUser($member, $user){
+        if($user->getRole() == 'admin'){
+            return true;
+        }
+        if($user->getId() == $this->enteredByUserId){
+            return true;
+        }
+        $spec = new MemberSchoolSpecification($member);
+        return $spec->isSatisfiedBy($this->location);
+    }
 }

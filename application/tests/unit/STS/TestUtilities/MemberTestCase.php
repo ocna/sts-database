@@ -30,6 +30,12 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase {
         
         return $member;
     }
+
+    public static function createValidMember(){
+        $memberTestCase = new MemberTestCase();
+        return $memberTestCase->getValidMember();
+    }
+    
     protected function getValidNewMember() {
         $member = new Member();
         $address = new Address();

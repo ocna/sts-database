@@ -10,11 +10,12 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
      */
     public function itShouldReturnAllPresentationsForAnAdminUser()
     {
+        $this->markTestIncomplete();
         $facade = $this->getFacadeWithMockedDeps();
         $presentations = $facade->getPresentationsForUserId(self::ADMIN_USER_ID);
-        #$this->assertTrue(is_array($presentations));
-        #$this->assertCount(3, $presentations);
-        #$this->assertInstanceOf('STS\Core\Presentation\PresentationDto', $presentations[0]);
+        $this->assertTrue(is_array($presentations));
+        $this->assertCount(3, $presentations);
+        $this->assertInstanceOf('STS\Core\Presentation\PresentationDto', $presentations[0]);
     }
 
     private function getFacadeWithMockedDeps()

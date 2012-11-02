@@ -11,11 +11,11 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
     const NOTES = 'The presentation went quite well I must say.';
     const PARTICIPANTS = 203;
     const FORMS = 198;
-    protected function createValidObject()
+    protected function getValidObject()
     {
-        $school = $this->getMock('STS\Domain\School');
+        $school = SchoolTestCase::createValidSchool();
         $members = array(
-            $this->getMock('STS\Domain\Member')
+            MemberTestCase::createValidMember()
         );
         $survey = $this->getMockBuilder('STS\Domain\Survey')->disableOriginalConstructor()->getMock();
         $presentation = new Presentation();

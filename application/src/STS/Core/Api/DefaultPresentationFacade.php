@@ -43,8 +43,18 @@ class DefaultPresentationFacade implements PresentationFacade
     }
 
     public function getPresentationsForUserId($userId){
-        
+        $user = $this->userRepository->load($userId);
+        $member = $this->memberRepository->load($user->associatedMemberId());
+        $presentations = $this->presentationRepository->find();
+        $dtos = array();
+        foreach ($presentations as $presentation) {
+            if($presentation->isAccessableByMemberUser($member,$user)){
+                $dtos[] = PresentationDtoAssembler::toDTO($presentation);
+            }
+        }
+        return $dtos;
     }
+
     public static function getDefaultInstance($config)
     {
         $mongoConfig = $config->modules->default->db->mongodb;
