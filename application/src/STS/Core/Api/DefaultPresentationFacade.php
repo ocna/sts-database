@@ -1,23 +1,29 @@
 <?php
 namespace STS\Core\Api;
+
 use STS\Domain\Survey\Template;
 use STS\Domain\Member;
 use STS\Domain\Survey;
 use STS\Domain\School;
 use STS\Domain\Presentation;
-use STS\Core\Api\PresentationFacade;
 use STS\Core\Presentation\MongoPresentationRepository;
+use STS\Core\User\MongoUserRepository;
+use STS\Core\Member\MongoMemberRepository;
+use STS\Core\Presentation\PresentationDtoAssembler;
 
 class DefaultPresentationFacade implements PresentationFacade
 {
 
     private $presentationRepository;
-    public function __construct($presentationRepository)
+    private $userRepository;
+    private $memberRepository;
+    public function __construct($presentationRepository, $userRepository, $memberRepository)
     {
         $this->presentationRepository = $presentationRepository;
+        $this->userRepository = $userRepository;
+        $this->memberRepository = $memberRepository;
     }
-    public function savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants,
-                    $forms, $surveyId)
+    public function savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId)
     {
         $school = new School();
         $school->setId($schoolId);
@@ -41,15 +47,30 @@ class DefaultPresentationFacade implements PresentationFacade
     {
         return Presentation::getAvailableTypes();
     }
+
+    public function getPresentationsForUserId($userId)
+    {
+        $user = $this->userRepository->load($userId);
+        $member = $this->memberRepository->load($user->getAssociatedMemberId());
+        $presentations = $this->presentationRepository->find();
+        $dtos = array();
+        foreach ($presentations as $presentation) {
+            if ($presentation->isAccessableByMemberUser($member, $user)) {
+                $dtos[] = PresentationDtoAssembler::toDTO($presentation);
+            }
+        }
+        return $dtos;
+    }
+
     public static function getDefaultInstance($config)
     {
         $mongoConfig = $config->modules->default->db->mongodb;
         $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
-        $mongo = new \Mongo(
-                        'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/'
-                                        . $mongoConfig->dbname);
+        $mongo = new \Mongo('mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/' . $mongoConfig->dbname);
         $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $presentationRepository = new MongoPresentationRepository($mongoDb);
-        return new DefaultPresentationFacade($presentationRepository);
+        $userRepository = new MongoUserRepository($mongoDb);
+        $memberRepository = new MongoMemberRepository($mongoDb);
+        return new DefaultPresentationFacade($presentationRepository, $userRepository, $memberRepository);
     }
 }

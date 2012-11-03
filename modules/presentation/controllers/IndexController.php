@@ -23,6 +23,19 @@ class Presentation_IndexController extends SecureBaseController
         $this->memberFacade = $core->load('MemberFacade');
         $this->schoolFacade = $core->load('SchoolFacade');
     }
+
+    public function indexAction()
+    {
+        $this->view->layout()->pageHeader = $this->view->partial('partials/page-header.phtml', array(
+            'title' => 'Presentations',
+            'add' => 'Add New Presentation',
+            'addRoute' => '/presentation/index/new'
+        ));
+        
+        $dtos = $this->presentationFacade->getPresentationsForUserId($this->user->getId());
+        $this->view->objects = $dtos;
+    }
+
     public function newAction()
     {
         $this->view->form = $this->getForm();
@@ -45,7 +58,7 @@ class Presentation_IndexController extends SecureBaseController
                     $this->savePresentation($postData);
                     $this
                         ->setFlashMessageAndRedirect('You have successfully completed the presentation and survey entry process!', 'success', array(
-                            'module' => 'main', 'controller' => 'home', 'action' => 'index'
+                            'module' => 'presentation', 'controller' => 'index', 'action' => 'index'
                         ));
                 } catch (ApiException $e) {
                     $this

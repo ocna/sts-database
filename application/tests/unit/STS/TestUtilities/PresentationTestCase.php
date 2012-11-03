@@ -1,6 +1,9 @@
 <?php
 namespace STS\TestUtilities;
+
 use STS\Domain\Presentation;
+use STS\Core\Presentation\PresentationDto;
+use STS\TestUtilities\Location\AreaTestCase;
 
 class PresentationTestCase extends \PHPUnit_Framework_TestCase
 {
@@ -8,14 +11,15 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
     const ID = '50234bc4fe65f50a9579a8cd';
     const TYPE = 'MED';
     const DATE = '2012-05-10 11:55:23';
+    const DISPLAY_DATE = '5/10/2012';
     const NOTES = 'The presentation went quite well I must say.';
     const PARTICIPANTS = 203;
     const FORMS = 198;
-    protected function createValidObject()
+    protected function getValidObject()
     {
-        $school = $this->getMock('STS\Domain\School');
+        $school = SchoolTestCase::createValidSchool();
         $members = array(
-            $this->getMock('STS\Domain\Member')
+            MemberTestCase::createValidMember()
         );
         $survey = $this->getMockBuilder('STS\Domain\Survey')->disableOriginalConstructor()->getMock();
         $presentation = new Presentation();
@@ -23,6 +27,17 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
             ->setNotes(self::NOTES)->setMembers($members)->setNumberOfParticipants(self::PARTICIPANTS)
             ->setNumberOfFormsReturned(self::FORMS)->setSurvey($survey);
         return $presentation;
+    }
+
+    public static function createValidObject()
+    {
+        $presentationTestCase = new PresentationTestCase();
+        return $presentationTestCase->getValidObject();
+    }
+
+    protected function getValidPresentationDto()
+    {
+        return new PresentationDto(self::ID, SchoolTestCase::NAME, AreaTestCase::CITY, self::PARTICIPANTS, self::DATE, self::TYPE);
     }
     protected function assertValidObject($presentation)
     {
@@ -37,5 +52,17 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('STS\Domain\Survey', $presentation->getSurvey());
         $this->assertTrue(is_array($presentation->getMembers()));
         $this->assertInstanceOf('STS\Domain\Member', array_pop($presentation->getMembers()));
+    }
+
+    protected function assertValidPresentationDto($dto)
+    {
+        $this->assertInstanceOf('STS\Core\Presentation\PresentationDto', $dto);
+        $this->assertTrue(is_string($dto->getId()));
+        $this->assertEquals(self::ID, $dto->getId());
+        $this->assertEquals(SchoolTestCase::NAME, $dto->getSchoolName());
+        $this->assertEquals(AreaTestCase::CITY, $dto->getSchoolAreaCity());
+        $this->assertEquals(self::PARTICIPANTS, $dto->getNumberOfParticipants());
+        $this->assertEquals(self::TYPE, $dto->getType());
+        $this->assertEquals(self::DISPLAY_DATE, $dto->getDate());
     }
 }
