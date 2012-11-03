@@ -45,8 +45,9 @@
 
 	<target name="behat" description="Runs BDD tests with Behat">
 		<exec dir="${basedir}" executable="${basedir}/bin/behat" failonerror="true">
-			<arg value="--config" />
-			<arg value="${basedir}/tests/functional/config/behat.yml" />
+			<arg value="--config=${basedir}/tests/functional/config/behat.yml" />
+			<arg value="--format=html,progress" />
+            <arg value="--out=build/logs/behat.html," />
 		</exec>
 	</target>
 
