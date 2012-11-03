@@ -13,10 +13,14 @@ class AreaTestCase extends \PHPUnit_Framework_TestCase
     protected function getValidArea()
     {
         $area = new Area();
-        $region = \Mockery::mock('STS\Domain\Location\Region');
+        $region = RegionTestCase::createValidRegion();
         $area->setName(self::NAME)->setLegacyId(self::LEGACY_ID)->setId(self::ID)->setState(self::STATE)
             ->setCity(self::CITY)->setRegion($region);
         return $area;
+    }
+    public static function createValidArea(){
+        $areaTestCase = new AreaTestCase();
+        return $areaTestCase->getValidArea();
     }
     protected function assertValidArea($area)
     {

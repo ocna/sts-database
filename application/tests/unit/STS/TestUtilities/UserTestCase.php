@@ -1,5 +1,6 @@
 <?php
 namespace STS\TestUtilities;
+
 use STS\Domain\User;
 
 class UserTestCase extends \PHPUnit_Framework_TestCase
@@ -25,6 +26,12 @@ class UserTestCase extends \PHPUnit_Framework_TestCase
             ->setLegacyId(self::VALID_LEGACY_ID)->setRole(self::BASIC_USER_ROLE)->setAssociatedMemberId(self::ASSOCIATED_MEMBER_ID);
         return $user;
     }
+
+    public static function createValidUser()
+    {
+        $userTestCase = new UserTestCase();
+        return $userTestCase->getValidUser();
+    }
     protected function assertValidUser($user)
     {
         $this->assertInstanceOf('STS\Domain\User', $user);
@@ -38,7 +45,7 @@ class UserTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::VALID_LEGACY_ID, $user->getLegacyId());
         $this->assertEquals(self::ASSOCIATED_MEMBER_ID, $user->getAssociatedMemberId());
     }
-    
+
     protected function assertValidUserDto($dto)
     {
         $this->assertInstanceOf('STS\Core\User\UserDto', $dto);

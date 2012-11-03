@@ -17,11 +17,17 @@ class SchoolTestCase extends \PHPUnit_Framework_TestCase
     protected function getValidSchool()
     {
         $school = new School();
-        $area = \Mockery::mock('STS\Domain\Location\Area');
-        $address = \Mockery::mock('STS\Domain\Location\Address');
+        $area = AreaTestCase::createValidArea();
+        $address = AddressTestCase::createValidAddress();
         $school->setId(self::ID)->setLegacyId(self::LEGACY_ID)->setName(self::NAME)->setType(self::TYPE)->setNotes(self::NOTES)->setArea($area)->setAddress($address);
         return $school;
     }
+
+    public static function createValidSchool(){
+        $schoolTestCase = new SchoolTestCase();
+        return $schoolTestCase->getValidSchool();
+    }
+
     protected function assertValidSchool($school)
     {
         $this->assertEquals($school->getId(), self::ID);
