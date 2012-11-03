@@ -1,6 +1,8 @@
 <?php
 namespace STS\TestUtilities;
 use STS\Domain\Presentation;
+use STS\Core\Presentation\PresentationDto;
+use STS\TestUtilities\Location\AreaTestCase;
 
 class PresentationTestCase extends \PHPUnit_Framework_TestCase
 {
@@ -24,6 +26,17 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
             ->setNumberOfFormsReturned(self::FORMS)->setSurvey($survey);
         return $presentation;
     }
+
+    public static function createValidObject()
+    {
+        $presentationTestCase = new PresentationTestCase();
+        return $presentationTestCase->getValidObject();
+    }
+
+    protected function getValidPresentationDto()
+    {
+        return new PresentationDto(self::ID, SchoolTestCase::NAME, AreaTestCase::CITY, self::PARTICIPANTS, self::DATE, self::TYPE);
+    }
     protected function assertValidObject($presentation)
     {
         $this->assertEquals(self::ID, $presentation->getId());
@@ -37,5 +50,16 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('STS\Domain\Survey', $presentation->getSurvey());
         $this->assertTrue(is_array($presentation->getMembers()));
         $this->assertInstanceOf('STS\Domain\Member', array_pop($presentation->getMembers()));
+    }
+
+    protected function assertValidPresentationDto($dto)
+    {
+        $this->assertInstanceOf('STS\Core\Presentation\PresentationDto', $dto);
+        $this->assertTrue(is_string($dto->getId()));
+        $this->assertEquals(self::ID, $dto->getId());
+        $this->assertEquals(SchoolTestCase::NAME, $dto->getSchoolName());
+        $this->assertEquals(AreaTestCase::CITY, $dto->getSchoolAreaCity());
+        $this->assertEquals(self::PARTICIPANTS, $dto->getNumberOfParticipants());
+        $this->assertEquals(self::TYPE, $dto->getType());
     }
 }

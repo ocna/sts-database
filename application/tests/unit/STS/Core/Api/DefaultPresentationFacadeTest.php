@@ -1,16 +1,18 @@
 <?php
+namespace STS\Core\Api;
+
 use STS\TestUtilities\PresentationTestCase;
-use STS\Core\Api\DefaultPresentationFacade;
+use STS\TestUtilities\UserTestCase;
+use STS\TestUtilities\MemberTestCase;
 
 class DefaultPresentationFacadeTest extends PresentationTestCase
 {
-    const ADMIN_USER_ID = 'auser';
+    const ADMIN_USER_ID = 'muser';
     /**
      * @test
      */
     public function itShouldReturnAllPresentationsForAnAdminUser()
     {
-        $this->markTestIncomplete();
         $facade = $this->getFacadeWithMockedDeps();
         $presentations = $facade->getPresentationsForUserId(self::ADMIN_USER_ID);
         $this->assertTrue(is_array($presentations));
@@ -20,9 +22,11 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
 
     private function getFacadeWithMockedDeps()
     {
-        $presentationRepository = Mockery::mock('STS\Core\Presentation\MongoPresentationRepository');
-        $facade = new DefaultPresentationFacade($presentationRepository);
-
+        $presentations = array($this->getValidObject(), $this->getValidObject(), $this->getValidObject());
+        $presentationRepository = \Mockery::mock('STS\Core\Presentation\MongoPresentationRepository', array('find'=>$presentations));
+        $userRepository = \Mockery::mock('STS\Core\User\MongoUserRepository', array('load'=>UserTestCase::createValidUser()));
+        $memberRepository = \Mockery::mock('STS\Core\Member\MongoMemberRepository', array('load'=>MemberTestCase::createValidMember()));
+        $facade = new DefaultPresentationFacade($presentationRepository, $userRepository, $memberRepository);
         return $facade;
     }
 }
