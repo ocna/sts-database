@@ -1,13 +1,36 @@
-<?php if($this->inProgress): ?>
-    <br>
-<div class="alert alert-info hero-unit">
-<h1>
+<?php if(empty($this->objects)): ?>
+<div class="alert alert-info">
+<h3>
 <span>
-  <i class="icon-wrench"></i>
+  <i class="icon-info-sign"></i>
 </span>
-In Progress.</h1>
-<h2>This feature is in progress and will be available soon.</h2>
+No presentations yet.</h3>
+<p>You have not entered any presentations yet.</p>
 </div>
-<?php else: ?>
-
+<?php else: 
+$columns = array('date'=>'Date', 'schoolName'=>'School','schoolAreaCity'=>'City', 'numberOfParticipants'=>'Participants', 'type'=>'Type');
+?>
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+        <?php foreach ($columns as $title){
+            echo "<th>$title</th>";
+            }?>
+            <th style="text-align:right;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php   foreach ($this->objects as $object) {
+        ?>
+        <tr>
+        <?php foreach ($columns as $get=>$title){
+            $method = 'get' . ucfirst($get);
+            echo "<td>{$object->$method()}</td>";
+            }?>
+            <td style="text-align:right;">
+            </td>
+        <?php }?>   
+        </tr>
+    </tbody>
+</table>
 <?php endif; ?>

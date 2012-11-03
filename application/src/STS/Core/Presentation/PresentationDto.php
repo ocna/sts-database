@@ -27,6 +27,7 @@ class PresentationDto
         $this->schoolAreaCity = $schoolAreaCity;
         $this->numberOfParticipants = $numberOfParticipants;
         $this->type = $type;
+        $this->date = $date;
     }
     public function getId()
     {
@@ -38,7 +39,7 @@ class PresentationDto
     }
     public function getDate()
     {
-        return $this->date;
+        return $this->date ? date('n/j/Y', strtotime($this->date)) : null;
     }
     public function getNumberOfParticipants()
     {

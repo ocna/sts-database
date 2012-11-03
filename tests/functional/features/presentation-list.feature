@@ -14,13 +14,3 @@ Feature: Presentation-List
             | cuser |
             | fuser |
             | auser |
-
-    Scenario Outline: A non admin user will see a message that the functionality is not available yet
-        Given I am logged in as the user "<user>"
-        When I go to "/presentation/index"
-        Then I should see "This feature is in progress and will be available soon."
-
-        Examples:
-            | user  |
-            | cuser |
-            | fuser |

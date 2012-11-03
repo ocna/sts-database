@@ -1,4 +1,4 @@
-<?php
+m<?php
 use STS\TestUtilities\PresentationTestCase;
 use STS\Core;
 use STS\Core\Api\DefaultPresentationFacade;
@@ -12,6 +12,19 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
     {
         $this->assertInstanceOf('STS\Core\Api\DefaultPresentationFacade', $this->loadFacadeInstance());
     }
+
+    /**
+     * @test
+     */
+    public function adminUserShouldSeeAllPresentations()
+    {
+        $facade = $this->loadFacadeInstance();
+        $presentations = $facade->getPresentationsForUserId('muser');
+        $this->assertTrue(is_array($presentations));
+        $this->assertCount(4, $presentations);
+        $this->assertInstanceOf('STS\Core\Presentation\PresentationDto', $presentations[0]);
+    }
+    
     /**
      * @test
      */
