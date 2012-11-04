@@ -1,5 +1,6 @@
 <?php
 namespace STS\TestUtilities;
+
 use STS\Domain\Location\Area;
 use STS\Domain\Member;
 use STS\Core\Member\MemberDto;
@@ -7,49 +8,59 @@ use STS\TestUtilities\Location\AddressTestCase;
 use STS\Domain\Location\Region;
 use STS\Domain\Location\Address;
 
-class MemberTestCase extends \PHPUnit_Framework_TestCase {
+class MemberTestCase extends \PHPUnit_Framework_TestCase
+{
     const ID = '50234bc4fe65f50a9579a8cd';
     const LEGACY_ID = 0;
     const FIRST_NAME = 'Member';
     const LAST_NAME = 'User';
+    const EMAIL = 'member.user@email.com';
     const TYPE = 'Survivor';
     const NOTES = 'This is an interesting note!';
     const STATUS = 'Deceased';
     const ASSOCIATED_USER_ID = 'muser';
-    protected function getValidMember() {
+    const DATE_TRAINED = '2012-05-10 11:55:23';
+    const DISPLAY_DATE_TRAINED = '5/10/2012';
+
+    protected function getValidMember()
+    {
         $member = new Member();
         $address = new Address();
-        $address->setLineOne(AddressTestCase::LINE_ONE)->setLineTwo(AddressTestCase::LINE_TWO)->setZip(AddressTestCase::ZIP)->setState(AddressTestCase::STATE)->setCity(AddressTestCase::CITY);
-        $member->setId(self::ID)->setLegacyId(self::LEGACY_ID)->setFirstName(self::FIRST_NAME)->setLastName(self::LAST_NAME)->setNotes(self::NOTES)->setStatus(self::STATUS)->setType(self::TYPE)->setAddress($address)->setAssociatedUserId(self::ASSOCIATED_USER_ID);
-        
+        $address->setLineOne(AddressTestCase::LINE_ONE)
+                ->setLineTwo(AddressTestCase::LINE_TWO)
+                ->setZip(AddressTestCase::ZIP)
+                ->setState(AddressTestCase::STATE)
+                ->setCity(AddressTestCase::CITY);
+        $member->setId(self::ID)
+               ->setLegacyId(self::LEGACY_ID)
+               ->setFirstName(self::FIRST_NAME)
+               ->setLastName(self::LAST_NAME)
+               ->setEmail(self::EMAIL)
+               ->setNotes(self::NOTES)
+               ->setStatus(self::STATUS)
+               ->setType(self::TYPE)
+               ->setDateTrained(self::DATE_TRAINED)
+               ->setAddress($address)
+               ->setAssociatedUserId(self::ASSOCIATED_USER_ID);
+
         foreach ($this->getTestAreas() as $area) {
             $member->canPresentForArea($area);
             $member->canCoordinateForArea($area);
             $member->canFacilitateForArea($area);
         }
-        
+
         return $member;
     }
 
-    public static function createValidMember(){
+    public static function createValidMember()
+    {
         $memberTestCase = new MemberTestCase();
         return $memberTestCase->getValidMember();
     }
-    
-    protected function getValidNewMember() {
-        $member = new Member();
-        $address = new Address();
-        $address->setLineOne(AddressTestCase::LINE_ONE)->setLineTwo(AddressTestCase::LINE_TWO)->setZip(AddressTestCase::ZIP)->setState(AddressTestCase::STATE)->setCity(AddressTestCase::CITY);
-        $member->setLegacyId(self::LEGACY_ID)->setFirstName(self::FIRST_NAME)->setLastName(self::LAST_NAME)->setNotes(self::NOTES)->setStatus(self::STATUS)->setType(self::TYPE)->setAddress($address)->setAssociatedUserId(self::ASSOCIATED_USER_ID);
-        
-        foreach ($this->getTestAreas() as $area) {
-            $member->canPresentForArea($area);
-            $member->canCoordinateForArea($area);
-            $member->canFacilitateForArea($area);
-        }
-        return $member;
-    }
-    protected function assertValidMember($member) {
+
+
+    protected function assertValidMember($member)
+    {
         $this->assertInstanceOf('STS\Domain\Member', $member);
         $expectedMember = $this->getValidMember();
         $expectedMember->setAddress($member->getAddress());
@@ -59,12 +70,38 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase {
         $this->assertTrue($member->isDeceased());
         $this->assertInstanceOf('STS\Domain\Location\Address', $member->getAddress());
     }
-    protected function getValidMemberDto() {
-        $memberDto = new MemberDto(self::ID, self::LEGACY_ID, self::FIRST_NAME, self::LAST_NAME, self::TYPE, self::NOTES, self::STATUS, AddressTestCase::LINE_ONE, AddressTestCase::LINE_TWO, AddressTestCase::CITY, AddressTestCase::STATE, AddressTestCase::ZIP, self::ASSOCIATED_USER_ID, $this->getValidPresentsForAreasArray() , $this->getValidFacilitatesForAreasArray() , $this->getValidCoordinatesForAreasArray() , $this->getValidCoordinatesForRegionsArray());
-        
+    protected function getValidMemberDto()
+    {
+        $memberDto = new MemberDto(
+            self::ID,
+            self::LEGACY_ID,
+            self::FIRST_NAME,
+            self::LAST_NAME,
+            self::TYPE,
+            self::NOTES,
+            self::STATUS,
+            AddressTestCase::LINE_ONE,
+            AddressTestCase::LINE_TWO,
+            AddressTestCase::CITY,
+            AddressTestCase::STATE,
+            AddressTestCase::ZIP,
+            self::ASSOCIATED_USER_ID,
+            $this->getValidPresentsForAreasArray(),
+            $this->getValidFacilitatesForAreasArray(),
+            $this->getValidCoordinatesForAreasArray(),
+            $this->getValidCoordinatesForRegionsArray(),
+            self::EMAIL,
+            self::DATE_TRAINED,
+            //diagnosis date
+            self::DATE_TRAINED,
+            'I',
+            array(array('number'=>'3015551234', 'type'=>'work'), array('number'=>'5551239999', 'type'=>'cell'))
+        );
+
         return $memberDto;
     }
-    protected function assertValidMemberDto($dto) {
+    protected function assertValidMemberDto($dto)
+    {
         $this->assertInstanceOf('STS\Core\Member\MemberDto', $dto);
         $this->assertTrue(is_string($dto->getId()));
         $this->assertEquals(self::ID, $dto->getId());
@@ -81,39 +118,56 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(AddressTestCase::STATE, $dto->getAddressState());
         $this->assertEquals(AddressTestCase::ZIP, $dto->getAddressZip());
         $this->assertEquals(self::ASSOCIATED_USER_ID, $dto->getAssociatedUserId());
-        $this->assertEquals($this->getValidPresentsForAreasArray() , $dto->getPresentsForAreas());
-        $this->assertEquals($this->getValidFacilitatesForAreasArray() , $dto->getFacilitatesForAreas());
-        $this->assertEquals($this->getValidCoordinatesForAreasArray() , $dto->getCoordinatesForAreas());
-        $this->assertEquals($this->getValidCoordinatesForRegionsArray() , $dto->getCoordinatesForRegions());
+        $this->assertEquals($this->getValidPresentsForAreasArray(), $dto->getPresentsForAreas());
+        $this->assertEquals($this->getValidFacilitatesForAreasArray(), $dto->getFacilitatesForAreas());
+        $this->assertEquals($this->getValidCoordinatesForAreasArray(), $dto->getCoordinatesForAreas());
+        $this->assertEquals($this->getValidCoordinatesForRegionsArray(), $dto->getCoordinatesForRegions());
+        $this->assertEquals(self::EMAIL, $dto->getEmail());
+        $this->assertEquals(self::DISPLAY_DATE_TRAINED, $dto->getDateTrained());
+        $this->assertEquals(self::DISPLAY_DATE_TRAINED, $dto->getDiagnosisDate());
+        $this->assertEquals('I', $dto->getDiagnosisStage);
+        $this->assertEquals(
+            array(
+                array(
+                    'number'=>'3015551234',
+                    'type'=>'work'),
+                array(
+                    'number'=>'5551239999',
+                    'type'=>'cell'
+                    )
+                ),
+            $dto->getPhoneNumbers
+        );
     }
-    protected function getValidPresentsForAreasArray() {
-        
+    protected function getValidPresentsForAreasArray()
+    {
         return array(
             '502d90100172cda7d649d465' => 'OH-Clayton',
             '502d90100172cda7d649d461' => 'OH-Dayton'
         );
     }
-    protected function getValidFacilitatesForAreasArray() {
-        
+    protected function getValidFacilitatesForAreasArray()
+    {
         return array(
             '502d90100172cda7d649d465' => 'OH-Clayton',
             '502d90100172cda7d649d461' => 'OH-Dayton'
         );
     }
-    protected function getValidCoordinatesForAreasArray() {
-        
+    protected function getValidCoordinatesForAreasArray()
+    {
         return array(
             '502d90100172cda7d649d465' => 'OH-Clayton',
             '502d90100172cda7d649d461' => 'OH-Dayton'
         );
     }
-    protected function getValidCoordinatesForRegionsArray() {
-        
+    protected function getValidCoordinatesForRegionsArray()
+    {
         return array(
             'Mid-West'
         );
     }
-    protected function getTestAreas() {
+    protected function getTestAreas()
+    {
         $areas = array();
         $area = new Area();
         $region = new Region();
@@ -125,7 +179,6 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase {
         $region->setName('Mid-West')->setLegacyId(12);
         $area->setId('502d90100172cda7d649d461')->setName('OH-Dayton')->setCity('Dayton')->setState('OH')->setRegion($region)->setLegacyId(69);
         $areas[] = $area;
-        
         return $areas;
     }
 }

@@ -1,6 +1,9 @@
 <?php
+namespace STS\Domain;
+
 use STS\TestUtilities\MemberTestCase;
-use STS\Domain\Member;
+use STS\Domain\Member\Diagnosis;
+use STS\Domain\Member\PhoneNumber;
 
 class MemberTest extends MemberTestCase
 {
@@ -9,10 +12,15 @@ class MemberTest extends MemberTestCase
      */
     public function getValidTypes()
     {
-        $this
-            ->assertEquals(array(
-                'TYPE_CAREGIVER' => 'Caregiver', 'TYPE_FAMILY_MEMBER' => 'Family Member', 'TYPE_SURVIVOR' => 'Survivor', 'TYPE_SYSTEM_USER'=>'System User'
-            ), Member::getAvailableTypes());
+        $this->assertEquals(
+            array(
+                'TYPE_CAREGIVER' => 'Caregiver',
+                'TYPE_FAMILY_MEMBER' => 'Family Member',
+                'TYPE_SURVIVOR' => 'Survivor',
+                'TYPE_SYSTEM_USER'=>'System User'
+            ),
+            Member::getAvailableTypes()
+        );
     }
 
     /**
@@ -20,10 +28,14 @@ class MemberTest extends MemberTestCase
      */
     public function getValidStatuses()
     {
-        $this
-            ->assertEquals(array(
-                'STATUS_ACTIVE' => 'Active', 'STATUS_INACTIVE' => 'Inactive', 'STATUS_DECEASED' => 'Deceased'
-            ), Member::getAvailableStatuses());
+        $this->assertEquals(
+            array(
+                'STATUS_ACTIVE' => 'Active',
+                'STATUS_INACTIVE' => 'Inactive',
+                'STATUS_DECEASED' => 'Deceased'
+            ),
+            Member::getAvailableStatuses()
+        );
     }
     /**
      * @test
@@ -97,5 +109,29 @@ class MemberTest extends MemberTestCase
         $member = $this->getValidMember();
         $areas = $member->getAllAssociatedAreas();
         $this->assertCount(2, $areas);
+    }
+
+    /**
+     * @test
+     */
+    public function validSetDiagnosis()
+    {
+        $member = $this->getValidMember();
+        $diagnosis = new Diagnosis(time(), 'I');
+        $member->setDiagnosis($diagnosis);
+        $this->assertInstanceOf('STS\Domain\Member\Diagnosis', $member->getDiagnosis());
+    }
+
+    /**
+     * @test
+     */
+    public function validAddPhoneNumbers()
+    {
+        $member = $this->getValidMember();
+        $member->addPhoneNumber(new PhoneNumber('1231234444', 'cell'));
+        $member->addPhoneNumber(new PhoneNumber('5551239999', 'work'));
+        $this->assertCount(2, $member->getPhoneNumbers());
+        $phoneNumbers = $member->getPhoneNumbers();
+        $this->assertInstanceOf('STS\Domain\Member\PhoneNumber', $phoneNumbers[0]);
     }
 }

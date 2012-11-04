@@ -1,6 +1,9 @@
 <?php
 namespace STS\Domain;
+
 use STS\Domain\EntityWithTypes;
+use STS\Domain\Member\Diagnosis;
+use STS\Domain\Member\PhoneNumber;
 
 class Member extends EntityWithTypes
 {
@@ -16,6 +19,7 @@ class Member extends EntityWithTypes
     private $legacyId;
     private $firstName;
     private $lastName;
+    private $email;
     private $presentsFor = array();
     private $facilitatesFor = array();
     private $coordinatesFor = array();
@@ -24,21 +28,71 @@ class Member extends EntityWithTypes
     private $address;
     private $associatedUserId = null;
     private $status;
+    private $dateTrained = null;
+    private $diagnosis = null;
+    private $phoneNumbers = array();
 
+    public function addPhoneNumber(PhoneNumber $phoneNumber)
+    {
+        $this->phoneNumbers[] = $phoneNumber;
+        return $this;
+    }
+
+    public function getPhoneNumbers()
+    {
+        return $this->phoneNumbers;
+    }
+
+    public function getDiagnosis()
+    {
+        return $this->diagnosis;
+    }
+
+    public function setDiagnosis(Diagnosis $diagnosis)
+    {
+        $this->diagnosis = $diagnosis;
+        return $this;
+    }
+
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    public function setEmail($email)
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+    public function getDateTrained()
+    {
+        return $this->dateTrained;
+    }
+
+    public function setDateTrained($dateTrained)
+    {
+        $this->dateTrained = $dateTrained;
+        return $this;
+    }
 
     public function toMongoArray()
     {
         $facilitatesFor = array();
-        foreach($this->facilitatesFor as $area){
+        foreach ($this->facilitatesFor as $area) {
             $facilitatesFor[] = array("_id" => new \MongoId($area->getId()));
         }
         $presentsFor= array();
-        foreach($this->presentsFor as $area){
+        foreach ($this->presentsFor as $area) {
             $presentsFor[] = array("_id" => new \MongoId($area->getId()));
         }
         $coordinatesFor = array();
-        foreach($this->coordinatesFor as $area){
+        foreach ($this->coordinatesFor as $area) {
             $coordinatesFor[] = array("_id" => new \MongoId($area->getId()));
+        }
+        $phoneNumbers = array();
+        foreach ($this->phoneNumbers as $phoneNumber) {
+            $phoneNumbers[] = array("number"=> $phoneNumber->getNumber(), "type"=>$phoneNumber->getType());
         }
         $array = array(
                 'id' => $this->id, 'fname' => $this->firstName, 'lname'=>$this->lastName, 'type' => $this->type, 'notes' => $this->notes,
@@ -51,12 +105,20 @@ class Member extends EntityWithTypes
                 ),
                 'facilitates_for' => $facilitatesFor,
                 'presents_for'=> $presentsFor,
-                'coordinates_for'=> $coordinatesFor
+                'coordinates_for'=> $coordinatesFor,
+                'email'=> $this->email,
+                'date_trained' => new \MongoDate(strtotime($this->dateTrained)),
+                'diagnosis' => array(
+                    'stage' => $this->diagnosis->getStage(),
+                    'date' => new \MongoDate(strtotime($this->diagnosis->getDate))
+                    ),
+                'phone_numbers' => $phoneNumbers
         );
         return $array;
     }
 
-    public function getStatus(){
+    public function getStatus()
+    {
         return $this->status;
     }
 
@@ -116,9 +178,9 @@ class Member extends EntityWithTypes
     }
     public function isDeceased()
     {
-        if($this->getStatus()==self::STATUS_DECEASED){
+        if ($this->getStatus()==self::STATUS_DECEASED) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -201,7 +263,8 @@ class Member extends EntityWithTypes
             }
         }
     }
-    private function getFullName(){
+    private function getFullName()
+    {
         return $this->firstName . ' '. $this->lastName;
     }
 }

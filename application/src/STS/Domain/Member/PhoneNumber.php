@@ -25,6 +25,12 @@ class PhoneNumber
         return $this->number;
     }
 
+    public function setNumber()
+    {
+        $this->number = $number;
+        return $this;
+    }
+
     public static function getAvailableTypes()
     {
         $reflected = new \ReflectionClass(get_called_class());

@@ -3,7 +3,6 @@ Namespace STS\Core\Member;
 
 class MemberDto
 {
-
     private $id;
     private $legacyId;
     private $firstName;
@@ -21,9 +20,15 @@ class MemberDto
     private $coordinatesForAreas;
     private $coordinatesForRegions;
     private $status;
+    private $email;
+    private $dateTrained;
+    private $diagnosisDate;
+    private $diagnosisStage;
+    private $phoneNumbers;
+
     public function __construct($id, $legacyId, $firstName, $lastName, $type, $notes, $status, $addressLineOne,
                     $addressLineTwo, $addressCity, $addressState, $addressZip, $associatedUserId, $presentsForAreas,
-                    $facilitatesForAreas, $coordinatesForAreas, $coordinatesForRegions)
+                    $facilitatesForAreas, $coordinatesForAreas, $coordinatesForRegions, $email, $dateTrained, $diagnosisDate, $diagnosiStage, $phoneNumbers)
     {
         $this->id = $id;
         $this->firstName = $firstName;
@@ -42,6 +47,12 @@ class MemberDto
         $this->facilitatesForAreas = $facilitatesForAreas;
         $this->coordinatesForAreas = $coordinatesForAreas;
         $this->coordinatesForRegions = $coordinatesForRegions;
+        $this->email = $email;
+        $this->dateTrained = $dateTrained;
+        $this->diagnosisDate = $diagnosisDate;
+        $this->diagnosisStage = $diagnosisStage;
+        $this->phoneNumbers = $phoneNumbers;
+
     }
     public function getCoordinatesForRegions()
     {
