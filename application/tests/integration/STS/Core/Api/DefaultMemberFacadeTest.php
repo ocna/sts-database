@@ -16,7 +16,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
         $this->assertValidMemberDto($members[0], 'The first returned member is different than expected!');
     }
     /**
-     * @test 
+     * @test
      */
     public function getValidMemberById()
     {

@@ -18,7 +18,8 @@ class AreaTestCase extends \PHPUnit_Framework_TestCase
             ->setCity(self::CITY)->setRegion($region);
         return $area;
     }
-    public static function createValidArea(){
+    public static function createValidArea()
+    {
         $areaTestCase = new AreaTestCase();
         return $areaTestCase->getValidArea();
     }

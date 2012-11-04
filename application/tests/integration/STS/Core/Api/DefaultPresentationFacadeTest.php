@@ -24,7 +24,7 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
         $this->assertCount(4, $presentations);
         $this->assertInstanceOf('STS\Core\Presentation\PresentationDto', $presentations[0]);
     }
-    
+
     /**
      * @test
      */
@@ -39,8 +39,8 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
         $enteredByUserId = 'muser';
         $participants = 20;
         $forms = 18;
-        $surveyId = '5035af240172cda7d649d477';        
-        
+        $surveyId = '5035af240172cda7d649d477';
+
         $facade = $this->loadFacadeInstance();
         $presentationId = $facade
             ->savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId);

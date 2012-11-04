@@ -15,31 +15,33 @@ class DefaultMemberFacadeTest extends MemberTestCase
     /**
      * @test
      */
-    public function validSaveNewMember(){
+    public function validSaveNewMember()
+    {
         $facade = new DefaultMemberFacade($this->getMockMemberRepoForSave());
         $presentsFor = array_keys($this->getValidPresentsForAreasArray());
         $facilitatesFor = array_keys($this->getValidFacilitatesForAreasArray());
         $coordinatesFor = array_keys($this->getValidCoordinatesForAreasArray());
-        $newMemberDto = $facade->saveMember(self::FIRST_NAME, self::LAST_NAME, self::TYPE, self::STATUS, self::NOTES, 
-        $presentsFor, $facilitatesFor, $coordinatesFor, self::ASSOCIATED_USER_ID, 
+        $newMemberDto = $facade->saveMember(self::FIRST_NAME, self::LAST_NAME, self::TYPE, self::STATUS, self::NOTES,
+        $presentsFor, $facilitatesFor, $coordinatesFor, self::ASSOCIATED_USER_ID,
         AddressTestCase::LINE_ONE, AddressTestCase::LINE_TWO, AddressTestCase::CITY, AddressTestCase::STATE,
                     AddressTestCase::ZIP);
 
         $this->assertValidMemberDto($newMemberDto);
     }
-    
+
 
     /**
      * @test
      */
-    public function validGetMemberStatuses(){
+    public function validGetMemberStatuses()
+    {
         $facade = new DefaultMemberFacade($this->getMockMemberRepository());
         $this
             ->assertEquals(array(
                 'STATUS_ACTIVE' => 'Active', 'STATUS_INACTIVE' => 'Inactive', 'STATUS_DECEASED' => 'Deceased'
             ), $facade->getMemberStatuses());
     }
-    
+
     /**
      * @test
      */
@@ -105,7 +107,8 @@ class DefaultMemberFacadeTest extends MemberTestCase
         return $memberRepository;
     }
 
-    private function getMockMemberRepoForSave(){
+    private function getMockMemberRepoForSave()
+    {
         $memberRepository = \Mockery::mock('STS\Core\Member\MongoMemberRepository');
         $memberRepository->shouldReceive('save')->withAnyArgs()->andReturn($this->getValidMember());
         $areas = $this->getTestAreas();

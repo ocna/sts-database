@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ *
  * @category sts
  * @package core
  * @subpackage api

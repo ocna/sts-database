@@ -22,7 +22,8 @@ class MongoUserRepository implements UserRepository
         return $this->mapData($userData);
     }
 
-    public function find($criteria){
+    public function find($criteria)
+    {
         $userData = $this->mongoDb->user->find($criteria);
         $users = array();
         if ($userData != null) {
@@ -33,7 +34,8 @@ class MongoUserRepository implements UserRepository
         return $users;
     }
 
-    public function save($user){
+    public function save($user)
+    {
          if (!$user instanceof User) {
             throw new \InvalidArgumentException('Instance of User expected.');
         }

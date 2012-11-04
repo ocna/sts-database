@@ -14,26 +14,28 @@ class DefaultUserFacadeTest extends UserTestCase
         $userDto = $facade->findUserById(self::BASIC_USER_NAME);
         $this->assertValidUserDto($userDto);
     }
-    
+
     /**
      * @test
      */
-    public function validLoadUserByEmail(){
+    public function validLoadUserByEmail()
+    {
         $facade = $this->loadFacadeInstance();
         $userDto = $facade->findUserByEmail(self::BASIC_USER_EMAIL);
         $this->assertValidUserDto($userDto);
     }
-    
+
     /**
      * @test
      */
-    public function getEmptyArrayForNonExistantEmail(){
+    public function getEmptyArrayForNonExistantEmail()
+    {
         $facade = $this->loadFacadeInstance();
         $userDto = $facade->findUserByEmail(self::NEW_USER_EMAIL);
         $this->assertEmpty($userDto);
         $this->assertTrue(is_array($userDto));
     }
-    
+
     /**
      * @test
      */

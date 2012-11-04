@@ -13,7 +13,8 @@ class RegionTestCase extends \PHPUnit_Framework_TestCase
         return $region;
     }
 
-    public static function createValidRegion(){
+    public static function createValidRegion()
+    {
         $regionTestCase = new RegionTestCase();
         return $regionTestCase->getValidRegion();
     }

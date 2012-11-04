@@ -32,7 +32,7 @@ class DefaultSchoolFacadeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $dto->getId());
     }
     /**
-     * @test 
+     * @test
      */
     public function getCorrectTypes()
     {

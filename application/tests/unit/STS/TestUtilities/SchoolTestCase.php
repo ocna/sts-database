@@ -23,7 +23,8 @@ class SchoolTestCase extends \PHPUnit_Framework_TestCase
         return $school;
     }
 
-    public static function createValidSchool(){
+    public static function createValidSchool()
+    {
         $schoolTestCase = new SchoolTestCase();
         return $schoolTestCase->getValidSchool();
     }
@@ -37,7 +38,7 @@ class SchoolTestCase extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('STS\Domain\Location\Area', $school->getArea());
         $this->assertInstanceOf('STS\Domain\Location\Address', $school->getAddress());
     }
-    
+
     protected function getValidSchoolDto()
     {
         $dto = new SchoolDto(self::ID, self::LEGACY_ID, self::NAME, self::TYPE, self::NOTES, RegionTestCase::NAME,

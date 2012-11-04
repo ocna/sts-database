@@ -47,7 +47,8 @@ class DefaultAuthFacade implements AuthFacade
         return new DefaultAuthFacade($userRepository);
     }
 
-    public function generateTemporaryPassword(){
+    public function generateTemporaryPassword()
+    {
         return substr(md5(uniqid().time()), 0, 8);
     }
 }

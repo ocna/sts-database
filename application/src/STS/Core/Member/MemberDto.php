@@ -122,7 +122,8 @@ class MemberDto
     {
         return $this->status == 'Deceased';
     }
-    public function getStatus(){
+    public function getStatus()
+    {
         return $this->status;
     }
 }
