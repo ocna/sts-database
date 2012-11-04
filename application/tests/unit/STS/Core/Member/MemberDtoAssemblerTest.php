@@ -1,4 +1,7 @@
 <?php
+
+namespace STS\Core\Member;
+
 use STS\Domain\Member;
 use STS\TestUtilities\MemberTestCase;
 use STS\Core\Member\MemberDtoAssembler;
@@ -13,10 +16,6 @@ class MemberDtoAssemblerTest extends MemberTestCase
     public function getValidSchoolDTOFromSchoolDomainObject()
     {
         $member = $this->getValidMember();
-        $address = new Address();
-        $address->setLineOne(AddressTestCase::LINE_ONE)->setLineTwo(AddressTestCase::LINE_TWO)
-            ->setZip(AddressTestCase::ZIP)->setState(AddressTestCase::STATE)->setCity(AddressTestCase::CITY);
-        $member->setAddress($address);
         $dto = MemberDtoAssembler::toDTO($member);
         $this->assertValidMemberDto($dto);
     }

@@ -5,7 +5,7 @@ use STS\Domain\School\Specification\MemberSchoolSpecification;
 
 class Presentation extends EntityWithTypes
 {
-    
+
     const TYPE_MED = 'MED';
     const TYPE_PA = 'PA';
     const TYPE_NP = 'NP';
@@ -14,7 +14,7 @@ class Presentation extends EntityWithTypes
     const TYPE_RES_INT = 'RES INT';
     const TYPE_OTHER = 'OTHER';
 
-    
+
     private $date;
     private $notes;
     private $numberOfParticipants;
@@ -47,7 +47,7 @@ class Presentation extends EntityWithTypes
         $this->enteredByUserId = $enteredByUserId;
         return $this;
     }
-    
+
     public function getDate()
     {
         return $this->date;
@@ -111,8 +111,9 @@ class Presentation extends EntityWithTypes
         $this->survey = $survey;
         return $this;
     }
-    
-    public function isAccessableByMemberUser($member, $user){
+
+    public function isAccessableByMemberUser($member, $user)
+    {
         if($user->getRole() == 'admin'){
             return true;
         }

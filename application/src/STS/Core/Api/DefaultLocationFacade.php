@@ -56,7 +56,8 @@ class DefaultLocationFacade implements LocationFacade
         return $returnData;
     }
 
-    public function getAreasForRegions($regions){
+    public function getAreasForRegions($regions)
+    {
         $query = array('region.name'=>array('$in'=> $regions));
         $areas = $this->mongoDb->area->find($query);
         $returnData = array();
@@ -66,7 +67,7 @@ class DefaultLocationFacade implements LocationFacade
         }
         return $returnData;
     }
-    
+
     public function getAllRegions()
     {
         $regions = $this->mongoDb->area->distinct('region');

@@ -17,7 +17,8 @@ class DefaultUserFacadeTest extends UserTestCase
     /**
      * @test
      */
-    public function validLoadUserByEmail(){
+    public function validLoadUserByEmail()
+    {
         $facade = new DefaultUserFacade($this->getMockUserRepository());
         $userDto = $facade->findUserByEmail(self::BASIC_USER_EMAIL);
         $this->assertValidUserDto($userDto);
@@ -26,16 +27,17 @@ class DefaultUserFacadeTest extends UserTestCase
     /**
      * @test
      */
-    public function getEmptyArrayForNonExistantEmail(){
+    public function getEmptyArrayForNonExistantEmail()
+    {
         $facade = new DefaultUserFacade($this->getMockUserRepository());
         $userDto = $facade->findUserByEmail(self::NEW_USER_EMAIL);
         $this->assertEmpty($userDto);
         $this->assertTrue(is_array($userDto));
     }
-    
-    
+
+
     /**
-     * @test 
+     * @test
      */
     public function validCreateObject()
     {

@@ -22,11 +22,12 @@ class SchoolTest extends SchoolTestCase
                 'TYPE_SCHOOL' => 'School', 'TYPE_HOSPITAL' => 'Hospital'
             ), School::getAvailableTypes());
     }
-    
+
     /**
      * @test
      */
-    public function confirmSanitiezedName(){
+    public function confirmSanitiezedName()
+    {
         $school = $this->getValidSchool();
 
         $bad = ' Name with   spaces  and leading    trailing space ';
@@ -34,7 +35,7 @@ class SchoolTest extends SchoolTestCase
 
         $this->assertEquals($good, $school->getName($school->setName($bad)));
     }
-    
+
 
 
 }

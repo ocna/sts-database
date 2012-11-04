@@ -49,7 +49,7 @@ class PresentationTest extends PresentationTestCase
         $presentation = $this->getValidObject();
         $this->assertTrue($presentation->isAccessableByMemberUser($member, $user));
     }
-    
+
     /**
      * @test
      */
@@ -73,5 +73,5 @@ class PresentationTest extends PresentationTestCase
         $presentation = $this->getValidObject();
         $this->assertFalse($presentation->isAccessableByMemberUser($member, $user));
     }
-    
+
 }

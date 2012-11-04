@@ -10,8 +10,8 @@ path=${BASH_REMATCH[1]}
 
 namespace=`echo $path | sed 's/\//\\\/g'`
 
-classText="<?php\n\nnamespace $namespace;\nclass ${class}\n{\n}";
-testText="<?php\n\nnamespace $namespace;\n\nuse ${namespace}\\${class};\n\nclass ${class}Test extends \PHPUnit_Framework_TestCase{\n}";
+classText="<?php\nnamespace $namespace;\nclass ${class}\n{\n}";
+testText="<?php\nnamespace $namespace;\n\nuse ${namespace}\\${class};\n\nclass ${class}Test extends \PHPUnit_Framework_TestCase\n{\n}";
 
 mkdir -p "$src$path";
 classFile="$src$path/$class.php"

@@ -23,7 +23,8 @@ class DefaultUserFacade implements UserFacade
         }
     }
 
-    public function findUserByEmail($email){
+    public function findUserByEmail($email)
+    {
         $users = $this->userRepository->find(array('email'=>$email));
         if(empty($users)){
             return array();
@@ -32,7 +33,8 @@ class DefaultUserFacade implements UserFacade
         }
     }
 
-    public function createUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId){
+    public function createUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId)
+    {
         $user = new User();
         $user->setId($username)->setFirstName($firstName)->setLastName($lastName)->setEmail($email)->setRole($role)->setAssociatedMemberId($associatedMemberId)->initializePassword($password);
         $newUser = $this->userRepository->save($user);

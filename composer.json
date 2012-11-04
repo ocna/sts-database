@@ -23,7 +23,7 @@
    },
    "autoload":{
       "psr-0":{
-         "STS":["application/src","application/tests/unit"]
+         "STS":["application/src","application/tests/unit","application/tests/integration"]
       }
    }
 }

@@ -58,7 +58,8 @@ class Admin_MemberController extends SecureBaseController {
         $this->view->layout()->pageHeader = $this->view->partial('partials/page-header.phtml', $parameters);
         $this->view->member = $member;
     }
-    public function newAction() {
+    public function newAction()
+    {
         $this->view->form = $this->getForm();
         $request = $this->getRequest();
         $form = $this->getForm();
@@ -67,20 +68,29 @@ class Admin_MemberController extends SecureBaseController {
             $validations = array();
             $validations[] = $form->getElement('firstName')->isValid($postData['firstName']);
             $validations[] = $form->getElement('lastName')->isValid($postData['lastName']);
+            $validations[] = $form->getElement('systemUserEmail')->isValid($postData['systemUserEmail']);
             $validations[] = $form->getElement('memberType')->isValid($postData['memberType']);
             $validations[] = $form->getElement('role')->isValid($postData['role']);
             $validations[] = $form->getElement('memberStatus')->isValid($postData['memberStatus']);
+            $validations[] = $form->getElement('dateTrained')->isValid($postData['dateTrained']);
+
+            $validations[] = $form->getElement('workPhone')->isValid($postData['workPhone']);
+            $validations[] = $form->getElement('cellPhone')->isValid($postData['cellPhone']);
+            $validations[] = $form->getElement('homePhone')->isValid($postData['homePhone']);
+
             $validations[] = $form->getElement('addressLineOne')->isValid($postData['addressLineOne']);
             $validations[] = $form->getElement('addressLineTwo')->isValid($postData['addressLineTwo']);
             $validations[] = $form->getElement('city')->isValid($postData['city']);
             $validations[] = $form->getElement('state')->isValid($postData['state']);
             $validations[] = $form->getElement('zip')->isValid($postData['zip']);
 
+            $validations[] = $form->getElement('diagnosisDate')->isValid($postData['diagnosisDate']);
+            $validations[] = $form->getElement('diagnosisStage')->isValid($postData['diagnosisStage']);
+
             if ($postData['memberStatus'] == 'STATUS_ACTIVE') {
                 //if member has been marked active, validate any relevant system user information
                 if ($postData['role'] != '0') {
                     //if role is not member, validate that a username and email has been entered and that they are unique
-                    $validations[] = $form->getElement('systemUserEmail')->isValid($postData['systemUserEmail']);
                     $validations[] = $form->getElement('systemUsername')->isValid($postData['systemUsername']);
                     $validations[] = $form->getElement('tempPassword')->isValid($postData['tempPassword']);
                     $validations[] = $form->getElement('tempPasswordConfirm')->isValid($postData['tempPasswordConfirm']);
@@ -209,8 +219,27 @@ class Admin_MemberController extends SecureBaseController {
             $coordinatesFor = array();
             $userId = null;
         }
-        
-        return $this->memberFacade->saveMember($data['firstName'], $data['lastName'], Member::getAvailableType($data['memberType']) , Member::getAvailableStatus($data['memberStatus']) , $data['notes'], $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $data['addressLineOne'], $data['addressLineTwo'], $data['city'], $data['state'], $data['zip']);
+
+        return $this->memberFacade->saveMember(
+            $data['firstName'],
+            $data['lastName'],
+            Member::getAvailableType($data['memberType']),
+            Member::getAvailableStatus($data['memberStatus']),
+            $data['notes'],
+            $presentsFor,
+            $facilitatesFor,
+            $coordinatesFor,
+            $userId,
+            $data['addressLineOne'],
+            $data['addressLineTwo'],
+            $data['city'],
+            $data['state'],
+            $data['zip'],
+            $data['systemUserEmail'],
+            $data['dateTrained'],
+            array('date'=>$data['diagnosisDate'], 'stage'=>$data['diagnosisStage']),
+            array('work' => $data['workPhone'], 'cell'=> $data['cellPhone'], 'home'=>$data['homePhone'])
+        );
     }
     private function getMembersArray() {
         $memberData = array();
@@ -288,6 +317,10 @@ class Admin_MemberController extends SecureBaseController {
         return $roleClass;
     }
     private function getForm() {
+        $diagnosisStagesArray = array_merge(array(
+            ''
+        ), $this->memberFacade->getDiagnosisStages());
+
         $statesArray = array_merge(array(
             ''
         ) , $this->locationFacade->getStates());
@@ -302,7 +335,9 @@ class Admin_MemberController extends SecureBaseController {
             'states' => $statesArray,
             'roles' => $rolesArray,
             'memberTypes' => $memberTypesArray,
-            'memberStatuses' => $memberStatusesArray
+            'memberStatuses' => $memberStatusesArray,
+            'diagnosisStages' => $diagnosisStagesArray,
+            'phoneNumberTypes' => $this->memberFacade->getPhoneNumberTypes()
         ));
         
         return $form;

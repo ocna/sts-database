@@ -4,11 +4,13 @@ use STS\Domain\Survey\Response\PairResponse;
 use STS\Domain\Survey\Response\SingleResponse;
 use STS\Domain\Survey\Question\MultipleChoice;
 
-class MultipleAnswerTest extends PHPUnit_Framework_TestCase {
+class MultipleAnswerTest extends PHPUnit_Framework_TestCase
+{
     /**
      * @test
      */
-    public function createValidObject() {
+    public function createValidObject()
+    {
         $question = $this->getQuestionObject();
         $this->assertEquals("Choice 2", $question->getChoice(2));
         $this->assertNull($question->getChoice(4));
@@ -16,7 +18,8 @@ class MultipleAnswerTest extends PHPUnit_Framework_TestCase {
     /**
      * @test
      */
-    public function addAnswerPairsForChoices() {
+    public function addAnswerPairsForChoices()
+    {
         $question = $this->getQuestionObject();
         $response = new PairResponse(4, 10);
         $question->addResponse(2, $response);
@@ -29,7 +32,8 @@ class MultipleAnswerTest extends PHPUnit_Framework_TestCase {
      * @expectedException InvalidArgumentException
      * @expectedExceptionMessage Choice does not exist.
      */
-    public function throwExceptionForGivingAResponseToNonExistantChoice() {
+    public function throwExceptionForGivingAResponseToNonExistantChoice()
+    {
         $question = $this->getQuestionObject();
         $response = new PairResponse(4, 10);
         $question->addResponse(4, $response);
@@ -39,7 +43,8 @@ class MultipleAnswerTest extends PHPUnit_Framework_TestCase {
      * @expectedException InvalidArgumentException
      * @expectedExceptionMessage Question expects a response single.
      */
-    public function throwExceptionPassingResponsePairToSingleQuestion() {
+    public function throwExceptionPassingResponsePairToSingleQuestion()
+    {
         $question = $this->getQuestionObject();
         $response = new PairResponse(4, 10);
         $question->isAsked(Question::AFTER);
@@ -50,12 +55,14 @@ class MultipleAnswerTest extends PHPUnit_Framework_TestCase {
      * @expectedException InvalidArgumentException
      * @expectedExceptionMessage Question expects a response pair.
      */
-    public function throwExceptionPassingResponseSingleToPairQuestion() {
+    public function throwExceptionPassingResponseSingleToPairQuestion()
+    {
         $question = $this->getQuestionObject();
         $response = new SingleResponse(4);
         $question->addResponse(4, $response);
     }
-    private function getQuestionObject() {
+    private function getQuestionObject()
+    {
         $question = new MultipleChoice();
         $question->addChoice(1, "Choice 1")
                  ->addChoice(2, "Choice 2")

@@ -36,6 +36,14 @@
 		</exec>
 	</target>
 
+	<target name="phpcs:fix" description="Fix all coding standard violations using php-cs-fixer">
+        <exec dir="${basedir}" executable="php-cs-fixer">
+            <arg value="--level=psr2" />
+            <arg value="fix" />
+            <arg path="application/" />
+        </exec>
+    </target>
+
 	<target name="phpunit:integration" depends="configure" description="Run intregration tests with PHPUnit">
 		<exec dir="${basedir}/application/tests/integration/" executable="${basedir}/bin/phpunit" failonerror="true">
 			<arg value="--testdox-html" />

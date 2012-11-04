@@ -14,8 +14,8 @@ interface AuthFacade
      * an exception
      * @api
      *
-     * @param string $email            
-     * @param string $password            
+     * @param string $email
+     * @param string $password
      * @return \STS\Core\User\UserDTO
      * @throws \STS\Core\Api\ApiException
      * @throws \InvalidArgumentException
