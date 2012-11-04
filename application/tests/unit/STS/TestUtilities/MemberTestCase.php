@@ -7,6 +7,8 @@ use STS\Core\Member\MemberDto;
 use STS\TestUtilities\Location\AddressTestCase;
 use STS\Domain\Location\Region;
 use STS\Domain\Location\Address;
+use STS\Domain\Member\Diagnosis;
+use STS\Domain\Member\PhoneNumber;
 
 class MemberTestCase extends \PHPUnit_Framework_TestCase
 {
@@ -19,8 +21,8 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
     const NOTES = 'This is an interesting note!';
     const STATUS = 'Deceased';
     const ASSOCIATED_USER_ID = 'muser';
-    const DATE_TRAINED = '2012-05-10 11:55:23';
-    const DISPLAY_DATE_TRAINED = '5/10/2012';
+    const DATE_TRAINED = '2012-08-09 04:00:00';
+    const DISPLAY_DATE_TRAINED = '8/9/2012';
 
     protected function getValidMember()
     {
@@ -31,6 +33,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
                 ->setZip(AddressTestCase::ZIP)
                 ->setState(AddressTestCase::STATE)
                 ->setCity(AddressTestCase::CITY);
+        $diagnosis = new Diagnosis(self::DATE_TRAINED, 'I');
         $member->setId(self::ID)
                ->setLegacyId(self::LEGACY_ID)
                ->setFirstName(self::FIRST_NAME)
@@ -41,7 +44,12 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
                ->setType(self::TYPE)
                ->setDateTrained(self::DATE_TRAINED)
                ->setAddress($address)
-               ->setAssociatedUserId(self::ASSOCIATED_USER_ID);
+               ->setAssociatedUserId(self::ASSOCIATED_USER_ID)
+               ->setDiagnosis($diagnosis);
+
+        foreach ($this->getValidPhoneNumbersArray() as $phoneNumber) {
+            $member->addPhoneNumber(new PhoneNumber($phoneNumber['number'], $phoneNumber['type']));
+        }
 
         foreach ($this->getTestAreas() as $area) {
             $member->canPresentForArea($area);
@@ -126,18 +134,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::DISPLAY_DATE_TRAINED, $dto->getDateTrained());
         $this->assertEquals(self::DISPLAY_DATE_TRAINED, $dto->getDiagnosisDate());
         $this->assertEquals('I', $dto->getDiagnosisStage());
-        $this->assertEquals(
-            array(
-                array(
-                    'number'=>'3015551234',
-                    'type'=>'work'),
-                array(
-                    'number'=>'5551239999',
-                    'type'=>'cell'
-                    )
-                ),
-            $dto->getPhoneNumbers()
-        );
+        $this->assertEquals($this->getValidPhoneNumbersArray(), $dto->getPhoneNumbers());
     }
     protected function getValidPresentsForAreasArray()
     {
@@ -193,5 +190,32 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
         $area->setId('502d90100172cda7d649d461')->setName('OH-Dayton')->setCity('Dayton')->setState('OH')->setRegion($region)->setLegacyId(69);
         $areas[] = $area;
         return $areas;
+    }
+
+    protected function getTestAreaData()
+    {
+        $data = array(
+            array(
+                '_id'=> new \MongoId('502d90100172cda7d649d465'),
+                'city'=>'Clayton',
+                'legacyid'=>69,
+                'name'=>'OH-Clayton',
+                'state'=>'OH',
+                'region'=> array(
+                    'legacyid'=>12,
+                    'name'=>'Mid-West')
+                ),
+            array(
+                '_id'=> new \MongoId('502d90100172cda7d649d461'),
+                'city'=>'Dayton',
+                'legacyid'=>69,
+                'name'=>'OH-Dayton',
+                'state'=>'OH',
+                'region'=> array(
+                    'legacyid'=>12,
+                    'name'=>'Mid-West')
+                )
+            );
+        return $data;
     }
 }

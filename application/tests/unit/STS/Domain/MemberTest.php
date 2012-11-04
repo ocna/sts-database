@@ -128,8 +128,6 @@ class MemberTest extends MemberTestCase
     public function validAddPhoneNumbers()
     {
         $member = $this->getValidMember();
-        $member->addPhoneNumber(new PhoneNumber('1231234444', 'cell'));
-        $member->addPhoneNumber(new PhoneNumber('5551239999', 'work'));
         $this->assertCount(2, $member->getPhoneNumbers());
         $phoneNumbers = $member->getPhoneNumbers();
         $this->assertInstanceOf('STS\Domain\Member\PhoneNumber', $phoneNumbers[0]);

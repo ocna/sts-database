@@ -1,5 +1,6 @@
 <?php
-Namespace STS\Core\Member;
+
+namespace STS\Core\Member;
 
 class MemberDto
 {

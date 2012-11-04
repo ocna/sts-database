@@ -47,6 +47,7 @@ class MemberDtoAssembler
         foreach ($phoneNumbers as $phoneNumber) {
             $phoneNumbersArray[] = array('number'=>$phoneNumber->getNumber(), 'type'=>$phoneNumber->getType());
         }
+        return $phoneNumbersArray;
     }
     private static function getAreaNamesArray($areas)
     {

@@ -13,7 +13,7 @@ class MongoUserRepository implements UserRepository
     }
     public function load($id)
     {
-        $userData = $this->mongoDb->user->findOne(array(
+        $userData = $this->mongoDb->selectCollection('user')->findOne(array(
                 "_id" => $id
             ));
         if ($userData == null) {
@@ -24,7 +24,7 @@ class MongoUserRepository implements UserRepository
 
     public function find($criteria)
     {
-        $userData = $this->mongoDb->user->find($criteria);
+        $userData = $this->mongoDb->selectCollection('user')->find($criteria);
         $users = array();
         if ($userData != null) {
             foreach ($userData as $data) {
@@ -41,7 +41,7 @@ class MongoUserRepository implements UserRepository
         }
         $array = $user->toMongoArray();
         $array['dateCreated'] = new \MongoDate();
-        $results = $this->mongoDb->user
+        $results = $this->mongoDb->selectCollection('user')
             ->update(array(
                 '_id' => $array['_id']
             ), $array, array(

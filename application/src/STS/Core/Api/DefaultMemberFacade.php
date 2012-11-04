@@ -6,15 +6,18 @@ use STS\Domain\Member\Specification\MemberByMemberAreaSpecification;
 use STS\Core\Member\MemberDto;
 use STS\Core\Api\MemberFacade;
 use STS\Core\Member\MongoMemberRepository;
+use STS\Core\Location\MongoAreaRepository;
 use STS\Domain\Member;
 use STS\Domain\Location\Address;
 
 class DefaultMemberFacade implements MemberFacade
 {
     private $memberRepository;
-    public function __construct($memberRepository)
+    private $areaRepository;
+    public function __construct($memberRepository, $areaRepository)
     {
         $this->memberRepository = $memberRepository;
+        $this->areaRepository = $areaRepository;
     }
     public function getMemberById($id)
     {
@@ -93,8 +96,8 @@ class DefaultMemberFacade implements MemberFacade
         $mongo = new \Mongo('mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/' . $mongoConfig->dbname);
         $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $memberRepository = new MongoMemberRepository($mongoDb);
-
-        return new DefaultMemberFacade($memberRepository);
+        $areaRepository = new MongoAreaRepository($mongoDb);
+        return new DefaultMemberFacade($memberRepository, $areaRepository);
     }
     private function getArrayOfDtos($array)
     {
@@ -111,7 +114,7 @@ class DefaultMemberFacade implements MemberFacade
     {
         $areas = array();
         foreach ($ids as $id){
-            $areas[] = $this->memberRepository->loadAreaById($id);
+            $areas[] = $this->areaRepository->load($id);
         }
         return $areas;
     }
