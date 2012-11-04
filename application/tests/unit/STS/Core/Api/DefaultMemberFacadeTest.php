@@ -21,10 +21,29 @@ class DefaultMemberFacadeTest extends MemberTestCase
         $presentsFor = array_keys($this->getValidPresentsForAreasArray());
         $facilitatesFor = array_keys($this->getValidFacilitatesForAreasArray());
         $coordinatesFor = array_keys($this->getValidCoordinatesForAreasArray());
-        $newMemberDto = $facade->saveMember(self::FIRST_NAME, self::LAST_NAME, self::TYPE, self::STATUS, self::NOTES,
-        $presentsFor, $facilitatesFor, $coordinatesFor, self::ASSOCIATED_USER_ID,
-        AddressTestCase::LINE_ONE, AddressTestCase::LINE_TWO, AddressTestCase::CITY, AddressTestCase::STATE,
-                    AddressTestCase::ZIP);
+        $newMemberDto = $facade->saveMember(
+            self::FIRST_NAME,
+            self::LAST_NAME,
+            self::TYPE,
+            self::STATUS,
+            self::NOTES,
+            $presentsFor,
+            $facilitatesFor,
+            $coordinatesFor,
+            self::ASSOCIATED_USER_ID,
+            AddressTestCase::LINE_ONE,
+            AddressTestCase::LINE_TWO,
+            AddressTestCase::CITY,
+            AddressTestCase::STATE,
+            AddressTestCase::ZIP,
+            self::EMAIL,
+            self::DISPLAY_DATE_TRAINED,
+            array('date'=>self::DISPLAY_DATE_TRAINED, 'stage'=>'I'),
+            array(
+                'work'=>'3015551234',
+                'cell'=>'5551239999'
+            )
+        );
 
         $this->assertValidMemberDto($newMemberDto);
     }
@@ -48,6 +67,45 @@ class DefaultMemberFacadeTest extends MemberTestCase
                 'STATUS_ACTIVE' => 'Active', 'STATUS_INACTIVE' => 'Inactive', 'STATUS_DECEASED' => 'Deceased'
             ), $facade->getMemberStatuses());
     }
+
+    /**
+     * @test
+     */
+    public function validGetDiagnosisStages()
+    {
+        $facade = new DefaultMemberFacade($this->getMockMemberRepository(), $this->getMockAreaRepository());
+        $this->assertEquals(
+            array(
+            'I'=>'I',
+            'IA'=>'IA',
+            'IB'=>'IB',
+            'IC'=>'IC',
+            'II'=>'II',
+            'IIA'=>'IIA',
+            'IIB'=>'IIB',
+            'IIC'=>'IIC',
+            'III'=>'III',
+            'IIIA'=>'IIIA',
+            'IIIB'=>'IIIB',
+            'IIIC'=>'IIIC',
+            'IV'=>'IV'
+        ), $facade->getDiagnosisStages());
+    }
+
+    /**
+     * @test
+     */
+    public function validGetPhoneNumberTypes()
+    {
+        $facade = new DefaultMemberFacade($this->getMockMemberRepository(), $this->getMockAreaRepository());
+        $this->assertEquals(array(
+            'TYPE_HOME' => 'home',
+            'TYPE_CELL' => 'cell',
+            'TYPE_WORK'=> 'work'
+            ), $facade->getPhoneNumberTypes());
+    }
+    
+    
 
     /**
      * @test

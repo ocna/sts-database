@@ -108,13 +108,17 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
 
         return $memberDto;
     }
-    protected function assertValidMemberDto($dto)
+    protected function assertValidMemberDto($dto, $skipCheck = array())
     {
         $this->assertInstanceOf('STS\Core\Member\MemberDto', $dto);
         $this->assertTrue(is_string($dto->getId()));
-        $this->assertEquals(self::ID, $dto->getId());
+        if (!in_array('id', $skipCheck)) {
+            $this->assertEquals(self::ID, $dto->getId());
+        }
         $this->assertEquals(self::LEGACY_ID, $dto->getLegacyId());
-        $this->assertEquals(self::FIRST_NAME, $dto->getFirstName());
+        if (!in_array('firstName', $skipCheck)) {
+            $this->assertEquals(self::FIRST_NAME, $dto->getFirstName());
+        }
         $this->assertEquals(self::LAST_NAME, $dto->getLastName());
         $this->assertEquals(self::TYPE, $dto->getType());
         $this->assertEquals(self::NOTES, $dto->getNotes());
@@ -125,7 +129,9 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(AddressTestCase::CITY, $dto->getAddressCity());
         $this->assertEquals(AddressTestCase::STATE, $dto->getAddressState());
         $this->assertEquals(AddressTestCase::ZIP, $dto->getAddressZip());
-        $this->assertEquals(self::ASSOCIATED_USER_ID, $dto->getAssociatedUserId());
+        if (!in_array('associatedUserId', $skipCheck)) {
+            $this->assertEquals(self::ASSOCIATED_USER_ID, $dto->getAssociatedUserId());
+        }
         $this->assertEquals($this->getValidPresentsForAreasArray(), $dto->getPresentsForAreas());
         $this->assertEquals($this->getValidFacilitatesForAreasArray(), $dto->getFacilitatesForAreas());
         $this->assertEquals($this->getValidCoordinatesForAreasArray(), $dto->getCoordinatesForAreas());

@@ -1,5 +1,6 @@
 <?php
 namespace STS\Core\Api;
+
 use STS\Core\Member\MemberDtoAssembler;
 use STS\Domain\School\Specification\MemberSchoolSpecification;
 use STS\Domain\Member\Specification\MemberByMemberAreaSpecification;
@@ -9,6 +10,8 @@ use STS\Core\Member\MongoMemberRepository;
 use STS\Core\Location\MongoAreaRepository;
 use STS\Domain\Member;
 use STS\Domain\Location\Address;
+use STS\Domain\Member\Diagnosis;
+use STS\Domain\Member\PhoneNumber;
 
 class DefaultMemberFacade implements MemberFacade
 {
@@ -39,6 +42,14 @@ class DefaultMemberFacade implements MemberFacade
     {
         return Member::getAvailableStatuses();
     }
+    public function getDiagnosisStages()
+    {
+        return Diagnosis::getAvailableStages();
+    }
+    public function getPhoneNumberTypes()
+    {
+        return PhoneNumber::getAvailableTypes();
+    }
     public function searchForMembersByNameWithSpec($searchString, $spec)
     {
         $foundMembers = $this->memberRepository->searchByName($searchString);
@@ -68,12 +79,17 @@ class DefaultMemberFacade implements MemberFacade
 
         return new MemberSchoolSpecification($member);
     }
-    public function saveMember($firstName, $lastName, $type, $status, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip)
+    public function saveMember($firstName, $lastName, $type, $status, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers)
     {
+        $diagnosis = new Diagnosis($diagnosisInfo['date'], $diagnosisInfo['stage']);
         $address = new Address();
         $address->setLineOne($addressLineOne)->setLineTwo($addressLineTwo)->setCity($city)->setState($state)->setZip($zip);
         $member = new Member();
-        $member->setFirstName($firstName)->setLastName($lastName)->setType($type)->setStatus($status)->setNotes($notes)->setAddress($address)->setAssociatedUserId($userId);
+        $member->setFirstName($firstName)->setLastName($lastName)
+               ->setType($type)->setStatus($status)->setNotes($notes)
+               ->setAddress($address)->setAssociatedUserId($userId)
+               ->setEmail($email)->setDateTrained($dateTrained)
+               ->setDiagnosis($diagnosis);
 
         foreach ($this->getAreasForIds($presentsFor) as $area) {
             $member->canPresentForArea($area);
@@ -85,6 +101,10 @@ class DefaultMemberFacade implements MemberFacade
 
         foreach ($this->getAreasForIds($coordinatesFor) as $area) {
             $member->canCoordinateForArea($area);
+        }
+
+        foreach ($phoneNumbers as $type => $number) {
+            $member->addPhoneNumber(new PhoneNumber($number, $type));
         }
         $updatedMember = $this->memberRepository->save($member);
         return MemberDtoAssembler::toDTO($updatedMember);

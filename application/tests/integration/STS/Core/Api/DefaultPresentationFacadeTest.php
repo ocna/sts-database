@@ -1,10 +1,15 @@
-m<?php
+<?php
+namespace STS\Core\Api;
+
 use STS\TestUtilities\PresentationTestCase;
 use STS\Core;
 use STS\Core\Api\DefaultPresentationFacade;
+use STS\TestUtilities\MongoUtility;
 
 class DefaultPresentationFacadeTest extends PresentationTestCase
 {
+    protected $cleanUp = array();
+
     /**
      * @test
      */
@@ -30,26 +35,36 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
      */
     public function savePresentation()
     {
-        $this->markTestSkipped();
         $schoolId='502314eec6464712c1e7060e';
         $typeCode='TYPE_NP';
         $date='08/09/2012';
         $notes ='These are some notes!';
         $memberIds = array('50318d42066b83068e5d9452');
-        $enteredByUserId = 'muser';
+        $enteredByUserId = 'auser';
         $participants = 20;
         $forms = 18;
         $surveyId = '5035af240172cda7d649d477';
 
         $facade = $this->loadFacadeInstance();
-        $presentationId = $facade
-            ->savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId);
-        $this->assertNotNull($presentationId);
+        $presentationDto = $facade->savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId);
+        $this->assertNotNull($presentationDto->getId());
+        $this->cleanUp[] = array('collection'=>'presentation','_id'=> new \MongoId($presentationDto->getId()));
     }
     private function loadFacadeInstance()
     {
         $core = Core::getDefaultInstance();
         $facade = $core->load('PresentationFacade');
         return $facade;
+    }
+
+    public function tearDown()
+    {
+        $mongoDb = MongoUtility::getDbConnection();
+        foreach ($this->cleanUp as $object) {
+            $mongoDb->selectCollection($object['collection'])->remove(
+                array('_id' => $object['_id']),
+                array("justOne" => true, "safe" => true)
+            );
+        }
     }
 }

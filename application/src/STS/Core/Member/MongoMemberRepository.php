@@ -125,10 +125,17 @@ class MongoMemberRepository implements MemberRepository
         if (array_key_exists('email', $memberData)) {
             $member->setEmail($memberData['email']);
         } else {
-            if (array_key_exists('user_id', $memberData)) {
+            //var_dump($memberData);
+            if (array_key_exists('user_id', $memberData) && isset($memberData['user_id'])) {
+                try{
+
+
                 $userRepository = new MongoUserRepository($this->mongoDb);
                 $user = $userRepository->load($memberData['user_id']);
                 $member->setEmail($user->getEmail());
+            } catch (Exception $e){
+                var_dump($memberData);
+            }
             }
         }
         if (array_key_exists('diagnosis', $memberData)) {

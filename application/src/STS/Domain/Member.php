@@ -19,7 +19,7 @@ class Member extends EntityWithTypes
     private $legacyId;
     private $firstName;
     private $lastName;
-    private $email;
+    private $email = null;
     private $presentsFor = array();
     private $facilitatesFor = array();
     private $coordinatesFor = array();
@@ -110,7 +110,7 @@ class Member extends EntityWithTypes
                 'date_trained' => new \MongoDate(strtotime($this->dateTrained)),
                 'diagnosis' => array(
                     'stage' => $this->diagnosis->getStage(),
-                    'date' => new \MongoDate(strtotime($this->diagnosis->getDate))
+                    'date' => new \MongoDate(strtotime($this->diagnosis->getDate()))
                     ),
                 'phone_numbers' => $phoneNumbers
         );
