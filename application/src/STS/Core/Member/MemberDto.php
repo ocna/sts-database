@@ -26,10 +26,30 @@ class MemberDto
     private $diagnosisStage;
     private $phoneNumbers;
 
-    public function __construct($id, $legacyId, $firstName, $lastName, $type, $notes, $status, $addressLineOne,
-                    $addressLineTwo, $addressCity, $addressState, $addressZip, $associatedUserId, $presentsForAreas,
-                    $facilitatesForAreas, $coordinatesForAreas, $coordinatesForRegions, $email, $dateTrained, $diagnosisDate, $diagnosiStage, $phoneNumbers)
-    {
+    public function __construct(
+        $id,
+        $legacyId,
+        $firstName,
+        $lastName,
+        $type,
+        $notes,
+        $status,
+        $addressLineOne,
+        $addressLineTwo,
+        $addressCity,
+        $addressState,
+        $addressZip,
+        $associatedUserId,
+        $presentsForAreas,
+        $facilitatesForAreas,
+        $coordinatesForAreas,
+        $coordinatesForRegions,
+        $email,
+        $dateTrained,
+        $diagnosisDate,
+        $diagnosisStage,
+        $phoneNumbers
+    ) {
         $this->id = $id;
         $this->firstName = $firstName;
         $this->lastName = $lastName;
@@ -52,8 +72,33 @@ class MemberDto
         $this->diagnosisDate = $diagnosisDate;
         $this->diagnosisStage = $diagnosisStage;
         $this->phoneNumbers = $phoneNumbers;
-
     }
+
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    public function getDateTrained()
+    {
+        return $this->dateTrained ? date('n/j/Y', strtotime($this->dateTrained)) : null;
+    }
+
+    public function getDiagnosisDate()
+    {
+        return $this->diagnosisDate ? date('n/j/Y', strtotime($this->diagnosisDate)) : null;
+    }
+
+    public function getDiagnosisStage()
+    {
+        return $this->diagnosisStage;
+    }
+
+    public function getPhoneNumbers()
+    {
+        return $this->phoneNumbers;
+    }
+
     public function getCoordinatesForRegions()
     {
         return $this->coordinatesForRegions;

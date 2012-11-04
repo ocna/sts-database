@@ -95,7 +95,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
             //diagnosis date
             self::DATE_TRAINED,
             'I',
-            array(array('number'=>'3015551234', 'type'=>'work'), array('number'=>'5551239999', 'type'=>'cell'))
+            $this->getValidPhoneNumbersArray()
         );
 
         return $memberDto;
@@ -125,7 +125,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::EMAIL, $dto->getEmail());
         $this->assertEquals(self::DISPLAY_DATE_TRAINED, $dto->getDateTrained());
         $this->assertEquals(self::DISPLAY_DATE_TRAINED, $dto->getDiagnosisDate());
-        $this->assertEquals('I', $dto->getDiagnosisStage);
+        $this->assertEquals('I', $dto->getDiagnosisStage());
         $this->assertEquals(
             array(
                 array(
@@ -136,7 +136,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
                     'type'=>'cell'
                     )
                 ),
-            $dto->getPhoneNumbers
+            $dto->getPhoneNumbers()
         );
     }
     protected function getValidPresentsForAreasArray()
@@ -165,6 +165,19 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
         return array(
             'Mid-West'
         );
+    }
+    protected function getValidPhoneNumbersArray()
+    {
+        return array(
+            array(
+                'number'=>'3015551234',
+                'type'=>'work'
+                ),
+            array(
+                'number'=>'5551239999',
+                'type'=>'cell'
+                )
+            );
     }
     protected function getTestAreas()
     {

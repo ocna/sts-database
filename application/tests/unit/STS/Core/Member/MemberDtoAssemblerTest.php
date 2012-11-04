@@ -1,4 +1,7 @@
 <?php
+
+namespace STS\Core\Member;
+
 use STS\Domain\Member;
 use STS\TestUtilities\MemberTestCase;
 use STS\Core\Member\MemberDtoAssembler;
