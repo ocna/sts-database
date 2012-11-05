@@ -1,20 +1,23 @@
 <?php
 use STS\Core\Survey\StaticTemplateRepository;
 
-class StaticTemplateRepositoryTest extends PHPUnit_Framework_TestCase {
+class StaticTemplateRepositoryTest extends PHPUnit_Framework_TestCase
+{
     /**
      * @test
      * @expectedException InvalidArgumentException
      * @expectedExceptionMessage Template not found for given id.
      */
-    public function throwExceptionForInvalidId() {
+    public function throwExceptionForInvalidId()
+    {
         $repo = new StaticTemplateRepository();
         $template = $repo->load(2);
     }
     /**
      * @test
      */
-    public function checkCorrectQuestions() {
+    public function checkCorrectQuestions()
+    {
         $template = $this->getDefaultTemplate();
         $templateData = array(
                 1 => array(
@@ -84,7 +87,8 @@ class StaticTemplateRepositoryTest extends PHPUnit_Framework_TestCase {
             }
         }
     }
-    private function getDefaultTemplate() {
+    private function getDefaultTemplate()
+    {
         $repo = new StaticTemplateRepository();
         $template = $repo->load(1);
         return $template;

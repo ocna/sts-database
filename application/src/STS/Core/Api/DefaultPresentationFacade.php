@@ -10,6 +10,7 @@ use STS\Core\Presentation\MongoPresentationRepository;
 use STS\Core\User\MongoUserRepository;
 use STS\Core\Member\MongoMemberRepository;
 use STS\Core\Presentation\PresentationDtoAssembler;
+use STS\Core\School\MongoSchoolRepository;
 
 class DefaultPresentationFacade implements PresentationFacade
 {
@@ -17,16 +18,17 @@ class DefaultPresentationFacade implements PresentationFacade
     private $presentationRepository;
     private $userRepository;
     private $memberRepository;
-    public function __construct($presentationRepository, $userRepository, $memberRepository)
+    private $schoolRepository;
+    public function __construct($presentationRepository, $userRepository, $memberRepository, $schoolRepository)
     {
         $this->presentationRepository = $presentationRepository;
         $this->userRepository = $userRepository;
         $this->memberRepository = $memberRepository;
+        $this->schoolRepository = $schoolRepository;
     }
     public function savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId)
     {
-        $school = new School();
-        $school->setId($schoolId);
+        $school = $this->schoolRepository->load($schoolId);
         $members = array();
         foreach ($memberIds as $ids) {
             $member = new Member();
@@ -41,7 +43,8 @@ class DefaultPresentationFacade implements PresentationFacade
             ->setType(Presentation::getAvailableType($typeCode))->setDate($date)->setNotes($notes)
             ->setNumberOfParticipants($participants)->setNumberOfFormsReturned($forms)->setSurvey($survey)
             ->setMembers($members);
-        return $this->presentationRepository->save($presentation);
+        $updatedPresentation = $this->presentationRepository->save($presentation);
+        return PresentationDtoAssembler::toDto($updatedPresentation);
     }
     public function getPresentationTypes()
     {
@@ -71,6 +74,7 @@ class DefaultPresentationFacade implements PresentationFacade
         $presentationRepository = new MongoPresentationRepository($mongoDb);
         $userRepository = new MongoUserRepository($mongoDb);
         $memberRepository = new MongoMemberRepository($mongoDb);
-        return new DefaultPresentationFacade($presentationRepository, $userRepository, $memberRepository);
+        $schoolRepository = new MongoSchoolRepository($mongoDb);
+        return new DefaultPresentationFacade($presentationRepository, $userRepository, $memberRepository, $schoolRepository);
     }
 }

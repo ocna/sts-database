@@ -15,7 +15,8 @@ $columns = array('Role', 'Status' ,'Last Name, First Name', 'City', 'State');
 	    ?>
 		<tr <?php echo $member['deceased'] ? 'class="muted"' : ""; ?>>
 		<td>
-		    <span class="label <?php echo $member['roleClass']; ?>"><?php echo $member['role']; ?></span>
+		    <span class="label <?php echo $member['roleClass']; ?>"><?php echo $member['role']; ?></span> 
+		    <?php if($member['hasNotes']) { echo '<i class="icon-paper-clip"/>'; } ?>
 		</td>
 		<td <?php echo $member['deceased'] ? 'class="deceased"' : ""; ?>>
 			<?php echo $member['status']; ?>

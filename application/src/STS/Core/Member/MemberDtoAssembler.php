@@ -1,5 +1,6 @@
 <?php
 namespace STS\Core\Member;
+
 use STS\Domain\Member;
 
 class MemberDtoAssembler
@@ -9,34 +10,45 @@ class MemberDtoAssembler
         if (!($member instanceof Member)) {
             throw new \InvalidArgumentException('Instance of \STS\Domain\Member not provided.');
         }
-        $id = $member->getId();
-        $legacyId = $member->getLegacyId();
-        $firstName = $member->getFirstName();
-        $lastName = $member->getLastName();
-        $status = $member->getStatus();
-        $type = $member->getType();
-        $notes = $member->getNotes();
-        $associatedUserId = $member->getAssociatedUserId();
+        $builder = new MemberDtoBuilder();
+        $builder->withId($member->getId())
+                ->withLegacyId($member->getLegacyId())
+                ->withFirstName($member->getFirstName())
+                ->withLastName($member->getLastName())
+                ->withStatus($member->getStatus())
+                ->withType($member->getType())
+                ->withNotes($member->getNotes())
+                ->withDateTrained($member->getDateTrained())
+                ->withAssociatedUserId($member->getAssociatedUserId());
         if ($address = $member->getAddress()) {
-            $addressLineOne = $address->getLineOne();
-            $addressLineTwo = $address->getLineTwo();
-            $addressCity = $address->getCity();
-            $addressState = $address->getState();
-            $addressZip = $address->getZip();
-        } else {
-            $addressLineOne = null;
-            $addressLineTwo = null;
-            $addressCity = null;
-            $addressState = null;
-            $addressZip = null;
+            $builder->withAddressLineOne($address->getLineOne())
+                    ->withAddressLineTwo($address->getLineTwo())
+                    ->withAddressCity($address->getCity())
+                    ->withAddressState($address->getState())
+                    ->withAddressZip($address->getZip());
         }
-        $presentsForAreas = self::getAreaNamesArray($member->getPresentsForAreas());
-        $facilitatesForAreas = self::getAreaNamesArray($member->getFacilitatesForAreas());
-        $coordinatesForAreas = self::getAreaNamesArray($member->getCoordinatesForAreas());
-        $coordinatesForRegions = self::getRegionNamesForAreas($member->getCoordinatesForAreas());
-        return new MemberDto($id, $legacyId, $firstName, $lastName, $type, $notes, $status, $addressLineOne,
-                        $addressLineTwo, $addressCity, $addressState, $addressZip, $associatedUserId,
-                        $presentsForAreas, $facilitatesForAreas, $coordinatesForAreas, $coordinatesForRegions);
+        $builder->withPresentsForAreas(self::getAreaNamesArray($member->getPresentsForAreas()))
+                ->withFacilitatesForAreas(self::getAreaNamesArray($member->getFacilitatesForAreas()))
+                ->withCoordinatesForAreas(self::getAreaNamesArray($member->getCoordinatesForAreas()))
+                ->withCoordinatesForRegions(self::getRegionNamesForAreas($member->getCoordinatesForAreas()))
+                ->withEmail($member->getEmail())
+                ->withDateTrained($member->getDateTrained());
+        if ($diagnosis = $member->getDiagnosis()) {
+                $builder->withDiagnosisDate($diagnosis->getDate())
+                        ->withDiagnosisStage($diagnosis->getStage());
+        }
+        if ($phoneNumbers = $member->getPhoneNumbers()) {
+            $builder->withPhoneNumbers(self::getPhoneNumbersArray($phoneNumbers));
+        }
+        return $builder->build();
+    }
+    private static function getPhoneNumbersArray($phoneNumbers)
+    {
+        $phoneNumbersArray = array();
+        foreach ($phoneNumbers as $phoneNumber) {
+            $phoneNumbersArray[] = array('number'=>$phoneNumber->getNumber(), 'type'=>$phoneNumber->getType());
+        }
+        return $phoneNumbersArray;
     }
     private static function getAreaNamesArray($areas)
     {

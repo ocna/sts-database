@@ -57,8 +57,9 @@ class UserDTOBuilder
         $this->legacyId = $legacyId;
         return $this;
     }
-    
-    public function withAssociatedMemberId($id){
+
+    public function withAssociatedMemberId($id)
+    {
         $this->associatedMemberId = $id;
         return $this;
     }

@@ -1,10 +1,34 @@
 <dl class="dl-horizontal">
   <dt>Type:</dt>
   <dd><?php echo $this->member->getType() ? $this->member->getType() : '-'; ?></dd>
-  <dt>Notes:</dt>
-  <dd>
-  <?php echo $this->member->getNotes() ? $this->member->getNotes() : '-'; ?>
-  </dd>
+  <dt>Status:</dt>
+  <dd><?php echo $this->member->getStatus() ? $this->member->getStatus() : '-'; ?></dd>
+  <dt>Date Trained:</dt>
+  <dd><?php echo $this->member->getDateTrained() ? $this->member->getDateTrained() : '-'; ?></dd>
+  <dt>Email:</dt>
+  <dd><?php echo $this->member->getEmail() ? '<a href="mailto:'.$this->member->getEmail().'">'.$this->member->getEmail().'</a>' : '-'; ?></dd>
+  
+  <?php 
+    $phoneNumbers = $this->member->getPhoneNumbers();
+    if (! empty($phoneNumbers)):
+      echo "<br>";
+      foreach ($phoneNumbers as $phoneNumber):
+  ?>
+  <dt><?php echo ucfirst($phoneNumber['type']); ?> <i class="icon-phone"></i></dt>
+  <dd><?php echo preg_replace('/([0-9]{3})([0-9]{3})([0-9]{4})/', '$1-$2-$3', $phoneNumber['number']); ?></dd>
+  
+  <?php 
+    endforeach;
+    endif;
+  ?>
+
+  <br>
+  <dt>Date of Diagnosis:</dt>
+  <dd><?php echo $this->member->getDiagnosisDate() ? $this->member->getDiagnosisDate() : '-'; ?></dd>
+  <dt>Diagnosis Stage:</dt>
+  <dd><?php echo $this->member->getDiagnosisStage() ? $this->member->getDiagnosisStage() : '-'; ?></dd>
+
+  <br>
   <dt>Address:</dt>
   <dd><address>
   <?php echo $this->member->getAddressLineOne() ? $this->member->getAddressLineOne() : '-' ?><br>
@@ -56,6 +80,17 @@
   </dl>
 </div>
 <?php endif;?>
+
+<?php if($this->member->getNotes()): ?>
+  <hr>
+  <dl class="dl-horizontal">
+  <dt>Notes:</dt>
+  <dd>
+  <?php echo $this->member->getNotes() ?>
+  </dd>
+  <br>
+<?php endif; ?>
+
 <div class="well">
 <div class="btn-toolbar">
 <a class="btn" href="/admin/member">Go Back</a>

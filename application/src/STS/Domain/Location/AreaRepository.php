@@ -1,5 +1,6 @@
 <?php
 namespace STS\Domain\Location;
-interface AreaRepository{
+interface AreaRepository
+{
     public function load($id);
 }

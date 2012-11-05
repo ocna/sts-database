@@ -13,7 +13,7 @@ class MongoUserRepository implements UserRepository
     }
     public function load($id)
     {
-        $userData = $this->mongoDb->user->findOne(array(
+        $userData = $this->mongoDb->selectCollection('user')->findOne(array(
                 "_id" => $id
             ));
         if ($userData == null) {
@@ -22,8 +22,9 @@ class MongoUserRepository implements UserRepository
         return $this->mapData($userData);
     }
 
-    public function find($criteria){
-        $userData = $this->mongoDb->user->find($criteria);
+    public function find($criteria)
+    {
+        $userData = $this->mongoDb->selectCollection('user')->find($criteria);
         $users = array();
         if ($userData != null) {
             foreach ($userData as $data) {
@@ -33,13 +34,14 @@ class MongoUserRepository implements UserRepository
         return $users;
     }
 
-    public function save($user){
+    public function save($user)
+    {
          if (!$user instanceof User) {
             throw new \InvalidArgumentException('Instance of User expected.');
         }
         $array = $user->toMongoArray();
         $array['dateCreated'] = new \MongoDate();
-        $results = $this->mongoDb->user
+        $results = $this->mongoDb->selectCollection('user')
             ->update(array(
                 '_id' => $array['_id']
             ), $array, array(

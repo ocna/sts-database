@@ -6,15 +6,17 @@ use STS\Core\School\SchoolDtoAssembler;
 use STS\Core\School\SchoolDto;
 use STS\Core\Api\SchoolFacade;
 use STS\Core\School\MongoSchoolRepository;
+use STS\Core\Location\MongoAreaRepository;
 
 class DefaultSchoolFacade implements SchoolFacade
 {
 
     private $schoolRepository;
     private $areaRepository;
-    public function __construct($schoolRepository)
+    public function __construct($schoolRepository, $areaRepository)
     {
         $this->schoolRepository = $schoolRepository;
+        $this->areaRepository = $areaRepository;
     }
     public function getSchoolById($id)
     {
@@ -51,7 +53,7 @@ class DefaultSchoolFacade implements SchoolFacade
         $address->setLineOne($addressLineOne)->setLineTwo($addressLineTwo)->setCity($city)->setState($state)
             ->setZip($zip);
         $school = new School();
-        $area = $this->schoolRepository->loadAreaById($areaId);
+        $area = $this->areaRepository->load($areaId);
         $school->setName($name)->setNotes($notes)->setType(School::getAvailableType($schoolType))->setNotes($notes)->setAddress($address)
             ->setArea($area);
         return $this->schoolRepository->save($school);
@@ -65,6 +67,7 @@ class DefaultSchoolFacade implements SchoolFacade
                                         . $mongoConfig->dbname);
         $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $schoolRepository = new MongoSchoolRepository($mongoDb);
-        return new DefaultSchoolFacade($schoolRepository);
+        $areaRepository = new MongoAreaRepository($mongoDb);
+        return new DefaultSchoolFacade($schoolRepository, $areaRepository);
     }
 }

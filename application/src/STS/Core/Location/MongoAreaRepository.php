@@ -17,7 +17,7 @@ class MongoAreaRepository implements AreaRepository
     public function load($id)
     {
         $mongoId = new \MongoId($id);
-        $areaData = $this->mongoDb->area->findOne(
+        $areaData = $this->mongoDb->selectCollection('area')->findOne(
             array(
                 '_id' => $mongoId
             )

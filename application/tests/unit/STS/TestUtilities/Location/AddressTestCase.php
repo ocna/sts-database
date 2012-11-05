@@ -18,7 +18,8 @@ class AddressTestCase extends \PHPUnit_Framework_TestCase
         return $address;
     }
 
-    public static function createValidAddress(){
+    public static function createValidAddress()
+    {
         $addressTestCase = new AddressTestCase();
         return $addressTestCase->getValidAddress();
     }
