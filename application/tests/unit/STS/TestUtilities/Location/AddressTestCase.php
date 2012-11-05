@@ -17,6 +17,12 @@ class AddressTestCase extends \PHPUnit_Framework_TestCase
             ->setCity(self::CITY);
         return $address;
     }
+
+    public static function createValidAddress()
+    {
+        $addressTestCase = new AddressTestCase();
+        return $addressTestCase->getValidAddress();
+    }
     protected function assertValidAddress($address)
     {
         $this->assertInstanceOf('STS\Domain\Location\Address', $address);

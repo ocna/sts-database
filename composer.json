@@ -13,7 +13,7 @@
       "behat/mink-goutte-driver":"1.0.3",
       "behat/mink-selenium2-driver":"*",
       "breerly/zf1":"1.11.*",
-      "EHER/PHPUnit":"*",
+      "phpunit/phpunit":"*",
       "emagister/zend-form-decorators-bootstrap":"*",
       "mockery/mockery": "*"
    },
@@ -23,7 +23,7 @@
    },
    "autoload":{
       "psr-0":{
-         "STS":["application/src","application/tests/unit"]
+         "STS":["application/src","application/tests/unit","application/tests/integration"]
       }
    }
 }

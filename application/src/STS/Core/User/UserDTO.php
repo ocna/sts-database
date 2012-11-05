@@ -45,7 +45,8 @@ class UserDTO
     {
         return $this->id;
     }
-    public function getAssociatedMemberId(){
+    public function getAssociatedMemberId()
+    {
         return $this->associatedMemberId;
     }
 }

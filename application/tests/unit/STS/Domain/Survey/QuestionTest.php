@@ -1,13 +1,15 @@
 <?php
 use STS\Domain\Survey\Question;
 
-class QuestionTest extends PHPUnit_Framework_TestCase {
+class QuestionTest extends PHPUnit_Framework_TestCase
+{
     const ID = 12;
     const PROMPT = "This is a question?";
     /**
      * @test
      */
-    public function createValidObject() {
+    public function createValidObject()
+    {
         $question = new Question();
         $this->assertNull($question->getId());
         $this->assertNull($question->getPrompt());

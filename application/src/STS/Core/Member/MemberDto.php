@@ -1,9 +1,9 @@
 <?php
-Namespace STS\Core\Member;
+
+namespace STS\Core\Member;
 
 class MemberDto
 {
-
     private $id;
     private $legacyId;
     private $firstName;
@@ -21,10 +21,36 @@ class MemberDto
     private $coordinatesForAreas;
     private $coordinatesForRegions;
     private $status;
-    public function __construct($id, $legacyId, $firstName, $lastName, $type, $notes, $status, $addressLineOne,
-                    $addressLineTwo, $addressCity, $addressState, $addressZip, $associatedUserId, $presentsForAreas,
-                    $facilitatesForAreas, $coordinatesForAreas, $coordinatesForRegions)
-    {
+    private $email;
+    private $dateTrained;
+    private $diagnosisDate;
+    private $diagnosisStage;
+    private $phoneNumbers;
+
+    public function __construct(
+        $id,
+        $legacyId,
+        $firstName,
+        $lastName,
+        $type,
+        $notes,
+        $status,
+        $addressLineOne,
+        $addressLineTwo,
+        $addressCity,
+        $addressState,
+        $addressZip,
+        $associatedUserId,
+        $presentsForAreas,
+        $facilitatesForAreas,
+        $coordinatesForAreas,
+        $coordinatesForRegions,
+        $email,
+        $dateTrained,
+        $diagnosisDate,
+        $diagnosisStage,
+        $phoneNumbers
+    ) {
         $this->id = $id;
         $this->firstName = $firstName;
         $this->lastName = $lastName;
@@ -42,7 +68,38 @@ class MemberDto
         $this->facilitatesForAreas = $facilitatesForAreas;
         $this->coordinatesForAreas = $coordinatesForAreas;
         $this->coordinatesForRegions = $coordinatesForRegions;
+        $this->email = $email;
+        $this->dateTrained = $dateTrained;
+        $this->diagnosisDate = $diagnosisDate;
+        $this->diagnosisStage = $diagnosisStage;
+        $this->phoneNumbers = $phoneNumbers;
     }
+
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    public function getDateTrained()
+    {
+        return ! is_null($this->dateTrained) ? date('n/j/Y', strtotime($this->dateTrained)) : null;
+    }
+
+    public function getDiagnosisDate()
+    {
+        return ! is_null($this->diagnosisDate) ? date('n/j/Y', strtotime($this->diagnosisDate)) : null;
+    }
+
+    public function getDiagnosisStage()
+    {
+        return $this->diagnosisStage;
+    }
+
+    public function getPhoneNumbers()
+    {
+        return $this->phoneNumbers;
+    }
+
     public function getCoordinatesForRegions()
     {
         return $this->coordinatesForRegions;
@@ -111,7 +168,8 @@ class MemberDto
     {
         return $this->status == 'Deceased';
     }
-    public function getStatus(){
+    public function getStatus()
+    {
         return $this->status;
     }
 }

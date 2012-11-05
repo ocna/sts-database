@@ -10,6 +10,7 @@ Feature: Acl
         And I fill in "password" with "<password>"
         And I press "submit"
         Then I <admin> see "Administration"
+        And I should see "Presentations"
         And I <warning> see "You have logged in with Administrator priveleges, be carful"
         
         Examples:

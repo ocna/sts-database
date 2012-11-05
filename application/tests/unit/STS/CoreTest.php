@@ -12,7 +12,7 @@ class CoreTest extends PHPUnit_Framework_TestCase
         $core = $this->getValidCoreWithMockedDeps();
         $this->assertInstanceOf('STS\Core', $core);
     }
-    
+
     /**
      * @test
      * @expectedException \InvalidArgumentException

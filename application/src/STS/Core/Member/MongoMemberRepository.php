@@ -5,6 +5,10 @@ use STS\Domain\Location\Region;
 use STS\Domain\Location\Address;
 use STS\Domain\Member;
 use STS\Domain\Member\MemberRepository;
+use STS\Core\Location\MongoAreaRepository;
+use STS\Core\User\MongoUserRepository;
+use STS\Domain\Member\Diagnosis;
+use STS\Domain\Member\PhoneNumber;
 
 class MongoMemberRepository implements MemberRepository
 {
@@ -16,17 +20,36 @@ class MongoMemberRepository implements MemberRepository
     }
     public function find()
     {
-        $memberData = $this->mongoDb->member->find()->sort(array(
+        $memberData = $this->mongoDb->selectCollection('member')->find()->sort(array(
                 'lname' => 1
             ));
         return $this->mapMultiple($memberData);
     }
     public function save($member)
-    {}
+    {
+        if (!$member instanceof Member) {
+            throw new \InvalidArgumentException('Instance of Member expected.');
+        }
+        $array = $member->toMongoArray();
+
+        $id = array_shift($array);
+        $array['dateCreated'] = new \MongoDate();
+        $results = $this->mongoDb->selectCollection('member')
+            ->update(array(
+                '_id' => new \MongoId($id)
+            ), $array, array(
+                'upsert' => 1, 'safe' => 1
+            ));
+        if (array_key_exists('upserted', $results)) {
+            $member->setId($results['upserted']->__toString());
+        }
+        return $member;
+    }
+
     public function searchByName($searchString)
     {
         $regex = new \MongoRegex("/$searchString/i");
-        $memberData = $this->mongoDb->member->find(array(
+        $memberData = $this->mongoDb->selectCollection('member')->find(array(
                 'fullname' => $regex
             ))->sort(array(
                 'lname' => 1
@@ -36,7 +59,7 @@ class MongoMemberRepository implements MemberRepository
     public function load($id)
     {
         $mongoId = new \MongoId($id);
-        $memberData = $this->mongoDb->member->findOne(array(
+        $memberData = $this->mongoDb->selectCollection('member')->findOne(array(
                 '_id' => $mongoId
             ));
         return $this->mapData($memberData);
@@ -63,6 +86,9 @@ class MongoMemberRepository implements MemberRepository
         if (array_key_exists('user_id', $memberData)) {
             $member->setAssociatedUserId($memberData['user_id']);
         }
+        if (array_key_exists('date_trained', $memberData)) {
+            $member->setDateTrained(date('Y-M-d h:i:s', $memberData['date_trained']->sec));
+        }
         if (array_key_exists('status', $memberData)) {
             $member->setStatus($memberData['status']);
         }else{
@@ -76,36 +102,53 @@ class MongoMemberRepository implements MemberRepository
             $member->setAddress($address);
         }
         if (array_key_exists('presents_for', $memberData)) {
+            $areaRepository = new MongoAreaRepository($this->mongoDb);
             foreach ($memberData['presents_for'] as $area) {
                 $areaId = $area['_id'];
-                $member->canPresentForArea($this->loadAreaById($areaId));
+                $member->canPresentForArea($areaRepository->load($areaId));
             }
         }
         if (array_key_exists('facilitates_for', $memberData)) {
+            $areaRepository = new MongoAreaRepository($this->mongoDb);
             foreach ($memberData['facilitates_for'] as $area) {
                 $areaId = $area['_id'];
-                $member->canFacilitateForArea($this->loadAreaById($areaId));
+                $member->canFacilitateForArea($areaRepository->load($areaId));
             }
         }
         if (array_key_exists('coordinates_for', $memberData)) {
+            $areaRepository = new MongoAreaRepository($this->mongoDb);
             foreach ($memberData['coordinates_for'] as $area) {
                 $areaId = $area['_id'];
-                $member->canCoordinateForArea($this->loadAreaById($areaId));
+                $member->canCoordinateForArea($areaRepository->load($areaId));
+            }
+        }
+        if (array_key_exists('email', $memberData)) {
+            $member->setEmail($memberData['email']);
+        } else {
+            if (array_key_exists('user_id', $memberData) && isset($memberData['user_id'])) {
+                $userRepository = new MongoUserRepository($this->mongoDb);
+                $user = $userRepository->load($memberData['user_id']);
+                $member->setEmail($user->getEmail());
+            }
+        }
+        if (array_key_exists('diagnosis', $memberData)) {
+            $diagnosis = $memberData['diagnosis'];
+            $diagnosisDate = array_key_exists('date', $diagnosis) ? date('Y-M-d h:i:s', $diagnosis['date']->sec) : null;
+            $diagnosisStage = array_key_exists('stage', $diagnosis) ? $diagnosis['stage'] : null;
+            $member->setDiagnosis(
+                new Diagnosis($diagnosisDate, $diagnosisStage)
+            );
+        }
+        if (array_key_exists('phone_numbers', $memberData)) {
+            foreach ($memberData['phone_numbers'] as $phoneNumber) {
+                $member->addPhoneNumber(
+                    new PhoneNumber(
+                        $phoneNumber['number'],
+                        $phoneNumber['type']
+                    )
+                );
             }
         }
         return $member;
-    }
-    private function loadAreaById($areaId)
-    {
-        $mongoId = new \MongoId($areaId);
-        $areaData = $this->mongoDb->area->findOne(array(
-                '_id' => $mongoId
-            ));
-        $region = new Region();
-        $region->setLegacyId($areaData['region']['legacyid'])->setName($areaData['region']['name']);
-        $area = new Area();
-        $area->setId($areaData['_id']->__toString())->setRegion($region)->setLegacyId($areaData['legacyid'])
-            ->setName($areaData['name'])->setState($areaData['state'])->setCity($areaData['city']);
-        return $area;
     }
 }

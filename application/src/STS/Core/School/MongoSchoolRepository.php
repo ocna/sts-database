@@ -5,6 +5,7 @@ use STS\Domain\School;
 use STS\Domain\School\SchoolRepository;
 use STS\Domain\Location\Region;
 use STS\Domain\Location\Area;
+use STS\Core\Location\MongoAreaRepository;
 
 class MongoSchoolRepository implements SchoolRepository
 {
@@ -61,8 +62,8 @@ class MongoSchoolRepository implements SchoolRepository
         $school->setId($schoolData['_id']->__toString())->setLegacyId($schoolData['legacyid'])
             ->setName($schoolData['name']);
         if (array_key_exists('area_id', $schoolData)) {
-            $areaId = $schoolData['area_id']['_id'];
-            $school->setArea($this->loadAreaById($areaId));
+            $areaRepository = new MongoAreaRepository($this->mongoDb);
+            $school->setArea($areaRepository->load($schoolData['area_id']['_id']));
         }
         if (array_key_exists('address', $schoolData)) {
             $address = new Address();
@@ -78,18 +79,5 @@ class MongoSchoolRepository implements SchoolRepository
             $school->setType($schoolData['type']);
         }
         return $school;
-    }
-    public function loadAreaById($areaId)
-    {
-        $mongoId = new \MongoId($areaId);
-        $areaData = $this->mongoDb->area->findOne(array(
-                '_id' => $mongoId
-            ));
-        $region = new Region();
-        $region->setLegacyId($areaData['region']['legacyid'])->setName($areaData['region']['name']);
-        $area = new Area();
-        $area->setId($areaData['_id']->__toString())->setRegion($region)->setLegacyId($areaData['legacyid'])
-            ->setName($areaData['name'])->setState($areaData['state'])->setCity($areaData['city']);
-        return $area;
     }
 }

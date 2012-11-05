@@ -27,6 +27,16 @@ $(document).ready(function() {
 
     registerTaggerHelpPopover()
 
+    $( "#dateTrained" ).datepicker();
+    $("#dateTrainedButton").click(function(){
+        $( "#dateTrained" ).datepicker( "show" );
+    })
+
+    $( "#diagnosisDate" ).datepicker();
+    $("#diagnosisDateButton").click(function(){
+        $( "#diagnosisDate" ).datepicker( "show" );
+    })
+
     showRightFormPartsForStatus($('#memberStatus').val())
 
     $('#memberStatus').change(function(e){
@@ -85,10 +95,12 @@ $(document).ready(function() {
     function userDetails(flip){
         if(flip == 'on'){
             $('#systemUsernameControlGroup').show();
-            $('#systemUserEmailControlGroup').show();
+            $('#tempPasswordControlGroup').show();
+            $('#tempPasswordConfirmControlGroup').show();
         }else if (flip == 'off'){
             $('#systemUsernameControlGroup').hide();
-            $('#systemUserEmailControlGroup').hide();
+            $('#tempPasswordControlGroup').hide();
+            $('#tempPasswordConfirmControlGroup').hide();
         }
     }
     

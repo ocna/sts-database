@@ -36,6 +36,14 @@
 		</exec>
 	</target>
 
+	<target name="phpcs:fix" description="Fix all coding standard violations using php-cs-fixer">
+        <exec dir="${basedir}" executable="php-cs-fixer">
+            <arg value="--level=psr2" />
+            <arg value="fix" />
+            <arg path="application/" />
+        </exec>
+    </target>
+
 	<target name="phpunit:integration" depends="configure" description="Run intregration tests with PHPUnit">
 		<exec dir="${basedir}/application/tests/integration/" executable="${basedir}/bin/phpunit" failonerror="true">
 			<arg value="--testdox-html" />
@@ -45,8 +53,9 @@
 
 	<target name="behat" description="Runs BDD tests with Behat">
 		<exec dir="${basedir}" executable="${basedir}/bin/behat" failonerror="true">
-			<arg value="--config" />
-			<arg value="${basedir}/tests/functional/config/behat.yml" />
+			<arg value="--config=${basedir}/tests/functional/config/behat.yml" />
+			<arg value="--format=html,progress" />
+            <arg value="--out=build/logs/behat.html," />
 		</exec>
 	</target>
 

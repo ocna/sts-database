@@ -46,4 +46,9 @@ class DefaultAuthFacade implements AuthFacade
         $userRepository = new MongoUserRepository($mongoDb);
         return new DefaultAuthFacade($userRepository);
     }
+
+    public function generateTemporaryPassword()
+    {
+        return substr(md5(uniqid().time()), 0, 8);
+    }
 }

@@ -3,4 +3,8 @@ namespace STS\Core\Api;
 interface UserFacade
 {
     public function findUserById($id);
+
+    public function findUserByEmail($email);
+
+    public function createUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId);
 }

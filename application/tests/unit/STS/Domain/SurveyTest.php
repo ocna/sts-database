@@ -64,7 +64,7 @@ class SurveyTest extends SurveyTestCase
         $survey->answerQuestion(1, $response);
     }
     /**
-     * @test 
+     * @test
      */
     public function validToArray()
     {
@@ -94,5 +94,5 @@ class SurveyTest extends SurveyTestCase
         );
         $this->assertEquals($expectedArray, $array);
     }
-    
+
 }

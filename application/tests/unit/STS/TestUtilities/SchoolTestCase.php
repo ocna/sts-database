@@ -17,11 +17,18 @@ class SchoolTestCase extends \PHPUnit_Framework_TestCase
     protected function getValidSchool()
     {
         $school = new School();
-        $area = \Mockery::mock('STS\Domain\Location\Area');
-        $address = \Mockery::mock('STS\Domain\Location\Address');
+        $area = AreaTestCase::createValidArea();
+        $address = AddressTestCase::createValidAddress();
         $school->setId(self::ID)->setLegacyId(self::LEGACY_ID)->setName(self::NAME)->setType(self::TYPE)->setNotes(self::NOTES)->setArea($area)->setAddress($address);
         return $school;
     }
+
+    public static function createValidSchool()
+    {
+        $schoolTestCase = new SchoolTestCase();
+        return $schoolTestCase->getValidSchool();
+    }
+
     protected function assertValidSchool($school)
     {
         $this->assertEquals($school->getId(), self::ID);
@@ -31,7 +38,7 @@ class SchoolTestCase extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('STS\Domain\Location\Area', $school->getArea());
         $this->assertInstanceOf('STS\Domain\Location\Address', $school->getAddress());
     }
-    
+
     protected function getValidSchoolDto()
     {
         $dto = new SchoolDto(self::ID, self::LEGACY_ID, self::NAME, self::TYPE, self::NOTES, RegionTestCase::NAME,

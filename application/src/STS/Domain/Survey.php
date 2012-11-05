@@ -83,7 +83,7 @@ class Survey
                     $choiceArray = array(
                         'id' => $id, 'prompt' => $choice
                     );
-                    
+
                     if($question->getResponse($id)){
                         $response = $question->getResponse($id);
                         if($question->whenAsked()==0){

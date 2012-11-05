@@ -23,6 +23,19 @@ class Presentation_IndexController extends SecureBaseController
         $this->memberFacade = $core->load('MemberFacade');
         $this->schoolFacade = $core->load('SchoolFacade');
     }
+
+    public function indexAction()
+    {
+        $this->view->layout()->pageHeader = $this->view->partial('partials/page-header.phtml', array(
+            'title' => 'Presentations',
+            'add' => 'Add New Presentation',
+            'addRoute' => '/presentation/index/new'
+        ));
+        
+        $dtos = $this->presentationFacade->getPresentationsForUserId($this->user->getId());
+        $this->view->objects = $dtos;
+    }
+
     public function newAction()
     {
         $this->view->form = $this->getForm();
@@ -45,7 +58,7 @@ class Presentation_IndexController extends SecureBaseController
                     $this->savePresentation($postData);
                     $this
                         ->setFlashMessageAndRedirect('You have successfully completed the presentation and survey entry process!', 'success', array(
-                            'module' => 'main', 'controller' => 'home', 'action' => 'index'
+                            'module' => 'presentation', 'controller' => 'index', 'action' => 'index'
                         ));
                 } catch (ApiException $e) {
                     $this
@@ -82,7 +95,7 @@ class Presentation_IndexController extends SecureBaseController
     private function getSchoolsVisableToMember()
     {
         $schoolSpec = null;
-        if ($this->user->getAssociatedMemberId()) {
+        if ($this->user->getAssociatedMemberId() && $this->user->getRole() != 'admin') {
             $schoolSpec = $this->memberFacade->getMemberSchoolSpecForId($this->user->getAssociatedMemberId());
         }
         return $this->schoolFacade->getSchoolsForSpecification($schoolSpec);
@@ -90,7 +103,7 @@ class Presentation_IndexController extends SecureBaseController
     private function savePresentation($postData)
     {
         //Get User
-        $userId = $this->auth->getIdentity()->getId();
+        $userId = $this->user->getId();
         $templateId = 1;
         //First Save Survey Built
         $surveyData = array();

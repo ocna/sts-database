@@ -12,6 +12,12 @@ class RegionTestCase extends \PHPUnit_Framework_TestCase
         $region->setName(self::NAME)->setLegacyId(self::LEGACY_ID);
         return $region;
     }
+
+    public static function createValidRegion()
+    {
+        $regionTestCase = new RegionTestCase();
+        return $regionTestCase->getValidRegion();
+    }
     protected function assertValidRegion($region)
     {
         $this->assertInstanceOf('STS\Domain\Location\Region', $region);

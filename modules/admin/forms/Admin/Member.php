@@ -1,9 +1,13 @@
 <?php
+
 class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
     protected $memberTypes;
     protected $states;
     protected $roles;
     protected $memberStatuses;
+    protected $diagnosisStages;
+    protected $phoneNumberTypes;
+
     public function init() {
         $this->setName('memberForm');
         $this->setMethod('post');
@@ -19,6 +23,16 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
             'label' => 'Last Name',
             'dimension' => 2,
             'required' => true
+        ));
+        //email
+        $this->addElement('text', 'systemUserEmail', array(
+            'label' => 'Email',
+            'dimension' => 3,
+            'required' => true,
+            'validators' => array(
+                new \Zend_Validate_EmailAddress()
+            ),
+            'description' => 'If this member is begin added as a system user, this email will also be associated with that account.'
         ));
         //type
         $this->addElement('select', 'memberType', array(
@@ -38,13 +52,62 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
             'required' => true,
             'description' => 'Note that unless a member is marked "Active" they may not be added as a system user.'
         ));
+        //date trained
+        $this->addElement('text', 'dateTrained', array(
+            'label' => 'Date Trained', 
+            'dimension' => 2,
+            'validators' => array(
+                new Zend_Validate_Date(array('format' => 'MM/dd/yyyy'))),
+            'append' => array(
+                'name' => 'dateTrainedButton', 'label' => '', 'icon' => 'calendar'
+            )
+            ));
         //notes
         $this->addElement('textarea', 'notes', array(
             'label' => 'Notes',
             'dimension' => 4,
             'rows' => 5
         ));
-        //address
+
+        //phone numbers
+        $this->addElement('text', 'homePhone', array(
+            'label' => 'Home Phone',
+            'dimension' => 2,
+            'validators' => array(
+                new Zend_Validate_Regex(array('pattern' => '/^\d{3}-\d{3}-\d{4}/'))
+                ),
+            'description' => 'Use the format ###-###-####',
+            'errorMessages' => array('Does not match format: ###-###-####')
+            )
+        );
+
+        $this->addElement('text', 'cellPhone', array(
+            'label' => 'Cell Phone',
+            'dimension' => 2,
+            'validators' => array(
+                new Zend_Validate_Regex(array('pattern' => '/^\d{3}-\d{3}-\d{4}/'))
+                ),
+            'description' => 'Use the format xxx-xxx-xxxx'
+            )
+        );
+
+        $this->addElement('text', 'workPhone', array(
+            'label' => 'Work Phone',
+            'dimension' => 2,
+            'validators' => array(
+                new Zend_Validate_Regex(array('pattern' => '/^\d{3}-\d{3}-\d{4}/'))
+                ),
+            'description' => 'Use the format xxx-xxx-xxxx'
+            )
+        );
+
+        $this->addDisplayGroup(array(
+            'homePhone',
+            'cellPhone',
+            'workPhone'), 'phoneNumbers', array('legend' => 'Phone Numbers')
+            );
+
+//address
         $this->addElement('text', 'addressLineOne', array(
             'label' => 'Address 1',
             'dimension' => 4,
@@ -80,29 +143,73 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
         ) , 'address', array(
             'legend' => 'Address'
         ));
+
+        //diagnosis
+        //date diagnosed
+        $this->addElement('text', 'diagnosisDate', array(
+            'label' => 'Original Diagnosis Date', 
+            'dimension' => 2,
+            'validators' => array(
+                new Zend_Validate_Date(array('format' => 'MM/dd/yyyy'))),
+            'append' => array(
+                'name' => 'diagnosisDateButton', 'label' => '', 'icon' => 'calendar'
+            )
+            ));
+        //stage
+        $this->addElement('select', 'diagnosisStage', array(
+            'label' => 'Type',
+            'dimension' => 2,
+            'MultiOptions' => $this->diagnosisStages,
+        ));
+        $this->addDisplayGroup(array(
+            'diagnosisDate',
+            'diagnosisStage',
+        ) , 'diagnosis', array(
+            'legend' => 'Diagnosis'
+        ));
+
+        
         //role
         $this->addElement('select', 'role', array(
-            'label' => 'Type',
+            'label' => 'Role',
             'dimension' => 2,
             'MultiOptions' => $this->roles,
             'required' => true,
             'description' => "If this Member should have access to this system, select a role type to enter other information.",
-        ));
-        //system email
-        $this->addElement('text', 'systemUserEmail', array(
-            'label' => 'Email',
-            'dimension' => 3,
-            'required' => true,
-            'validators' => array(
-                new \Zend_Validate_EmailAddress()
-            )
         ));
         //username
         $this->addElement('text', 'systemUsername', array(
             'label' => 'Username',
             'dimension' => 2,
             'required' => true,
-            'description' => 'The username and a temporary password will be emailed to the system user\'s email address above upon save.'
+        ));
+        //password
+        $this->addElement('password', 'tempPassword', array(
+            'label' => 'Password',
+            'dimension' => 2,
+            'required' => true,
+            'description' => 'The password should be between 6 and 12 charactars and be letters and numbers of any case. For example: "N0tSecUr3".',
+            'validators' => array(
+                new \Zend_Validate_Alnum() ,
+                new \Zend_Validate_StringLength(array(
+                    'min' => 6,
+                    'max' => 12
+                ))
+            )
+        ));
+        //password confirm
+        $this->addElement('password', 'tempPasswordConfirm', array(
+            'label' => 'Confirm',
+            'dimension' => 2,
+            'required' => true,
+            'validators' => array(
+
+                new \Zend_Validate_Alnum() ,
+                new \Zend_Validate_StringLength(array(
+                    'min' => 6,
+                    'max' => 12
+                ))
+            )
         ));
         //Presents For
         $this->addElement('text', 'presentsFor[]', array(
@@ -136,9 +243,9 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
         ));
         $this->addDisplayGroup(array(
             'role',
-            'systemUserEmail',
             'systemUsername',
-            'systemUserEmail',
+            'tempPassword',
+            'tempPasswordConfirm',
             'presentsFor[]',
             'facilitatesFor[]',
             'coordinatesFor[]'
@@ -188,5 +295,13 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
     }
     public function setMemberStatuses($memberStatuses) {
         $this->memberStatuses = $memberStatuses;
+    }
+    public function setDiagnosisStages($diagnosisStages)
+    {
+        $this->diagnosisStages = $diagnosisStages;
+    }
+    public function setPhoneNumberTypes($phoneNumberTypes)
+    {
+        $this->phoneNumberTypes = $phoneNumberTypes;
     }
 }
