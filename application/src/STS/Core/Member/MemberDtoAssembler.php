@@ -18,6 +18,7 @@ class MemberDtoAssembler
                 ->withStatus($member->getStatus())
                 ->withType($member->getType())
                 ->withNotes($member->getNotes())
+                ->withDateTrained($member->getDateTrained())
                 ->withAssociatedUserId($member->getAssociatedUserId());
         if ($address = $member->getAddress()) {
             $builder->withAddressLineOne($address->getLineOne())

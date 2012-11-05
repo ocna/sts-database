@@ -39,8 +39,8 @@ class DefaultMemberFacadeTest extends MemberTestCase
             self::DISPLAY_DATE_TRAINED,
             array('date'=>self::DISPLAY_DATE_TRAINED, 'stage'=>'I'),
             array(
-                'work'=>'3015551234',
-                'cell'=>'5551239999'
+                'work'=>'301-555-1234',
+                'cell'=>'555-123-9999'
             )
         );
 

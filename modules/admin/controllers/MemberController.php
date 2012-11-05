@@ -246,13 +246,16 @@ class Admin_MemberController extends SecureBaseController {
         $members = $this->memberFacade->getAllMembers();
         
         foreach ($members as $member) {
+            $notes =$member->getNotes();
+            $hasNotes = empty($notes) ? false : true;
             $data = array(
                 'firstName' => $member->getFirstName() ,
                 'lastName' => $member->getLastName() ,
                 'deceased' => $member->isDeceased() ,
                 'city' => $member->getAddressCity() ,
                 'state' => $member->getAddressState() ,
-                'status' => $member->getStatus()
+                'status' => $member->getStatus(),
+                'hasNotes' => $hasNotes
             );
             if ($member->getAssociatedUserId() != null) {
                 $user = $this->userFacade->findUserById($member->getAssociatedUserId());

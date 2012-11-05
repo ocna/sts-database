@@ -125,25 +125,18 @@ class MongoMemberRepository implements MemberRepository
         if (array_key_exists('email', $memberData)) {
             $member->setEmail($memberData['email']);
         } else {
-            //var_dump($memberData);
             if (array_key_exists('user_id', $memberData) && isset($memberData['user_id'])) {
-                try{
-
-
                 $userRepository = new MongoUserRepository($this->mongoDb);
                 $user = $userRepository->load($memberData['user_id']);
                 $member->setEmail($user->getEmail());
-            } catch (Exception $e){
-                var_dump($memberData);
-            }
             }
         }
         if (array_key_exists('diagnosis', $memberData)) {
+            $diagnosis = $memberData['diagnosis'];
+            $diagnosisDate = array_key_exists('date', $diagnosis) ? date('Y-M-d h:i:s', $diagnosis['date']->sec) : null;
+            $diagnosisStage = array_key_exists('stage', $diagnosis) ? $diagnosis['stage'] : null;
             $member->setDiagnosis(
-                new Diagnosis(
-                    date('Y-M-d h:i:s', $memberData['diagnosis']['date']->sec),
-                    $memberData['diagnosis']['stage']
-                )
+                new Diagnosis($diagnosisDate, $diagnosisStage)
             );
         }
         if (array_key_exists('phone_numbers', $memberData)) {

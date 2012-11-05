@@ -16,7 +16,7 @@ class PhoneNumber
       */
     public function __construct($number, $type)
     {
-        $this->number = $number;
+        $this->setNumber($number);
         $this->setType($type);
     }
 
@@ -25,8 +25,11 @@ class PhoneNumber
         return $this->number;
     }
 
-    public function setNumber()
+    public function setNumber($number)
     {
+        if (! preg_match('/\d{10}/', $number)) {
+            throw new \InvalidArgumentException('Phone number must be 10 digits only.');
+        }
         $this->number = $number;
         return $this;
     }
