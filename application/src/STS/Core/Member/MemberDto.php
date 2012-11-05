@@ -82,12 +82,12 @@ class MemberDto
 
     public function getDateTrained()
     {
-        return $this->dateTrained ? date('n/j/Y', strtotime($this->dateTrained)) : null;
+        return ! is_null($this->dateTrained) ? date('n/j/Y', strtotime($this->dateTrained)) : null;
     }
 
     public function getDiagnosisDate()
     {
-        return $this->diagnosisDate ? date('n/j/Y', strtotime($this->diagnosisDate)) : null;
+        return ! is_null($this->diagnosisDate) ? date('n/j/Y', strtotime($this->diagnosisDate)) : null;
     }
 
     public function getDiagnosisStage()

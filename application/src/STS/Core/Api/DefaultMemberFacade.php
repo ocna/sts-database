@@ -25,7 +25,6 @@ class DefaultMemberFacade implements MemberFacade
     public function getMemberById($id)
     {
         $member = $this->memberRepository->load($id);
-
         return MemberDtoAssembler::toDTO($member);
     }
     public function getAllMembers()
@@ -104,6 +103,7 @@ class DefaultMemberFacade implements MemberFacade
         }
 
         foreach ($phoneNumbers as $type => $number) {
+            $number = preg_replace('/[-]/', '', $number);
             $member->addPhoneNumber(new PhoneNumber($number, $type));
         }
         $updatedMember = $this->memberRepository->save($member);
