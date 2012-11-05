@@ -5,10 +5,6 @@
   <dd><?php echo $this->member->getStatus() ? $this->member->getStatus() : '-'; ?></dd>
   <dt>Date Trained:</dt>
   <dd><?php echo $this->member->getDateTrained() ? $this->member->getDateTrained() : '-'; ?></dd>
-  <dt>Notes:</dt>
-  <dd>
-  <?php echo $this->member->getNotes() ? $this->member->getNotes() : '-'; ?>
-  </dd>
   <dt>Email:</dt>
   <dd><?php echo $this->member->getEmail() ? '<a href="mailto:'.$this->member->getEmail().'">'.$this->member->getEmail().'</a>' : '-'; ?></dd>
   
@@ -84,6 +80,17 @@
   </dl>
 </div>
 <?php endif;?>
+
+<?php if($this->member->getNotes()): ?>
+  <hr>
+  <dl class="dl-horizontal">
+  <dt>Notes:</dt>
+  <dd>
+  <?php echo $this->member->getNotes() ?>
+  </dd>
+  <br>
+<?php endif; ?>
+
 <div class="well">
 <div class="btn-toolbar">
 <a class="btn" href="/admin/member">Go Back</a>
