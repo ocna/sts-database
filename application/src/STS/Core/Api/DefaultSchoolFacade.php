@@ -58,6 +58,17 @@ class DefaultSchoolFacade implements SchoolFacade
             ->setArea($area);
         return $this->schoolRepository->save($school);
     }
+
+     /**
+      * updateSchool updates a schools values
+      * 
+      * @return SchoolDto
+      */
+    public function updateSchool($id, $name, $areaId, $schoolType, $notes, $addressLineOne, $addressLineTwo, $city, $state, $zip)
+    {
+        
+        
+    }
     public static function getDefaultInstance($config)
     {
         $mongoConfig = $config->modules->default->db->mongodb;

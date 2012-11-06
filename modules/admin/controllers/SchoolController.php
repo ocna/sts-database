@@ -60,18 +60,18 @@ class Admin_SchoolController extends SecureBaseController
     }
 
     public function editAction(){
-        $this->view->form = $this->getForm();
-        $id = $this->getRequest()->getParam('id');
-        $form = $this->getForm();
-        $dto = $this->schoolFacade->getSchoolById($id);
+        // $this->view->form = $this->getForm();
+        // $id = $this->getRequest()->getParam('id');
+        // $form = $this->getForm();
+        // $dto = $this->schoolFacade->getSchoolById($id);
 
-        $form->populate(array('name'=>$dto->getName(), 'area'=>$));
-        $this->view->layout()->pageHeader = $this->view
-            ->partial('partials/page-header.phtml', array(
-                'title' => 'Edit: '.$dto->getName()
-            ));
+        // $form->populate(array('name'=>$dto->getName(), 'area'=>$));
+        // $this->view->layout()->pageHeader = $this->view
+        //     ->partial('partials/page-header.phtml', array(
+        //         'title' => 'Edit: '.$dto->getName()
+        //     ));
 
-            $this->view->form = $form;
+        //     $this->view->form = $form;
     }
     private function saveSchool($postData)
     {

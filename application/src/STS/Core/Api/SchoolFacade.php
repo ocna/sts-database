@@ -8,5 +8,7 @@ interface SchoolFacade
 
     public function saveSchool($name, $areaId, $schoolType, $notes, $addressLineOne, $addressLineTwo, $city, $state, $zip);
 
+    public function updateSchool($id, $name, $areaId, $schoolType, $notes, $addressLineOne, $addressLineTwo, $city, $state, $zip);
+
     public function getSchoolById($id);
 }

@@ -1,12 +1,15 @@
 <?php
+namespace STS\Core\Api;
+
 use STS\Domain\Member;
 use STS\Domain\School\Specification\MemberSchoolSpecification;
 use STS\Domain\School;
 use STS\Domain\Location\Area;
 use STS\Core\Api\DefaultSchoolFacade;
 use STS\Core\Location\MongoAreaRepository;
+use STS\TestUtilities\SchoolTestCase;
 
-class DefaultSchoolFacadeTest extends \PHPUnit_Framework_TestCase
+class DefaultSchoolFacadeTest extends SchoolTestCase
 {
     /**
      * @test
@@ -59,5 +62,31 @@ class DefaultSchoolFacadeTest extends \PHPUnit_Framework_TestCase
                 $schoolA, $schoolB
             ));
         return $schoolRepository;
+    }
+
+    /**
+     * @test
+     */
+    public function validUpdateSchool()
+    {
+        $updatedSchoolName = 'Updated School Name';
+        $school = $this->getValidSchool();
+        $school->setName($updatedSchoolName);
+        $schoolRepository = \Mockery::mock('STS\Core\School\MongoSchoolRepository', array('save'=>$school));
+        $facade = new DefaultSchoolFacade($schoolRepository, $this->getMockAreaRepository());
+        $updatedSchoolDto = $facade->updateSchool(
+            $school->getId(),
+            $school->getName(),
+            $school->getArea()->getId(),
+            $school->getType(),
+            $school->getNotes(),
+            $school->getAddress()->getLineOne(),
+            $school->getAddress()->getLineTwo(),
+            $school->getAddress()->getCity(),
+            $school->getAddress()->getState(),
+            $school->getAddress()->getZip()
+        );
+        $this->assertInstanceOf('STS\Core\School\SchoolDto', $updatedSchoolDto);
+        $this->assertEquals($updatedSchoolName, $updatedSchoolDto->getName());
     }
 }
