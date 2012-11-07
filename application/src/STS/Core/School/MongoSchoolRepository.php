@@ -33,8 +33,9 @@ class MongoSchoolRepository implements SchoolRepository
             ));
         $returnData = array();
         foreach ($schools as $schoolData) {
-            $returnData[] = $this->mapData($schoolData);
+            $returnData[strtolower($schoolData['name'])] = $this->mapData($schoolData);
         }
+        ksort($returnData);
         return $returnData;
     }
     public function save($school)
@@ -42,7 +43,9 @@ class MongoSchoolRepository implements SchoolRepository
         if (!$school instanceof School) {
             throw new \InvalidArgumentException('Instance of School expected.');
         }
+        
         $array = $school->toMongoArray();
+
         $id = array_shift($array);
         $array['dateCreated'] = new \MongoDate();
         $results = $this->mongoDb->school
