@@ -4,7 +4,7 @@ namespace STS\Domain;
 class Entity
 {
 
-    protected $id;
+    protected $id = null;
     public function getId()
     {
         return $this->id;
