@@ -37,6 +37,7 @@ class Admin_SchoolController extends SecureBaseController
         $this->view->form = $this->getForm();
         $request = $this->getRequest();
         $form = $this->getForm();
+        $form->setAction('/admin/school/new');
         if ($this->getRequest()->isPost()) {
             $postData = $request->getPost();
             if ($form->isValid($postData)) {
@@ -47,9 +48,7 @@ class Admin_SchoolController extends SecureBaseController
                             'module' => 'admin', 'controller' => 'school', 'action' => 'index'
                         ));
                 } catch (ApiException $e) {
-                    $this
-                        ->setFlashMessageAndUpdateLayout('An error occured while saving this information: '
-                                        . $e->getMessage(), 'error');
+                    $this->setFlashMessageAndUpdateLayout('An error occured while saving this information: ' . $e->getMessage(), 'error');
                 }
             } else {
                 $this
@@ -60,24 +59,51 @@ class Admin_SchoolController extends SecureBaseController
     }
 
     public function editAction(){
-        // $this->view->form = $this->getForm();
-        // $id = $this->getRequest()->getParam('id');
-        // $form = $this->getForm();
-        // $dto = $this->schoolFacade->getSchoolById($id);
-
-        // $form->populate(array('name'=>$dto->getName(), 'area'=>$));
-        // $this->view->layout()->pageHeader = $this->view
-        //     ->partial('partials/page-header.phtml', array(
-        //         'title' => 'Edit: '.$dto->getName()
-        //     ));
-
-        //     $this->view->form = $form;
+        $id = $this->getRequest()->getParam('id');
+        $form = $this->getForm();
+        $form->setAction('/admin/school/edit?id='.$id);
+        $dto = $this->schoolFacade->getSchoolById($id);
+        $this->view->layout()->pageHeader = $this->view
+            ->partial('partials/page-header.phtml', array(
+                'title' => 'Edit: '.$dto->getName()
+            ));
+        $form->populate(
+            array(
+            'name'=>$dto->getName(),
+            'notes'=>$dto->getNotes(),
+            'area'=>$dto->getAreaId(),
+            'schoolType'=>$dto->getTypeKey(),
+            'addressLineOne'=>$dto->getAddressLineOne(),
+            'addressLineTwo'=>$dto->getAddressLineTwo(),
+            'city'=>$dto->getAddressCity(),
+            'state'=>$dto->getAddressState(),
+            'zip'=>$dto->getAddressZip()
+            )
+        );
+        if ($this->getRequest()->isPost()) {
+            $request = $this->getRequest();
+            $postData = $request->getPost();
+            if ($form->isValid($postData)) {
+                try {
+                    $updatedSchool = $this->schoolFacade->updateSchool($id, $postData['name'], $postData['area'], $postData['schoolType'], $postData['notes'], $postData['addressLineOne'], $postData['addressLineTwo'], $postData['city'], $postData['state'], $postData['zip']);
+                    $this
+                        ->setFlashMessageAndRedirect("The school: \"{$updatedSchool->getName()}\" has been updated!", 'success', array(
+                            'module' => 'admin', 'controller' => 'school', 'action' => 'view', 'params' => array('id'=>$updatedSchool->getId())
+                        ));
+                } catch (ApiException $e) {
+                    $this->setFlashMessageAndUpdateLayout('An error occured while saving this information: ' . $e->getMessage(), 'error');
+                }
+            } else {
+                $this
+                    ->setFlashMessageAndUpdateLayout('It looks like you missed some information, please make the corrections below.', 'error');
+            }
+        }
+        $this->view->form = $form;
     }
     private function saveSchool($postData)
     {
-        $this->schoolFacade
-            ->saveSchool($postData['name'], $postData['area'], $postData['schoolType'], $postData['notes'], $postData['addressLineOne'], $postData['addressLineTwo'], $postData['city'], $postData['state'], $postData['zip']);
-        return true;
+        $school = $this->schoolFacade->saveSchool($postData['name'], $postData['area'], $postData['schoolType'], $postData['notes'], $postData['addressLineOne'], $postData['addressLineTwo'], $postData['city'], $postData['state'], $postData['zip']);
+        return $school;
     }
     private function getForm()
     {

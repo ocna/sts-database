@@ -33,8 +33,9 @@ class MongoSchoolRepository implements SchoolRepository
             ));
         $returnData = array();
         foreach ($schools as $schoolData) {
-            $returnData[] = $this->mapData($schoolData);
+            $returnData[strtolower($schoolData['name'])] = $this->mapData($schoolData);
         }
+        ksort($returnData);
         return $returnData;
     }
     public function save($school)

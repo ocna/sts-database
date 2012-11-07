@@ -64,7 +64,7 @@ class DefaultSchoolFacade implements SchoolFacade
                ->setAddress($address)
                ->setArea($area);
         $savedSchool = $this->schoolRepository->save($school);
-        return SchoolDtoAssembler::toDTO($updatedSchool);
+        return SchoolDtoAssembler::toDTO($savedSchool);
     }
 
      /**
