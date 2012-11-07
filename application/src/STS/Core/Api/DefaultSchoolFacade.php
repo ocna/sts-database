@@ -1,5 +1,6 @@
 <?php
 namespace STS\Core\Api;
+
 use STS\Domain\Location\Address;
 use STS\Domain\School;
 use STS\Core\School\SchoolDtoAssembler;
@@ -46,17 +47,24 @@ class DefaultSchoolFacade implements SchoolFacade
     {
         return School::getAvailableTypes();
     }
-    public function saveSchool($name, $areaId, $schoolType, $notes, $addressLineOne, $addressLineTwo, $city, $state,
-                    $zip)
+    public function saveSchool($name, $areaId, $schoolType, $notes, $addressLineOne, $addressLineTwo, $city, $state, $zip)
     {
         $address = new Address();
-        $address->setLineOne($addressLineOne)->setLineTwo($addressLineTwo)->setCity($city)->setState($state)
-            ->setZip($zip);
-        $school = new School();
+        $address->setLineOne($addressLineOne)
+                ->setLineTwo($addressLineTwo)
+                ->setCity($city)
+                ->setState($state)
+                ->setZip($zip);
         $area = $this->areaRepository->load($areaId);
-        $school->setName($name)->setNotes($notes)->setType(School::getAvailableType($schoolType))->setNotes($notes)->setAddress($address)
-            ->setArea($area);
-        return $this->schoolRepository->save($school);
+        $school = new School();
+        $school->setName($name)
+               ->setNotes($notes)
+               ->setType(School::getAvailableType($schoolType))
+               ->setNotes($notes)
+               ->setAddress($address)
+               ->setArea($area);
+        $savedSchool = $this->schoolRepository->save($school);
+        return SchoolDtoAssembler::toDTO($updatedSchool);
     }
 
      /**
@@ -66,16 +74,27 @@ class DefaultSchoolFacade implements SchoolFacade
       */
     public function updateSchool($id, $name, $areaId, $schoolType, $notes, $addressLineOne, $addressLineTwo, $city, $state, $zip)
     {
-        
-        
+        $oldSchool = $this->schoolRepository->load($id);
+        $address = new Address();
+        $address->setLineOne($addressLineOne)
+                ->setLineTwo($addressLineTwo)
+                ->setCity($city)
+                ->setState($state)
+                ->setZip($zip);
+        $oldSchool->setName($name)
+                  ->setType(School::getAvailableType($schoolType))
+                  ->setNotes($notes)
+                  ->setArea($this->areaRepository->load($areaId))
+                  ->setAddress($address);
+        $updatedSchool = $this->schoolRepository->save($oldSchool);
+        return SchoolDtoAssembler::toDTO($updatedSchool);
     }
+
     public static function getDefaultInstance($config)
     {
         $mongoConfig = $config->modules->default->db->mongodb;
         $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
-        $mongo = new \Mongo(
-                        'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/'
-                                        . $mongoConfig->dbname);
+        $mongo = new \Mongo('mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/' . $mongoConfig->dbname);
         $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $schoolRepository = new MongoSchoolRepository($mongoDb);
         $areaRepository = new MongoAreaRepository($mongoDb);

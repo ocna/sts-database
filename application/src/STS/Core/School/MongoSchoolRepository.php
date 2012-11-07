@@ -42,7 +42,9 @@ class MongoSchoolRepository implements SchoolRepository
         if (!$school instanceof School) {
             throw new \InvalidArgumentException('Instance of School expected.');
         }
+        
         $array = $school->toMongoArray();
+
         $id = array_shift($array);
         $array['dateCreated'] = new \MongoDate();
         $results = $this->mongoDb->school
