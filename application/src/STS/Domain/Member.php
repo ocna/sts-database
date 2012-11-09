@@ -112,7 +112,9 @@ class Member extends EntityWithTypes
                     'stage' => $this->diagnosis->getStage(),
                     'date' => new \MongoDate(strtotime($this->diagnosis->getDate()))
                     ),
-                'phone_numbers' => $phoneNumbers
+                'phone_numbers' => $phoneNumbers,
+                'dateCreated' => new \MongoDate($this->getCreatedOn()),
+                'dateUpdated' => new \MongoDate($this->getUpdatedOn())
         );
         return $array;
     }

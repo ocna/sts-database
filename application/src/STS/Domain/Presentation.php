@@ -23,13 +23,15 @@ class Presentation extends EntityWithTypes
     private $members = array();
     private $survey;
     private $enteredByUserId;
-    public function toArray()
+    public function toMongoArray()
     {
         $array = array(
                 'id' => $this->id, 'entered_by_user_id' => $this->enteredByUserId, 'type' => $this->type,
                 'notes' => $this->notes, 'nforms' => $this->numberOfFormsReturned, 'date' => $this->date,
                 'nparticipants' => $this->numberOfParticipants, 'school_id' => $this->location->getId(),
-                'survey_id' => $this->survey->getId()
+                'survey_id' => $this->survey->getId(),
+                'dateCreated' => new \MongoDate($this->getCreatedOn()),
+                'dateUpdated' => new \MongoDate($this->getUpdatedOn())
         );
         $members = array();
         foreach ($this->members as $member) {

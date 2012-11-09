@@ -25,7 +25,9 @@ class School extends EntityWithTypes
                         'line_one' => $this->address->getLineOne(), 'line_two' => $this->address->getLineTwo(),
                         'city' => $this->address->getCity(), 'state' => $this->address->getState(),
                         'zip' => $this->address->getZip()
-                )
+                ),
+                'dateCreated' => new \MongoDate($this->getCreatedOn()),
+                'dateUpdated' => new \MongoDate($this->getUpdatedOn())
         );
         return $array;
     }

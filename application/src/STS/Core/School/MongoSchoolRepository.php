@@ -43,11 +43,13 @@ class MongoSchoolRepository implements SchoolRepository
         if (!$school instanceof School) {
             throw new \InvalidArgumentException('Instance of School expected.');
         }
-        
+        if(is_null($school->getId())){
+            $school->markCreated();
+        }else{
+            $school->markUpdated();
+        }
         $array = $school->toMongoArray();
-
         $id = array_shift($array);
-        $array['dateCreated'] = new \MongoDate();
         $results = $this->mongoDb->school
             ->update(array(
                 '_id' => new \MongoId($id)
@@ -62,8 +64,15 @@ class MongoSchoolRepository implements SchoolRepository
     private function mapData($schoolData)
     {
         $school = new School();
-        $school->setId($schoolData['_id']->__toString())->setLegacyId($schoolData['legacyid'])
-            ->setName($schoolData['name']);
+        $school->setId($schoolData['_id']->__toString())
+               ->setLegacyId($schoolData['legacyid'])
+               ->setName($schoolData['name']);
+        if (array_key_exists('dateCreated', $schoolData)) {
+            $school->setCreatedOn(strtotime(date('Y-M-d h:i:s', $schoolData['dateCreated']->sec)));
+        }
+        if (array_key_exists('dateUpdated', $schoolData)) {
+            $school->setUpdatedOn(strtotime(date('Y-M-d h:i:s', $schoolData['dateUpdated']->sec)));
+        }
         if (array_key_exists('area_id', $schoolData)) {
             $areaRepository = new MongoAreaRepository($this->mongoDb);
             $school->setArea($areaRepository->load($schoolData['area_id']['_id']));

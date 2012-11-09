@@ -9,7 +9,7 @@ use STS\Core\School\SchoolDto;
 
 class SchoolTestCase extends \PHPUnit_Framework_TestCase
 {
-    const ID = '502314eec6464712c1e705cc';
+    const ID = '509c47941f804c464d01959d';
     const LEGACY_ID = 14;
     const NAME = 'Michigan State University School of Medicine';
     const TYPE = 'School';
