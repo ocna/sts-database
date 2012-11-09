@@ -67,7 +67,20 @@ class MongoMemberRepository implements MemberRepository
         $memberData = $this->mongoDb->selectCollection('member')->findOne(array(
                 '_id' => $mongoId
             ));
+        if(is_null($memberData)){
+            throw new \InvalidArgumentException('Member not found for given id.');
+        }
         return $this->mapData($memberData);
+    }
+    public function delete($id){
+        $mongoId = new \MongoId($id);
+        $results = $this->mongoDb->selectCollection('member')->remove(array(
+                '_id' => $mongoId
+            ), array('justOne'=>true, 'safe'=>true));
+        if($results['ok']==1){
+        return true;
+        }
+        return false;
     }
     private function mapMultiple($memberData)
     {
@@ -162,6 +175,16 @@ class MongoMemberRepository implements MemberRepository
                 );
             }
         }
+        $member->setCanBeDeleted($this->canMemberBeDeleted($member->getId()));
         return $member;
+    }
+
+    private function canMemberBeDeleted($id){
+        $count = $this->mongoDb->selectCollection('presentation')->find(array('members'=>$id))->count();
+        if($count!=0){
+            return false;
+        }else{
+            return true;
+        }
     }
 }

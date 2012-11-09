@@ -34,7 +34,8 @@ class MemberDtoBuilderTest extends MemberTestCase
                 ->withDateTrained($member->getDateTrained())
                 ->withDiagnosisDate($member->getDiagnosis()->getDate())
                 ->withDiagnosisStage($member->getDiagnosis()->getStage())
-                ->withPhoneNumbers($this->getValidPhoneNumbersArray());
+                ->withPhoneNumbers($this->getValidPhoneNumbersArray())
+                ->withCanBeDeleted($member->canBeDeleted());
         $dto = $builder->build();
         $this->assertValidMemberDto($dto);
     }

@@ -31,6 +31,7 @@ class Member extends EntityWithTypes
     private $dateTrained = null;
     private $diagnosis = null;
     private $phoneNumbers = array();
+    private $canBeDeleted = true;
 
     public function addPhoneNumber(PhoneNumber $phoneNumber)
     {
@@ -257,6 +258,23 @@ class Member extends EntityWithTypes
         $this->addUniqueElements($areas, $this->coordinatesFor);
         return $areas;
     }
+
+    public function canBeDeleted(){
+        $canBeDeleted = $this->canBeDeleted;
+        if(!$canBeDeleted){
+            return false;
+        }
+        if(isset($this->associatedUserId)){
+            $canBeDeleted = false;
+        }
+        return $canBeDeleted;
+    }
+
+    public function setCanBeDeleted($canIt){
+        $this->canBeDeleted = $canIt;
+        return $this;
+    }
+
     private function addUniqueElements(&$array, $elements)
     {
         foreach ($elements as $element) {

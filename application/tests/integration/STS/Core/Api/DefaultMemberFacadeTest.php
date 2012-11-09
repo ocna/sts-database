@@ -29,7 +29,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
             $presentsFor,
             $facilitatesFor,
             $coordinatesFor,
-            null,
+            'muser',
             AddressTestCase::LINE_ONE,
             AddressTestCase::LINE_TWO,
             AddressTestCase::CITY,
@@ -48,6 +48,43 @@ class DefaultMemberFacadeTest extends MemberTestCase
         $this->assertValidMemberDto($newMemberDto, array('id', 'firstName', 'associatedUserId'));
         $this->cleanUp[] = array('collection'=>'member','_id'=> new \MongoId($newMemberDto->getId()));
     }
+
+    /**
+     * @test
+     */
+    public function validDeleteAMemberWithNoAssociations()
+    {
+        //givens
+        $facade = $this->loadFacadeInstance();
+        $presentsFor = array_keys($this->getValidPresentsForAreasArray());
+        $facilitatesFor = array_keys($this->getValidFacilitatesForAreasArray());
+        $coordinatesFor = array_keys($this->getValidCoordinatesForAreasArray());
+        $newMemberDto = $facade->saveMember(
+            'Delete Simple',
+            self::LAST_NAME,
+            self::TYPE,
+            self::STATUS,
+            self::NOTES,
+            $presentsFor,
+            $facilitatesFor,
+            $coordinatesFor,
+            null,
+            AddressTestCase::LINE_ONE,
+            AddressTestCase::LINE_TWO,
+            AddressTestCase::CITY,
+            AddressTestCase::STATE,
+            AddressTestCase::ZIP,
+            self::EMAIL,
+            self::DISPLAY_DATE_TRAINED,
+            null,
+            array()
+        );
+        //whens
+        $results = $facade->deleteMember($newMemberDto->getId());
+        //thens
+        $this->assertTrue($results);
+    }
+    
     /**
      * @test
      */

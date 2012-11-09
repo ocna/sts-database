@@ -28,6 +28,27 @@ class Admin_MemberController extends SecureBaseController {
             'addRoute' => '/admin/member/new'
         ));
     }
+
+    public function deleteAction(){
+        $id = $this->getRequest()->getParam('id');
+        try{
+            $results = $this->memberFacade->deleteMember($id);
+            if($results === true){
+                $this->setFlashMessageAndRedirect('The member has been removed from the system!', 'success', array(
+                        'module' => 'admin',
+                        'controller' => 'member',
+                        'action' => 'index'
+                    ));
+            }else{
+                throw new ApiException("An error occured while deleting member.", 1);
+            }
+        }catch (ApiException $e){
+            $this->setFlashMessageAndRedirect('An error occured while deleting member: ' . $e->getMessage() , 'error', array(
+                        'module' => 'admin',
+                        'controller' => 'member',
+                        'action' => 'index'));
+        }
+    }
     public function viewAction() {
         $id = $this->getRequest()->getParam('id');
         $member = $this->memberFacade->getMemberById($id);
@@ -255,7 +276,8 @@ class Admin_MemberController extends SecureBaseController {
                 'city' => $member->getAddressCity() ,
                 'state' => $member->getAddressState() ,
                 'status' => $member->getStatus(),
-                'hasNotes' => $hasNotes
+                'hasNotes' => $hasNotes,
+                'canBeDeleted' => $member->canBeDeleted()
             );
             if ($member->getAssociatedUserId() != null) {
                 $user = $this->userFacade->findUserById($member->getAssociatedUserId());

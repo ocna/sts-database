@@ -23,6 +23,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
     const ASSOCIATED_USER_ID = 'muser';
     const DATE_TRAINED = '2012-08-09 04:00:00';
     const DISPLAY_DATE_TRAINED = '8/9/2012';
+    const CAN_BE_DELETED = false;
 
     protected function getValidMember()
     {
@@ -77,6 +78,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::STATUS, $member->getStatus());
         $this->assertTrue($member->isDeceased());
         $this->assertInstanceOf('STS\Domain\Location\Address', $member->getAddress());
+        $this->assertFalse($member->canBeDeleted());
     }
     protected function getValidMemberDto()
     {
@@ -103,7 +105,8 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
             //diagnosis date
             self::DATE_TRAINED,
             'I',
-            $this->getValidPhoneNumbersArray()
+            $this->getValidPhoneNumbersArray(),
+            self::CAN_BE_DELETED
         );
 
         return $memberDto;
@@ -141,6 +144,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::DISPLAY_DATE_TRAINED, $dto->getDiagnosisDate());
         $this->assertEquals('I', $dto->getDiagnosisStage());
         $this->assertEquals($this->getValidPhoneNumbersArray(), $dto->getPhoneNumbers());
+        $this->assertFalse($dto->canBeDeleted());
     }
     protected function getValidPresentsForAreasArray()
     {
