@@ -21,6 +21,14 @@ class Error_IndexController extends \Zend_Controller_Action
         }
         $this->view->exception = $errors->exception;
         $this->view->request = $errors->request;
+        $config = Zend_Registry::get('config');
+        if (in_array($config->env, array(
+            'dev' , 'stg'
+        ))) {
+            $this->view->devEnvironment = true;
+        } else {
+            $this->view->devEnvironment = false;
+        }
     }
     public function accessDeniedAction()
     {
