@@ -255,7 +255,8 @@ class Admin_MemberController extends SecureBaseController {
                 'city' => $member->getAddressCity() ,
                 'state' => $member->getAddressState() ,
                 'status' => $member->getStatus(),
-                'hasNotes' => $hasNotes
+                'hasNotes' => $hasNotes,
+                'canBeDeleted' => $member->canBeDeleted()
             );
             if ($member->getAssociatedUserId() != null) {
                 $user = $this->userFacade->findUserById($member->getAssociatedUserId());

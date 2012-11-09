@@ -12,6 +12,10 @@ $(document).ready(function() {
       return '<small>' + $(this).siblings('p.help-block').html() + '</small>';
     }
   });
+
+  $('#delete-button').tooltip({
+    placement: 'right',
+  })
 });
 
 

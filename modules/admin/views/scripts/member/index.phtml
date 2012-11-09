@@ -1,3 +1,24 @@
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('.confirm-delete').bind('click', function(){
+			var id = $(this).data('id'),
+				name = $(this).data('fullname');
+			$('#memberDeleteModal').data({'id': id, 'fullname': name}).modal('show');
+		})
+		$('#memberDeleteModal').bind('show', function() {
+			var id = $(this).data('id'),
+				name = $(this).data('fullname'),
+				removeBtn = $(this).find('.btn-danger'),
+				href = removeBtn.attr('href');
+				content = $('.modal-body p').html();
+				$('.confirm-message').html(content.replace(/~member~/, name));
+				removeBtn.attr('href', href.replace(/\?id=.*/, '?id=' + id));
+		}).modal({ 
+			backdrop: true,
+			show: false
+		});
+	});
+</script>
 <?php
 $columns = array('Role', 'Status' ,'Last Name, First Name', 'City', 'State');
 ?>
@@ -32,8 +53,28 @@ $columns = array('Role', 'Status' ,'Last Name, First Name', 'City', 'State');
 		</td>
 			<td style="text-align:right;">
 			<a class="btn btn-mini" href="/admin/member/view?id=<?php echo $id; ?>"><i class="icon-info-sign"></i> Details</a>
+			<?php if($member['canBeDeleted']): ?>
+				<a class="btn btn-mini btn-danger confirm-delete" data-fullname="<?php echo $member['firstName'] .' ' . $member['lastName']; ?>" data-id="<?php echo $id; ?>" href="#"><i class="icon-trash"></i></a>
+			<?php else: ?>
+				<a class="btn btn-mini btn-danger disabled" href="#"><i class="icon-trash"></i></a>
+			<?php endif; ?>
 			</td>
 		<?php }?>	
 		</tr>
 	</tbody>
 </table>
+
+<div id="memberDeleteModal" class="modal hide fade">
+    <div class="modal-header">
+      <a href="#" class="close">&times;</a>
+      <h3>Delete Member</h3>
+    </div>
+    <div class="modal-body">
+      <p class="confirm-message">You are about to delete the member ~member~, this procedure is irreversible.</p>
+      <p>Are you sure you want to do this?</p>
+    </div>
+    <div class="modal-footer">
+      <a href="/admin/member/delete?id=" class="btn btn-danger">Yes</a>
+      <a href="javascript:$('#memberDeleteModal').modal('hide')" class="btn btn-secondary">No</a>
+    </div>
+</div>
