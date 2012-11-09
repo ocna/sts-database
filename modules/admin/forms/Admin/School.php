@@ -26,7 +26,7 @@ class Admin_School extends Twitter_Bootstrap_Form_Horizontal
         //type
         $this
             ->addElement('select', 'schoolType', array(
-                    'label' => 'Type', 'dimension' => 2, 'MultiOptions' => $this->schoolTypes, 'required' => true,
+                    'label' => 'Program Type', 'dimension' => 2, 'MultiOptions' => $this->schoolTypes, 'required' => true,
                     'validators' => array(
                         new \Zend_Validate_NotEmpty(\Zend_Validate_NotEmpty::ZERO)
                     )

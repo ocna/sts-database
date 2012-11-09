@@ -6,6 +6,8 @@ class School extends EntityWithTypes
 {
     const TYPE_SCHOOL = 'School';
     const TYPE_HOSPITAL = 'Hospital';
+    const TYPE_NP = 'NP';
+    const TYPE_PA = 'PA';
 
     private $legacyId;
     private $name;

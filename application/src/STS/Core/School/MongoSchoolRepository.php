@@ -88,7 +88,11 @@ class MongoSchoolRepository implements SchoolRepository
             $school->setNotes($schoolData['notes']);
         }
         if (array_key_exists('type', $schoolData)) {
-            $school->setType($schoolData['type']);
+            try {
+                $school->setType($schoolData['type']);
+            }catch(\InvalidArgumentException $e){
+                $school->setType(School::TYPE_SCHOOL);
+            }
         }
         return $school;
     }

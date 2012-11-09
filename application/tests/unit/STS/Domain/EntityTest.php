@@ -68,7 +68,6 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(is_int($entity->getCreatedOn()));
         $this->assertTrue(is_int($entity->getUpdatedOn()));
     }
-    
 
     /**
      * @test
@@ -80,7 +79,6 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $entity = new Entity();
         $entity->setUpdatedOn(self::INVALID_DATE);
     }
-
 
     /**
      * @test

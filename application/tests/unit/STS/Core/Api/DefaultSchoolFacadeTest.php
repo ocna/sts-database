@@ -42,7 +42,7 @@ class DefaultSchoolFacadeTest extends SchoolTestCase
     {
         $facade = new DefaultSchoolFacade($this->getMockSchoolRepository(), $this->getMockAreaRepository());
         $types = $facade->getSchoolTypes();
-        $this->assertEquals(array('TYPE_SCHOOL'=>'School', 'TYPE_HOSPITAL'=>'Hospital'), $types);
+        $this->assertEquals(array('TYPE_SCHOOL' => 'School', 'TYPE_HOSPITAL' => 'Hospital', 'TYPE_NP' => 'NP', 'TYPE_PA' => 'PA'), $types);
     }
 
     private function getMockAreaRepository()
