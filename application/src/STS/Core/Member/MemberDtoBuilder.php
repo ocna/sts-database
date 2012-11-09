@@ -25,6 +25,7 @@ class MemberDtoBuilder
     private $diagnosisDate = null;
     private $diagnosisStage = null;
     private $phoneNumbers = null;
+    private $canBeDeleted = null;
 
     public function withId($id)
     {
@@ -157,6 +158,11 @@ class MemberDtoBuilder
         $this->phoneNumbers = $phoneNumbers;
         return $this;
     }
+    public function withCanBeDeleted($canBeDeleted)
+    {
+        $this->canBeDeleted = $canBeDeleted;
+        return $this;
+    }
     public function build()
     {
         return new MemberDto(
@@ -181,7 +187,8 @@ class MemberDtoBuilder
             $this->dateTrained,
             $this->diagnosisDate,
             $this->diagnosisStage,
-            $this->phoneNumbers
+            $this->phoneNumbers,
+            $this->canBeDeleted
         );
     }
 }

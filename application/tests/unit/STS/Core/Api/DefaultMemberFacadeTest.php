@@ -178,6 +178,45 @@ class DefaultMemberFacadeTest extends MemberTestCase
         $memberRepository->shouldReceive('save')->withAnyArgs()->andReturn($this->getValidMember());
         return $memberRepository;
     }
+    /**
+     * @test
+     */
+    public function validDeleteMemberWithNoAssociations(){
+        $member = $this->getValidMember();
+        $member->setAssociatedUserId(null);
+        $memberRepository = \Mockery::mock('STS\Core\Member\MongoMemberRepository');
+        $memberRepository->shouldReceive('load')->with($member->getId())->andReturn($member);
+        $memberRepository->shouldReceive('delete')->with($member->getId())->andReturn(true);
+        $facade = new DefaultMemberFacade($memberRepository, $this->getMockAreaRepository());
+        $this->assertTrue($facade->deleteMember($member->getId()));
+    }
 
+    /**
+     * @test
+     * @expectedException STS\Core\Api\ApiException
+     * @expectedExceptionMessage Unable to delete member.
+     */
+    public function validDeleteMemberWithUserAssociation(){
+        $member = $this->getValidMember();
+        $memberRepository = \Mockery::mock('STS\Core\Member\MongoMemberRepository');
+        $memberRepository->shouldReceive('load')->with($member->getId())->andReturn($member);
+        $facade = new DefaultMemberFacade($memberRepository, $this->getMockAreaRepository());
+        $this->assertTrue($facade->deleteMember($member->getId()));
+    }
+
+    /**
+     * @test
+     * @expectedException STS\Core\Api\ApiException
+     * @expectedExceptionMessage Unable to delete member.
+     */
+    public function validDeleteMemberWithOtherAssociation(){
+        $member = $this->getValidMember();
+        $member->setAssociatedUserId(null);
+        $member->setCanBeDeleted(false);
+        $memberRepository = \Mockery::mock('STS\Core\Member\MongoMemberRepository');
+        $memberRepository->shouldReceive('load')->with($member->getId())->andReturn($member);
+        $facade = new DefaultMemberFacade($memberRepository, $this->getMockAreaRepository());
+        $this->assertTrue($facade->deleteMember($member->getId()));
+    }
 
 }

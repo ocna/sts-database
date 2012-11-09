@@ -132,4 +132,20 @@ class MemberTest extends MemberTestCase
         $phoneNumbers = $member->getPhoneNumbers();
         $this->assertInstanceOf('STS\Domain\Member\PhoneNumber', $phoneNumbers[0]);
     }
+
+    /**
+     * @test
+     */
+    public function validCanBeDeleted()
+    {
+        $member = new Member();
+        $this->assertTrue($member->canBeDeleted(), 'returns false against new member when should be true');
+        $member->setCanBeDeleted(false);
+        $this->assertFalse($member->canBeDeleted(), 'returns true after setting it to false');
+        $member->setCanBeDeleted(true);
+        $this->assertTrue($member->canBeDeleted(), 'returns false against after setting it to true');
+        $member->setAssociatedUserId(self::ASSOCIATED_USER_ID);
+        $this->assertFalse($member->canBeDeleted(), 'returns true after associating a user');
+    }
+    
 }

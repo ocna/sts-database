@@ -19,7 +19,32 @@ class MongoMemberRepositoryTest extends MemberTestCase
     /**
      * @test
      */
-    public function ifShouldLoadTheUserEmailIfTheMemberEmailIsNotFound()
+    public function itShouldSetCanBeDeletedToFalseForPresentationAssociation()
+    {
+        //givens
+        $mockMongoDb = \Mockery::mock('MongoDB');
+        $mockMongoDb->shouldReceive('selectCollection->findOne')
+                    ->andReturn(array(
+                        '_id' => new \MongoId("50234bc4fe65f50a9579a8cd"),
+                        'legacyid' => 0,
+                        'fname' => "Member",
+                        'lname' => "User",
+                        'fullname' => "Member User",
+                        'email'=> "member.user@email.com")
+                    );
+        $mockMongoDb->shouldReceive('selectCollection->find->count')
+        ->andReturn(1);
+        $repo = new MongoMemberRepository($mockMongoDb);
+        //whens
+        $member = $repo->load(self::ID);
+        //thens
+        $this->assertFalse($member->canBeDeleted());
+    }
+    
+    /**
+     * @test
+     */
+    public function itShouldLoadTheUserEmailIfTheMemberEmailIsNotFound()
     {
         //givens
         $mockMongoDb = \Mockery::mock('MongoDB');
@@ -27,7 +52,7 @@ class MongoMemberRepositoryTest extends MemberTestCase
         $mockMongoDb->shouldReceive('selectCollection->findOne')
                     ->withAnyArgs()
                     ->andReturn($this->getOlderMemberDataSet(), $areas[0], $areas[1],$areas[0], $areas[1],$areas[0], $areas[1], $this->getOlderUserDataSet());
-
+        $mockMongoDb->shouldReceive('selectCollection->find->count')->andReturn(1);
         $repo = new MongoMemberRepository($mockMongoDb);
         //whens
         $member = $repo->load(self::ID);
@@ -69,6 +94,52 @@ class MongoMemberRepositoryTest extends MemberTestCase
             'fname' => "Member",
             'lname' => "User",
             'fullname' => "Member User",
+            'type' => "Survivor",
+            'notes' => "This is an interesting note!",
+            'user_id' => "muser",
+            'address' => array(
+                'line_one' => "123 Main Street",
+                'line_two' => "Suite 200",
+                'city' => "Grand Rapids",
+                'state' => "MI",
+                'zip' => "12345"
+            ),
+            'status' => "Deceased",
+            'facilitates_for' => array(
+                     array(
+                        '_id' => new \MongoId("502d90100172cda7d649d465"),
+                    ),
+                     array(
+                        '_id' => new \MongoId("502d90100172cda7d649d461"),
+                ),
+                'presents_for' =>
+                     array(
+                        '_id' => new \MongoId("502d90100172cda7d649d465"),
+                    ),
+                     array(
+                        '_id' => new \MongoId("502d90100172cda7d649d461"),
+                ),
+                'coordinates_for' =>
+                     array(
+                        '_id' => new \MongoId("502d90100172cda7d649d465"),
+                    ),
+                     array(
+                        '_id' => new \MongoId("502d90100172cda7d649d461"),
+                    )
+            )
+        );
+        return $data;
+    }
+
+    private function getMemberDataSet()
+    {
+        $data = array(
+            '_id' => new \MongoId("50234bc4fe65f50a9579a8cd"),
+            'legacyid' => 0,
+            'fname' => "Member",
+            'lname' => "User",
+            'fullname' => "Member User",
+            'email'=> "member.user@email.com",
             'type' => "Survivor",
             'notes' => "This is an interesting note!",
             'user_id' => "muser",

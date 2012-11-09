@@ -162,6 +162,16 @@ class MongoMemberRepository implements MemberRepository
                 );
             }
         }
+        $member->setCanBeDeleted($this->canMemberBeDeleted($member->getId()));
         return $member;
+    }
+
+    private function canMemberBeDeleted($id){
+        $count = $this->mongoDb->selectCollection('presentation')->find(array('members'=>$id))->count();
+        if($count()!=0){
+            return false;
+        }else{
+            return true;
+        }
     }
 }

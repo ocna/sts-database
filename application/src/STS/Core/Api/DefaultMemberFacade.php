@@ -109,6 +109,14 @@ class DefaultMemberFacade implements MemberFacade
         $updatedMember = $this->memberRepository->save($member);
         return MemberDtoAssembler::toDTO($updatedMember);
     }
+
+    public function deleteMember($id){
+        $member = $this->memberRepository->load($id);
+        if(! $member->canBeDeleted()){
+            throw new ApiException('Unable to delete member.');
+        }
+        return $this->memberRepository->delete($id);
+    }
     public static function getDefaultInstance($config)
     {
         $mongoConfig = $config->modules->default->db->mongodb;

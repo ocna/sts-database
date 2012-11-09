@@ -26,6 +26,7 @@ class MemberDto
     private $diagnosisDate;
     private $diagnosisStage;
     private $phoneNumbers;
+    private $canBeDeleted;
 
     public function __construct(
         $id,
@@ -49,7 +50,8 @@ class MemberDto
         $dateTrained,
         $diagnosisDate,
         $diagnosisStage,
-        $phoneNumbers
+        $phoneNumbers,
+        $canBeDeleted
     ) {
         $this->id = $id;
         $this->firstName = $firstName;
@@ -73,6 +75,7 @@ class MemberDto
         $this->diagnosisDate = $diagnosisDate;
         $this->diagnosisStage = $diagnosisStage;
         $this->phoneNumbers = $phoneNumbers;
+        $this->canBeDeleted = $canBeDeleted;
     }
 
     public function getEmail()
@@ -171,5 +174,8 @@ class MemberDto
     public function getStatus()
     {
         return $this->status;
+    }
+    public function canBeDeleted(){
+        return $this->canBeDeleted;
     }
 }
