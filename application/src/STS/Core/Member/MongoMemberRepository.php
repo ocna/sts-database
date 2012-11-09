@@ -146,7 +146,7 @@ class MongoMemberRepository implements MemberRepository
         }
         if (array_key_exists('diagnosis', $memberData)) {
             $diagnosis = $memberData['diagnosis'];
-            $diagnosisDate = array_key_exists('date', $diagnosis) ? date('Y-M-d h:i:s', $diagnosis['date']->sec) : null;
+            $diagnosisDate = array_key_exists('date', $diagnosis) && ! is_null($diagnosis['date']) ? date('Y-M-d h:i:s', $diagnosis['date']->sec) : null;
             $diagnosisStage = array_key_exists('stage', $diagnosis) ? $diagnosis['stage'] : null;
             $member->setDiagnosis(
                 new Diagnosis($diagnosisDate, $diagnosisStage)

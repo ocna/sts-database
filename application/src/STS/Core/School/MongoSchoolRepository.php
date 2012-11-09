@@ -79,9 +79,15 @@ class MongoSchoolRepository implements SchoolRepository
         }
         if (array_key_exists('address', $schoolData)) {
             $address = new Address();
-            $address->setLineOne($schoolData['address']['line_one'])->setLineTwo($schoolData['address']['line_two'])
-                ->setCity($schoolData['address']['city'])->setState($schoolData['address']['state'])
-                ->setZip($schoolData['address']['zip']);
+            if (array_key_exists('line_two', $schoolData['address'])){
+                $address->setLineTwo($schoolData['address']['line_two']);
+            }
+            if (array_key_exists('zip', $schoolData['address'])){
+                $address->setZip($schoolData['address']['zip']);
+            }
+            $address->setLineOne($schoolData['address']['line_one'])
+                    ->setCity($schoolData['address']['city'])
+                    ->setState($schoolData['address']['state']);
             $school->setAddress($address);
         }
         if (array_key_exists('notes', $schoolData)) {
