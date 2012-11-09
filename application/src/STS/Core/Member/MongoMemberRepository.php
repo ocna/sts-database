@@ -67,6 +67,9 @@ class MongoMemberRepository implements MemberRepository
         $memberData = $this->mongoDb->selectCollection('member')->findOne(array(
                 '_id' => $mongoId
             ));
+        if(is_null($memberData)){
+            throw new \InvalidArgumentException('Member not found for given id.');
+        }
         return $this->mapData($memberData);
     }
     public function delete($id){
