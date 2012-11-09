@@ -115,7 +115,11 @@ class DefaultMemberFacade implements MemberFacade
         if(! $member->canBeDeleted()){
             throw new ApiException('Unable to delete member.');
         }
-        return $this->memberRepository->delete($id);
+        try{
+            return $this->memberRepository->delete($id);
+        }catch(\Exception $e){
+            throw new ApiException('Error deleting member.', $e->getCode(), $e);
+        }
     }
     public static function getDefaultInstance($config)
     {

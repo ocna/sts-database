@@ -23,7 +23,8 @@ class MongoMemberRepositoryTest extends MemberTestCase
     {
         //givens
         $mockMongoDb = \Mockery::mock('MongoDB');
-        $mockMongoDb->shouldReceive('selectCollection->findOne')
+        $mockMongoDb->shouldReceive('selectCollection')->andReturn($mockMongoDb);
+        $mockMongoDb->shouldReceive('findOne')
                     ->andReturn(array(
                         '_id' => new \MongoId("50234bc4fe65f50a9579a8cd"),
                         'legacyid' => 0,
@@ -32,14 +33,54 @@ class MongoMemberRepositoryTest extends MemberTestCase
                         'fullname' => "Member User",
                         'email'=> "member.user@email.com")
                     );
-        $mockMongoDb->shouldReceive('selectCollection->find->count')
-        ->andReturn(1);
+        $mockMongoDb->shouldReceive('find')->andReturn($mockMongoDb);
+        $mockMongoDb->shouldReceive('count')->andReturn(1);
         $repo = new MongoMemberRepository($mockMongoDb);
         //whens
         $member = $repo->load(self::ID);
         //thens
         $this->assertFalse($member->canBeDeleted());
     }
+
+    /**
+     * @test
+     */
+    public function itCanBeDeletedWithNoPresentationAssociation()
+    {
+        $mockMongoDb = \Mockery::mock('MongoDB');
+        $mockMongoDb->shouldReceive('selectCollection')->andReturn($mockMongoDb);
+        $mockMongoDb->shouldReceive('findOne')
+                    ->andReturn(array(
+                        '_id' => new \MongoId("50234bc4fe65f50a9579a8cd"),
+                        'legacyid' => 0,
+                        'fname' => "Member",
+                        'lname' => "User",
+                        'fullname' => "Member User",
+                        'email'=> "member.user@email.com")
+                    );
+        $mockMongoDb->shouldReceive('find')->andReturn($mockMongoDb);
+        $mockMongoDb->shouldReceive('count')->andReturn(0);
+        $repo = new MongoMemberRepository($mockMongoDb);
+        //whens
+        $member = $repo->load(self::ID);
+        //thens
+        $this->assertTrue($member->canBeDeleted());
+    }
+    
+    /**
+     * @test
+     */
+    public function validDeleteMember()
+    {
+        $mockMongoDb = \Mockery::mock('MongoDB');
+        $mockMongoDb->shouldReceive('selectCollection->remove')->andReturn(array('ok'=>1));
+        $repo = new MongoMemberRepository($mockMongoDb);
+        //whens
+        $results = $repo->delete(self::ID);
+        //thens
+        $this->assertTrue($results);
+    }
+    
     
     /**
      * @test
@@ -48,11 +89,13 @@ class MongoMemberRepositoryTest extends MemberTestCase
     {
         //givens
         $mockMongoDb = \Mockery::mock('MongoDB');
+        $mockMongoDb->shouldReceive('selectCollection')->andReturn($mockMongoDb);
         $areas = $this->getTestAreaData();
-        $mockMongoDb->shouldReceive('selectCollection->findOne')
+        $mockMongoDb->shouldReceive('findOne')
                     ->withAnyArgs()
                     ->andReturn($this->getOlderMemberDataSet(), $areas[0], $areas[1],$areas[0], $areas[1],$areas[0], $areas[1], $this->getOlderUserDataSet());
-        $mockMongoDb->shouldReceive('selectCollection->find->count')->andReturn(1);
+        $mockMongoDb->shouldReceive('find')->andReturn($mockMongoDb);
+        $mockMongoDb->shouldReceive('count')->andReturn(1);
         $repo = new MongoMemberRepository($mockMongoDb);
         //whens
         $member = $repo->load(self::ID);
