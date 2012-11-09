@@ -33,8 +33,9 @@ class MongoSchoolRepository implements SchoolRepository
             ));
         $returnData = array();
         foreach ($schools as $schoolData) {
-            $returnData[] = $this->mapData($schoolData);
+            $returnData[strtolower($schoolData['name'])] = $this->mapData($schoolData);
         }
+        ksort($returnData);
         return $returnData;
     }
     public function save($school)
@@ -42,9 +43,13 @@ class MongoSchoolRepository implements SchoolRepository
         if (!$school instanceof School) {
             throw new \InvalidArgumentException('Instance of School expected.');
         }
+        if(is_null($school->getId())){
+            $school->markCreated();
+        }else{
+            $school->markUpdated();
+        }
         $array = $school->toMongoArray();
         $id = array_shift($array);
-        $array['dateCreated'] = new \MongoDate();
         $results = $this->mongoDb->school
             ->update(array(
                 '_id' => new \MongoId($id)
@@ -59,24 +64,41 @@ class MongoSchoolRepository implements SchoolRepository
     private function mapData($schoolData)
     {
         $school = new School();
-        $school->setId($schoolData['_id']->__toString())->setLegacyId($schoolData['legacyid'])
-            ->setName($schoolData['name']);
+        $school->setId($schoolData['_id']->__toString())
+               ->setLegacyId($schoolData['legacyid'])
+               ->setName($schoolData['name']);
+        if (array_key_exists('dateCreated', $schoolData)) {
+            $school->setCreatedOn(strtotime(date('Y-M-d h:i:s', $schoolData['dateCreated']->sec)));
+        }
+        if (array_key_exists('dateUpdated', $schoolData)) {
+            $school->setUpdatedOn(strtotime(date('Y-M-d h:i:s', $schoolData['dateUpdated']->sec)));
+        }
         if (array_key_exists('area_id', $schoolData)) {
             $areaRepository = new MongoAreaRepository($this->mongoDb);
             $school->setArea($areaRepository->load($schoolData['area_id']['_id']));
         }
         if (array_key_exists('address', $schoolData)) {
             $address = new Address();
-            $address->setLineOne($schoolData['address']['line_one'])->setLineTwo($schoolData['address']['line_two'])
-                ->setCity($schoolData['address']['city'])->setState($schoolData['address']['state'])
-                ->setZip($schoolData['address']['zip']);
+            if (array_key_exists('line_two', $schoolData['address'])){
+                $address->setLineTwo($schoolData['address']['line_two']);
+            }
+            if (array_key_exists('zip', $schoolData['address'])){
+                $address->setZip($schoolData['address']['zip']);
+            }
+            $address->setLineOne($schoolData['address']['line_one'])
+                    ->setCity($schoolData['address']['city'])
+                    ->setState($schoolData['address']['state']);
             $school->setAddress($address);
         }
         if (array_key_exists('notes', $schoolData)) {
             $school->setNotes($schoolData['notes']);
         }
         if (array_key_exists('type', $schoolData)) {
-            $school->setType($schoolData['type']);
+            try {
+                $school->setType($schoolData['type']);
+            }catch(\InvalidArgumentException $e){
+                $school->setType(School::TYPE_SCHOOL);
+            }
         }
         return $school;
     }

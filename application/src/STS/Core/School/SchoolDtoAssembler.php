@@ -13,6 +13,7 @@ class SchoolDtoAssembler
         $legacyId = $school->getLegacyId();
         $name = $school->getName();
         $type = $school->getType();
+        $typeKey = array_search($type, School::getAvailableTypes());
         $notes = $school->getNotes();
         if ($area = $school->getArea()) {
             if ($region = $area->getRegion()) {
@@ -21,6 +22,7 @@ class SchoolDtoAssembler
                 $regionName = null;
             }
             $areaName = $area->getName();
+            $areaId = $area->getId();
         } else {
             $regionName = null;
             $areaName = null;
@@ -39,7 +41,7 @@ class SchoolDtoAssembler
             $addressZip = null;
         }
         $schoolDto = new SchoolDto($id, $legacyId, $name, $type, $notes, $regionName, $areaName, $addressLineOne,
-                        $addressLineTwo, $addressCity, $addressState, $addressZip);
+                        $addressLineTwo, $addressCity, $addressState, $addressZip, $areaId, $typeKey);
         return $schoolDto;
     }
 }

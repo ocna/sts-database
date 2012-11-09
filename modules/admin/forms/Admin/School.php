@@ -10,7 +10,6 @@ class Admin_School extends Twitter_Bootstrap_Form_Horizontal
     {
         $this->setName('schoolForm');
         $this->setMethod('post');
-        $this->setAction('/admin/school/new');
         //name
         $this
             ->addElement('text', 'name', array(
@@ -27,7 +26,7 @@ class Admin_School extends Twitter_Bootstrap_Form_Horizontal
         //type
         $this
             ->addElement('select', 'schoolType', array(
-                    'label' => 'Type', 'dimension' => 2, 'MultiOptions' => $this->schoolTypes, 'required' => true,
+                    'label' => 'Program Type', 'dimension' => 2, 'MultiOptions' => $this->schoolTypes, 'required' => true,
                     'validators' => array(
                         new \Zend_Validate_NotEmpty(\Zend_Validate_NotEmpty::ZERO)
                     )
@@ -70,7 +69,7 @@ class Admin_School extends Twitter_Bootstrap_Form_Horizontal
         //Saving
         $this
             ->addElement('button', 'submit', array(
-                    'label' => 'Save New School!', 'type' => 'submit',
+                    'label' => 'Save School!', 'type' => 'submit',
                     'buttonType' => Twitter_Bootstrap_Form_Element_Submit::BUTTON_SUCCESS
             ));
         $this

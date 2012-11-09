@@ -19,7 +19,12 @@ class MongoPresentationRepository implements PresentationRepository
         if (!$presentation instanceof Presentation) {
             throw new \InvalidArgumentException('Instance of Presentation expected.');
         }
-        $array = $presentation->toArray();
+        if(is_null($presentation->getId())){
+            $presentation->markCreated();
+        }else{
+            $presentation->markUpdated();
+        }
+        $array = $presentation->toMongoArray();
         $id = array_shift($array);
         $array['date'] = new \MongoDate(strtotime($array['date']));
         $results = $this->mongoDb->presentation->update(

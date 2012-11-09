@@ -30,10 +30,15 @@ class MongoMemberRepository implements MemberRepository
         if (!$member instanceof Member) {
             throw new \InvalidArgumentException('Instance of Member expected.');
         }
+
+        if(is_null($member->getId())){
+            $member->markCreated();
+        }else{
+            $member->markUpdated();
+        }
         $array = $member->toMongoArray();
 
         $id = array_shift($array);
-        $array['dateCreated'] = new \MongoDate();
         $results = $this->mongoDb->selectCollection('member')
             ->update(array(
                 '_id' => new \MongoId($id)
@@ -75,8 +80,16 @@ class MongoMemberRepository implements MemberRepository
     private function mapData($memberData)
     {
         $member = new Member();
-        $member->setId($memberData['_id']->__toString())->setLegacyId($memberData['legacyid'])
-            ->setFirstName($memberData['fname'])->setLastName($memberData['lname']);
+        $member->setId($memberData['_id']->__toString())
+               ->setLegacyId($memberData['legacyid'])
+               ->setFirstName($memberData['fname'])
+               ->setLastName($memberData['lname']);
+        if (array_key_exists('dateCreated', $memberData)) {
+            $member->setCreatedOn(strtotime(date('Y-M-d h:i:s', $memberData['dateCreated']->sec)));
+        }
+        if (array_key_exists('dateUpdated', $memberData)) {
+            $member->setUpdatedOn(strtotime(date('Y-M-d h:i:s', $memberData['dateUpdated']->sec)));
+        }
         if (array_key_exists('type', $memberData)) {
             $member->setType($memberData['type']);
         }
@@ -133,7 +146,7 @@ class MongoMemberRepository implements MemberRepository
         }
         if (array_key_exists('diagnosis', $memberData)) {
             $diagnosis = $memberData['diagnosis'];
-            $diagnosisDate = array_key_exists('date', $diagnosis) ? date('Y-M-d h:i:s', $diagnosis['date']->sec) : null;
+            $diagnosisDate = array_key_exists('date', $diagnosis) && ! is_null($diagnosis['date']) ? date('Y-M-d h:i:s', $diagnosis['date']->sec) : null;
             $diagnosisStage = array_key_exists('stage', $diagnosis) ? $diagnosis['stage'] : null;
             $member->setDiagnosis(
                 new Diagnosis($diagnosisDate, $diagnosisStage)

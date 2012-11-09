@@ -1,12 +1,16 @@
 <?php
+namespace STS\Core\Api;
+
 use STS\Domain\Member;
 use STS\Domain\School\Specification\MemberSchoolSpecification;
 use STS\Domain\School;
 use STS\Domain\Location\Area;
 use STS\Core\Api\DefaultSchoolFacade;
 use STS\Core\Location\MongoAreaRepository;
+use STS\TestUtilities\SchoolTestCase;
+use STS\TestUtilities\Location\AreaTestCase;
 
-class DefaultSchoolFacadeTest extends \PHPUnit_Framework_TestCase
+class DefaultSchoolFacadeTest extends SchoolTestCase
 {
     /**
      * @test
@@ -38,7 +42,7 @@ class DefaultSchoolFacadeTest extends \PHPUnit_Framework_TestCase
     {
         $facade = new DefaultSchoolFacade($this->getMockSchoolRepository(), $this->getMockAreaRepository());
         $types = $facade->getSchoolTypes();
-        $this->assertEquals(array('TYPE_SCHOOL'=>'School', 'TYPE_HOSPITAL'=>'Hospital'), $types);
+        $this->assertEquals(array('TYPE_SCHOOL' => 'School', 'TYPE_HOSPITAL' => 'Hospital', 'TYPE_NP' => 'NP', 'TYPE_PA' => 'PA'), $types);
     }
 
     private function getMockAreaRepository()
@@ -59,5 +63,33 @@ class DefaultSchoolFacadeTest extends \PHPUnit_Framework_TestCase
                 $schoolA, $schoolB
             ));
         return $schoolRepository;
+    }
+
+    /**
+     * @test
+     */
+    public function validUpdateSchool()
+    {
+        $updatedSchoolName = 'Updated School Name';
+        $oldSchool = $this->getValidSchool();
+        $school = $this->getValidSchool();
+        $school->setName($updatedSchoolName);
+        $schoolRepository = \Mockery::mock('STS\Core\School\MongoSchoolRepository', array('load'=> $oldSchool, 'save'=>$school));
+        $areaRepository = \Mockery::mock('STS\Core\Location\MongoAreaRepository', array('load'=>AreaTestCase::createValidArea()));
+        $facade = new DefaultSchoolFacade($schoolRepository, $areaRepository);
+        $updatedSchoolDto = $facade->updateSchool(
+            $school->getId(),
+            $school->getName(),
+            $school->getArea()->getId(),
+            'TYPE_SCHOOL',
+            $school->getNotes(),
+            $school->getAddress()->getLineOne(),
+            $school->getAddress()->getLineTwo(),
+            $school->getAddress()->getCity(),
+            $school->getAddress()->getState(),
+            $school->getAddress()->getZip()
+        );
+        $this->assertInstanceOf('STS\Core\School\SchoolDto', $updatedSchoolDto);
+        $this->assertEquals($updatedSchoolName, $updatedSchoolDto->getName());
     }
 }

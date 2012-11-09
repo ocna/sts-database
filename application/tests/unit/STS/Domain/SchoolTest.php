@@ -19,7 +19,7 @@ class SchoolTest extends SchoolTestCase
     {
         $this
             ->assertEquals(array(
-                'TYPE_SCHOOL' => 'School', 'TYPE_HOSPITAL' => 'Hospital'
+                'TYPE_SCHOOL' => 'School', 'TYPE_HOSPITAL' => 'Hospital', 'TYPE_NP' => 'NP', 'TYPE_PA' => 'PA'
             ), School::getAvailableTypes());
     }
 

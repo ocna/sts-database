@@ -9,11 +9,12 @@ use STS\Core\School\SchoolDto;
 
 class SchoolTestCase extends \PHPUnit_Framework_TestCase
 {
-    const ID = '502314eec6464712c1e705cc';
+    const ID = '509c47941f804c464d01959d';
     const LEGACY_ID = 14;
     const NAME = 'Michigan State University School of Medicine';
     const TYPE = 'School';
     const NOTES = 'This is an interesting note!';
+    const TYPE_KEY = 'TYPE_SCHOOL';
     protected function getValidSchool()
     {
         $school = new School();
@@ -43,7 +44,7 @@ class SchoolTestCase extends \PHPUnit_Framework_TestCase
     {
         $dto = new SchoolDto(self::ID, self::LEGACY_ID, self::NAME, self::TYPE, self::NOTES, RegionTestCase::NAME,
                 AreaTestCase::NAME, AddressTestCase::LINE_ONE, AddressTestCase::LINE_TWO,
-                AddressTestCase::CITY, AddressTestCase::STATE, AddressTestCase::ZIP);
+                AddressTestCase::CITY, AddressTestCase::STATE, AddressTestCase::ZIP, AreaTestCase::ID, self::TYPE_KEY);
         return $dto;
     }
     protected function assertValidSchoolDto($dto)
@@ -53,6 +54,8 @@ class SchoolTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::ID, $dto->getId());
         $this->assertEquals(self::LEGACY_ID, $dto->getLegacyId());
         $this->assertEquals(self::NAME, $dto->getName());
+        $this->assertEquals(self::TYPE_KEY, $dto->getTypeKey());
+        $this->assertEquals(AreaTestCase::ID, $dto->getAreaId());
         $this->assertEquals(RegionTestCase::NAME, $dto->getRegionName());
         $this->assertEquals(AreaTestCase::NAME, $dto->getAreaName());
         $this->assertEquals(AddressTestCase::LINE_ONE, $dto->getAddressLineOne());

@@ -16,8 +16,9 @@ class SchoolDto
     private $addressCity;
     private $addressState;
     private $addressZip;
-    public function __construct($id, $legacyId, $name, $type, $notes, $regionName, $areaName, $addressLineOne,
-                    $addressLineTwo, $addressCity, $addressState, $addressZip)
+    private $areaId;
+    private $typeKey;
+    public function __construct($id, $legacyId, $name, $type, $notes, $regionName, $areaName, $addressLineOne, $addressLineTwo, $addressCity, $addressState, $addressZip, $areaId, $typeKey)
     {
         $this->id = $id;
         $this->name = $name;
@@ -31,6 +32,8 @@ class SchoolDto
         $this->addressCity = $addressCity;
         $this->addressState = $addressState;
         $this->addressZip = $addressZip;
+        $this->areaId = $areaId;
+        $this->typeKey = $typeKey;
     }
     public function getName()
     {
@@ -79,5 +82,13 @@ class SchoolDto
     public function getAddressZip()
     {
         return $this->addressZip;
+    }
+    public function getTypeKey()
+    {
+        return $this->typeKey;
+    }
+    public function getAreaId()
+    {
+        return $this->areaId;
     }
 }
