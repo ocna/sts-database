@@ -7,3 +7,52 @@
 An error occurred.</h1>
 <h2><?php echo $this->message ?>.</h2>
 </div>
+<?php if($this->devEnvironment == true):?>
+<hr>
+
+<div class="alert alert-error">
+<h2><?php echo $this->message ?></h2>
+<h3><?=$this->exception->getCode() ? $this->exception->getCode() . ' : ' : ''?><?=$this->exception->getMessage()?></h3>
+<p>
+    <b>Message:</b> 
+        <?=$this->exception->getMessage()?> 
+    </p>
+<p>
+    <b>File:</b>
+        <?=$this->exception->getFile()?> 
+    </p>
+<p>
+    <b>Line:</b>
+        <?=$this->exception->getLine()?> 
+    </p>
+</div>
+<h3>Stack trace:</h3>
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Class</th>
+            <th>Function</th>
+            <th>Line</th>
+        </tr>
+    </thead>
+    <tbody>
+  <?php foreach ($this->exception->getTrace() as $key=>$value):?>
+    <tr>
+            <td><?php echo $key;?></td>
+            <td><?php echo $value['class'];?><br>
+            <span class="muted">
+            <i><?php echo str_replace(ROOT_PATH, '', $value['file']);?></i>
+            </span></td>
+            <td><?php echo $value['function'];?><br>
+            <td><?php echo $value['line'];?></td>
+        </tr>
+    <?php endforeach;?>
+  </tbody>
+
+</table>
+
+<h3>Request Parameters:</h3>
+<?
+    var_dump($this->request->getParams())?> 
+<?php endif;?>

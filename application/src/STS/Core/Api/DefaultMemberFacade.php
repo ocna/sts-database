@@ -80,7 +80,12 @@ class DefaultMemberFacade implements MemberFacade
     }
     public function saveMember($firstName, $lastName, $type, $status, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers)
     {
-        $diagnosis = new Diagnosis($diagnosisInfo['date'], $diagnosisInfo['stage']);
+        if(in_array($diagnosisInfo['stage'], array('0',0,''))){
+            $stage = null;
+        }else{
+            $stage = $diagnosisInfo['stage'];
+        }
+        $diagnosis = new Diagnosis($diagnosisInfo['date'], $stage);
         $address = new Address();
         $address->setLineOne($addressLineOne)->setLineTwo($addressLineTwo)->setCity($city)->setState($state)->setZip($zip);
         $member = new Member();
@@ -101,13 +106,26 @@ class DefaultMemberFacade implements MemberFacade
         foreach ($this->getAreasForIds($coordinatesFor) as $area) {
             $member->canCoordinateForArea($area);
         }
-
         foreach ($phoneNumbers as $type => $number) {
             $number = preg_replace('/[-]/', '', $number);
-            $member->addPhoneNumber(new PhoneNumber($number, $type));
+            if(preg_match('/\d{10}/', $number)){
+                $member->addPhoneNumber(new PhoneNumber($number, $type));
+            }
         }
         $updatedMember = $this->memberRepository->save($member);
         return MemberDtoAssembler::toDTO($updatedMember);
+    }
+
+    public function deleteMember($id){
+        try{
+            $member = $this->memberRepository->load($id);
+            if(! $member->canBeDeleted()){
+                throw new ApiException('Unable to delete member.');
+            }
+            return $this->memberRepository->delete($id);
+        }catch(\InvalidArgumentException $e){
+            throw new ApiException('Error deleting member.', $e->getCode(), $e);
+        }
     }
     public static function getDefaultInstance($config)
     {

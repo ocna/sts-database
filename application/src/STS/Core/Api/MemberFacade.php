@@ -11,4 +11,5 @@ interface MemberFacade
         $presentsFor, $facilitatesFor, $coordinatesFor, $userId, 
         $addressLineOne, $addressLineTwo, $city, $state,
                     $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers);
+    public function deleteMember($id);
 }
