@@ -12,6 +12,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $view->setBasePath(APPLICATION_PATH . "/../design/");
         return $view;
     }
+    
+    protected function _initConfig()
+    {
+        $config = new Zend_Config($this->getOptions(), true);
+        Zend_Registry::set('config', $config);
+    }
+
     public function _initModules()
     {
         $this->bootstrap('frontController');
