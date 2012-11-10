@@ -30,9 +30,41 @@ class DefaultMemberFacade implements MemberFacade
     public function getAllMembers()
     {
         $members = $this->memberRepository->find();
-
         return $this->getArrayOfDtos($members);
     }
+    public function getMembersMatching($criteria)
+    {
+        if (empty($criteria)) {
+            return $this->getAllMembers();
+        }
+        $query = array();
+        if (array_key_exists('status', $criteria)) {
+            $in = array();
+            foreach ($criteria['status'] as $key) {
+                $in[] = Member::getAvailableStatus($key);
+            }
+            $query['status']=array('$in'=>$in);
+        }
+        $members = $this->memberRepository->find($query);
+        if (array_key_exists('region', $criteria)) {
+            $members = $this->filterMembersByRegions($criteria['region'], $members);
+        }
+        if (array_key_exists('role', $criteria)) {
+            $members = $this->filterMembersByLinkedUserRoles($criteria['role'], $members);
+        }
+        return $this->getArrayOfDtos($members);
+        //get the raw query
+        //db.member.find({ 'facilitates_for': { $in : [{"_id" : ObjectId("502d90100172cda7d649d425")}, {"_id" : ObjectId("502d90100172cda7d649d438") }]}})
+    }
+
+    private function filterMembersByRegions($regions, $members){
+        //to implement get the areas by region see if there is intersection
+    }
+
+    private function filterMembersByLinkedUserRoles($roles, $members){
+        //to implement get role for linked user, filter as needed
+    }
+
     public function getMemberTypes()
     {
         return Member::getAvailableTypes();
@@ -80,9 +112,9 @@ class DefaultMemberFacade implements MemberFacade
     }
     public function saveMember($firstName, $lastName, $type, $status, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers)
     {
-        if(in_array($diagnosisInfo['stage'], array('0',0,''))){
+        if (! in_array($diagnosisInfo['stage'], Diagnosis::getAvailableStages())) {
             $stage = null;
-        }else{
+        } else {
             $stage = $diagnosisInfo['stage'];
         }
         $diagnosis = new Diagnosis($diagnosisInfo['date'], $stage);
