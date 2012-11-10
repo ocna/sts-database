@@ -57,7 +57,7 @@ class Diagnosis
     public function setStage($stage)
     {
         if ($stage !== null && !in_array($stage, static::getAvailableStages(), true)) {
-            throw new \InvalidArgumentException('No such type with given value.');
+            throw new \InvalidArgumentException('No such type with given value.'. $stage);
         }
         $this->stage = $stage;
         return $this;
