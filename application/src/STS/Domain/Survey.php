@@ -100,9 +100,9 @@ class Survey
                 if($question->getResponse()){
                         $response = $question->getResponse();
                     if($question->whenAsked()==0){
-                        $responseArray = array('type'=>'Pair', 'beforeValue'=>$response->getBeforeResponse(), 'afterValue'=>$response->getAfterResponse());
+                        $responseArray = array('type'=>'Pair', 'beforeValue'=>utf8_encode($response->getBeforeResponse()), 'afterValue'=>utf8_encode($response->getAfterResponse()));
                     }else{
-                        $responseArray = array('type'=>'Single', 'value'=>$response->getResponse());
+                        $responseArray = array('type'=>'Single', 'value'=>utf8_encode($response->getResponse()));
                     }
                 }
                 $questionArray['response']= $responseArray;

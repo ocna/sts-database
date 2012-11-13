@@ -14,6 +14,22 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
     const ADMIN_USER_ID = 'muser';
     const BASIC_USER_ID = 'buser';
     const COORDINATOR_USER_ID = 'cuser';
+
+    /**
+     * @test
+     */
+    public function itShouldReturnASinglePresentation()
+    {
+        $presentation = $this->getValidObject();
+        $presentationRepository = \Mockery::mock('STS\Core\Presentation\MongoPresentationRepository', array('load'=>$presentation));
+        $userRepository = \Mockery::mock('STS\Core\User\MongoUserRepository', array('load'=>UserTestCase::createValidUser()));
+        $memberRepository = \Mockery::mock('STS\Core\Member\MongoMemberRepository', array('load'=>MemberTestCase::createValidMember()));
+        $schoolRepository = \Mockery::mock('STS\Core\School\MongoSchoolRepository', array('load'=>SchoolTestCase::createValidSchool()));
+        $facade = new DefaultPresentationFacade($presentationRepository, $userRepository, $memberRepository, $schoolRepository);
+        $dto = $facade->getPresentationById(self::ID);
+        $this->assertValidPresentationDto($dto);
+    }
+
     /**
      * @test
      */

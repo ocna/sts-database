@@ -4,6 +4,7 @@ interface MemberFacade
 {
     public function getMemberById($id);
     public function getAllMembers();
+    public function getMembersMatching($criteria);
     public function searchForMembersByNameWithSpec($searchString, $spec);
     public function getMemberByMemberAreaSpecForId($id);
     public function getMemberSchoolSpecForId($id);

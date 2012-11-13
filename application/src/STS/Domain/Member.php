@@ -96,18 +96,18 @@ class Member extends EntityWithTypes
             $phoneNumbers[] = array("number"=> $phoneNumber->getNumber(), "type"=>$phoneNumber->getType());
         }
         $array = array(
-                'id' => $this->id, 'fname' => $this->firstName, 'lname'=>$this->lastName, 'type' => $this->type, 'notes' => $this->notes,
-                'legacyid' => $this->legacyId, 'status'=>$this->status, 'fullname' => $this->getFullName(),
+                'id' => $this->id, 'fname' => utf8_encode($this->firstName), 'lname'=>utf8_encode($this->lastName), 'type' => $this->type, 'notes' => utf8_encode($this->notes),
+                'legacyid' => $this->legacyId, 'status'=>$this->status, 'fullname' => utf8_encode($this->getFullName()),
                 'user_id' => $this->associatedUserId,
                 'address' => array(
-                        'line_one' => $this->address->getLineOne(), 'line_two' => $this->address->getLineTwo(),
-                        'city' => $this->address->getCity(), 'state' => $this->address->getState(),
+                        'line_one' => utf8_encode($this->address->getLineOne()), 'line_two' => utf8_encode($this->address->getLineTwo()),
+                        'city' => utf8_encode($this->address->getCity()), 'state' => $this->address->getState(),
                         'zip' => $this->address->getZip()
                 ),
                 'facilitates_for' => $facilitatesFor,
                 'presents_for'=> $presentsFor,
                 'coordinates_for'=> $coordinatesFor,
-                'email'=> $this->email,
+                'email'=> utf8_encode($this->email),
                 'date_trained' => new \MongoDate(strtotime($this->dateTrained)),
                 'diagnosis' => array(
                     'stage' => $this->diagnosis->getStage(),
@@ -259,18 +259,33 @@ class Member extends EntityWithTypes
         return $areas;
     }
 
-    public function canBeDeleted(){
+    public function getAllAssociatedRegions()
+    {
+        $regions = array();
+        $areas = $this->getAllAssociatedAreas();
+        foreach ($areas as $area) {
+            $region = $area->getRegion()->getName();
+            if (!in_array($region, $regions)) {
+                $regions[] = $region;
+            }
+        }
+        return $regions;
+    }
+
+    public function canBeDeleted() 
+    {
         $canBeDeleted = $this->canBeDeleted;
-        if(!$canBeDeleted){
+        if (!$canBeDeleted) {
             return false;
         }
-        if(isset($this->associatedUserId)){
+        if (isset($this->associatedUserId)) {
             $canBeDeleted = false;
         }
         return $canBeDeleted;
     }
 
-    public function setCanBeDeleted($canIt){
+    public function setCanBeDeleted($canIt) 
+    {
         $this->canBeDeleted = $canIt;
         return $this;
     }

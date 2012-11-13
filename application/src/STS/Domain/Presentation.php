@@ -18,7 +18,8 @@ class Presentation extends EntityWithTypes
     private $date;
     private $notes;
     private $numberOfParticipants;
-    private $numberOfFormsReturned;
+    private $numberOfFormsReturnedPre;
+    private $numberOfFormsReturnedPost;
     private $location;
     private $members = array();
     private $survey;
@@ -27,7 +28,9 @@ class Presentation extends EntityWithTypes
     {
         $array = array(
                 'id' => $this->id, 'entered_by_user_id' => $this->enteredByUserId, 'type' => $this->type,
-                'notes' => $this->notes, 'nforms' => $this->numberOfFormsReturned, 'date' => $this->date,
+                'notes' => utf8_encode($this->notes), 'nforms' => $this->numberOfFormsReturnedPost,
+                'nformspre'=>$this->numberOfFormsReturnedPre,
+                'date' => $this->date,
                 'nparticipants' => $this->numberOfParticipants, 'school_id' => $this->location->getId(),
                 'survey_id' => $this->survey->getId(),
                 'dateCreated' => new \MongoDate($this->getCreatedOn()),
@@ -77,13 +80,22 @@ class Presentation extends EntityWithTypes
         $this->numberOfParticipants = $numberOfParticipants;
         return $this;
     }
-    public function getNumberOfFormsReturned()
+    public function getNumberOfFormsReturnedPost()
     {
-        return $this->numberOfFormsReturned;
+        return $this->numberOfFormsReturnedPost;
     }
-    public function setNumberOfFormsReturned($numberOfFormsReturned)
+    public function setNumberOfFormsReturnedPost($numberOfFormsReturnedPost)
     {
-        $this->numberOfFormsReturned = $numberOfFormsReturned;
+        $this->numberOfFormsReturnedPost = $numberOfFormsReturnedPost;
+        return $this;
+    }
+    public function getNumberOfFormsReturnedPre()
+    {
+        return $this->numberOfFormsReturnedPre;
+    }
+    public function setNumberOfFormsReturnedPre($numberOfFormsReturnedPre)
+    {
+        $this->numberOfFormsReturnedPre = $numberOfFormsReturnedPre;
         return $this;
     }
     public function getLocation()

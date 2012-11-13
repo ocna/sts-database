@@ -36,6 +36,16 @@ class Presentation_IndexController extends SecureBaseController
         $this->view->objects = $dtos;
     }
 
+    public function viewAction(){
+        $id = $this->getRequest()->getParam('id');
+        $dto = $this->presentationFacade->getPresentationById($id);
+        $this->view->layout()->pageHeader = $this->view
+            ->partial('partials/page-header.phtml', array(
+                'title' => $dto->getSchoolName(). ' - '. $dto->getDate()
+            ));
+        $this->view->presentation = $dto;
+    }
+
     public function newAction()
     {
         $this->view->form = $this->getForm();
@@ -116,7 +126,7 @@ class Presentation_IndexController extends SecureBaseController
         //Then Save Presentation
         $members = array_keys($postData['membersAttended']);
         $this->presentationFacade
-            ->savePresentation($userId, $postData['location'], $postData['presentationType'], $postData['dateOfPresentation'], $postData['notes'], $members, $postData['participants'], $postData['formsReturned'], $surveyId);
+            ->savePresentation($userId, $postData['location'], $postData['presentationType'], $postData['dateOfPresentation'], $postData['notes'], $members, $postData['participants'], $postData['formsReturnedPost'], $surveyId, $postData['formsReturnedPre']);
         return true;
     }
 }

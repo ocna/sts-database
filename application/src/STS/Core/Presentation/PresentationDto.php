@@ -9,6 +9,8 @@ class PresentationDto
     private $schoolName;
     private $schoolAreaCity;
     private $numberOfParticipants;
+    private $numberOfFormsReturnedPost;
+    private $numberOfFormsReturnedPre;
     private $date;
     private $type;
 
@@ -20,7 +22,7 @@ class PresentationDto
       * @param string $date
       * @param string $type
       */
-    public function __construct($id, $schoolName, $schoolAreaCity, $numberOfParticipants, $date, $type)
+    public function __construct($id, $schoolName, $schoolAreaCity, $numberOfParticipants, $date, $type, $postForms, $preForms)
     {
         $this->id = $id;
         $this->schoolName = $schoolName;
@@ -28,6 +30,8 @@ class PresentationDto
         $this->numberOfParticipants = $numberOfParticipants;
         $this->type = $type;
         $this->date = $date;
+        $this->numberOfFormsReturnedPost = $postForms;
+        $this->numberOfFormsReturnedPre = $preForms;
     }
     public function getId()
     {
@@ -52,5 +56,21 @@ class PresentationDto
     public function getSchoolName()
     {
         return $this->schoolName;
+    }
+    public function getNumberOfFormsReturnedPost()
+    {
+        return $this->numberOfFormsReturnedPost;
+    }
+    public function getNumberOfFormsReturnedPre()
+    {
+        return $this->numberOfFormsReturnedPre;
+    }
+    public function getPreFormsPercentage()
+    {
+        return round(($this->numberOfFormsReturnedPre/$this->numberOfParticipants)*100);
+    }
+    public function getPostFormsPercentage()
+    {
+        return round(($this->numberOfFormsReturnedPost/$this->numberOfParticipants)*100);
     }
 }

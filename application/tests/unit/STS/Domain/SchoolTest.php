@@ -18,8 +18,14 @@ class SchoolTest extends SchoolTestCase
     public function getValidTypes()
     {
         $this
-            ->assertEquals(array(
-                'TYPE_SCHOOL' => 'School', 'TYPE_HOSPITAL' => 'Hospital', 'TYPE_NP' => 'NP', 'TYPE_PA' => 'PA'
+            ->assertEquals(
+                array(
+                'TYPE_SCHOOL' => 'School',
+                'TYPE_HOSPITAL' => 'Hospital',
+                'TYPE_NP' => 'NP',
+                'TYPE_PA' => 'PA',
+                'TYPE_NURSING'=>'Nursing',
+                'TYPE_MEDICAL'=>'Medical'
             ), School::getAvailableTypes());
     }
 

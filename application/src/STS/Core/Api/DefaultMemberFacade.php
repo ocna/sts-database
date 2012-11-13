@@ -8,6 +8,7 @@ use STS\Core\Member\MemberDto;
 use STS\Core\Api\MemberFacade;
 use STS\Core\Member\MongoMemberRepository;
 use STS\Core\Location\MongoAreaRepository;
+use STS\Core\User\MongoUserRepository;
 use STS\Domain\Member;
 use STS\Domain\Location\Address;
 use STS\Domain\Member\Diagnosis;
@@ -17,10 +18,11 @@ class DefaultMemberFacade implements MemberFacade
 {
     private $memberRepository;
     private $areaRepository;
-    public function __construct($memberRepository, $areaRepository)
+    public function __construct($memberRepository, $areaRepository, $userRepository)
     {
         $this->memberRepository = $memberRepository;
         $this->areaRepository = $areaRepository;
+        $this->userRepository = $userRepository;
     }
     public function getMemberById($id)
     {
@@ -30,9 +32,72 @@ class DefaultMemberFacade implements MemberFacade
     public function getAllMembers()
     {
         $members = $this->memberRepository->find();
-
         return $this->getArrayOfDtos($members);
     }
+    public function getMembersMatching($criteria)
+    {
+        if (empty($criteria)) {
+            return $this->getAllMembers();
+        }
+        $query = array();
+        if (array_key_exists('status', $criteria) && ! empty($criteria['status'])) {
+            $in = array();
+            foreach ($criteria['status'] as $key) {
+                $in[] = Member::getAvailableStatus($key);
+            }
+            $query = array(
+                        'status' => array('$in'=>$in),
+                );
+        }
+        $members = $this->memberRepository->find($query);
+        if (array_key_exists('region', $criteria) && ! empty($criteria['region'])) {
+            $members = $this->filterMembersByRegions($criteria['region'], $members);
+        }
+        if (array_key_exists('role', $criteria) && ! empty($criteria['role'])) {
+            $members = $this->filterMembersByLinkedUserRoles($criteria['role'], $members);
+        }
+        return $this->getArrayOfDtos($members);
+    }
+
+    private function filterMembersByRegions($regions, $members)
+    {   $filteredMembers = $members;
+        if (!empty($regions)) {
+            $filteredMembers = array();
+            foreach ($members as $member) {
+                $intersection = array_intersect($regions, $member->getAllAssociatedRegions());
+                if (! empty($intersection)) {
+                    $filteredMembers[] = $member;
+                }
+            }
+        }
+            return $filteredMembers;
+
+    }
+
+    private function filterMembersByLinkedUserRoles($roles, $members)
+    {
+        //to implement get role for linked user, filter as needed
+        $filteredMembers = array();
+        foreach ($members as $member){
+            if (in_array('ROLE_MEMBER', $roles) && is_null($member->getAssociatedUserId())) {
+                $filteredMembers[] = $member;
+            }
+            if (! is_null($member->getAssociatedUserId()) && (in_array('ROLE_ADMIN', $roles)||in_array('ROLE_COORDINATOR', $roles)||in_array('ROLE_FACILITATOR', $roles))) {
+                $user = $this->userRepository->load($member->getAssociatedUserId());
+                if (in_array('ROLE_ADMIN', $roles) && $user->getAvailableRole('ROLE_ADMIN') == $user->getRole()) {
+                    $filteredMembers[] = $member;
+                }
+                if (in_array('ROLE_COORDINATOR', $roles) && $user->isRole('ROLE_COORDINATOR')) {
+                    $filteredMembers[] = $member;
+                }
+                if (in_array('ROLE_FACILITATOR', $roles) && $user->isRole('ROLE_FACILITATOR')) {
+                    $filteredMembers[] = $member;
+                }
+            }
+        }
+        return $filteredMembers;
+    }
+
     public function getMemberTypes()
     {
         return Member::getAvailableTypes();
@@ -80,9 +145,9 @@ class DefaultMemberFacade implements MemberFacade
     }
     public function saveMember($firstName, $lastName, $type, $status, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers)
     {
-        if(in_array($diagnosisInfo['stage'], array('0',0,''))){
+        if (! in_array($diagnosisInfo['stage'], Diagnosis::getAvailableStages())) {
             $stage = null;
-        }else{
+        } else {
             $stage = $diagnosisInfo['stage'];
         }
         $diagnosis = new Diagnosis($diagnosisInfo['date'], $stage);
@@ -135,7 +200,8 @@ class DefaultMemberFacade implements MemberFacade
         $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $memberRepository = new MongoMemberRepository($mongoDb);
         $areaRepository = new MongoAreaRepository($mongoDb);
-        return new DefaultMemberFacade($memberRepository, $areaRepository);
+        $userRepository = new MongoUserRepository($mongoDb);
+        return new DefaultMemberFacade($memberRepository, $areaRepository, $userRepository);
     }
     private function getArrayOfDtos($array)
     {
