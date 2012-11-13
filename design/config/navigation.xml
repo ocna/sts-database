@@ -7,6 +7,22 @@
         <action>index</action>
         <resource>presentation</resource>
     </presentation>
+    <report>
+        <label>Reports</label>
+        <module>admin</module>
+        <controller>report</controller>
+        <action>index</action>
+        <resource>report</resource>
+        <pages>
+            <presentation>
+                <label>Presentation Summary Report</label>
+                <module>admin</module>
+                <controller>report</controller>
+                <action>presentation</action>
+                <resource>report</resource>
+            </presentation>
+        </pages>
+    </report>
     <admin>
         <label>Administration</label>
         <module>admin</module>

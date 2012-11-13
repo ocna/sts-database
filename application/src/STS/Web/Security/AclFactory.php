@@ -12,6 +12,8 @@ class AclFactory
     const RESOURCE_USER = 'user';
     const RESOURCE_SCHOOL = 'school';
     const RESOURCE_SEARCH = 'search';
+    const RESOURCE_REPORT = 'report';
+
     public static function buildAcl()
     {
         $acl = new \Zend_Acl();
@@ -26,6 +28,7 @@ class AclFactory
         $acl->addResource(self::RESOURCE_MEMBER, self::RESOURCE_ADMIN);
         $acl->addResource(self::RESOURCE_USER, self::RESOURCE_ADMIN);
         $acl->addResource(self::RESOURCE_SCHOOL, self::RESOURCE_ADMIN);
+        $acl->addResource(self::RESOURCE_REPORT, self::RESOURCE_ADMIN);
         //Establish Rules
         $acl->allow(self::ROLE_ADMIN);
         $acl->allow(self::ROLE_FACILITATOR, self::RESOURCE_PRESENTATION);

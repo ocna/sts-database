@@ -1,0 +1,79 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+        $( "#startDate" ).datepicker();
+        $("#startDateButton").click(function(){
+            $( "#startDate" ).datepicker( "show" );
+        })
+
+        $( "#endDate" ).datepicker();
+        $("#endDateButton").click(function(){
+            $( "#endDate" ).datepicker( "show" );
+        })
+    })
+</script>
+
+<script type='text/javascript' src='https://www.google.com/jsapi'></script>
+    <script type='text/javascript'>
+     google.load('visualization', '1', {'packages': ['geochart']});
+     google.setOnLoadCallback(drawRegionsMap);
+
+      function drawRegionsMap() {
+        var data = google.visualization.arrayToDataTable([
+            ['State', 'Presentations', 'Students'],
+            <?php foreach($this->summary->geo as $state => $info){
+                echo "['$state', {$info->presentations}, {$info->participants}],\n";
+            }
+            ?>
+        ]);
+
+        var options = {region: 'US', resolution: 'provinces'};
+
+        var chart = new google.visualization.GeoChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+    };
+    </script>
+
+<div class="row">
+    <div class="span12">
+        <div class="row">
+            <div class="span3 well">
+                <?php echo $this->form; ?>
+            </div>
+            <div class="span8">
+                <?php if($this->noData == true): ?>
+                <div class="alert alert-info">
+                    <h4>Data Unavailable!</h4>
+                    There is no information for the choices you selected. Please try again.
+                </div>
+                <?php else: ?>
+                <h3>Data for <?php echo $this->startDate; ?> to <?php echo $this->endDate; ?></h3>
+                <div class="row-fluid">
+                    <div class="span6 well well-small">
+                        <h4><i class="icon-file icon-large"></i>&nbsp;Presentations Held</h4><br><br>
+                        <div style="font-size: 63px;">
+                            <strong><?php echo $this->summary->totalPresentations; ?></strong>
+                        </div>
+                        <br>
+                    </div>
+                    <div class="span6 well well-small">
+                        <h4><i class="icon-user icon-large"></i>&nbsp;Students Reached</h4><br><br>
+                        <div style="font-size: 63px;">
+                            <strong><?php echo $this->summary->totalStudents; ?></strong>
+                        </div>
+                        <br>
+                    </div>
+                </div>
+                <h3>Geographic Distribution</h3>
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div id="chart_div"></div>
+                    </div>
+                </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+
+    
