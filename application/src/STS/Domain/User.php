@@ -4,6 +4,10 @@ use STS\Domain\Entity;
 
 class User extends Entity
 {
+    const ROLE_ADMIN = 'admin';
+    const ROLE_COORDINATOR = 'coordinator';
+    const ROLE_FACILITATOR = 'facilitator';
+
     private $email;
     private $password;
     private $role;
@@ -115,5 +119,34 @@ class User extends Entity
         $this->password = sha1($this->salt . $newPassword);
 
         return $this;
+    }
+
+    public function isRole($key)
+    {
+        return $this->getAvailableRole($key) == $this->getRole();
+    }
+
+    public static function getAvailableRole($key)
+    {
+        if (substr($key, 0, 5) != 'ROLE_') {
+            throw new \InvalidArgumentException('Role key must begin with "ROLE_".');
+        }
+        if (!array_key_exists($key, static::getAvailableRoles())) {
+            throw new \InvalidArgumentException('No such role with given key.');
+        }
+        $reflected = new \ReflectionClass(get_called_class());
+        return $reflected->getConstant($key);
+    }
+
+    public static function getAvailableRoles()
+    {
+        $reflected = new \ReflectionClass(get_called_class());
+        $roles = array();
+        foreach ($reflected->getConstants() as $key => $value) {
+            if (substr($key, 0, 5) == 'ROLE_') {
+                $types[$key] = $value;
+            }
+        }
+        return $types;
     }
 }

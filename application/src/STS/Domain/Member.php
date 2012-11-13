@@ -259,18 +259,33 @@ class Member extends EntityWithTypes
         return $areas;
     }
 
-    public function canBeDeleted(){
+    public function getAllAssociatedRegions()
+    {
+        $regions = array();
+        $areas = $this->getAllAssociatedAreas();
+        foreach ($areas as $area) {
+            $region = $area->getRegion()->getName();
+            if (!in_array($region, $regions)) {
+                $regions[] = $region;
+            }
+        }
+        return $regions;
+    }
+
+    public function canBeDeleted() 
+    {
         $canBeDeleted = $this->canBeDeleted;
-        if(!$canBeDeleted){
+        if (!$canBeDeleted) {
             return false;
         }
-        if(isset($this->associatedUserId)){
+        if (isset($this->associatedUserId)) {
             $canBeDeleted = false;
         }
         return $canBeDeleted;
     }
 
-    public function setCanBeDeleted($canIt){
+    public function setCanBeDeleted($canIt) 
+    {
         $this->canBeDeleted = $canIt;
         return $this;
     }

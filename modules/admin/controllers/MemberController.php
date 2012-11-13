@@ -20,16 +20,72 @@ class Admin_MemberController extends SecureBaseController {
         $this->authFacade = $core->load('AuthFacade');
         $this->mailerFacade = $core->load('MailerFacade');
     }
-    public function indexAction() {
-        $this->view->members = $this->getMembersArray();
-        $this->view->layout()->pageHeader = $this->view->partial('partials/page-header.phtml', array(
-            'title' => 'Members',
-            'add' => 'Add New Member',
-            'addRoute' => '/admin/member/new'
-        ));
+    public function indexAction()
+    {
+        $this->view->layout()->pageHeader = $this->view->partial(
+            'partials/page-header.phtml',
+            array(
+                'title' => 'Members',
+                'add' => 'Add New Member',
+                'addRoute' => '/admin/member/new'
+                )
+        );
+        $form = $this->getFilterForm();
+        $criteria = array();
+        $params = $this->getRequest()->getParams();
+        if (array_key_exists('reset', $params)) {
+            return $this->_helper->redirector('index');
+        }
+        if (array_key_exists('update', $params)) {
+            $form->setDefaults($params);
+            $this->filterParams('role', $params, $criteria);
+            $this->filterParams('status', $params, $criteria);
+            $this->filterParams('region', $params, $criteria);
+        }
+        $members = $this->memberFacade->getMembersMatching($criteria);
+        $this->view->form = $form;
+        $memberDtos = $this->getMembersArray($members);
+        if(empty($memberDtos) && array_key_exists('update', $params)){
+            $this->setFlashMessageAndRedirect('No members matched your selected filter criteria!','warning', array(
+                        'module' => 'admin',
+                        'controller' => 'member',
+                        'action' => 'index'
+                    ));
+        }
+        $this->view->members = $memberDtos;
+    }
+    private function filterParams($key, &$params, &$criteria)
+    {
+        if (array_key_exists($key, $params)) {
+            $chaff = array_search('0', $params[$key]);
+            if($chaff !== false){
+                unset($params[$key][$chaff]);
+            }
+            $criteria[$key] = $params[$key];
+        }
+    }
+    private function getFilterForm()
+    {
+        $form = new \Admin_MemberFilter(
+            array(
+                'roles' => array_merge(array(0=>'', 'ROLE_MEMBER'=>'Member'), AclFactory::getAvailableRoles()),
+                'regions' => $this->getRegionsArray(),
+                'memberStatuses' => array_merge(array(''), $this->getMemberStatusesArray())
+            )
+        );
+        return $form;
     }
 
-    public function deleteAction(){
+    private function getRegionsArray()
+    {
+        $regionsArray = array('');
+        foreach ($this->locationFacade->getAllRegions() as $region) {
+            $regionsArray[$region->getName()] = $region->getName();
+        }
+        return $regionsArray;
+    }
+    public function deleteAction()
+    {
         $id = $this->getRequest()->getParam('id');
         try{
             $results = $this->memberFacade->deleteMember($id);
@@ -262,10 +318,11 @@ class Admin_MemberController extends SecureBaseController {
             array('work' => $data['workPhone'], 'cell'=> $data['cellPhone'], 'home'=>$data['homePhone'])
         );
     }
-    private function getMembersArray() {
+    private function getMembersArray($members) {
         $memberData = array();
-        $members = $this->memberFacade->getAllMembers();
-        
+        if (empty($members)){
+            return $memberData;
+        }
         foreach ($members as $member) {
             $notes =$member->getNotes();
             $hasNotes = empty($notes) ? false : true;
@@ -349,24 +406,33 @@ class Admin_MemberController extends SecureBaseController {
         $statesArray = array_merge(array(
             ''
         ) , $this->locationFacade->getStates());
-        $rolesArray = array_merge(array(
-            'Member'
-        ) , AclFactory::getAvailableRoles());
+        
         $memberTypesArray = array_merge(array(
             ''
         ) , $this->memberFacade->getMemberTypes());
         $memberStatusesArray = $this->memberFacade->getMemberStatuses();
         $form = new \Admin_Member(array(
             'states' => $statesArray,
-            'roles' => $rolesArray,
+            'roles' => $this->getRolesArray(),
             'memberTypes' => $memberTypesArray,
-            'memberStatuses' => $memberStatusesArray,
+            'memberStatuses' => $this->getMemberStatusesArray(),
             'diagnosisStages' => $diagnosisStagesArray,
             'phoneNumberTypes' => $this->memberFacade->getPhoneNumberTypes()
         ));
         
         return $form;
     }
+
+    private function getRolesArray()
+    {
+        return array_merge(array('Member'), AclFactory::getAvailableRoles());
+    }
+
+    private function getMemberStatusesArray()
+    {
+        return $this->memberFacade->getMemberStatuses();
+    }
+
     private function getAreasForRegionsArray($array) {
         $dtos = $this->locationFacade->getAreasForRegions($array);
         $keys = array();

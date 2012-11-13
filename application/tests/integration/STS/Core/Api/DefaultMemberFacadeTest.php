@@ -10,6 +10,16 @@ use STS\TestUtilities\Location\AddressTestCase;
 class DefaultMemberFacadeTest extends MemberTestCase
 {
     protected $cleanUp = array();
+    /**
+     * @test
+     */
+    public function validGetMembersMatchingNullCriteria()
+    {
+        $facade = $this->loadFacadeInstance();
+        $allMembers = $facade->getAllMembers();
+        $membersMatching = $facade->getMembersMatching(null);
+        $this->assertEquals(count($allMembers), count($membersMatching));
+    }
 
     /**
      * @test
