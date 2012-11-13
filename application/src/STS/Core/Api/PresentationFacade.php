@@ -24,7 +24,7 @@ interface PresentationFacade
      * @param int $forms
      * @param string $surveyId
      */
-    public function savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId);
+    public function savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId, $preForms);
 
     /**
      *

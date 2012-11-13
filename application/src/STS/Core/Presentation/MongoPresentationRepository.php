@@ -68,9 +68,12 @@ class MongoPresentationRepository implements PresentationRepository
                      ->setNumberOfParticipants($data['nparticipants'])
                      ->setDate(date('Y-M-d h:i:s', $data['date']->sec))
                      ->setNotes($data['notes'])
-                     ->setNumberOfFormsReturned($data['nforms'])
+                     ->setNumberOfFormsReturnedPost($data['nforms'])
                      ->setEnteredByUserId($data['entered_by_user_id'])
                      ->setType($data['type']);
+        if (array_key_exists('nformspre', $data)) {
+            $presentation->setNumberOfFormsReturnedPre($data['nformspre']);
+        }
         $schoolRepository = new MongoSchoolRepository($this->mongoDb);
         $presentation->setLocation($schoolRepository->load($data['school_id']));
         $memberRepository = new MongoMemberRepository($this->mongoDb);

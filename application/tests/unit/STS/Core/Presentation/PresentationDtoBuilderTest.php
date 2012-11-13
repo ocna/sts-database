@@ -23,6 +23,9 @@ class PresentationDtoBuilderTest extends PresentationTestCase
         $this->assertNull($dto->getId());
         $this->assertNull($dto->getId());
         $this->assertNull($dto->getId());
+        $this->assertNull($dto->getNumberOfFormsReturnedPre());
+        $this->assertNull($dto->getNumberOfFormsReturnedPost());
+        $this->assertNull($dto->getId());
     }
 
     /**
@@ -37,7 +40,9 @@ class PresentationDtoBuilderTest extends PresentationTestCase
                 ->withSchoolAreaCity($validDto->getSchoolAreaCity())
                 ->withNumberOfParticipants($validDto->getNumberOfParticipants())
                 ->withType($validDto->getType())
-                ->withDate($validDto->getDate());
+                ->withDate($validDto->getDate())
+                ->withNumberOfFormsReturnedPost($validDto->getNumberOfFormsReturnedPost())
+                ->withNumberOfFormsReturnedPre($validDto->getNumberOfFormsReturnedPre());
         $dto = $builder->build();
         $this->assertValidPresentationDto($dto);
     }
