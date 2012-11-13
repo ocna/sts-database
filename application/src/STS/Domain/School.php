@@ -18,14 +18,14 @@ class School extends EntityWithTypes
     {
         $areaId = new \MongoId($this->area->getId());
         $array = array(
-                'id' => $this->id, 'name' => $this->name, 'type' => $this->type, 'notes' => $this->notes,
+                'id' => $this->id, 'name' => utf8_encode($this->name), 'type' => $this->type, 'notes' => utf8_encode($this->notes),
                 'legacyid' => $this->legacyId,
                 'area_id' => array(
                     '_id' => $areaId
                 ),
                 'address' => array(
-                        'line_one' => $this->address->getLineOne(), 'line_two' => $this->address->getLineTwo(),
-                        'city' => $this->address->getCity(), 'state' => $this->address->getState(),
+                        'line_one' => utf8_encode($this->address->getLineOne()), 'line_two' => utf8_encode($this->address->getLineTwo()),
+                        'city' => utf8_encode($this->address->getCity()), 'state' => $this->address->getState(),
                         'zip' => $this->address->getZip()
                 ),
                 'dateCreated' => new \MongoDate($this->getCreatedOn()),

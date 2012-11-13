@@ -20,9 +20,9 @@ class User extends Entity
     {
         $array = array(
             '_id' => $this->id,
-            'email' => $this->email,
-            'fname' => $this->firstName,
-            'lname' => $this->lastName,
+            'email' => utf8_encode($this->email),
+            'fname' => utf8_encode($this->firstName),
+            'lname' => utf8_encode($this->lastName),
             'legacyid' => $this->legacyId,
             'role' => $this->role,
             'pw' => $this->password,

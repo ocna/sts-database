@@ -27,7 +27,7 @@ class Presentation extends EntityWithTypes
     {
         $array = array(
                 'id' => $this->id, 'entered_by_user_id' => $this->enteredByUserId, 'type' => $this->type,
-                'notes' => $this->notes, 'nforms' => $this->numberOfFormsReturned, 'date' => $this->date,
+                'notes' => utf8_encode($this->notes), 'nforms' => $this->numberOfFormsReturned, 'date' => $this->date,
                 'nparticipants' => $this->numberOfParticipants, 'school_id' => $this->location->getId(),
                 'survey_id' => $this->survey->getId(),
                 'dateCreated' => new \MongoDate($this->getCreatedOn()),
