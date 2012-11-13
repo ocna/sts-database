@@ -71,6 +71,32 @@ class DefaultPresentationFacade implements PresentationFacade
         return $dtos;
     }
 
+    public function getPresentationsSummary($criteria = array())
+    {
+        $summary = new \stdClass();
+        $summary->startDate = $criteria['startDate'];
+        $summary->endDate = $criteria['endDate'];
+        $startDate = strtotime($summary->startDate);
+        $endDate = strtotime($summary->endDate);
+        $query = array(
+            'date' => array(
+                '$gte'=> new \MongoDate(min($startDate, $endDate)),
+                '$lt'=> new \MongoDate(max($startDate, $endDate))
+                )
+            );
+        $presentations = $this->presentationRepository->find($query);
+
+        $summary->totalPresentations = count($presentations);
+        $summary->totalStudents = 0;
+        foreach ($presentations as $presentation) {
+            $summary->totalStudents += $presentation->getNumberOfParticipants();
+            $state = $presentation->getLocation()->getArea()->getState();
+            $summary->geo->$state->participants += $presentation->getNumberOfParticipants();
+            $summary->geo->$state->presentations += 1;
+        }
+        return $summary;
+    }
+
     public static function getDefaultInstance($config)
     {
         $mongoConfig = $config->modules->default->db->mongodb;

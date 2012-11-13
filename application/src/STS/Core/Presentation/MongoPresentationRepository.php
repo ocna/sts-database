@@ -57,9 +57,9 @@ class MongoPresentationRepository implements PresentationRepository
      /**
       * @param array $criteria
       */
-    public function find($criteria = null)
+    public function find($criteria = array())
     {
-        $presentationData = $this->mongoDb->presentation->find()->sort(
+        $presentationData = $this->mongoDb->presentation->find($criteria)->sort(
             array(
                 'date' => -1
             )
