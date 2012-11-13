@@ -17,7 +17,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
      */
     public function validSaveNewMember()
     {
-        $facade = new DefaultMemberFacade($this->getMockMemberRepoForSave(), $this->getMockAreaRepository());
+        $facade = new DefaultMemberFacade($this->getMockMemberRepoForSave(), $this->getMockAreaRepository(), $this->getMockUserRepository());
         $presentsFor = array_keys($this->getValidPresentsForAreasArray());
         $facilitatesFor = array_keys($this->getValidFacilitatesForAreasArray());
         $coordinatesFor = array_keys($this->getValidCoordinatesForAreasArray());
@@ -61,7 +61,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
      */
     public function validGetMemberStatuses()
     {
-        $facade = new DefaultMemberFacade($this->getMockMemberRepository(), $this->getMockAreaRepository());
+        $facade = new DefaultMemberFacade($this->getMockMemberRepository(), $this->getMockAreaRepository(), $this->getMockUserRepository());
         $this
             ->assertEquals(array(
                 'STATUS_ACTIVE' => 'Active', 'STATUS_INACTIVE' => 'Inactive', 'STATUS_DECEASED' => 'Deceased'
@@ -73,7 +73,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
      */
     public function validGetDiagnosisStages()
     {
-        $facade = new DefaultMemberFacade($this->getMockMemberRepository(), $this->getMockAreaRepository());
+        $facade = new DefaultMemberFacade($this->getMockMemberRepository(), $this->getMockAreaRepository(), $this->getMockUserRepository());
         $this->assertEquals(
             array(
             'I'=>'I',
@@ -97,7 +97,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
      */
     public function validGetPhoneNumberTypes()
     {
-        $facade = new DefaultMemberFacade($this->getMockMemberRepository(), $this->getMockAreaRepository());
+        $facade = new DefaultMemberFacade($this->getMockMemberRepository(), $this->getMockAreaRepository(), $this->getMockUserRepository());
         $this->assertEquals(array(
             'TYPE_HOME' => 'home',
             'TYPE_CELL' => 'cell',
@@ -112,7 +112,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
      */
     public function validGetAllSchoolsWithNoSpec()
     {
-        $facade = new DefaultMemberFacade($this->getMockMemberRepository(), $this->getMockAreaRepository());
+        $facade = new DefaultMemberFacade($this->getMockMemberRepository(), $this->getMockAreaRepository(), $this->getMockUserRepository());
         $memberDtos = $facade->searchForMembersByNameWithSpec('Jab', null);
         $this->assertCount(2, $memberDtos);
     }
@@ -121,7 +121,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
      */
     public function validGetMembersPerMemberSpec()
     {
-        $facade = new DefaultMemberFacade($this->getMockMemberRepository(), $this->getMockAreaRepository());
+        $facade = new DefaultMemberFacade($this->getMockMemberRepository(), $this->getMockAreaRepository(), $this->getMockUserRepository());
         $member = new Member();
         $areaA = new Area();
         $spec = new MemberByMemberAreaSpecification($member->canPresentForArea($areaA->setId(11)));
@@ -139,7 +139,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
         $memberA = new Member();
         $memberA->setId(1);
         $memberRepository->shouldReceive('load')->with('1')->andReturn($memberA);
-        $facade = new DefaultMemberFacade($memberRepository, $this->getMockAreaRepository());
+        $facade = new DefaultMemberFacade($memberRepository, $this->getMockAreaRepository(), $this->getMockUserRepository());
         $spec = $facade->getMemberByMemberAreaSpecForId(1);
         $this->assertInstanceOf('STS\Domain\Member\Specification\MemberByMemberAreaSpecification', $spec);
     }
@@ -152,7 +152,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
         $memberA = new Member();
         $memberA->setId(1);
         $memberRepository->shouldReceive('load')->with('1')->andReturn($memberA);
-        $facade = new DefaultMemberFacade($memberRepository, $this->getMockAreaRepository());
+        $facade = new DefaultMemberFacade($memberRepository, $this->getMockAreaRepository(), $this->getMockUserRepository());
         $spec = $facade->getMemberSchoolSpecForId(1);
         $this->assertInstanceOf('STS\Domain\School\Specification\MemberSchoolSpecification', $spec);
     }
@@ -187,7 +187,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
         $memberRepository = \Mockery::mock('STS\Core\Member\MongoMemberRepository');
         $memberRepository->shouldReceive('load')->with($member->getId())->andReturn($member);
         $memberRepository->shouldReceive('delete')->with($member->getId())->andReturn(true);
-        $facade = new DefaultMemberFacade($memberRepository, $this->getMockAreaRepository());
+        $facade = new DefaultMemberFacade($memberRepository, $this->getMockAreaRepository(), $this->getMockUserRepository());
         $this->assertTrue($facade->deleteMember($member->getId()));
     }
 
@@ -200,7 +200,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
         $member = $this->getValidMember();
         $memberRepository = \Mockery::mock('STS\Core\Member\MongoMemberRepository');
         $memberRepository->shouldReceive('load')->with($member->getId())->andReturn($member);
-        $facade = new DefaultMemberFacade($memberRepository, $this->getMockAreaRepository());
+        $facade = new DefaultMemberFacade($memberRepository, $this->getMockAreaRepository(), $this->getMockUserRepository());
         $this->assertTrue($facade->deleteMember($member->getId()));
     }
 
@@ -215,8 +215,12 @@ class DefaultMemberFacadeTest extends MemberTestCase
         $member->setCanBeDeleted(false);
         $memberRepository = \Mockery::mock('STS\Core\Member\MongoMemberRepository');
         $memberRepository->shouldReceive('load')->with($member->getId())->andReturn($member);
-        $facade = new DefaultMemberFacade($memberRepository, $this->getMockAreaRepository());
+        $facade = new DefaultMemberFacade($memberRepository, $this->getMockAreaRepository(), $this->getMockUserRepository());
         $this->assertTrue($facade->deleteMember($member->getId()));
     }
 
+    private function getMockUserRepository()
+    {
+        return \Mockery::mock('STS\Core\User\MongoUserRepository');
+    }
 }

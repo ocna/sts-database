@@ -8,6 +8,8 @@ class School extends EntityWithTypes
     const TYPE_HOSPITAL = 'Hospital';
     const TYPE_NP = 'NP';
     const TYPE_PA = 'PA';
+    const TYPE_NURSING = 'Nursing'; 
+    const TYPE_MEDICAL = 'Medical';
 
     private $legacyId;
     private $name;
