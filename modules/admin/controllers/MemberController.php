@@ -44,7 +44,15 @@ class Admin_MemberController extends SecureBaseController {
         }
         $members = $this->memberFacade->getMembersMatching($criteria);
         $this->view->form = $form;
-        $this->view->members = $this->getMembersArray($members);
+        $memberDtos = $this->getMembersArray($members);
+        if(empty($memberDtos) && array_key_exists('update', $params)){
+            $this->setFlashMessageAndRedirect('No members matched your selected filter criteria!','warning', array(
+                        'module' => 'admin',
+                        'controller' => 'member',
+                        'action' => 'index'
+                    ));
+        }
+        $this->view->members = $memberDtos;
     }
     private function filterParams($key, &$params, &$criteria)
     {
