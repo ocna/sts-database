@@ -14,7 +14,9 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
     const DISPLAY_DATE = '5/10/2012';
     const NOTES = 'The presentation went quite well I must say.';
     const PARTICIPANTS = 203;
-    const FORMS = 198;
+    const FORMS_POST = 198;
+    const FORMS_PRE = 200;
+
     protected function getValidObject()
     {
         $school = SchoolTestCase::createValidSchool();
@@ -23,9 +25,17 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         );
         $survey = $this->getMockBuilder('STS\Domain\Survey')->disableOriginalConstructor()->getMock();
         $presentation = new Presentation();
-        $presentation->setEnteredByUserId(self::ENTERED_BY_USER_ID)->setId(self::ID)->setLocation($school)->setType(self::TYPE)->setDate(self::DATE)
-            ->setNotes(self::NOTES)->setMembers($members)->setNumberOfParticipants(self::PARTICIPANTS)
-            ->setNumberOfFormsReturned(self::FORMS)->setSurvey($survey);
+        $presentation->setEnteredByUserId(self::ENTERED_BY_USER_ID)
+                     ->setId(self::ID)
+                     ->setLocation($school)
+                     ->setType(self::TYPE)
+                     ->setDate(self::DATE)
+                     ->setNotes(self::NOTES)
+                     ->setMembers($members)
+                     ->setNumberOfParticipants(self::PARTICIPANTS)
+                     ->setNumberOfFormsReturnedPost(self::FORMS_POST)
+                     ->setNumberOfFormsReturnedPre(self::FORMS_PRE)
+                     ->setSurvey($survey);
         return $presentation;
     }
 
@@ -37,7 +47,7 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
 
     protected function getValidPresentationDto()
     {
-        return new PresentationDto(self::ID, SchoolTestCase::NAME, AreaTestCase::CITY, self::PARTICIPANTS, self::DATE, self::TYPE);
+        return new PresentationDto(self::ID, SchoolTestCase::NAME, AreaTestCase::CITY, self::PARTICIPANTS, self::DATE, self::TYPE, self::FORMS_POST, self::FORMS_PRE);
     }
     protected function assertValidObject($presentation)
     {
@@ -47,7 +57,8 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::DATE, $presentation->getDate());
         $this->assertEquals(self::NOTES, $presentation->getNotes());
         $this->assertEquals(self::PARTICIPANTS, $presentation->getNumberOfParticipants());
-        $this->assertEquals(self::FORMS, $presentation->getNumberOfFormsReturned());
+        $this->assertEquals(self::FORMS_POST, $presentation->getNumberOfFormsReturnedPost());
+        $this->assertEquals(self::FORMS_PRE, $presentation->getNumberOfFormsReturnedPre());
         $this->assertInstanceOf('STS\Domain\School', $presentation->getLocation());
         $this->assertInstanceOf('STS\Domain\Survey', $presentation->getSurvey());
         $this->assertTrue(is_array($presentation->getMembers()));
@@ -64,5 +75,7 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::PARTICIPANTS, $dto->getNumberOfParticipants());
         $this->assertEquals(self::TYPE, $dto->getType());
         $this->assertEquals(self::DISPLAY_DATE, $dto->getDate());
+        $this->assertEquals(self::FORMS_POST, $dto->getNumberOfFormsReturnedPost());
+        $this->assertEquals(self::FORMS_PRE, $dto->getNumberOfFormsReturnedPre());
     }
 }

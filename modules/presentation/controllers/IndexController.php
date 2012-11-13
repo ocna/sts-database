@@ -116,7 +116,7 @@ class Presentation_IndexController extends SecureBaseController
         //Then Save Presentation
         $members = array_keys($postData['membersAttended']);
         $this->presentationFacade
-            ->savePresentation($userId, $postData['location'], $postData['presentationType'], $postData['dateOfPresentation'], $postData['notes'], $members, $postData['participants'], $postData['formsReturned'], $surveyId);
+            ->savePresentation($userId, $postData['location'], $postData['presentationType'], $postData['dateOfPresentation'], $postData['notes'], $members, $postData['participants'], $postData['formsReturnedPost'], $surveyId, $postData['formsReturnedPre']);
         return true;
     }
 }

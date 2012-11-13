@@ -26,7 +26,7 @@ class DefaultPresentationFacade implements PresentationFacade
         $this->memberRepository = $memberRepository;
         $this->schoolRepository = $schoolRepository;
     }
-    public function savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId)
+    public function savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId, $preForms)
     {
         $school = $this->schoolRepository->load($schoolId);
         $members = array();
@@ -41,7 +41,8 @@ class DefaultPresentationFacade implements PresentationFacade
         $presentation = new Presentation();
         $presentation->setEnteredByUserId($enteredByUserId)->setLocation($school)
             ->setType(Presentation::getAvailableType($typeCode))->setDate($date)->setNotes($notes)
-            ->setNumberOfParticipants($participants)->setNumberOfFormsReturned($forms)->setSurvey($survey)
+            ->setNumberOfParticipants($participants)->setNumberOfFormsReturnedPost($forms)->setSurvey($survey)
+            ->setNumberOfFormsReturnedPre($preForms)
             ->setMembers($members);
         $updatedPresentation = $this->presentationRepository->save($presentation);
         return PresentationDtoAssembler::toDto($updatedPresentation);

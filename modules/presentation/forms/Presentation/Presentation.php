@@ -66,10 +66,19 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
                         'int'
                     )
             ));
-        //FormsReturned
+        //FormsReturned Pre
         $this
-            ->addElement('text', 'formsReturned', array(
-                    'label' => 'Number of Forms Returned', 'dimension' => 1, 'required' => true,
+            ->addElement('text', 'formsReturnedPre', array(
+                    'label' => 'Number of Forms Returned (Pre Class)', 'dimension' => 1, 'required' => true,
+                    'validators' => array(
+                        'int'
+                    )
+            ));
+
+        //FormsReturned Post
+        $this
+            ->addElement('text', 'formsReturnedPost', array(
+                    'label' => 'Number of Forms Returned (Post Class)', 'dimension' => 1, 'required' => true,
                     'validators' => array(
                         'int'
                     )

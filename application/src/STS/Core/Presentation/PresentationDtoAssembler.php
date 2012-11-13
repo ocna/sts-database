@@ -13,6 +13,8 @@ class PresentationDtoAssembler
         $builder->withNumberOfParticipants($presentation->getNumberOfParticipants());
         $builder->withDate($presentation->getDate());
         $builder->withType($presentation->getType());
+        $builder->withNumberOfFormsReturnedPost($presentation->getNumberOfFormsReturnedPost());
+        $builder->withNumberOfFormsReturnedPre($presentation->getNumberOfFormsReturnedPre());
         return $builder->build();
     }
 }

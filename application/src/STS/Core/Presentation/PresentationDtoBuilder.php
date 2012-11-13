@@ -10,10 +10,12 @@ class PresentationDtoBuilder
     private $numberOfParticipants = null;
     private $date = null;
     private $type = null;
+    private $numberOfFormsReturnedPost = null;
+    private $numberOfFormsReturnedPre  = null;
 
     public function build()
     {
-        return new PresentationDto($this->id, $this->schoolName, $this->schoolAreaCity, $this->numberOfParticipants, $this->date, $this->type);
+        return new PresentationDto($this->id, $this->schoolName, $this->schoolAreaCity, $this->numberOfParticipants, $this->date, $this->type, $this->numberOfFormsReturnedPost, $this->numberOfFormsReturnedPre);
     }
 
      /**
@@ -67,6 +69,18 @@ class PresentationDtoBuilder
     public function withType($type)
     {
         $this->type = $type;
+        return $this;
+    }
+
+    public function withNumberOfFormsReturnedPost($formsPost)
+    {
+        $this->numberOfFormsReturnedPost = $formsPost;
+        return $this;
+    }
+
+    public function withNumberOfFormsReturnedPre($formsPre)
+    {
+        $this->numberOfFormsReturnedPre = $formsPre;
         return $this;
     }
 }

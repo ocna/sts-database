@@ -43,11 +43,14 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
         $enteredByUserId = 'auser';
         $participants = 20;
         $forms = 18;
+        $preForms = 20;
         $surveyId = '5035af240172cda7d649d477';
 
         $facade = $this->loadFacadeInstance();
-        $presentationDto = $facade->savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId);
+        $presentationDto = $facade->savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId, $preForms);
         $this->assertNotNull($presentationDto->getId());
+        $this->assertEquals($forms, $presentationDto->getNumberOfFormsReturnedPost());
+        $this->assertEquals($preForms, $presentationDto->getNumberOfFormsReturnedPre());
         $this->cleanUp[] = array('collection'=>'presentation','_id'=> new \MongoId($presentationDto->getId()));
     }
     private function loadFacadeInstance()
