@@ -28,6 +28,7 @@ $columns = array('date'=>'Date', 'schoolName'=>'School','schoolAreaCity'=>'City'
             echo "<td>{$object->$method()}</td>";
             }?>
             <td style="text-align:right;">
+                <a class="btn btn-mini" href="/presentation/index/view?id=<?php echo $object->getId()?>"><i class="icon-info-sign"></i> Details</a>
             </td>
         <?php }?>   
         </tr>

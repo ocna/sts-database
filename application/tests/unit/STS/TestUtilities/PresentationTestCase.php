@@ -13,9 +13,9 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
     const DATE = '2012-05-10 11:55:23';
     const DISPLAY_DATE = '5/10/2012';
     const NOTES = 'The presentation went quite well I must say.';
-    const PARTICIPANTS = 203;
-    const FORMS_POST = 198;
-    const FORMS_PRE = 200;
+    const PARTICIPANTS = 104;
+    const FORMS_POST = 76;
+    const FORMS_PRE = 98;
 
     protected function getValidObject()
     {
@@ -77,5 +77,7 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::DISPLAY_DATE, $dto->getDate());
         $this->assertEquals(self::FORMS_POST, $dto->getNumberOfFormsReturnedPost());
         $this->assertEquals(self::FORMS_PRE, $dto->getNumberOfFormsReturnedPre());
+        $this->assertEquals(94, $dto->getPreFormsPercentage());
+        $this->assertEquals(73, $dto->getPostFormsPercentage());
     }
 }

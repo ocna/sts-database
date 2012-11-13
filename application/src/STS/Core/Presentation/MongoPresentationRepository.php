@@ -42,6 +42,18 @@ class MongoPresentationRepository implements PresentationRepository
         return $presentation;
     }
 
+    public function load($id)
+    {
+        $data = $this->mongoDb->presentation->findOne(array(
+                '_id' => new \MongoId($id)
+            ));
+        if ($data == null) {
+            throw new \InvalidArgumentException("Presentation not found with given id: $id");
+        }
+        $presentation = $this->mapData($data);
+        return $presentation;
+    }
+
      /**
       * @param array $criteria
       */

@@ -52,6 +52,11 @@ class DefaultPresentationFacade implements PresentationFacade
         return Presentation::getAvailableTypes();
     }
 
+    public function getPresentationById($id)
+    {
+        $presentation = $this->presentationRepository->load($id);
+        return PresentationDtoAssembler::toDto($presentation);
+    }
     public function getPresentationsForUserId($userId)
     {
         $user = $this->userRepository->load($userId);

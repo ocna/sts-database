@@ -21,6 +21,17 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
     /**
      * @test
      */
+    public function itShouldGetOnePresentationById()
+    {
+        $facade = $this->loadFacadeInstance();
+        $dto = $facade->getPresentationById('5068b274559ac99cfe2f6796');
+        $this->assertEquals('5068b274559ac99cfe2f6796', $dto->getId());
+    }
+    
+
+    /**
+     * @test
+     */
     public function adminUserShouldSeeAllPresentations()
     {
         $facade = $this->loadFacadeInstance();

@@ -32,4 +32,6 @@ interface PresentationFacade
      * @param string  $userId
      */
     public function getPresentationsForUserId($userId);
+
+    public function getPresentationById($id);
 }

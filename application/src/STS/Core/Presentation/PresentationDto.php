@@ -65,4 +65,12 @@ class PresentationDto
     {
         return $this->numberOfFormsReturnedPre;
     }
+    public function getPreFormsPercentage()
+    {
+        return round(($this->numberOfFormsReturnedPre/$this->numberOfParticipants)*100);
+    }
+    public function getPostFormsPercentage()
+    {
+        return round(($this->numberOfFormsReturnedPost/$this->numberOfParticipants)*100);
+    }
 }
