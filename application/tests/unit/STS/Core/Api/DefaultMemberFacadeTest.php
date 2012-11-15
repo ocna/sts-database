@@ -55,28 +55,6 @@ class DefaultMemberFacadeTest extends MemberTestCase
         //thens
         $this->assertInstanceOf('STS\Core\Member\MemberDto', $updatedMemberDto);
         $this->assertEquals($updatedFirstName, $updatedMemberDto->getFirstName());
-        ////
-
-        //givens
-        $updatedFirstName = 'Test User Update';
-        $oldUser = $this->getValidUser();
-        $user = $this->getValidUser();
-        $user->setFirstName($updatedFirstName);
-        $userRepository = \Mockery::mock('STS\Core\User\MongoUserRepository', array('load'=>$oldUser, 'save'=>$user));
-        $facade = new DefaultUserFacade($userRepository);
-        //whens
-        $updatedUserDto = $facade->updateUser(
-            $user->getId(),
-            $updatedFirstName,
-            $user->getLastName(),
-            $user->getEmail(),
-            self::BASIC_USER_PASSWORD, 
-            $user->getRole(),
-            $user->getAssociatedMemberId()
-        );
-        //thens
-        $this->assertInstanceOf('STS\Core\User\UserDto', $updatedUserDto);
-        $this->assertEquals($updatedFirstName, $updatedUserDto->getFirstName());
     }
     
 

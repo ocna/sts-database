@@ -60,6 +60,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
         $updatedMemberDto = $facade->getMemberById(self::ID);
         $this->assertInstanceOf('STS\Core\Member\MemberDto', $updatedMemberDto);
         $this->assertEquals($updatedFirstName, $updatedMemberDto->getFirstName());
+        
         //reset
         $facade->updateMember(
             self::ID,

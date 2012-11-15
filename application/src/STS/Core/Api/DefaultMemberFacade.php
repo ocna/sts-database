@@ -145,45 +145,18 @@ class DefaultMemberFacade implements MemberFacade
     }
     public function saveMember($firstName, $lastName, $type, $status, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers)
     {
-        if (! in_array($diagnosisInfo['stage'], Diagnosis::getAvailableStages())) {
-            $stage = null;
-        } else {
-            $stage = $diagnosisInfo['stage'];
-        }
-        $diagnosis = new Diagnosis($diagnosisInfo['date'], $stage);
-        $address = new Address();
-        $address->setLineOne($addressLineOne)->setLineTwo($addressLineTwo)->setCity($city)->setState($state)->setZip($zip);
         $member = new Member();
-        $member->setFirstName($firstName)->setLastName($lastName)
-               ->setType($type)->setStatus($status)->setNotes($notes)
-               ->setAddress($address)->setAssociatedUserId($userId)
-               ->setEmail($email)->setDateTrained($dateTrained)
-               ->setDiagnosis($diagnosis);
-
-        foreach ($this->getAreasForIds($presentsFor) as $area) {
-            $member->canPresentForArea($area);
-        }
-
-        foreach ($this->getAreasForIds($facilitatesFor) as $area) {
-            $member->canFacilitateForArea($area);
-        }
-
-        foreach ($this->getAreasForIds($coordinatesFor) as $area) {
-            $member->canCoordinateForArea($area);
-        }
-        foreach ($phoneNumbers as $type => $number) {
-            $number = preg_replace('/[-]/', '', $number);
-            if(preg_match('/\d{10}/', $number)){
-                $member->addPhoneNumber(new PhoneNumber($number, $type));
-            }
-        }
+        $this->setMemberProperties($member, $firstName, $lastName, $type, $status, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers);
         $updatedMember = $this->memberRepository->save($member);
         return MemberDtoAssembler::toDTO($updatedMember);
     }
 
     public function updateMember($id, $firstName, $lastName, $type, $status, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers)
     {
-
+        $member = $this->memberRepository->load($id);
+        $this->setMemberProperties($member, $firstName, $lastName, $type, $status, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers);
+        $updatedMember = $this->memberRepository->save($member);
+        return MemberDtoAssembler::toDTO($updatedMember);
     }
 
     public function deleteMember($id){
@@ -226,5 +199,40 @@ class DefaultMemberFacade implements MemberFacade
             $areas[] = $this->areaRepository->load($id);
         }
         return $areas;
+    }
+
+    private function setMemberProperties(&$member, $firstName, $lastName, $type, $status, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers)
+    {
+        if (! in_array($diagnosisInfo['stage'], Diagnosis::getAvailableStages())) {
+            $stage = null;
+        } else {
+            $stage = $diagnosisInfo['stage'];
+        }
+        $diagnosis = new Diagnosis($diagnosisInfo['date'], $stage);
+        $address = new Address();
+        $address->setLineOne($addressLineOne)->setLineTwo($addressLineTwo)->setCity($city)->setState($state)->setZip($zip);
+        $member->setFirstName($firstName)->setLastName($lastName)
+               ->setType($type)->setStatus($status)->setNotes($notes)
+               ->setAddress($address)->setAssociatedUserId($userId)
+               ->setEmail($email)->setDateTrained($dateTrained)
+               ->setDiagnosis($diagnosis)->clearPresentsFor()->clearFacilitatesFor()->clearCoordinatesFor()->clearPhoneNumbers();
+
+        foreach ($this->getAreasForIds($presentsFor) as $area) {
+            $member->canPresentForArea($area);
+        }
+
+        foreach ($this->getAreasForIds($facilitatesFor) as $area) {
+            $member->canFacilitateForArea($area);
+        }
+
+        foreach ($this->getAreasForIds($coordinatesFor) as $area) {
+            $member->canCoordinateForArea($area);
+        }
+        foreach ($phoneNumbers as $type => $number) {
+            $number = preg_replace('/[-]/', '', $number);
+            if(preg_match('/\d{10}/', $number)){
+                $member->addPhoneNumber(new PhoneNumber($number, $type));
+            }
+        }
     }
 }
