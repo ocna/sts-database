@@ -250,6 +250,17 @@ class Admin_MemberController extends SecureBaseController {
         $this->view->form = $form;
     }
 
+    public function editAction(){
+        $id = $this->getRequest()->getParam('id');
+        $form = $this->getForm();
+        $form->setAction('/admin/member/edit?id='.$id);
+        $dto = $this->memberFacade->getMemberById($id);
+        $this->view->layout()->pageHeader = $this->view
+            ->partial('partials/page-header.phtml', array(
+                'title' => 'Edit: ' .$dto->getFirstName() . ' ' . $dto->getLastName()
+            ));
+    }
+
     private function sendNotificationOfNewAccount($systemUserDto, $tempPassword){
         $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
         $username = $systemUserDto->getId();
