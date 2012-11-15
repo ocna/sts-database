@@ -7,6 +7,33 @@ class DefaultUserFacadeTest extends UserTestCase
     /**
      * @test
      */
+    public function validUpdateUser()
+    {
+        //givens
+        $updatedFirstName = 'Test User Update';
+        $oldUser = $this->getValidUser();
+        $user = $this->getValidUser();
+        $user->setFirstName($updatedFirstName);
+        $userRepository = \Mockery::mock('STS\Core\User\MongoUserRepository', array('load'=>$oldUser, 'save'=>$user));
+        $facade = new DefaultUserFacade($userRepository);
+        //whens
+        $updatedUserDto = $facade->updateUser(
+            $user->getId(),
+            $user->getFirstName(),
+            $user->getLastName(),
+            $user->getEmail(),
+            self::BASIC_USER_PASSWORD, 
+            $user->getRole(),
+            $user->getAssociatedMemberId()
+        );
+        //thens
+        $this->assertInstanceOf('STS\Core\User\UserDto', $updatedUserDto);
+        $this->assertEquals($updatedFirstName, $updatedUserDto->getFirstName());
+    }
+
+    /**
+     * @test
+     */
     public function validLoadUserById()
     {
         $facade = new DefaultUserFacade($this->getMockUserRepository());

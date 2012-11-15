@@ -41,6 +41,11 @@ class DefaultUserFacade implements UserFacade
         return UserDTOAssembler::toDTO($user);
     }
 
+    public function updateUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId)
+    {
+        
+    }
+
     public static function getDefaultInstance($config)
     {
         $mongoConfig = $config->modules->default->db->mongodb;
