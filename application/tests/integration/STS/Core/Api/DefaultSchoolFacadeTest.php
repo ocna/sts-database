@@ -50,7 +50,6 @@ class DefaultSchoolFacadeTest extends SchoolTestCase
             $school->getAddressZip()
         );
 
-
         //thens
         $updatedSchoolDto = $facade->getSchoolById(self::ID);
         $this->assertInstanceOf('STS\Core\School\SchoolDto', $updatedSchoolDto);

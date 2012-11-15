@@ -4,6 +4,7 @@ use STS\Core\User\UserDTOAssembler;
 use STS\Core\User\MongoUserRepository;
 use STS\Core\Api\UserFacade;
 use STS\Domain\User;
+use STS\Core\Api\ApiException;
 
 class DefaultUserFacade implements UserFacade
 {
@@ -43,7 +44,17 @@ class DefaultUserFacade implements UserFacade
 
     public function updateUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId)
     {
-        
+        $user = $this->userRepository->load($username);
+        if ($associatedMemberId != $user->getAssociatedMemberId()) {
+            throw new ApiException('Can not associate user with different member.');
+        }
+        $user->setFirstName($firstName)
+             ->setLastName($lastName)
+             ->setEmail($email)
+             ->setRole($role)
+             ->initializePasswordIfNew($password);
+        $updatedUser = $this->userRepository->save($user);
+        return UserDTOAssembler::toDTO($updatedUser);
     }
 
     public static function getDefaultInstance($config)
