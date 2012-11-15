@@ -181,6 +181,11 @@ class DefaultMemberFacade implements MemberFacade
         return MemberDtoAssembler::toDTO($updatedMember);
     }
 
+    public function updateMember($id, $firstName, $lastName, $type, $status, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers)
+    {
+
+    }
+
     public function deleteMember($id){
         try{
             $member = $this->memberRepository->load($id);
