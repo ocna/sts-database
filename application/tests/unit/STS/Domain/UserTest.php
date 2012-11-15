@@ -31,6 +31,21 @@ class UserTest extends UserTestCase
     /**
      * @test
      */
+    public function validInitializePasswordIfNewNullWontChange()
+    {
+        $user = new User();
+        $user->initializePassword(self::TEMP_PW);
+        $password = $user->getPassword();
+        $user->initializePasswordIfNew(null);
+        $this->assertEquals($password, $user->getPassword(), 'passwords were changed when null passed');
+        $user->initializePasswordIfNew('');
+        $this->assertEquals($password, $user->getPassword(), 'passwords were changed when blank passed');
+    }
+    
+
+    /**
+     * @test
+     */
     public function validInitializePassword()
     {
         $temp = self::TEMP_PW;

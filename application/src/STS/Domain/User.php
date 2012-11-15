@@ -122,7 +122,7 @@ class User extends Entity
 
     public function initializePasswordIfNew($password)
     {
-        if ($this->password == sha1($this->salt . $password)) {
+        if ($this->password == sha1($this->salt . $password) || is_null($password) || $password == '') {
             return $this;
         } else {
             $this->initializePassword($password);

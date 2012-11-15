@@ -61,6 +61,17 @@ class DefaultUserFacadeTest extends UserTestCase
     /**
      * @test
      */
+    public function validGetUserByMemberId()
+    {
+        $facade = $this->loadFacadeInstance();
+        $userDto = $facade->getUserByMemberId(self::ASSOCIATED_MEMBER_ID);
+        $this->assertValidUserDto($userDto);
+    }
+    
+
+    /**
+     * @test
+     */
     public function validLoadUserByEmail()
     {
         $facade = $this->loadFacadeInstance();

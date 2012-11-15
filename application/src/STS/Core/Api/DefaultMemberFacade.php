@@ -102,6 +102,14 @@ class DefaultMemberFacade implements MemberFacade
     {
         return Member::getAvailableTypes();
     }
+    public function getMemberTypeKey($key)
+    {
+        return array_search($key, Member::getAvailableTypes());
+    }
+    public function getMemberStatusKey($key)
+    {
+        return array_search($key, Member::getAvailableStatuses());
+    }
     public function getMemberStatuses()
     {
         return Member::getAvailableStatuses();

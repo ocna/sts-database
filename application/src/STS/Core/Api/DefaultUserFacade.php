@@ -24,6 +24,18 @@ class DefaultUserFacade implements UserFacade
         }
     }
 
+    public function getUserByMemberId($id)
+    {
+        $users = $this->userRepository->find(
+            array('member_id'=> array('_id' => new \MongoId($id)))
+                    );
+        if(empty($users)){
+            return null;
+        }else{
+            return UserDTOAssembler::toDTO($users[0]);
+        }
+    }
+
     public function findUserByEmail($email)
     {
         $users = $this->userRepository->find(array('email'=>$email));
@@ -57,6 +69,11 @@ class DefaultUserFacade implements UserFacade
         return UserDTOAssembler::toDTO($updatedUser);
     }
 
+    public function getUserRoleKey($key)
+    {
+        return array_search($key, User::getAvailableRoles());
+    }
+
     public static function getDefaultInstance($config)
     {
         $mongoConfig = $config->modules->default->db->mongodb;
@@ -68,4 +85,5 @@ class DefaultUserFacade implements UserFacade
         $userRepository = new MongoUserRepository($mongoDb);
         return new DefaultUserFacade($userRepository);
     }
+
 }
