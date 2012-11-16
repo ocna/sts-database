@@ -112,7 +112,7 @@ class MongoMemberRepository implements MemberRepository
         if (array_key_exists('user_id', $memberData)) {
             $member->setAssociatedUserId($memberData['user_id']);
         }
-        if (array_key_exists('date_trained', $memberData)) {
+        if (array_key_exists('date_trained', $memberData) && ! is_null($memberData['date_trained'])) {
             $member->setDateTrained(date('Y-M-d h:i:s', $memberData['date_trained']->sec));
         }
         if (array_key_exists('status', $memberData)) {

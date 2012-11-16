@@ -108,8 +108,7 @@ class Admin_MemberController extends SecureBaseController {
     public function viewAction() {
         $id = $this->getRequest()->getParam('id');
         $member = $this->memberFacade->getMemberById($id);
-        if ($member->getAssociatedUserId() != null) {
-            $user = $this->userFacade->findUserById($member->getAssociatedUserId());
+        if ($user = $this->userFacade->findUserById($member->getAssociatedUserId())) {
             $this->view->user = $user;
             $role = $user->getRole();
         } else {
@@ -140,81 +139,10 @@ class Admin_MemberController extends SecureBaseController {
         $this->view->form = $this->getForm();
         $request = $this->getRequest();
         $form = $this->getForm();
+        $form->setAction('/admin/member/new');
         if ($this->getRequest()->isPost()) {
             $postData = $request->getPost();
-            $validations = array();
-            $validations[] = $form->getElement('firstName')->isValid($postData['firstName']);
-            $validations[] = $form->getElement('lastName')->isValid($postData['lastName']);
-            $validations[] = $form->getElement('systemUserEmail')->isValid($postData['systemUserEmail']);
-            $validations[] = $form->getElement('memberType')->isValid($postData['memberType']);
-            $validations[] = $form->getElement('role')->isValid($postData['role']);
-            $validations[] = $form->getElement('memberStatus')->isValid($postData['memberStatus']);
-            $validations[] = $form->getElement('dateTrained')->isValid($postData['dateTrained']);
-
-            $validations[] = $form->getElement('workPhone')->isValid($postData['workPhone']);
-            $validations[] = $form->getElement('cellPhone')->isValid($postData['cellPhone']);
-            $validations[] = $form->getElement('homePhone')->isValid($postData['homePhone']);
-
-            $validations[] = $form->getElement('addressLineOne')->isValid($postData['addressLineOne']);
-            $validations[] = $form->getElement('addressLineTwo')->isValid($postData['addressLineTwo']);
-            $validations[] = $form->getElement('city')->isValid($postData['city']);
-            $validations[] = $form->getElement('state')->isValid($postData['state']);
-            $validations[] = $form->getElement('zip')->isValid($postData['zip']);
-
-            $validations[] = $form->getElement('diagnosisDate')->isValid($postData['diagnosisDate']);
-            $validations[] = $form->getElement('diagnosisStage')->isValid($postData['diagnosisStage']);
-
-            if ($postData['memberStatus'] == 'STATUS_ACTIVE') {
-                //if member has been marked active, validate any relevant system user information
-                if ($postData['role'] != '0') {
-                    //if role is not member, validate that a username and email has been entered and that they are unique
-                    $validations[] = $form->getElement('systemUsername')->isValid($postData['systemUsername']);
-                    $validations[] = $form->getElement('tempPassword')->isValid($postData['tempPassword']);
-                    $validations[] = $form->getElement('tempPasswordConfirm')->isValid($postData['tempPasswordConfirm']);
-                    if($postData['tempPassword']!=$postData['tempPasswordConfirm']){
-                        $form->getElement('tempPasswordConfirm')->addErrors(array(
-                            'The two passwords do not match!'
-                        ))->markAsError();
-                        $validations[] = false;
-                    }
-                } else {
-                    //else validate presents for
-                    if (!array_key_exists('presentsFor', $postData) || !is_array($postData['presentsFor'])) {
-                        $form->getElement('presentsFor[]')->addErrors(array(
-                            'Please enter at least one area.'
-                        ))->markAsError();
-                        $validations[] = false;
-                    } else {
-                        $this->view->storedPresentsFor = $postData['presentsFor'];
-                        $validations[] = true;
-                    }
-                }
-                if ($postData['role'] == 'ROLE_COORDINATOR') {
-                    //if role is coordinator, validate regions
-                    if (!array_key_exists('coordinatesFor', $postData) || !is_array($postData['coordinatesFor'])) {
-                        $form->getElement('coordinatesFor[]')->addErrors(array(
-                            'Please enter at least one region.'
-                        ))->markAsError();
-                        $validations[] = false;
-                    } else {
-                        $this->view->storedCoordinatesFor = $postData['coordinatesFor'];
-                        $validations[] = true;
-                    }
-                }
-                if ($postData['role'] == 'ROLE_FACILITATOR') {
-                    //if role is facilitator, validate areas
-                    if (!array_key_exists('facilitatesFor', $postData) || !is_array($postData['facilitatesFor'])) {
-                        $form->getElement('facilitatesFor[]')->addErrors(array(
-                            'Please enter at least one area.'
-                        ))->markAsError();
-                        $validations[] = false;
-                    } else {
-                        $this->view->storedFacilitatesFor = $postData['facilitatesFor'];
-                        $validations[] = true;
-                    }
-                }
-            }
-            if (!in_array(false, $validations)) {
+            if ($this->formIsValid($form, $postData)) {
                 try {
                     if ($postData['role'] != '0') {
                         if ($this->userFacade->findUserById($postData['systemUsername']) != array()) {
@@ -250,6 +178,159 @@ class Admin_MemberController extends SecureBaseController {
         $this->view->form = $form;
     }
 
+    public function editAction(){
+        $id = $this->getRequest()->getParam('id');
+        $form = $this->getForm();
+        $form->setAction('/admin/member/edit?id='.$id);
+        $dto = $this->memberFacade->getMemberById($id);
+        $this->view->member = $dto;
+        $this->view->layout()->pageHeader = $this->view->partial(
+            'partials/page-header.phtml', array(
+                'title' => 'Edit: ' .$dto->getFirstName() . ' ' . $dto->getLastName()
+            )
+        );
+        //populate form
+        $phoneNumbers = $dto->getPhoneNumbers();
+        
+
+        //get the member associated user id to see if the user is a member
+        $associatedUserId = $dto->getAssociatedUserId();
+        //also get the associated user if there is one
+        $associatedUser = $this->userFacade->getUserByMemberId($dto->getId());
+        //the user name will always be set
+        $username = null;
+        $hiddenUsername = null;
+        if(!is_null($associatedUser)){
+            $username = $associatedUser->getId();
+            $hiddenUsername = $username;
+            $form->getElement('systemUsername')->setAttrib('disabled', 'disabled');
+            $form->getElement('tempPassword')->setRequired(false);
+            $form->getElement('tempPassword')->setAttrib('placeholder', 'xxxxxxxxxx');
+            $form->getElement('tempPassword')->setDescription('This member has a user account and password. Only change these fields if you want to change thier password!');
+            $form->getElement('tempPasswordConfirm')->setRequired(false);
+            $form->getElement('tempPasswordConfirm')->setAttrib('placeholder', 'xxxxxxxxxx');
+        }
+        //if the id is null, the member is just a member, so don't show user details
+        if(is_null($associatedUserId)){
+            $role = '0';
+        }else{
+            //else set the roll
+            $role = $this->userFacade->getUserRoleKey($associatedUser->getRole());
+        }
+
+        $form->populate(
+            array(
+                'firstName' => $dto->getFirstName(),
+                'lastName' => $dto->getLastName(),
+                'systemUserEmail' => $dto->getEmail(),
+                'memberType' => $this->memberFacade->getMemberTypeKey($dto->getType()),
+                'memberStatus' => $this->memberFacade->getMemberStatusKey($dto->getStatus()),
+                'dateTrained' => $dto->getDateTrained(),
+                'notes' => $dto->getNotes(),
+                'workPhone' => $this->getPhoneNumberFromDto('work', $dto->getPhoneNumbers()),
+                'homePhone' => $this->getPhoneNumberFromDto('home', $dto->getPhoneNumbers()),
+                'cellPhone' => $this->getPhoneNumberFromDto('cell', $dto->getPhoneNumbers()),
+                'addressLineOne' => $dto->getAddressLineOne(),
+                'addressLineTwo' => $dto->getAddressLineTwo(),
+                'city' => $dto->getAddressCity(),
+                'state'=> $dto->getAddressState(),
+                'zip' => $dto->getAddressZip(),
+                'diagnosisDate' => $dto->getDiagnosisDate(),
+                'diagnosisStage' => $dto->getDiagnosisStage(),
+                'role' => $role,
+                'systemUsername' => $username,
+                'hiddenSystemUsername' => $hiddenUsername
+                )
+            );
+
+        $this->view->storedPresentsFor = $dto->getPresentsForAreas();
+        $this->view->storedCoordinatesFor = $dto->getCoordinatesForRegions();
+        $this->view->storedFacilitatesFor = $dto->getFacilitatesForAreas();
+
+        if ($this->getRequest()->isPost()) {
+            $request = $this->getRequest();
+            $postData = $request->getPost();
+            if ($this->formIsValid($form, $postData)) {
+                
+                try {
+                    //if a member has been upgraded to a system user, check the email
+                    // and password to ensure no duplication
+                    if (! empty($postData['systemUsername']) && $postData['role'] != '0') {
+                        
+                        if ($this->userFacade->findUserById($postData['systemUsername']) != array()) {
+                            throw new ApiException("A system user with the username: \"{$postData['systemUsername']}\" already exists. System users must have a unique email and username.");
+                        }
+                        if ($this->userFacade->findUserByEmail($postData['systemUserEmail']) != array()) {
+                            throw new ApiException("A system user with the email address: \"{$postData['systemUserEmail']}\" already exists. System users must have a unique email and username.");
+                        }
+                    }
+                    //if a member has be downgraded from a system user to a member
+                    //its ok as that is handled by the saving
+
+
+                    $updatedMemberDto = $this->updateMember($id, $postData);
+                    $successMessage = "The member \"{$postData['firstName']} {$postData['lastName']}\" has been successfully updated.";
+
+                    //if a system user is changed roles
+                    //then confirm that and set the username to the hidden value
+                    if ($postData['role'] != '0') {
+                        if (! empty($postData['systemUsername'])) {
+                            //the user is new, we must add them
+                            $tempPassword = $postData['tempPassword'];
+                            $systemUserDto = $this->saveNewUser($postData, $updatedMemberDto, $tempPassword);
+                            $successMessage .= " The new user with username: \"{$systemUserDto->getId()}\" and password: \"$tempPassword\" may now access the system. Please write this down.";
+                        } else {
+                            //the user has changed, we must modify
+                            $postData['systemUsername'] = $postData['hiddenSystemUsername'];
+                            $tempPassword = $postData['tempPassword'];
+                            $systemUserDto = $this->updateExistingUser($postData, $updatedMemberDto, $tempPassword);
+                            $successMessage .= " The user with username: \"{$systemUserDto->getId()}\" has been updated!";
+                        }
+                    }
+                    
+                    $this->setFlashMessageAndRedirect($successMessage, 'success', array(
+                        'module' => 'admin',
+                        'controller' => 'member',
+                        'action' => 'view',
+                        'params' => array('id'=>$updatedMemberDto->getId())
+                    ));
+                } catch(ApiException $e) {
+                    $this->setFlashMessageAndUpdateLayout('An error occured while saving this information: ' . $e->getMessage() , 'error');
+                }
+
+
+
+            } else {
+                $this->setFlashMessageAndUpdateLayout('It looks like you missed some information, please make the corrections below.', 'error');
+            }
+        }
+        $this->view->form = $form;
+    }
+    private function getUserRoleFromDto($dto){
+        if(is_null($dto)){
+            return '0';
+        }else{
+           return $this->userFacade->getUserRoleKey($dto->getRole());
+        }
+    }
+
+    private function getUserNameFromDto($dto){
+        if(is_null($dto)){
+            return null;
+        }else{
+           return $dto->getId();
+        }
+    }
+
+    private function getPhoneNumberFromDto($type, $numbers){
+        if (! is_null($numbers) && array_key_exists($type, $numbers)) {
+            $number = $numbers[$type]['number'];
+            return sprintf('%s-%s-%s', substr($number, 0,3), substr($number, 3, -4), substr($number, -4));
+        } else {
+            return null;
+        }
+    }
+
     private function sendNotificationOfNewAccount($systemUserDto, $tempPassword){
         $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
         $username = $systemUserDto->getId();
@@ -266,6 +347,18 @@ class Admin_MemberController extends SecureBaseController {
         $associatedMemberId = $newMemberDto->getId();
         
         return $this->userFacade->createUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId);
+    }
+
+    private function updateExistingUser($postData, $memberDto, $tempPassword)
+    {
+        $firstName = $memberDto->getFirstName();
+        $lastName = $memberDto->getLastName();
+        $email = $postData['systemUserEmail'];
+        $username = $postData['systemUsername'];
+        $password = $tempPassword;
+        $role = AclFactory::getAvailableRole($postData['role']);
+        $associatedMemberId = $memberDto->getId();
+        return $this->userFacade->updateUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId);
     }
     private function saveNewMember($data) {
         if ($data['memberStatus'] == 'STATUS_ACTIVE') {
@@ -318,6 +411,62 @@ class Admin_MemberController extends SecureBaseController {
             array('work' => $data['workPhone'], 'cell'=> $data['cellPhone'], 'home'=>$data['homePhone'])
         );
     }
+
+    private function updateMember($id, $data) {
+        if (empty($postData['systemUsername'])) {
+            $data['systemUsername'] = $data['hiddenSystemUsername'];
+        }
+        if ($data['memberStatus'] == 'STATUS_ACTIVE') {
+            if ($data['role'] == 'ROLE_ADMIN') {
+                $userId = $data['systemUsername'];
+                $presentsFor = array();
+                $facilitatesFor = array();
+                $coordinatesFor = array();
+            } elseif ($data['role'] == 'ROLE_FACILITATOR') {
+                $userId = $data['systemUsername'];
+                $presentsFor = array();
+                $facilitatesFor = array_keys($data['facilitatesFor']);
+                $coordinatesFor = array();
+            } elseif ($data['role'] == 'ROLE_COORDINATOR') {
+                $userId = $data['systemUsername'];
+                $presentsFor = array();
+                $facilitatesFor = array();
+                $coordinatesFor = $this->getAreasForRegionsArray(array_keys($data['coordinatesFor']));
+            } else {
+                $presentsFor = array_keys($data['presentsFor']);
+                $facilitatesFor = array();
+                $coordinatesFor = array();
+                $userId = null;
+            }
+        } else {
+            $presentsFor = array();
+            $facilitatesFor = array();
+            $coordinatesFor = array();
+            $userId = null;
+        }
+
+        return $this->memberFacade->updateMember($id,
+            $data['firstName'],
+            $data['lastName'],
+            Member::getAvailableType($data['memberType']),
+            Member::getAvailableStatus($data['memberStatus']),
+            $data['notes'],
+            $presentsFor,
+            $facilitatesFor,
+            $coordinatesFor,
+            $userId,
+            $data['addressLineOne'],
+            $data['addressLineTwo'],
+            $data['city'],
+            $data['state'],
+            $data['zip'],
+            $data['systemUserEmail'],
+            $data['dateTrained'],
+            array('date'=>$data['diagnosisDate'], 'stage'=>$data['diagnosisStage']),
+            array('work' => $data['workPhone'], 'cell'=> $data['cellPhone'], 'home'=>$data['homePhone'])
+        );
+    }
+
     private function getMembersArray($members) {
         $memberData = array();
         if (empty($members)){
@@ -355,7 +504,6 @@ class Admin_MemberController extends SecureBaseController {
         return $memberData;
     }
     private function getRoleTitleForRole($role) {
-        
         switch ($role) {
             case 'admin':
                 $role = "Site Administrator";
@@ -442,5 +590,91 @@ class Admin_MemberController extends SecureBaseController {
         }
         
         return $keys;
+    }
+
+    private function formIsValid(&$form, $postData)
+    {
+        $validations = array();
+            $validations[] = $form->getElement('firstName')->isValid($postData['firstName']);
+            $validations[] = $form->getElement('lastName')->isValid($postData['lastName']);
+            $validations[] = $form->getElement('systemUserEmail')->isValid($postData['systemUserEmail']);
+            $validations[] = $form->getElement('memberType')->isValid($postData['memberType']);
+            $validations[] = $form->getElement('role')->isValid($postData['role']);
+            $validations[] = $form->getElement('memberStatus')->isValid($postData['memberStatus']);
+            $validations[] = $form->getElement('dateTrained')->isValid($postData['dateTrained']);
+
+            $validations[] = $form->getElement('workPhone')->isValid($postData['workPhone']);
+            $validations[] = $form->getElement('cellPhone')->isValid($postData['cellPhone']);
+            $validations[] = $form->getElement('homePhone')->isValid($postData['homePhone']);
+
+            $validations[] = $form->getElement('addressLineOne')->isValid($postData['addressLineOne']);
+            $validations[] = $form->getElement('addressLineTwo')->isValid($postData['addressLineTwo']);
+            $validations[] = $form->getElement('city')->isValid($postData['city']);
+            $validations[] = $form->getElement('state')->isValid($postData['state']);
+            $validations[] = $form->getElement('zip')->isValid($postData['zip']);
+
+            $validations[] = $form->getElement('diagnosisDate')->isValid($postData['diagnosisDate']);
+            $validations[] = $form->getElement('diagnosisStage')->isValid($postData['diagnosisStage']);
+
+            if ($postData['memberStatus'] == 'STATUS_ACTIVE') {
+                //if member has been marked active, validate any relevant system user information
+                if ($postData['role'] != '0') {
+                    //if role is not member, validate that a username and email has been entered and that they are unique
+                    if(array_key_exists('systemUsername', $postData)){
+                        $validations[] = $form->getElement('systemUsername')->isValid($postData['systemUsername']);
+                    }else{
+                        $validations[] = $form->getElement('systemUsername')->isValid($postData['hiddenSystemUsername']);
+
+                    }
+                    $validations[] = $form->getElement('tempPassword')->isValid($postData['tempPassword']);
+                    $validations[] = $form->getElement('tempPasswordConfirm')->isValid($postData['tempPasswordConfirm']);
+                    if($postData['tempPassword']!=$postData['tempPasswordConfirm']){
+                        $form->getElement('tempPasswordConfirm')->addErrors(array(
+                            'The two passwords do not match!'
+                        ))->markAsError();
+                        $validations[] = false;
+                    }
+                } else {
+                    //else validate presents for
+                    if (!array_key_exists('presentsFor', $postData) || !is_array($postData['presentsFor'])) {
+                        $form->getElement('presentsFor[]')->addErrors(array(
+                            'Please enter at least one area.'
+                        ))->markAsError();
+                        $validations[] = false;
+                    } else {
+                        $this->view->storedPresentsFor = $postData['presentsFor'];
+                        $validations[] = true;
+                    }
+                }
+                if ($postData['role'] == 'ROLE_COORDINATOR') {
+                    //if role is coordinator, validate regions
+                    if (!array_key_exists('coordinatesFor', $postData) || !is_array($postData['coordinatesFor'])) {
+                        $form->getElement('coordinatesFor[]')->addErrors(array(
+                            'Please enter at least one region.'
+                        ))->markAsError();
+                        $validations[] = false;
+                    } else {
+                        $this->view->storedCoordinatesFor = $postData['coordinatesFor'];
+                        $validations[] = true;
+                    }
+                }
+                if ($postData['role'] == 'ROLE_FACILITATOR') {
+                    //if role is facilitator, validate areas
+                    if (!array_key_exists('facilitatesFor', $postData) || !is_array($postData['facilitatesFor'])) {
+                        $form->getElement('facilitatesFor[]')->addErrors(array(
+                            'Please enter at least one area.'
+                        ))->markAsError();
+                        $validations[] = false;
+                    } else {
+                        $this->view->storedFacilitatesFor = $postData['facilitatesFor'];
+                        $validations[] = true;
+                    }
+                }
+            }
+            if(!in_array(false, $validations)){
+                return true;
+            }else{
+                return false;
+            }
     }
 }

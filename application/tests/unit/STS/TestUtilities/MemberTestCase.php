@@ -22,7 +22,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
     const STATUS = 'Deceased';
     const ASSOCIATED_USER_ID = 'muser';
     const DATE_TRAINED = '2012-08-09 04:00:00';
-    const DISPLAY_DATE_TRAINED = '8/9/2012';
+    const DISPLAY_DATE_TRAINED = '08/09/2012';
     const CAN_BE_DELETED = false;
 
     protected function getValidMember()
@@ -176,11 +176,11 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
     protected function getValidPhoneNumbersArray()
     {
         return array(
-            array(
+            'work' => array(
                 'number'=>'3015551234',
                 'type'=>'work'
                 ),
-            array(
+            'cell'=> array(
                 'number'=>'5551239999',
                 'type'=>'cell'
                 )

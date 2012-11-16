@@ -9,6 +9,7 @@ class UserTestCase extends \PHPUnit_Framework_TestCase
     const BASIC_USER_EMAIL = 'member.user@email.com';
     const NEW_USER_EMAIL = 'new.user@email.com';
     const BASIC_USER_NAME = 'muser';
+    const ID = 'muser';
     const SALT = 'f95299ac31b9b43d593d6165dc4d79e7'; //md5 of 'hambone'
     const PASSWORD = '64f5c419fb3ec946807544e7a6b40d16413cadc4'; //sha1 of salt+pw
     const BASIC_USER_PASSWORD = 'hambone';

@@ -10,7 +10,53 @@ use STS\TestUtilities\Location\AddressTestCase;
 class DefaultMemberFacadeTest extends MemberTestCase
 {
 
-
+    /**
+     * @test
+     */
+    public function validUpdateMember()
+    {
+        //givens
+        $updatedFirstName = 'Test User Update';
+        $oldMember = $this->getValidMember();
+        $member = $this->getValidMember();
+        $member->setFirstName($updatedFirstName);
+        $memberRepository = \Mockery::mock('STS\Core\Member\MongoMemberRepository', array('load'=>$oldMember, 'save'=>$member));
+        $areaRepository = $this->getMockAreaRepository();
+        $userRepository = $this->getMockUserRepository();
+        $facade = new DefaultMemberFacade($memberRepository, $areaRepository, $userRepository);
+        $presentsFor = array_keys($this->getValidPresentsForAreasArray());
+        $facilitatesFor = array_keys($this->getValidFacilitatesForAreasArray());
+        $coordinatesFor = array_keys($this->getValidCoordinatesForAreasArray());
+        //whens
+        $updatedMemberDto = $facade->updateMember(
+            self::ID,
+            $updatedFirstName,
+            self::LAST_NAME,
+            self::TYPE,
+            self::STATUS,
+            self::NOTES,
+            $presentsFor,
+            $facilitatesFor,
+            $coordinatesFor,
+            'muser',
+            AddressTestCase::LINE_ONE,
+            AddressTestCase::LINE_TWO,
+            AddressTestCase::CITY,
+            AddressTestCase::STATE,
+            AddressTestCase::ZIP,
+            self::EMAIL,
+            self::DISPLAY_DATE_TRAINED,
+            array('date'=>self::DISPLAY_DATE_TRAINED, 'stage'=>'I'),
+            array(
+                'work'=>'301-555-1234',
+                'cell'=>'555-123-9999'
+            )
+        );
+        //thens
+        $this->assertInstanceOf('STS\Core\Member\MemberDto', $updatedMemberDto);
+        $this->assertEquals($updatedFirstName, $updatedMemberDto->getFirstName());
+    }
+    
 
     /**
      * @test

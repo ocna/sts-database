@@ -43,7 +43,7 @@ class PresentationDto
     }
     public function getDate()
     {
-        return $this->date ? date('n/j/Y', strtotime($this->date)) : null;
+        return $this->date ? date('m/d/Y', strtotime($this->date)) : null;
     }
     public function getNumberOfParticipants()
     {

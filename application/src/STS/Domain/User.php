@@ -117,8 +117,16 @@ class User extends Entity
     {
         $this->salt = md5(time() . $newPassword . uniqid());
         $this->password = sha1($this->salt . $newPassword);
-
         return $this;
+    }
+
+    public function initializePasswordIfNew($password)
+    {
+        if ($this->password == sha1($this->salt . $password) || is_null($password) || $password == '') {
+            return $this;
+        } else {
+            $this->initializePassword($password);
+        }
     }
 
     public function isRole($key)

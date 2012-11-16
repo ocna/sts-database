@@ -1,9 +1,58 @@
 <?php
 use STS\TestUtilities\UserTestCase;
 use STS\Core\Api\DefaultUserFacade;
+use STS\Core\Api\ApiException;
 
 class DefaultUserFacadeTest extends UserTestCase
 {
+    /**
+     * @test
+     * @expectedException STS\Core\Api\ApiException
+     * @expectedExceptionMessage Can not associate user with different member.
+     */
+    public function throwApiExceptionIfTryingToChangeAssociatedUser()
+    {
+        $oldUser = $this->getValidUser();
+        $userRepository = \Mockery::mock('STS\Core\User\MongoUserRepository', array('load'=>$oldUser));
+        $facade = new DefaultUserFacade($userRepository);
+        $updatedUserDto = $facade->updateUser(
+            $oldUser->getId(),
+            $oldUser->getFirstName(),
+            $oldUser->getLastName(),
+            $oldUser->getEmail(),
+            self::BASIC_USER_PASSWORD, 
+            $oldUser->getRole(),
+            'differentUserId'
+        );
+    }
+    
+    /**
+     * @test
+     */
+    public function validUpdateUser()
+    {
+        //givens
+        $updatedFirstName = 'Test User Update';
+        $oldUser = $this->getValidUser();
+        $user = $this->getValidUser();
+        $user->setFirstName($updatedFirstName);
+        $userRepository = \Mockery::mock('STS\Core\User\MongoUserRepository', array('load'=>$oldUser, 'save'=>$user));
+        $facade = new DefaultUserFacade($userRepository);
+        //whens
+        $updatedUserDto = $facade->updateUser(
+            $user->getId(),
+            $updatedFirstName,
+            $user->getLastName(),
+            $user->getEmail(),
+            self::BASIC_USER_PASSWORD, 
+            $user->getRole(),
+            $user->getAssociatedMemberId()
+        );
+        //thens
+        $this->assertInstanceOf('STS\Core\User\UserDto', $updatedUserDto);
+        $this->assertEquals($updatedFirstName, $updatedUserDto->getFirstName());
+    }
+
     /**
      * @test
      */

@@ -1,3 +1,4 @@
+
 <script type="text/javascript">
     $(document).ready(function() {
         $( "#startDate" ).datepicker();
@@ -11,7 +12,7 @@
         })
     })
 </script>
-
+<?php if($this->noData != true): ?>
 <script type='text/javascript' src='https://www.google.com/jsapi'></script>
     <script type='text/javascript'>
      google.load('visualization', '1', {'packages': ['geochart']});
@@ -32,7 +33,7 @@
         chart.draw(data, options);
     };
     </script>
-
+<?php endif; ?>
 <div class="row">
     <div class="span12">
         <div class="row">
