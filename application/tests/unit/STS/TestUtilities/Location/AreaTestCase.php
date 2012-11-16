@@ -33,8 +33,4 @@ class AreaTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals($area->getCity(), self::CITY);
         $this->assertInstanceOf('STS\Domain\Location\Region', $area->getRegion());
     }
-    public function tearDown()
-    {
-        \Mockery::close();
-    }
 }

@@ -63,8 +63,4 @@ class MemberByMemberAreaSpecificationTest extends \PHPUnit_Framework_TestCase
         $spec = new MemberByMemberAreaSpecification($member);
         $this->assertTrue(false === $spec->isSatisfiedBy($candidateMember));
     }
-    public function teardown()
-    {
-        \Mockery::close();
-    }
 }

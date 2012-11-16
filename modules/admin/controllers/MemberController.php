@@ -5,13 +5,15 @@ use STS\Web\Controller\SecureBaseController;
 use STS\Core\Api\ApiException;
 use STS\Domain\Member;
 
-class Admin_MemberController extends SecureBaseController {
+class Admin_MemberController extends SecureBaseController
+{
     protected $memberFacade;
     protected $userFacade;
     protected $locationFacade;
     protected $authFacade;
     protected $mailerFacade;
-    public function init() {
+    public function init()
+    {
         parent::init();
         $core = Core::getDefaultInstance();
         $this->memberFacade = $core->load('MemberFacade');
@@ -105,7 +107,8 @@ class Admin_MemberController extends SecureBaseController {
                         'action' => 'index'));
         }
     }
-    public function viewAction() {
+    public function viewAction()
+    {
         $id = $this->getRequest()->getParam('id');
         $member = $this->memberFacade->getMemberById($id);
         if ($user = $this->userFacade->findUserById($member->getAssociatedUserId())) {
@@ -159,16 +162,19 @@ class Admin_MemberController extends SecureBaseController {
                         //save new system user
                         $tempPassword = $postData['tempPassword'];
                         $systemUserDto = $this->saveNewUser($postData, $newMemberDto, $tempPassword);
-                        $successMessage .= " The new user with username: \"{$systemUserDto->getId()}\" and password: \"$tempPassword\" may now access the system. Please write this down.";
+                        //send credentials via email
+                        $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
+                        $this->mailerFacade->sendNewAccountNotification($name, $systemUserDto->getId(), $systemUserDto->getEmail(), $tempPassword);
+                        //update success message
+                        $successMessage .= " The new user with username: \"{$systemUserDto->getId()}\" and password: \"$tempPassword\" may now access the system. This information has been emailed to them.";
                     }
-                    
+
                     $this->setFlashMessageAndRedirect($successMessage, 'success', array(
                         'module' => 'admin',
                         'controller' => 'member',
                         'action' => 'index'
                     ));
-                }
-                catch(ApiException $e) {
+                } catch(ApiException $e) {
                     $this->setFlashMessageAndUpdateLayout('An error occured while saving this information: ' . $e->getMessage() , 'error');
                 }
             } else {
@@ -178,7 +184,8 @@ class Admin_MemberController extends SecureBaseController {
         $this->view->form = $form;
     }
 
-    public function editAction(){
+    public function editAction()
+    {
         $id = $this->getRequest()->getParam('id');
         $form = $this->getForm();
         $form->setAction('/admin/member/edit?id='.$id);
@@ -191,7 +198,7 @@ class Admin_MemberController extends SecureBaseController {
         );
         //populate form
         $phoneNumbers = $dto->getPhoneNumbers();
-        
+
 
         //get the member associated user id to see if the user is a member
         $associatedUserId = $dto->getAssociatedUserId();
@@ -251,12 +258,12 @@ class Admin_MemberController extends SecureBaseController {
             $request = $this->getRequest();
             $postData = $request->getPost();
             if ($this->formIsValid($form, $postData)) {
-                
+
                 try {
                     //if a member has been upgraded to a system user, check the email
                     // and password to ensure no duplication
                     if (! empty($postData['systemUsername']) && $postData['role'] != '0') {
-                        
+
                         if ($this->userFacade->findUserById($postData['systemUsername']) != array()) {
                             throw new ApiException("A system user with the username: \"{$postData['systemUsername']}\" already exists. System users must have a unique email and username.");
                         }
@@ -278,16 +285,22 @@ class Admin_MemberController extends SecureBaseController {
                             //the user is new, we must add them
                             $tempPassword = $postData['tempPassword'];
                             $systemUserDto = $this->saveNewUser($postData, $updatedMemberDto, $tempPassword);
-                            $successMessage .= " The new user with username: \"{$systemUserDto->getId()}\" and password: \"$tempPassword\" may now access the system. Please write this down.";
+                            //send credentials via email
+                            $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
+                            $this->mailerFacade->sendNewAccountNotification($name, $systemUserDto->getId(), $systemUserDto->getEmail(), $tempPassword);
+                            $successMessage .= " The new user with username: \"{$systemUserDto->getId()}\" and password: \"$tempPassword\" may now access the system. This information has been emailed to them.";
                         } else {
                             //the user has changed, we must modify
                             $postData['systemUsername'] = $postData['hiddenSystemUsername'];
                             $tempPassword = $postData['tempPassword'];
                             $systemUserDto = $this->updateExistingUser($postData, $updatedMemberDto, $tempPassword);
-                            $successMessage .= " The user with username: \"{$systemUserDto->getId()}\" has been updated!";
+                            //send credentials via email
+                            $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
+                            $this->mailerFacade->sendNewAccountNotification($name, $systemUserDto->getId(), $systemUserDto->getEmail(), $tempPassword);
+                            $successMessage .= " The user with username: \"{$systemUserDto->getId()}\" has been updated! Updated information has been emaild to them.";
                         }
                     }
-                    
+
                     $this->setFlashMessageAndRedirect($successMessage, 'success', array(
                         'module' => 'admin',
                         'controller' => 'member',
@@ -306,7 +319,8 @@ class Admin_MemberController extends SecureBaseController {
         }
         $this->view->form = $form;
     }
-    private function getUserRoleFromDto($dto){
+    private function getUserRoleFromDto($dto)
+    {
         if(is_null($dto)){
             return '0';
         }else{
@@ -314,7 +328,8 @@ class Admin_MemberController extends SecureBaseController {
         }
     }
 
-    private function getUserNameFromDto($dto){
+    private function getUserNameFromDto($dto)
+    {
         if(is_null($dto)){
             return null;
         }else{
@@ -322,7 +337,8 @@ class Admin_MemberController extends SecureBaseController {
         }
     }
 
-    private function getPhoneNumberFromDto($type, $numbers){
+    private function getPhoneNumberFromDto($type, $numbers)
+    {
         if (! is_null($numbers) && array_key_exists($type, $numbers)) {
             $number = $numbers[$type]['number'];
             return sprintf('%s-%s-%s', substr($number, 0,3), substr($number, 3, -4), substr($number, -4));
@@ -331,13 +347,15 @@ class Admin_MemberController extends SecureBaseController {
         }
     }
 
-    private function sendNotificationOfNewAccount($systemUserDto, $tempPassword){
+    private function sendNotificationOfNewAccount($systemUserDto, $tempPassword)
+    {
         $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
         $username = $systemUserDto->getId();
         $email = $systemUserDto->getEmail();
         $this->mailerFacade->sendNewAccountNotification($name, $username, $email, $tempPassword);
     }
-    private function saveNewUser($postData, $newMemberDto, $tempPassword) {
+    private function saveNewUser($postData, $newMemberDto, $tempPassword)
+    {
         $firstName = $newMemberDto->getFirstName();
         $lastName = $newMemberDto->getLastName();
         $email = $postData['systemUserEmail'];
@@ -345,7 +363,7 @@ class Admin_MemberController extends SecureBaseController {
         $password = $tempPassword;
         $role = AclFactory::getAvailableRole($postData['role']);
         $associatedMemberId = $newMemberDto->getId();
-        
+
         return $this->userFacade->createUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId);
     }
 
@@ -360,7 +378,8 @@ class Admin_MemberController extends SecureBaseController {
         $associatedMemberId = $memberDto->getId();
         return $this->userFacade->updateUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId);
     }
-    private function saveNewMember($data) {
+    private function saveNewMember($data)
+    {
         if ($data['memberStatus'] == 'STATUS_ACTIVE') {
             if ($data['role'] == 'ROLE_ADMIN') {
                 $userId = $data['systemUsername'];
@@ -412,7 +431,8 @@ class Admin_MemberController extends SecureBaseController {
         );
     }
 
-    private function updateMember($id, $data) {
+    private function updateMember($id, $data)
+    {
         if (empty($postData['systemUsername'])) {
             $data['systemUsername'] = $data['hiddenSystemUsername'];
         }
@@ -467,7 +487,8 @@ class Admin_MemberController extends SecureBaseController {
         );
     }
 
-    private function getMembersArray($members) {
+    private function getMembersArray($members)
+    {
         $memberData = array();
         if (empty($members)){
             return $memberData;
@@ -500,10 +521,11 @@ class Admin_MemberController extends SecureBaseController {
             }
             $memberData[$member->getId() ] = $data;
         }
-        
+
         return $memberData;
     }
-    private function getRoleTitleForRole($role) {
+    private function getRoleTitleForRole($role)
+    {
         switch ($role) {
             case 'admin':
                 $role = "Site Administrator";
@@ -521,11 +543,11 @@ class Admin_MemberController extends SecureBaseController {
                 $role = "Member";
                 break;
         }
-        
+
         return $role;
     }
-    private function getRoleClassForRole($role) {
-        
+    private function getRoleClassForRole($role)
+    {
         switch ($role) {
             case 'admin':
                 $roleClass = "label-important";
@@ -543,10 +565,11 @@ class Admin_MemberController extends SecureBaseController {
                 $roleClass = "";
                 break;
         }
-        
+
         return $roleClass;
     }
-    private function getForm() {
+    private function getForm()
+    {
         $diagnosisStagesArray = array_merge(array(
             ''
         ), $this->memberFacade->getDiagnosisStages());
@@ -554,7 +577,7 @@ class Admin_MemberController extends SecureBaseController {
         $statesArray = array_merge(array(
             ''
         ) , $this->locationFacade->getStates());
-        
+
         $memberTypesArray = array_merge(array(
             ''
         ) , $this->memberFacade->getMemberTypes());
@@ -567,7 +590,7 @@ class Admin_MemberController extends SecureBaseController {
             'diagnosisStages' => $diagnosisStagesArray,
             'phoneNumberTypes' => $this->memberFacade->getPhoneNumberTypes()
         ));
-        
+
         return $form;
     }
 
@@ -581,14 +604,15 @@ class Admin_MemberController extends SecureBaseController {
         return $this->memberFacade->getMemberStatuses();
     }
 
-    private function getAreasForRegionsArray($array) {
+    private function getAreasForRegionsArray($array)
+    {
         $dtos = $this->locationFacade->getAreasForRegions($array);
         $keys = array();
-        
+
         foreach ($dtos as $dto) {
             $keys[] = $dto->getId();
         }
-        
+
         return $keys;
     }
 
