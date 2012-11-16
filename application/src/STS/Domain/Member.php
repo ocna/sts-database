@@ -97,6 +97,11 @@ class Member extends EntityWithTypes
         return $this;
     }
 
+    private function getMongoDateTrained()
+    {
+        return $this->dateTrained ? new \MongoDate(strtotime($this->dateTrained)) : null;
+    }
+
     public function toMongoArray()
     {
         $facilitatesFor = array();
@@ -128,10 +133,10 @@ class Member extends EntityWithTypes
                 'presents_for'=> $presentsFor,
                 'coordinates_for'=> $coordinatesFor,
                 'email'=> utf8_encode($this->email),
-                'date_trained' => new \MongoDate(strtotime($this->dateTrained)),
+                'date_trained' => $this->getMongoDateTrained(),
                 'diagnosis' => array(
                     'stage' => $this->diagnosis->getStage(),
-                    'date' => new \MongoDate(strtotime($this->diagnosis->getDate()))
+                    'date' => $this->diagnosis->getMongoDate()
                     ),
                 'phone_numbers' => $phoneNumbers,
                 'dateCreated' => new \MongoDate($this->getCreatedOn()),
