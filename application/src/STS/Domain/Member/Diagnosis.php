@@ -27,6 +27,10 @@ class Diagnosis
         return $this->date;
     }
 
+    public function getMongoDate(){
+        return $this->date ? new \MongoDate(strtotime($this->date)) : null;
+    }
+
     public static function getAvailableStages()
     {
         return array(
