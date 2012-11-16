@@ -192,19 +192,32 @@ class Admin_MemberController extends SecureBaseController {
         //populate form
         $phoneNumbers = $dto->getPhoneNumbers();
         
+
+        //get the member associated user id to see if the user is a member
+        $associatedUserId = $dto->getAssociatedUserId();
+        //also get the associated user if there is one
         $associatedUser = $this->userFacade->getUserByMemberId($dto->getId());
-        if ($associatedUser) {
+        //the user name will always be set
+        $username = null;
+        $hiddenUsername = null;
+        if(!is_null($associatedUser)){
+            $username = $associatedUser->getId();
+            $hiddenUsername = $username;
             $form->getElement('systemUsername')->setAttrib('disabled', 'disabled');
-            $hiddenSystemUsername = $this->getUserNameFromDto($associatedUser);
-                $form->getElement('tempPassword')->setRequired(false);
-                $form->getElement('tempPassword')->setAttrib('placeholder', 'xxxxxxxxxx');
-                $form->getElement('tempPassword')->setDescription('This member has a user account and password. Only change these fields if you want to change thier password!');
-                $form->getElement('tempPasswordConfirm')->setRequired(false);
-                $form->getElement('tempPasswordConfirm')->setAttrib('placeholder', 'xxxxxxxxxx');
-        } else {
-            $associatedUser = null;
-            $hiddenSystemUsername = null;
+            $form->getElement('tempPassword')->setRequired(false);
+            $form->getElement('tempPassword')->setAttrib('placeholder', 'xxxxxxxxxx');
+            $form->getElement('tempPassword')->setDescription('This member has a user account and password. Only change these fields if you want to change thier password!');
+            $form->getElement('tempPasswordConfirm')->setRequired(false);
+            $form->getElement('tempPasswordConfirm')->setAttrib('placeholder', 'xxxxxxxxxx');
         }
+        //if the id is null, the member is just a member, so don't show user details
+        if(is_null($associatedUserId)){
+            $role = '0';
+        }else{
+            //else set the roll
+            $role = $this->userFacade->getUserRoleKey($associatedUser->getRole());
+        }
+
         $form->populate(
             array(
                 'firstName' => $dto->getFirstName(),
@@ -224,9 +237,9 @@ class Admin_MemberController extends SecureBaseController {
                 'zip' => $dto->getAddressZip(),
                 'diagnosisDate' => $dto->getDiagnosisDate(),
                 'diagnosisStage' => $dto->getDiagnosisStage(),
-                'role' => $this->getUserRoleFromDto($associatedUser),
-                'systemUsername' => $this->getUserNameFromDto($associatedUser),
-                'hiddenSystemUsername' => $hiddenSystemUsername
+                'role' => $role,
+                'systemUsername' => $username,
+                'hiddenSystemUsername' => $hiddenUsername
                 )
             );
 
@@ -237,7 +250,6 @@ class Admin_MemberController extends SecureBaseController {
         if ($this->getRequest()->isPost()) {
             $request = $this->getRequest();
             $postData = $request->getPost();
-            
             if ($this->formIsValid($form, $postData)) {
                 
                 try {
@@ -612,6 +624,7 @@ class Admin_MemberController extends SecureBaseController {
                         $validations[] = $form->getElement('systemUsername')->isValid($postData['systemUsername']);
                     }else{
                         $validations[] = $form->getElement('systemUsername')->isValid($postData['hiddenSystemUsername']);
+
                     }
                     $validations[] = $form->getElement('tempPassword')->isValid($postData['tempPassword']);
                     $validations[] = $form->getElement('tempPasswordConfirm')->isValid($postData['tempPasswordConfirm']);
