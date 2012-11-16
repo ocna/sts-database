@@ -59,7 +59,6 @@ class MandrillEmailMessageService implements EmailMessageService
                 array('email' => $email)
                 )
             );
-
         $response = $this->mandrill->send($params);
         if (isset($response['status']) && $response['status'] == 'error') {
             throw new MessageServiceException('Error occured while sending message: ' . $response['message'], $response['code']);
