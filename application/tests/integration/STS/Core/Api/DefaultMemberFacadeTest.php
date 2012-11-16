@@ -20,7 +20,75 @@ class DefaultMemberFacadeTest extends MemberTestCase
         $membersMatching = $facade->getMembersMatching(null);
         $this->assertEquals(count($allMembers), count($membersMatching));
     }
-
+    /**
+     * @test
+     */
+    public function validUpdateMember()
+    {
+        //givens
+        $updatedFirstName = 'Test User';
+        $presentsFor = array_keys($this->getValidPresentsForAreasArray());
+        $facilitatesFor = array_keys($this->getValidFacilitatesForAreasArray());
+        $coordinatesFor = array_keys($this->getValidCoordinatesForAreasArray());
+        //whens
+        $facade = $this->loadFacadeInstance();
+        $facade->updateMember(
+            self::ID,
+            $updatedFirstName,
+            self::LAST_NAME,
+            self::TYPE,
+            self::STATUS,
+            self::NOTES,
+            $presentsFor,
+            $facilitatesFor,
+            $coordinatesFor,
+            'muser',
+            AddressTestCase::LINE_ONE,
+            AddressTestCase::LINE_TWO,
+            AddressTestCase::CITY,
+            AddressTestCase::STATE,
+            AddressTestCase::ZIP,
+            self::EMAIL,
+            self::DISPLAY_DATE_TRAINED,
+            array('date'=>self::DISPLAY_DATE_TRAINED, 'stage'=>'I'),
+            array(
+                'work'=>'301-555-1234',
+                'cell'=>'555-123-9999'
+            )
+        );
+        //thens
+        $updatedMemberDto = $facade->getMemberById(self::ID);
+        $this->assertInstanceOf('STS\Core\Member\MemberDto', $updatedMemberDto);
+        $this->assertEquals($updatedFirstName, $updatedMemberDto->getFirstName());
+        
+        //reset
+        $facade->updateMember(
+            self::ID,
+            self::FIRST_NAME,
+            self::LAST_NAME,
+            self::TYPE,
+            self::STATUS,
+            self::NOTES,
+            $presentsFor,
+            $facilitatesFor,
+            $coordinatesFor,
+            'muser',
+            AddressTestCase::LINE_ONE,
+            AddressTestCase::LINE_TWO,
+            AddressTestCase::CITY,
+            AddressTestCase::STATE,
+            AddressTestCase::ZIP,
+            self::EMAIL,
+            self::DISPLAY_DATE_TRAINED,
+            array('date'=>self::DISPLAY_DATE_TRAINED, 'stage'=>'I'),
+            array(
+                'work'=>'301-555-1234',
+                'cell'=>'555-123-9999'
+            )
+        );
+        $updatedMemberDto = $facade->getMemberById(self::ID);
+        $this->assertValidMemberDto($updatedMemberDto);
+    }
     /**
      * @test
      */

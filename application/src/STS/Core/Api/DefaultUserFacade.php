@@ -4,6 +4,7 @@ use STS\Core\User\UserDTOAssembler;
 use STS\Core\User\MongoUserRepository;
 use STS\Core\Api\UserFacade;
 use STS\Domain\User;
+use STS\Core\Api\ApiException;
 
 class DefaultUserFacade implements UserFacade
 {
@@ -20,6 +21,18 @@ class DefaultUserFacade implements UserFacade
             return UserDTOAssembler::toDTO($user);
         }catch(\InvalidArgumentException $e){
             return array();
+        }
+    }
+
+    public function getUserByMemberId($id)
+    {
+        $users = $this->userRepository->find(
+            array('member_id'=> array('_id' => new \MongoId($id)))
+                    );
+        if(empty($users)){
+            return null;
+        }else{
+            return UserDTOAssembler::toDTO($users[0]);
         }
     }
 
@@ -41,6 +54,26 @@ class DefaultUserFacade implements UserFacade
         return UserDTOAssembler::toDTO($user);
     }
 
+    public function updateUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId)
+    {
+        $user = $this->userRepository->load($username);
+        if ($associatedMemberId != $user->getAssociatedMemberId()) {
+            throw new ApiException('Can not associate user with different member.');
+        }
+        $user->setFirstName($firstName)
+             ->setLastName($lastName)
+             ->setEmail($email)
+             ->setRole($role)
+             ->initializePasswordIfNew($password);
+        $updatedUser = $this->userRepository->save($user);
+        return UserDTOAssembler::toDTO($updatedUser);
+    }
+
+    public function getUserRoleKey($key)
+    {
+        return array_search($key, User::getAvailableRoles());
+    }
+
     public static function getDefaultInstance($config)
     {
         $mongoConfig = $config->modules->default->db->mongodb;
@@ -52,4 +85,5 @@ class DefaultUserFacade implements UserFacade
         $userRepository = new MongoUserRepository($mongoDb);
         return new DefaultUserFacade($userRepository);
     }
+
 }

@@ -4,6 +4,7 @@ use STS\Domain\User;
 
 class UserTest extends UserTestCase
 {
+    const TEMP_PW = 'abcd1234';
     /**
      * @test
      */
@@ -16,9 +17,38 @@ class UserTest extends UserTestCase
     /**
      * @test
      */
+    public function validInitializePasswordIfNew()
+    {
+        $user = new User();
+        $user->initializePassword(self::TEMP_PW);
+        $password = $user->getPassword();
+        $user->initializePasswordIfNew(self::TEMP_PW);
+        $this->assertEquals($password, $user->getPassword(), 'passwords were changed when the same');
+        $user->initializePasswordIfNew('diffPW123');
+        $this->assertNotEquals($password, $user->getPassword(), 'passwords were not changed when different');
+    }
+    
+    /**
+     * @test
+     */
+    public function validInitializePasswordIfNewNullWontChange()
+    {
+        $user = new User();
+        $user->initializePassword(self::TEMP_PW);
+        $password = $user->getPassword();
+        $user->initializePasswordIfNew(null);
+        $this->assertEquals($password, $user->getPassword(), 'passwords were changed when null passed');
+        $user->initializePasswordIfNew('');
+        $this->assertEquals($password, $user->getPassword(), 'passwords were changed when blank passed');
+    }
+    
+
+    /**
+     * @test
+     */
     public function validInitializePassword()
     {
-        $temp = 'abcd1234';
+        $temp = self::TEMP_PW;
         $user = new User();
         $user->initializePassword($temp);
         $salt = $user->getSalt();

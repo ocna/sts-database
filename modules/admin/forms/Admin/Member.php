@@ -11,7 +11,6 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
     public function init() {
         $this->setName('memberForm');
         $this->setMethod('post');
-        $this->setAction('/admin/member/new');
         //first name
         $this->addElement('text', 'firstName', array(
             'label' => 'First Name',
@@ -183,6 +182,9 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
             'dimension' => 2,
             'required' => true,
         ));
+        $this->addElement('hidden', 'hiddenSystemUsername', array(
+            'dimension' => 2,
+        ));
         //password
         $this->addElement('password', 'tempPassword', array(
             'label' => 'Password',
@@ -254,7 +256,7 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
         ));
         //Saving
         $this->addElement('button', 'submit', array(
-            'label' => 'Save New Member!',
+            'label' => 'Save Member!',
             'type' => 'submit',
             'buttonType' => Twitter_Bootstrap_Form_Element_Submit::BUTTON_SUCCESS
         ));

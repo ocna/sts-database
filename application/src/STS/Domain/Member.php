@@ -33,6 +33,26 @@ class Member extends EntityWithTypes
     private $phoneNumbers = array();
     private $canBeDeleted = true;
 
+    public function clearPresentsFor(){
+        $this->presentsFor = array();
+        return $this;
+    }
+
+    public function clearFacilitatesFor(){
+        $this->facilitatesFor = array();
+        return $this;
+    }
+
+    public function clearCoordinatesFor(){
+        $this->coordinatesFor = array();
+        return $this;
+    }
+
+    public function clearPhoneNumbers(){
+        $this->phoneNumbers = array();
+        return $this;
+    }
+
     public function addPhoneNumber(PhoneNumber $phoneNumber)
     {
         $this->phoneNumbers[] = $phoneNumber;
