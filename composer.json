@@ -6,17 +6,15 @@
       }
    ],
    "require":{
+      "mandrill/mandrill":"*",
       "behat/behat":"*",
       "behat/mink":"*",
       "behat/mink-extension":"*",
-      "behat/mink-sahi-driver":"*",
       "behat/mink-goutte-driver":"1.0.3",
-      "behat/mink-selenium2-driver":"*",
       "breerly/zf1":"1.11.*",
       "phpunit/phpunit":"*",
       "emagister/zend-form-decorators-bootstrap":"*",
-      "mockery/mockery": "*", 
-      "amazonwebservices/aws-sdk-for-php": "*"
+      "mockery/mockery": "*"
    },
    "minimum-stability":"dev",
    "config":{

@@ -12,6 +12,12 @@
                         <dbname></dbname>
                     </mongodb>
 				</db>
+                <email>
+                    <mandrill>
+                        <sourceEmailAddress></sourceEmailAddress>
+                        <api_key></api_key>
+                    </mandrill>
+                </email>
 			</default>
 		</modules>
 	</all>

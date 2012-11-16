@@ -29,8 +29,4 @@ class MongoSurveyRepositoryTest extends SurveyTestCase
         $repo = new MongoSurveyRepository($mongoDb);
         return $repo;
     }
-    public function teardown()
-    {
-        \Mockery::close();
-    }
 }

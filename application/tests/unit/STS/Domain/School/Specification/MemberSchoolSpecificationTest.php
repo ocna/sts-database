@@ -58,8 +58,4 @@ class MemberSchoolSpecificationTest extends \PHPUnit_Framework_TestCase
         $spec = new MemberSchoolSpecification($member);
         $this->assertTrue(false === $spec->isSatisfiedBy($school));
     }
-    public function teardown()
-    {
-        \Mockery::close();
-    }
 }
