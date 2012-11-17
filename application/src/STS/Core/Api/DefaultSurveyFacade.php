@@ -21,7 +21,27 @@ class DefaultSurveyFacade implements SurveyFacade
     {
         return $this->templateRepository->load($id);
     }
+
+    public function getSurveyById($id)
+    {
+        return $this->surveyRepository->load($id);
+    }
     public function saveSurvey($userId, $templateId, $surveyData)
+    {
+        $surveyInstance = $this->buildSurveyInstanceFromPostData($userId, $templateId, $surveyData);
+        $updatedSurvey = $this->surveyRepository->save($surveyInstance);
+        return $updatedSurvey->getId();
+    }
+
+    public function updateSurvey($userId, $templateId, $surveyData, $surveyId)
+    {
+        $surveyInstance = $this->buildSurveyInstanceFromPostData($userId, $templateId, $surveyData);
+        $surveyInstance->setId($surveyId);
+        $updatedSurvey = $this->surveyRepository->save($surveyInstance);
+        return $updatedSurvey->getId();
+    }
+
+    private function buildSurveyInstanceFromPostData($userId, $templateId, $surveyData)
     {
         $template = $this->templateRepository->load($templateId);
         $surveyInstance = $template->createSurveyInstance();
@@ -50,9 +70,10 @@ class DefaultSurveyFacade implements SurveyFacade
             }
             $surveyInstance->answerQuestion($questionId, $response);
         }
-        $updatedSurvey = $this->surveyRepository->save($surveyInstance);
-        return $updatedSurvey->getId();
+        return $surveyInstance;
     }
+
+
     public static function getDefaultInstance($config)
     {
         $templateRepository = new StaticTemplateRepository();

@@ -1,4 +1,6 @@
 <?php
+namespace STS\Core\Survey;
+
 use STS\TestUtilities\SurveyTestCase;
 use STS\Core\Survey\MongoSurveyRepository;
 
@@ -12,6 +14,20 @@ class MongoSurveyRepositoryTest extends SurveyTestCase
         $repo = $this->getRepoWithMockedDeps();
         $this->assertInstanceOf('STS\Core\Survey\MongoSurveyRepository', $repo);
     }
+
+    /**
+     * @test
+     */
+    public function validLoadSurvey()
+    {
+        $mongoDb = \Mockery::mock('MongoDB');
+        $mongoDb->shouldReceive('selectCollection')->andReturn($mongoDb);
+        $mongoDb->shouldReceive('findOne')->andReturn($this->getValidSurveyData());
+        $repo = new MongoSurveyRepository($mongoDb);
+        $survey = $repo->load(self::ID);
+        $this->assertEquals($this->getValidSurvey(), $survey);
+    }
+
     /**
      * @test
      * @expectedException \InvalidArgumentException

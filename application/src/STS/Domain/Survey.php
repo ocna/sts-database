@@ -1,5 +1,6 @@
 <?php
 namespace STS\Domain;
+
 use STS\Domain\Survey\Question\TrueFalse;
 use STS\Domain\Survey\Question\MultipleChoice;
 use STS\Domain\Survey\Question\ShortAnswer;
@@ -16,7 +17,7 @@ class Survey
     {
         foreach ($questions as $question) {
             if (!$question instanceof Question) {
-                throw new InvalidArgumentException('Question not provided.');
+                throw new \InvalidArgumentException('Question not provided.');
             }
             $this->questions[$question->getId()] = $question;
         }
@@ -42,6 +43,10 @@ class Survey
     public function getQuestion($id)
     {
         return $this->questions[$id];
+    }
+    public function getQuestions()
+    {
+        return $this->questions;
     }
     public function answerQuestion($questionId, $responses)
     {

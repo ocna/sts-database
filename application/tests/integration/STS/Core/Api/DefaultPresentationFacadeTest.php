@@ -5,6 +5,7 @@ use STS\TestUtilities\PresentationTestCase;
 use STS\Core;
 use STS\Core\Api\DefaultPresentationFacade;
 use STS\TestUtilities\MongoUtility;
+use STS\TestUtilities\SchoolTestCase;
 
 class DefaultPresentationFacadeTest extends PresentationTestCase
 {
@@ -27,7 +28,7 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
         $dto = $facade->getPresentationById('5068b274559ac99cfe2f6796');
         $this->assertEquals('5068b274559ac99cfe2f6796', $dto->getId());
     }
-    
+
 
     /**
      * @test
@@ -64,6 +65,52 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
         $this->assertEquals($preForms, $presentationDto->getNumberOfFormsReturnedPre());
         $this->cleanUp[] = array('collection'=>'presentation','_id'=> new \MongoId($presentationDto->getId()));
     }
+
+    /**
+     * @test
+     */
+    public function validUpdatePresentation()
+    {
+        //givens
+        $updatedNotes = 'These are updated notes.';
+        $updatedPostForms = 123;
+        $facade = $this->loadFacadeInstance();
+        $dto= $facade->getPresentationById(self::ID);
+        //whens
+        $facade->updatePresentation(
+            self::ID,
+            $dto->getSchoolId(),
+            'TYPE_MED',
+            $dto->getDate(),
+            $updatedNotes,
+            array_keys($dto->getMembersArray()),
+            $dto->getNumberOfParticipants(),
+            $updatedPostForms,
+            $dto->getNumberOfFormsReturnedPre()
+        );
+        $school = SchoolTestCase::createValidSchool();
+        //thens
+        $updatedPresentationDto = $facade->getPresentationById(self::ID);
+        $this->assertInstanceOf('STS\Core\Presentation\PresentationDto', $updatedPresentationDto);
+        $this->assertEquals($updatedNotes, $updatedPresentationDto->getNotes());
+        $this->assertEquals($updatedPostForms, $updatedPresentationDto->getNumberOfFormsReturnedPost());
+        //reset
+        $facade->updatePresentation(
+            self::ID,
+            $dto->getSchoolId(),
+            'TYPE_MED',
+            $dto->getDate(),
+            $dto->getNotes(),
+            array_keys($dto->getMembersArray()),
+            $dto->getNumberOfParticipants(),
+            $dto->getNumberOfFormsReturnedPost(),
+            $dto->getNumberOfFormsReturnedPre()
+        );
+        $updatedPresentationDto = $facade->getPresentationById(self::ID);
+        $this->assertValidPresentationDto($updatedPresentationDto);
+    }
+
+
     private function loadFacadeInstance()
     {
         $core = Core::getDefaultInstance();

@@ -4,11 +4,12 @@ namespace STS\TestUtilities;
 use STS\Domain\Presentation;
 use STS\Core\Presentation\PresentationDto;
 use STS\TestUtilities\Location\AreaTestCase;
+use STS\TestUtilities\SurveyTestCase;
 
 class PresentationTestCase extends \PHPUnit_Framework_TestCase
 {
-    const ENTERED_BY_USER_ID = 'muser';
-    const ID = '50234bc4fe65f50a9579a8cd';
+    const ENTERED_BY_USER_ID = 'jfox';
+    const ID = '5068b274559ac99cfe2f6796';
     const TYPE = 'MED';
     const DATE = '2012-05-10 11:55:23';
     const DISPLAY_DATE = '05/10/2012';
@@ -23,7 +24,7 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $members = array(
             MemberTestCase::createValidMember()
         );
-        $survey = $this->getMockBuilder('STS\Domain\Survey')->disableOriginalConstructor()->getMock();
+        $survey = \Mockery::mock('STS\Domain\Survey', array('getId'=>SurveyTestCase::ID));
         $presentation = new Presentation();
         $presentation->setEnteredByUserId(self::ENTERED_BY_USER_ID)
                      ->setId(self::ID)
@@ -47,7 +48,20 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
 
     protected function getValidPresentationDto()
     {
-        return new PresentationDto(self::ID, SchoolTestCase::NAME, AreaTestCase::CITY, self::PARTICIPANTS, self::DATE, self::TYPE, self::FORMS_POST, self::FORMS_PRE);
+        return new PresentationDto(
+            self::ID,
+            SchoolTestCase::NAME,
+            AreaTestCase::CITY,
+            self::PARTICIPANTS,
+            self::DATE,
+            self::TYPE,
+            self::FORMS_POST,
+            self::FORMS_PRE,
+            SchoolTestCase::ID,
+            SurveyTestCase::ID,
+            $this->getPresentationDtoMemberArray(),
+            self::NOTES
+        );
     }
     protected function assertValidObject($presentation)
     {
@@ -62,6 +76,7 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('STS\Domain\School', $presentation->getLocation());
         $this->assertInstanceOf('STS\Domain\Survey', $presentation->getSurvey());
         $this->assertTrue(is_array($presentation->getMembers()));
+        $this->assertEquals(array(MemberTestCase::createValidMember()), $presentation->getMembers());
         $this->assertInstanceOf('STS\Domain\Member', array_pop($presentation->getMembers()));
     }
 
@@ -70,6 +85,7 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('STS\Core\Presentation\PresentationDto', $dto);
         $this->assertTrue(is_string($dto->getId()));
         $this->assertEquals(self::ID, $dto->getId());
+        $this->assertEquals(SchoolTestCase::ID, $dto->getSchoolId());
         $this->assertEquals(SchoolTestCase::NAME, $dto->getSchoolName());
         $this->assertEquals(AreaTestCase::CITY, $dto->getSchoolAreaCity());
         $this->assertEquals(self::PARTICIPANTS, $dto->getNumberOfParticipants());
@@ -77,7 +93,21 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::DISPLAY_DATE, $dto->getDate());
         $this->assertEquals(self::FORMS_POST, $dto->getNumberOfFormsReturnedPost());
         $this->assertEquals(self::FORMS_PRE, $dto->getNumberOfFormsReturnedPre());
+        $this->assertEquals($this->getPresentationDtoMemberArray(), $dto->getMembersArray());
+        $this->assertEquals(SurveyTestCase::ID, $dto->getSurveyId());
         $this->assertEquals(94, $dto->getPreFormsPercentage());
         $this->assertEquals(73, $dto->getPostFormsPercentage());
+        $this->assertEquals(self::NOTES, $dto->getNotes());
+    }
+
+    public function getPresentationDtoMemberArray()
+    {
+        $member = MemberTestCase::createValidMember();
+        return array(
+            $member->getId() => array(
+                'fullname'=> $member->getFullName(),
+                'status' => $member->getStatus()
+                )
+            );
     }
 }

@@ -1,6 +1,7 @@
 <?php
 use STS\Domain\Survey\Question\ShortAnswer;
 use STS\Domain\Survey\Question\MultipleChoice;
+use STS\Domain\Survey\Response\SingleResponse;
 
 class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
 {
@@ -12,7 +13,6 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
     {
         $this->setName('presentationForm');
         $this->setMethod('post');
-        $this->setAction('/presentation/index/new');
         //Location
         $this
             ->addElement('select', 'location', array(
@@ -131,7 +131,7 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
                     foreach ($asks as $ask) {
                         $this
                             ->addElement('text', $name . "_$ask", array(
-                                    'label' => $choice, 'dimension' => 1, 'required' => true,
+                                    'label' => $choice, 'dimension' => 1, 'required' => true, 'value' => $this->getMultiResponse($question, $choiceId, $ask),
                                     'validators' => array(
                                         'int'
                                     )
@@ -145,7 +145,7 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
                 foreach ($asks as $ask) {
                     $this
                         ->addElement('textarea', $name . "_$ask", array(
-                            'label' => '', 'dimension' => 3, 'rows' => 10, 'required' => true
+                            'label' => '', 'dimension' => 3, 'rows' => 10, 'required' => true, 'value' => $this->getShortResponse($question, $ask),
                         ));
                     $elements[] = $name . "_$ask";
                 }
@@ -178,5 +178,34 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
     public function setSurveyTemplate($surveyTemplate)
     {
         $this->surveyTemplate = $surveyTemplate;
+    }
+
+    private function getMultiResponse($question, $choiceId, $ask)
+    {
+        if ($response = $question->getResponse($choiceId)) {
+            return $this->getResponseFromAsk($response, $ask);
+        }
+        return null;
+    }
+
+    private function getShortResponse($question, $ask)
+    {
+        if ($response = $question->getResponse()) {
+            return $this->getResponseFromAsk($response, $ask);
+        }
+        return null;
+    }
+
+    private function getResponseFromAsk($response, $ask)
+    {
+        if ($response instanceof SingleResponse) {
+            return $response->getResponse();
+        } else {
+            if ($ask == 'pre') {
+                return $response->getBeforeResponse();
+            } else {
+                return $response->getAfterResponse();
+            }
+        }
     }
 }
