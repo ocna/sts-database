@@ -49,9 +49,10 @@ class Presentation_IndexController extends SecureBaseController
 
     public function newAction()
     {
-        $this->view->form = $this->getForm();
+        $surveyTemplate = $this->surveyFacade->getSurveyTemplate(1);
+        $this->view->form = $this->getForm($surveyTemplate);
         $request = $this->getRequest();
-        $form = $this->getForm();
+        $form = $this->getForm($surveyTemplate);
         $form->setAction('/presentation/index/new');
         if ($this->getRequest()->isPost()) {
             $postData = $request->getPost();
@@ -93,7 +94,9 @@ class Presentation_IndexController extends SecureBaseController
             ->partial('partials/page-header.phtml', array(
                 'title' => 'Edit: '.$dto->getSchoolName(). ' - '. $dto->getDate()
             ));
-        $form = $this->getForm();
+
+        $survey = $this->surveyFacade->getSurveyById($dto->getSurveyId());
+        $form = $this->getForm($survey);
         $form->setAction('/presentation/index/edit?id='.$id);
         //populate form from existing values
         $form->populate(
@@ -119,7 +122,7 @@ class Presentation_IndexController extends SecureBaseController
         $this->view->form = $form;
     }
 
-    private function getForm()
+    private function getForm($surveyOrTemplate)
     {
         $schools = $this->getSchoolsVisableToMember();
         $schoolsArray = array(
@@ -131,11 +134,10 @@ class Presentation_IndexController extends SecureBaseController
         $typesArray = array_merge(array(
             ''
         ), $this->presentationFacade->getPresentationTypes());
-        $surveyTemplate = $this->surveyFacade->getSurveyTemplate(1);
         $form = new \Presentation_Presentation(
                         array(
                                 'schools' => $schoolsArray, 'presentationTypes' => $typesArray,
-                                'surveyTemplate' => $surveyTemplate
+                                'surveyTemplate' => $surveyOrTemplate
                         ));
         return $form;
     }

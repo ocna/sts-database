@@ -21,6 +21,11 @@ class DefaultSurveyFacade implements SurveyFacade
     {
         return $this->templateRepository->load($id);
     }
+
+    public function getSurveyById($id)
+    {
+        return $this->surveyRepository->load($id);
+    }
     public function saveSurvey($userId, $templateId, $surveyData)
     {
         $template = $this->templateRepository->load($templateId);
