@@ -45,6 +45,7 @@ class Presentation_IndexController extends SecureBaseController
                 'title' => $dto->getSchoolName(). ' - '. $dto->getDate()
             ));
         $this->view->presentation = $dto;
+        $this->view->survey = $this->surveyFacade->getSurveyById($dto->getSurveyId());
     }
 
     public function newAction()
