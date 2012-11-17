@@ -68,6 +68,7 @@
   </div>
 </div>
 </div>
+<?php if (! is_null($this->survey)): ?>
 <h3>Survey Data</h3>
 <?php
  function getMultiResponse($question, $choiceId, $ask)
@@ -168,6 +169,7 @@
             echo"</tbody></table>";
           } 
 ?>
+<?php endif; ?>
 
 <div class="well">
 <div class="btn-toolbar">

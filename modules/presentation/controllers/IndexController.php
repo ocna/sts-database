@@ -45,7 +45,12 @@ class Presentation_IndexController extends SecureBaseController
                 'title' => $dto->getSchoolName(). ' - '. $dto->getDate()
             ));
         $this->view->presentation = $dto;
-        $this->view->survey = $this->surveyFacade->getSurveyById($dto->getSurveyId());
+        try {
+            $this->view->survey = $this->surveyFacade->getSurveyById($dto->getSurveyId());
+        } catch (\InvalidArgumentException $e) {
+             $this->view->survey = null;
+        }
+        
     }
 
     public function newAction()
@@ -96,8 +101,11 @@ class Presentation_IndexController extends SecureBaseController
             ->partial('partials/page-header.phtml', array(
                 'title' => 'Edit: '.$dto->getSchoolName(). ' - '. $dto->getDate()
             ));
-
-        $survey = $this->surveyFacade->getSurveyById($surveyId);
+        try {
+            $survey = $this->surveyFacade->getSurveyById($surveyId);
+        } catch (\InvalidArgumentException $e) {
+            $survey = $this->surveyFacade->getSurveyTemplate(1);
+        }
         $form = $this->getForm($survey);
         $form->setAction('/presentation/index/edit?id='.$id);
         //populate form from existing values

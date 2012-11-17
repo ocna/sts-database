@@ -45,7 +45,7 @@ class PresentationTest extends PresentationTestCase
     public function shouldBeAccessableToEntryUser()
     {
         $member = \Mockery::mock('Member');
-        $user = \Mockery::mock('User', array('getRole'=>'member', 'getId'=>'muser'));
+        $user = \Mockery::mock('User', array('getRole'=>'member', 'getId'=>'jfox'));
         $presentation = $this->getValidObject();
         $this->assertTrue($presentation->isAccessableByMemberUser($member, $user));
     }
