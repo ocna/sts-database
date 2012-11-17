@@ -90,12 +90,13 @@ class Presentation_IndexController extends SecureBaseController
     {
         $id = $this->getRequest()->getParam('id');
         $dto = $this->presentationFacade->getPresentationById($id);
+        $surveyId = $dto->getSurveyId();
         $this->view->layout()->pageHeader = $this->view
             ->partial('partials/page-header.phtml', array(
                 'title' => 'Edit: '.$dto->getSchoolName(). ' - '. $dto->getDate()
             ));
 
-        $survey = $this->surveyFacade->getSurveyById($dto->getSurveyId());
+        $survey = $this->surveyFacade->getSurveyById($surveyId);
         $form = $this->getForm($survey);
         $form->setAction('/presentation/index/edit?id='.$id);
         //populate form from existing values
@@ -116,9 +117,37 @@ class Presentation_IndexController extends SecureBaseController
             $members[$key]=$value['fullname'];
         }
         $this->view->storedMembers = $members;
-        //need to get the survey object from the id then use it to populate the template
         //process form
-        ##DO STUFF HERE
+        $request = $this->getRequest();
+        if ($this->getRequest()->isPost()) {
+            $postData = $request->getPost();
+            if (!array_key_exists('membersAttended', $postData) || !is_array($postData['membersAttended'])) {
+                $form->getElement('membersAttended[]')
+                    ->addErrors(array(
+                        'Please enter at least one member.'
+                    ))->markAsError();
+                $membersValid = false;
+            } else {
+                $this->view->storedMembers = $postData['membersAttended'];
+                $membersValid = true;
+            }
+            if ($form->isValid($postData) && $membersValid) {
+                try {
+                    $this->updatePresentation($postData, $id, $surveyId);
+                    $this
+                        ->setFlashMessageAndRedirect('You have successfully updated the presentation and survey!', 'success', array(
+                            'module' => 'presentation', 'controller' => 'index', 'action' => 'view', 'params' => array('id' => $id)
+                        ));
+                } catch (ApiException $e) {
+                    $this
+                        ->setFlashMessageAndUpdateLayout('An error occured while saving this information: '
+                                        . $e->getMessage(), 'error');
+                }
+            } else {
+                $this
+                    ->setFlashMessageAndUpdateLayout('It looks like you missed some information, please make the corrections below.', 'error');
+            }
+        }
         $this->view->form = $form;
     }
 
@@ -164,8 +193,47 @@ class Presentation_IndexController extends SecureBaseController
         $surveyId = $this->surveyFacade->saveSurvey($userId, $templateId, $surveyData);
         //Then Save Presentation
         $members = array_keys($postData['membersAttended']);
-        $this->presentationFacade
-            ->savePresentation($userId, $postData['location'], $postData['presentationType'], $postData['dateOfPresentation'], $postData['notes'], $members, $postData['participants'], $postData['formsReturnedPost'], $surveyId, $postData['formsReturnedPre']);
+        $this->presentationFacade->savePresentation(
+                $userId,
+                $postData['location'],
+                $postData['presentationType'],
+                $postData['dateOfPresentation'],
+                $postData['notes'],
+                $members,
+                $postData['participants'],
+                $postData['formsReturnedPost'],
+                $surveyId,
+                $postData['formsReturnedPre']
+            );
+        return true;
+    }
+
+    private function updatePresentation($postData, $presentationId, $surveyId)
+    {
+        //Get User
+        $userId = $this->user->getId();
+        $templateId = 1;
+        //First Save Survey Built
+        $surveyData = array();
+        foreach ($postData as $key => $value) {
+            if (substr($key, 0, 2) == 'q_') {
+                $surveyData[$key] = $value;
+            }
+        }
+        $surveyId = $this->surveyFacade->updateSurvey($userId, $templateId, $surveyData, $surveyId);
+        //Then Save Presentation
+        $members = array_keys($postData['membersAttended']);
+        $this->presentationFacade->updatePresentation(
+            $presentationId,
+            $postData['location'],
+            $postData['presentationType'],
+            $postData['dateOfPresentation'],
+            $postData['notes'],
+            $members,
+            $postData['participants'],
+            $postData['formsReturnedPost'],
+            $postData['formsReturnedPre']
+            );
         return true;
     }
 }
