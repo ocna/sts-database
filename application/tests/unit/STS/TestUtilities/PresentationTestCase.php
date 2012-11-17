@@ -8,7 +8,7 @@ use STS\TestUtilities\SurveyTestCase;
 
 class PresentationTestCase extends \PHPUnit_Framework_TestCase
 {
-    const ENTERED_BY_USER_ID = 'muser';
+    const ENTERED_BY_USER_ID = 'jfox';
     const ID = '5068b274559ac99cfe2f6796';
     const TYPE = 'MED';
     const DATE = '2012-05-10 11:55:23';
