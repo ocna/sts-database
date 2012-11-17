@@ -7,14 +7,15 @@
    ],
    "require":{
       "mandrill/mandrill":"*",
-      "behat/behat":"*",
-      "behat/mink":"*",
-      "behat/mink-extension":"*",
-      "behat/mink-goutte-driver":"1.0.3",
       "breerly/zf1":"1.11.*",
       "phpunit/phpunit":"*",
       "emagister/zend-form-decorators-bootstrap":"*",
-      "mockery/mockery": "*"
+      "mockery/mockery": "*",
+      "behat/behat":"*",
+      "behat/mink":"*",
+      "behat/mink-extension":"*",
+      "behat/mink-goutte-driver":"*",
+      "behat/mink-sahi-driver": "*"
    },
    "minimum-stability":"dev",
    "config":{

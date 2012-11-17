@@ -6,6 +6,7 @@ class PresentationDto
 {
 
     private $id;
+    private $schoolId;
     private $schoolName;
     private $schoolAreaCity;
     private $numberOfParticipants;
@@ -13,6 +14,9 @@ class PresentationDto
     private $numberOfFormsReturnedPre;
     private $date;
     private $type;
+    private $surveyId;
+    private $membersArray;
+    private $notes;
 
     /**
       * @param string $id
@@ -22,7 +26,7 @@ class PresentationDto
       * @param string $date
       * @param string $type
       */
-    public function __construct($id, $schoolName, $schoolAreaCity, $numberOfParticipants, $date, $type, $postForms, $preForms)
+    public function __construct($id, $schoolName, $schoolAreaCity, $numberOfParticipants, $date, $type, $postForms, $preForms, $schoolId, $surveyId, $membersArray, $notes)
     {
         $this->id = $id;
         $this->schoolName = $schoolName;
@@ -32,6 +36,26 @@ class PresentationDto
         $this->date = $date;
         $this->numberOfFormsReturnedPost = $postForms;
         $this->numberOfFormsReturnedPre = $preForms;
+        $this->schoolId = $schoolId;
+        $this->surveyId = $surveyId;
+        $this->membersArray = $membersArray;
+        $this->notes = $notes;
+    }
+    public function getNotes()
+    {
+        return $this->notes;
+    }
+    public function getSurveyId()
+    {
+        return $this->surveyId;
+    }
+    public function getMembersArray()
+    {
+        return $this->membersArray;
+    }
+    public function getSchoolId()
+    {
+        return $this->schoolId;
     }
     public function getId()
     {

@@ -15,6 +15,43 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
     const BASIC_USER_ID = 'buser';
     const COORDINATOR_USER_ID = 'cuser';
 
+
+    /**
+     * @test
+     */
+    public function validUpdatePresentation()
+    {
+        //givens
+        $updatedNotes = 'These are updated notes.';
+        $updatedPostForms = 123;
+        $oldPresentation = $this->getValidObject();
+        $presentation = $this->getValidObject();
+        $presentation->setNotes($updatedNotes)
+                     ->setNumberOfFormsReturnedPost($updatedPostForms);
+        $presentations = array($this->getValidObject(), $this->getValidObject(), $this->getValidObject());
+        $presentationRepository = \Mockery::mock('STS\Core\Presentation\MongoPresentationRepository', array('load'=>$oldPresentation, 'save'=>$presentation));
+        $userRepository = \Mockery::mock('STS\Core\User\MongoUserRepository', array('load'=>UserTestCase::createValidUser()));
+        $memberRepository = \Mockery::mock('STS\Core\Member\MongoMemberRepository', array('load'=>MemberTestCase::createValidMember()));
+        $schoolRepository = \Mockery::mock('STS\Core\School\MongoSchoolRepository', array('load'=>SchoolTestCase::createValidSchool()));
+        $facade = new DefaultPresentationFacade($presentationRepository, $userRepository, $memberRepository, $schoolRepository);
+        //whens
+        $updatedPresentationDto = $facade->updatePresentation(
+            $presentation->getId(),
+            $presentation->getLocation()->getId(),
+            'TYPE_MED',
+            $presentation->getDate(),
+            $presentation->getNotes(),
+            array_keys($this->getPresentationDtoMemberArray()),
+            $presentation->getNumberOfParticipants(),
+            $presentation->getNumberOfFormsReturnedPost(),
+            $presentation->getNumberOfFormsReturnedPre()
+        );
+        //thens
+        $this->assertInstanceOf('STS\Core\Presentation\PresentationDto', $updatedPresentationDto);
+        $this->assertEquals($updatedNotes, $updatedPresentationDto->getNotes());
+        $this->assertEquals($updatedPostForms, $updatedPresentationDto->getNumberOfFormsReturnedPost());
+    }
+
     /**
      * @test
      */

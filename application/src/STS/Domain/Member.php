@@ -33,22 +33,26 @@ class Member extends EntityWithTypes
     private $phoneNumbers = array();
     private $canBeDeleted = true;
 
-    public function clearPresentsFor(){
+    public function clearPresentsFor()
+    {
         $this->presentsFor = array();
         return $this;
     }
 
-    public function clearFacilitatesFor(){
+    public function clearFacilitatesFor()
+    {
         $this->facilitatesFor = array();
         return $this;
     }
 
-    public function clearCoordinatesFor(){
+    public function clearCoordinatesFor()
+    {
         $this->coordinatesFor = array();
         return $this;
     }
 
-    public function clearPhoneNumbers(){
+    public function clearPhoneNumbers()
+    {
         $this->phoneNumbers = array();
         return $this;
     }
@@ -297,7 +301,7 @@ class Member extends EntityWithTypes
         return $regions;
     }
 
-    public function canBeDeleted() 
+    public function canBeDeleted()
     {
         $canBeDeleted = $this->canBeDeleted;
         if (!$canBeDeleted) {
@@ -309,7 +313,7 @@ class Member extends EntityWithTypes
         return $canBeDeleted;
     }
 
-    public function setCanBeDeleted($canIt) 
+    public function setCanBeDeleted($canIt)
     {
         $this->canBeDeleted = $canIt;
         return $this;
@@ -323,7 +327,7 @@ class Member extends EntityWithTypes
             }
         }
     }
-    private function getFullName()
+    public function getFullName()
     {
         return $this->firstName . ' '. $this->lastName;
     }

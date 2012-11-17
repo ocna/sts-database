@@ -12,10 +12,68 @@ class PresentationDtoBuilder
     private $type = null;
     private $numberOfFormsReturnedPost = null;
     private $numberOfFormsReturnedPre  = null;
+    private $schoolId = null;
+    private $surveyId = null;
+    private $membersArray = array();
+    private $notes = null;
 
     public function build()
     {
-        return new PresentationDto($this->id, $this->schoolName, $this->schoolAreaCity, $this->numberOfParticipants, $this->date, $this->type, $this->numberOfFormsReturnedPost, $this->numberOfFormsReturnedPre);
+        return new PresentationDto(
+            $this->id,
+            $this->schoolName,
+            $this->schoolAreaCity,
+            $this->numberOfParticipants,
+            $this->date,
+            $this->type,
+            $this->numberOfFormsReturnedPost,
+            $this->numberOfFormsReturnedPre,
+            $this->schoolId,
+            $this->surveyId,
+            $this->membersArray,
+            $this->notes
+        );
+    }
+     /**
+      * withNotes
+      *
+      * @param string $notes
+      * @return PresentationDtoBuilder $this
+      */
+    public function withNotes($notes)
+    {
+        $this->notes = $notes;
+        return $this;
+    }
+
+     /**
+      * withMembersArray
+      *
+      * @param array $membersArray
+      * @return PresentationDtoBuilder $this
+      */
+    public function withMembersArray($membersArray)
+    {
+        $this->membersArray = $membersArray;
+        return $this;
+    }
+
+     /**
+      * @param string $id
+      */
+    public function withSchoolId($schoolId)
+    {
+        $this->schoolId = $schoolId;
+        return $this;
+    }
+
+     /**
+      * @param string $id
+      */
+    public function withSurveyId($surveyId)
+    {
+        $this->surveyId = $surveyId;
+        return $this;
     }
 
      /**

@@ -9,7 +9,7 @@ class MultipleChoice extends Question
     const QUESTION_TYPE = 'MultipleChoice';
 
     protected $choices;
-    protected $responses;
+    protected $responses = array();
     public function addChoice($choiceId, $choicePrompt)
     {
         $this->choices[$choiceId] = $choicePrompt;

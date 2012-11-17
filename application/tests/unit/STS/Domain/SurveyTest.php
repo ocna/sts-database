@@ -17,6 +17,17 @@ class SurveyTest extends SurveyTestCase
         $survey = $this->getValidSurvey();
         $this->assertEquals('Pick 2.', $survey->getQuestion(1)->getPrompt());
     }
+
+    /**
+     * @test
+     */
+    public function validGetQuestions()
+    {
+        $survey = $this->getValidSurvey();
+        $questions = $survey->getQuestions();
+        $this->assertTrue(is_array($questions));
+        $this->assertInstanceOf('\STS\Domain\Survey\Question', array_pop($questions));
+    }
     /**
      * @test
      */
@@ -71,7 +82,7 @@ class SurveyTest extends SurveyTestCase
         $survey = $this->getValidSurvey();
         $array = $survey->toArray();
         $expectedArray = array(
-                'id' => null, 'entered_by_user_id' => null,
+                'id' => self::ID, 'entered_by_user_id' => self::ENTERED_BY,
                 'questions' => array(
                         array(
                                 'id' => 1, 'type' => 'MultipleChoice', 'prompt' => 'Pick 2.', 'asked' => 0,
