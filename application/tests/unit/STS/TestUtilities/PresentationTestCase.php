@@ -105,8 +105,8 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $member = MemberTestCase::createValidMember();
         return array(
             $member->getId() => array(
-                'fullname'=> $member->getStatus(),
-                'status' => $member->getFullName()
+                'fullname'=> $member->getFullName(),
+                'status' => $member->getStatus()
                 )
             );
     }

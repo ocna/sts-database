@@ -25,8 +25,8 @@ class PresentationDtoAssembler
         $membersArray = array();
         foreach ($members as $member) {
             $membersArray[$member->getId()] = array(
-                'fullname'=> $member->getStatus(),
-                'status' => $member->getFullName()
+                'fullname'=> $member->getFullName(),
+                'status' => $member->getStatus()
                 );
         }
         $builder->withMembersArray($membersArray);

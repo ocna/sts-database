@@ -31,12 +31,13 @@ class Presentation_IndexController extends SecureBaseController
             'add' => 'Add New Presentation',
             'addRoute' => '/presentation/index/new'
         ));
-        
+
         $dtos = $this->presentationFacade->getPresentationsForUserId($this->user->getId());
         $this->view->objects = $dtos;
     }
 
-    public function viewAction(){
+    public function viewAction()
+    {
         $id = $this->getRequest()->getParam('id');
         $dto = $this->presentationFacade->getPresentationById($id);
         $this->view->layout()->pageHeader = $this->view
@@ -51,6 +52,7 @@ class Presentation_IndexController extends SecureBaseController
         $this->view->form = $this->getForm();
         $request = $this->getRequest();
         $form = $this->getForm();
+        $form->setAction('/presentation/index/new');
         if ($this->getRequest()->isPost()) {
             $postData = $request->getPost();
             if (!array_key_exists('membersAttended', $postData) || !is_array($postData['membersAttended'])) {
@@ -82,6 +84,41 @@ class Presentation_IndexController extends SecureBaseController
         }
         $this->view->form = $form;
     }
+
+    public function editAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $dto = $this->presentationFacade->getPresentationById($id);
+        $this->view->layout()->pageHeader = $this->view
+            ->partial('partials/page-header.phtml', array(
+                'title' => 'Edit: '.$dto->getSchoolName(). ' - '. $dto->getDate()
+            ));
+        $form = $this->getForm();
+        $form->setAction('/presentation/index/edit?id='.$id);
+        //populate form from existing values
+        $form->populate(
+            array(
+                'location'=>$dto->getSchoolId(),
+                'presentationType'=> $this->presentationFacade->getTypeKey($dto->getType()),
+                'dateOfPresentation'=>$dto->getDate(),
+                'notes'=>$dto->getNotes(),
+                'participants'=>$dto->getNumberOfParticipants(),
+                'formsReturnedPre'=>$dto->getNumberOfFormsReturnedPre(),
+                'formsReturnedPost'=>$dto->getNumberOfFormsReturnedPost()
+            )
+        );
+        //populate members
+        $members = array();
+        foreach ($dto->getMembersArray() as $key => $value) {
+            $members[$key]=$value['fullname'];
+        }
+        $this->view->storedMembers = $members;
+        //need to get the survey object from the id then use it to populate the template
+        //process form
+        ##DO STUFF HERE
+        $this->view->form = $form;
+    }
+
     private function getForm()
     {
         $schools = $this->getSchoolsVisableToMember();

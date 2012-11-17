@@ -119,6 +119,11 @@ class DefaultPresentationFacade implements PresentationFacade
         return $summary;
     }
 
+    public function getTypeKey($type)
+    {
+        return array_search($type, Presentation::getAvailableTypes());
+    }
+
     public static function getDefaultInstance($config)
     {
         $mongoConfig = $config->modules->default->db->mongodb;

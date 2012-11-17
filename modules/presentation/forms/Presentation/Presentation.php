@@ -12,7 +12,6 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
     {
         $this->setName('presentationForm');
         $this->setMethod('post');
-        $this->setAction('/presentation/index/new');
         //Location
         $this
             ->addElement('select', 'location', array(

@@ -1,0 +1,34 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+
+
+        window.onbeforeunload = function (e) {
+            var e = e || window.event;
+            // For IE and Firefox prior to version 4
+            if (e) {
+                e.returnValue = 'Please be sure you have double checked your work, and that you want to navigate away!';
+            }
+            // For Safari
+            return 'Please be sure you have double checked your work, and that you want to navigate away!';
+        };
+
+        $('input.membersAttended').tagedit({
+            autocompleteURL : "/search/member",
+            checkNewEntriesCaseSensitive: true,
+            allowEdit: false,
+            allowAdd: false,
+            addedPostfix: ''
+            });
+        $( "#dateOfPresentation" ).datepicker();
+        $("#dateOfPresentationButton").click(function(){
+            $( "#dateOfPresentation" ).datepicker( "show" );
+            })
+        registerTaggerHelpPopover()
+    });
+</script>
+<?php if ($this->storedMembers) : ?>
+<?php foreach ($this->storedMembers as $key => $value) : ?>
+    <input type="text" name="membersAttended[<?php echo $key ?>]" class="membersAttended" value="<?php echo $value ?>"/>
+<?php endforeach; ?>
+<?php endif; ?>
+<?php echo $this->form; ?>

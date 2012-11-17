@@ -1,9 +1,52 @@
+
 <h3>Details</h3>
 <dl class="dl-horizontal">
   <dt>Presentation Type:</dt>
   <dd><?php echo $this->presentation->getType() ? $this->presentation->getType() : '-'; ?></dd>
+
+  <dt>School:</dt>
+  <dd>
+    <?php
+    if($this->presentation->getSchoolId()){
+      echo '<a href="/admin/school/view?id='. $this->presentation->getSchoolId() .'">'. $this->presentation->getSchoolName(). '</a>';
+    } else{
+      echo '-';
+    }
+    ?>
+    </dd>
+
+  <dt>Notes:</dt>
+  <dd><?php echo $this->presentation->getNotes() ? $this->presentation->getNotes() : '-'; ?></dd>
+  <dt>Members Attending:</dt>
+  <?php if($this->presentation->getMembersArray()!=array() ):?>
+    <dd>
+    <?php foreach($this->presentation->getMembersArray() as $id =>$member):
+
+        switch ($member['status']) {
+            case 'Deceased':
+                $class = "label label-inverse deceased";
+                break;
+            case 'Inactive':
+                $class = "label";
+                break;
+            case 'Active':
+                $class = "label label-info";
+                break;
+            default:
+                $class = "label label-info";
+                break;
+        }
+        ?>
+        <a href="/admin/member/view?id=<?php echo $id ?>"><span class="<?php echo $class?>"><?php echo $member['fullname']; ?></span></a>
+    <?php endforeach; ?>
+    </dd>
+  <?php else: ?>
+  -
+<?php endif;?>
+
 </dl>
 <br>
+
 <h3>Quick Stats</h3>
 <div class="row">
   <div class="span7">
@@ -28,5 +71,6 @@
 </div>
 <div class="well">
 <div class="btn-toolbar">
+  <a class="btn btn-primary" href="/presentation/index/edit?id=<?php echo $this->presentation->getId() ?>"><i class="icon-edit"></i> Edit</a>
   <a class="btn" href="/presentation">Go Back</a>
 </div></div>
