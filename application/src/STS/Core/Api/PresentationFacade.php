@@ -26,6 +26,8 @@ interface PresentationFacade
      */
     public function savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId, $preForms);
 
+    public function updatePresentation($id, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $postForms, $preForms);
+
     /**
      *
      *

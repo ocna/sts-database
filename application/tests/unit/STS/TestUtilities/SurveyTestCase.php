@@ -8,6 +8,7 @@ use STS\Domain\Survey\Question\MultipleChoice;
 
 class SurveyTestCase extends \PHPUnit_Framework_TestCase
 {
+    const ID = '5068ab5c559ac99cfe2f6792';
     protected function getValidSurvey()
     {
         $multipleChoice = new MultipleChoice();

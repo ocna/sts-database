@@ -47,6 +47,28 @@ class DefaultPresentationFacade implements PresentationFacade
         $updatedPresentation = $this->presentationRepository->save($presentation);
         return PresentationDtoAssembler::toDto($updatedPresentation);
     }
+
+    public function updatePresentation($id, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $postForms, $preForms)
+    {
+        $presentation = $this->presentationRepository->load($id);
+        $school = $this->schoolRepository->load($schoolId);
+        foreach ($memberIds as $ids) {
+            $member = new Member();
+            $member->setId($ids);
+            $members[] = $member;
+        }
+        $presentation->setLocation($school)
+                     ->setType(Presentation::getAvailableType($typeCode))
+                     ->setDate($date)
+                     ->setNotes($notes)
+                     ->setNumberOfParticipants($participants)
+                     ->setNumberOfFormsReturnedPost($postForms)
+                     ->setNumberOfFormsReturnedPre($preForms)
+                     ->setMembers($members);
+        $updatedPresentation = $this->presentationRepository->save($presentation);
+        return PresentationDtoAssembler::toDto($updatedPresentation);
+    }
+
     public function getPresentationTypes()
     {
         return Presentation::getAvailableTypes();

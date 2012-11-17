@@ -2,9 +2,11 @@
 namespace STS\Core\Presentation;
 
 use STS\Domain\Presentation;
+use STS\Domain\Survey;
 use STS\Domain\Presentation\PresentationRepository;
 use STS\Core\Member\MongoMemberRepository;
 use STS\Core\School\MongoSchoolRepository;
+use STS\Domain\Survey\Template;
 
 class MongoPresentationRepository implements PresentationRepository
 {
@@ -19,9 +21,9 @@ class MongoPresentationRepository implements PresentationRepository
         if (!$presentation instanceof Presentation) {
             throw new \InvalidArgumentException('Instance of Presentation expected.');
         }
-        if(is_null($presentation->getId())){
+        if (is_null($presentation->getId())) {
             $presentation->markCreated();
-        }else{
+        } else {
             $presentation->markUpdated();
         }
         $array = $presentation->toMongoArray();
@@ -44,9 +46,11 @@ class MongoPresentationRepository implements PresentationRepository
 
     public function load($id)
     {
-        $data = $this->mongoDb->presentation->findOne(array(
+        $data = $this->mongoDb->presentation->findOne(
+            array(
                 '_id' => new \MongoId($id)
-            ));
+            )
+        );
         if ($data == null) {
             throw new \InvalidArgumentException("Presentation not found with given id: $id");
         }
@@ -85,6 +89,12 @@ class MongoPresentationRepository implements PresentationRepository
                      ->setType($data['type']);
         if (array_key_exists('nformspre', $data)) {
             $presentation->setNumberOfFormsReturnedPre($data['nformspre']);
+        }
+        if (array_key_exists('survey_id', $data)) {
+            $template = new Template();
+            $survey = $template->createSurveyInstance();
+            $survey->setId($data['survey_id']);
+            $presentation->setSurvey($survey);
         }
         $schoolRepository = new MongoSchoolRepository($this->mongoDb);
         $presentation->setLocation($schoolRepository->load($data['school_id']));
