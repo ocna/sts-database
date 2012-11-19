@@ -1,57 +1,29 @@
-<?php
-	$sortableArray = array();
-	$n = 1;
-	foreach ($this->regions as $name => $region) {
-			$sortableArray[] = '#sortable'. $n;
-			$n++;
-		}
-	$sortableList = '"'.implode(", ", $sortableArray).'"';
+<?php 
+$n = 1;
+foreach ($this->regions as $name => $region):
 ?>
-
-<script>
-    $(function() {
-        $( <?php echo $sortableList ?> ).sortable().disableSelection();
- 
-        var $tabs = $( "#tabs" ).tabs();
- 
-        var $tab_items = $( "ul:first li", $tabs ).droppable({
-            accept: ".connectedSortable li",
-            hoverClass: "ui-state-hover",
-            drop: function( event, ui ) {
-                var $item = $( this );
-                var $list = $( $item.find( "a" ).attr( "href" ) )
-                    .find( ".connectedSortable" );
- 
-                ui.draggable.hide( "slow", function() {
-                    $tabs.tabs( "select", $tab_items.index( $item ) );
-                    $( this ).appendTo( $list ).show( "slow" );
-                    $( this ).addClass("btn-success");
-                });
-            }
-        });
-    });
-</script>
-
-<div id="tabs">
-	<ul>
-	<?php 
-	$n = 1;
-	foreach ($this->regions as $name => $region) {
-		echo "<li><a href=\"#tabs-$n\">$name</a></li>";
-		$n++;
-	}
-	?>
-	</ul>
-		<?php 
-		$n = 1;
-		foreach ($this->regions as $name => $region) {
-			echo "<div id=\"tabs-$n\">";
-			echo "<ul id=\"sortable$n\" class=\"connectedSortable ui-helper-reset\">";
-			foreach ($region['areas'] as $area) {
-				echo "<li class=\"btn btn-large\"><i class=\"icon-move\"></i> ".$area->getCity()."</li>";
-			}
-			echo "</ul></div>";
-			$n++;
-		}
-		?>
+<h3><?= $name ?></h3>
+<div class="well">
+<ul class="thumbnails">
+	<? foreach ($region['areas'] as $area): ?>
+		<li class="span3">
+			<div class="thumbnail sortable-row">
+				<div class="row-fluid">
+					<!--
+					<div class="span2"><i class="icon-move"></i></div>
+					-->
+					<div class="span6"><?= $area->getCity() ?></div>
+					<div class="span2"><?= $area->getState() ?></div>
+					<!--
+					<div class="span2" style="text-align:right;">
+						<div class="btn-group">
+	                    <a class="btn btn-mini"><i class="icon-edit"></i></a>
+					</div>
+					-->
+			</div>
+			</div>
+		</li>
+	<? endforeach; ?>
+</ul>
 </div>
+<? endforeach; ?>

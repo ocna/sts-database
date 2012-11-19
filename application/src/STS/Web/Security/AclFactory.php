@@ -13,6 +13,7 @@ class AclFactory
     const RESOURCE_SCHOOL = 'school';
     const RESOURCE_SEARCH = 'search';
     const RESOURCE_REPORT = 'report';
+    const RESOURCE_REGION = 'region';
 
     public static function buildAcl()
     {
@@ -29,6 +30,7 @@ class AclFactory
         $acl->addResource(self::RESOURCE_USER, self::RESOURCE_ADMIN);
         $acl->addResource(self::RESOURCE_SCHOOL, self::RESOURCE_ADMIN);
         $acl->addResource(self::RESOURCE_REPORT, self::RESOURCE_ADMIN);
+        $acl->addResource(self::RESOURCE_REGION, self::RESOURCE_ADMIN);
         //Establish Rules
         $acl->allow(self::ROLE_ADMIN);
         $acl->allow(self::ROLE_FACILITATOR, self::RESOURCE_PRESENTATION);
