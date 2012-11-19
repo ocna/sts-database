@@ -1,29 +1,29 @@
-<?php
-$columns = array('id'=>'Region Id', 'name'=>'Name');
+<?php 
+$n = 1;
+foreach ($this->regions as $name => $region):
 ?>
-
-<table class="table table-striped table-bordered">
-	<thead>
-		<tr>
-		<?php foreach ($columns as $title){
-			echo "<th>$title</th>";
-			}?>
-			<th style="text-align:right;">Actions</th>
-		</tr>
-	</thead>
-	<tbody>
-	<?php	foreach ($this->objects as $object) {?>
-		<tr>
-		<?php foreach ($columns as $get=>$title){
-		    $method = 'get' . ucfirst($get);
-			echo "<td>{$object->$method()}</td>";
-			}?>
-			<td style="text-align:right;">
-			<a class="btn btn-small" href="#"><i class="icon-pencil"></i> Edit</a>
-			<a class="btn btn-small btn-danger" href="#"><i class="icon-trash icon-white"></i></a>
-			
-			</td>
-		<?php }?>	
-		</tr>
-	</tbody>
-</table>
+<h3><?= $name ?></h3>
+<div class="well">
+<ul class="thumbnails">
+	<? foreach ($region['areas'] as $area): ?>
+		<li class="span3">
+			<div class="thumbnail sortable-row">
+				<div class="row-fluid">
+					<!--
+					<div class="span2"><i class="icon-move"></i></div>
+					-->
+					<div class="span6"><?= $area->getCity() ?></div>
+					<div class="span2"><?= $area->getState() ?></div>
+					<!--
+					<div class="span2" style="text-align:right;">
+						<div class="btn-group">
+	                    <a class="btn btn-mini"><i class="icon-edit"></i></a>
+					</div>
+					-->
+			</div>
+			</div>
+		</li>
+	<? endforeach; ?>
+</ul>
+</div>
+<? endforeach; ?>

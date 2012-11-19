@@ -59,10 +59,18 @@ class DefaultLocationFacade implements LocationFacade
     public function getAreasForRegions($regions)
     {
         $query = array('region.name'=>array('$in'=> $regions));
-        $areas = $this->mongoDb->area->find($query);
+        $areas = $this->mongoDb->area->find($query)->sort(array(
+                'name' => 1
+            ));
         $returnData = array();
+
         foreach ($areas as $area) {
-            $returnData[] = new AreaDto($area['_id']->__toString(), $area['name'], $area['legacyid'], $area['city'],
+            if(!array_key_exists('legacyid', $area)){
+            $lid = null;
+        }else{
+            $lid = $area['legacyid'];
+        }
+            $returnData[] = new AreaDto($area['_id']->__toString(), $area['name'], $lid, $area['city'],
                             $area['state'], $area['region']['name']);
         }
         return $returnData;
@@ -70,10 +78,11 @@ class DefaultLocationFacade implements LocationFacade
 
     public function getAllRegions()
     {
-        $regions = $this->mongoDb->area->distinct('region');
+        $regions = $this->mongoDb->area->distinct('region.name');
+        sort($regions);
         $returnData = array();
         foreach ($regions as $region) {
-            $returnData[] = new RegionDto($region['legacyid'], $region['name']);
+            $returnData[] = new RegionDto(null, $region);
         }
         return $returnData;
     }
