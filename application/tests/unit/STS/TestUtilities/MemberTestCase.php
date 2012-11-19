@@ -170,7 +170,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
     protected function getValidCoordinatesForRegionsArray()
     {
         return array(
-            'Mid-West'
+            'Great Lakes'
         );
     }
     protected function getValidPhoneNumbersArray()
@@ -191,12 +191,12 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
         $areas = array();
         $area = new Area();
         $region = new Region();
-        $region->setName('Mid-West')->setLegacyId(12);
+        $region->setName('Great Lakes')->setLegacyId(12);
         $area->setId('502d90100172cda7d649d465')->setName('OH-Clayton')->setCity('Clayton')->setState('OH')->setRegion($region)->setLegacyId(69);
         $areas[] = $area;
         $area = new Area();
         $region = new Region();
-        $region->setName('Mid-West')->setLegacyId(12);
+        $region->setName('Great Lakes')->setLegacyId(12);
         $area->setId('502d90100172cda7d649d461')->setName('OH-Dayton')->setCity('Dayton')->setState('OH')->setRegion($region)->setLegacyId(69);
         $areas[] = $area;
         return $areas;
@@ -213,7 +213,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
                 'state'=>'OH',
                 'region'=> array(
                     'legacyid'=>12,
-                    'name'=>'Mid-West')
+                    'name'=>'Great Lakes')
                 ),
             array(
                 '_id'=> new \MongoId('502d90100172cda7d649d461'),
@@ -223,7 +223,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
                 'state'=>'OH',
                 'region'=> array(
                     'legacyid'=>12,
-                    'name'=>'Mid-West')
+                    'name'=>'Great Lakes')
                 )
             );
         return $data;

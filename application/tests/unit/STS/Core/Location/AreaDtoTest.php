@@ -8,7 +8,7 @@ class AreaDtoTest extends \PHPUnit_Framework_TestCase
     const LEGACY_ID = 10;
     const STATE = 'MI';
     const CITY = 'Grand Rapids';
-    const REGION_NAME = 'Mid-West';
+    const REGION_NAME = 'Great Lakes';
     /**
      * @test
      */
