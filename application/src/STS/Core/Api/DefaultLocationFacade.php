@@ -33,9 +33,18 @@ class DefaultLocationFacade implements LocationFacade
         $areas = $this->mongoDb->area->find()->sort(array(
                 'name' => 1
             ));
+
         $returnData = array();
         foreach ($areas as $area) {
-            $returnData[] = new AreaDto($area['_id']->__toString(), $area['name'], $area['legacyid'], $area['city'],
+
+            if(!array_key_exists('legacyid', $area)){
+            $lid = null;
+        }else{
+            $lid = $area['legacyid'];
+        }
+
+
+            $returnData[] = new AreaDto($area['_id']->__toString(), $area['name'], $lid, $area['city'],
                             $area['state'], $area['region']['name']);
         }
         return $returnData;
