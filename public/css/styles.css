@@ -32,3 +32,15 @@ h1 span.label {
 .deceased {
 	text-decoration: line-through;
 }
+
+.sortable-row {
+	background-color: #fff;
+	padding-top:11px;
+	padding-right: 10px;
+	padding-left: 10px;
+}
+
+.icon-move {
+	font-size: 25px;
+	margin-top: 6px;
+}

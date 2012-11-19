@@ -2,7 +2,7 @@
 use STS\Core\Location\RegionDto;
 class RegionDtoTest extends \PHPUnit_Framework_TestCase
 {
-    const NAME = 'Mid-West';
+    const NAME = 'Great Lakes';
     const LEGACY_ID = 10;
 
     /**

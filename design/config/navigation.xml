@@ -44,6 +44,13 @@
                 <action>index</action>
                 <resource>member</resource>
             </member>
+            <region>
+                <label>Regions</label>
+                <module>admin</module>
+                <controller>region</controller>
+                <action>index</action>
+                <resource>region</resource>
+            </region>
         </pages>
     </admin>
 </config>
