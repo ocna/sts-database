@@ -433,7 +433,7 @@ class Admin_MemberController extends SecureBaseController
 
     private function updateMember($id, $data)
     {
-        if (empty($postData['systemUsername'])) {
+        if (empty($data['systemUsername'])) {
             $data['systemUsername'] = $data['hiddenSystemUsername'];
         }
         if ($data['memberStatus'] == 'STATUS_ACTIVE') {
