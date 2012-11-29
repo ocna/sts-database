@@ -39,8 +39,8 @@ class MongoUserRepository implements UserRepository
          if (!$user instanceof User) {
             throw new \InvalidArgumentException('Instance of User expected.');
         }
+        $user->markUpdated();
         $array = $user->toMongoArray();
-        $array['dateCreated'] = new \MongoDate();
         $results = $this->mongoDb->selectCollection('user')
             ->update(array(
                 '_id' => $array['_id']

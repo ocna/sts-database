@@ -83,7 +83,11 @@ class DefaultMemberFacade implements MemberFacade
                 $filteredMembers[] = $member;
             }
             if (! is_null($member->getAssociatedUserId()) && (in_array('ROLE_ADMIN', $roles)||in_array('ROLE_COORDINATOR', $roles)||in_array('ROLE_FACILITATOR', $roles))) {
-                $user = $this->userRepository->load($member->getAssociatedUserId());
+                try{
+                    $user = $this->userRepository->load($member->getAssociatedUserId());
+                } catch (\InvalidArgumentException $e) {
+                    continue;
+                }
                 if (in_array('ROLE_ADMIN', $roles) && $user->getAvailableRole('ROLE_ADMIN') == $user->getRole()) {
                     $filteredMembers[] = $member;
                 }

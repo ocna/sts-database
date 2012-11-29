@@ -18,6 +18,7 @@ class MongoMemberRepository implements MemberRepository
     {
         $this->mongoDb = $mongoDb;
     }
+
     public function find($query = array())
     {
         $memberData = $this->mongoDb->selectCollection('member')->find($query)->sort(array(
