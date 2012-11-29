@@ -5,7 +5,7 @@ default:
     bootstrap:  '%behat.paths.features%/bootstrap'
   extensions:
     Behat\MinkExtension\Extension:
-      base_url: http://dev.sts.ovariancancer.org
+      base_url: http://dev.stsdatabase.org
       goutte: ~
       sahi: ~
   context:
