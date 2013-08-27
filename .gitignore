@@ -45,7 +45,7 @@ Thumbs.db
 .settings
 prepend.php
 append.php
-.htaccess
+#.htaccess
 .ant-targets-build.xml
 *.pem
 *.ant-targets-*.xml
