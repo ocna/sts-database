@@ -26,6 +26,11 @@ class MongoAreaRepository implements AreaRepository
         $region->setLegacyId($areaData['region']['legacyid'])
                ->setName($areaData['region']['name']);
         $area = new Area();
+
+        if (!isset($areaData['legacyid'])) {
+            $areaData['legacyid'] = NULL;
+        }
+
         $area->setId($areaData['_id']->__toString())
              ->setRegion($region)
              ->setLegacyId($areaData['legacyid'])

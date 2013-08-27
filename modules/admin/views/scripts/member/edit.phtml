@@ -1,6 +1,5 @@
 <script type="text/javascript">
 $(document).ready(function() {
-
     $('input.presentsFor').tagedit({
         autocompleteURL : "/search/area",
         checkNewEntriesCaseSensitive: true,
@@ -59,7 +58,7 @@ $(document).ready(function() {
         }
     }
 
-    function showRightFormPartsForRole(role){
+    function showRightFormPartsForRole(role) {
         if(role == 'ROLE_ADMIN'){
             userDetails('on')
             presenters('off')
