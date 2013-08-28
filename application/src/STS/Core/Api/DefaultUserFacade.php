@@ -8,18 +8,19 @@ use STS\Core\Api\ApiException;
 
 class DefaultUserFacade implements UserFacade
 {
-
     private $userRepository;
+
     public function __construct($userRepository)
     {
         $this->userRepository = $userRepository;
     }
+
     public function findUserById($id)
     {
-        try{
+        try {
             $user = $this->userRepository->load($id);
             return UserDTOAssembler::toDTO($user);
-        }catch(\InvalidArgumentException $e){
+        } catch(\InvalidArgumentException $e) {
             return array();
         }
     }
@@ -29,9 +30,9 @@ class DefaultUserFacade implements UserFacade
         $users = $this->userRepository->find(
             array('member_id'=> array('_id' => new \MongoId($id)))
                     );
-        if(empty($users)){
+        if (empty($users)) {
             return null;
-        }else{
+        } else {
             return UserDTOAssembler::toDTO($users[0]);
         }
     }
@@ -39,9 +40,9 @@ class DefaultUserFacade implements UserFacade
     public function findUserByEmail($email)
     {
         $users = $this->userRepository->find(array('email'=>$email));
-        if(empty($users)){
+        if(empty($users)) {
             return array();
-        }else{
+        } else {
             return UserDTOAssembler::toDTO($users[0]);
         }
     }
@@ -49,7 +50,15 @@ class DefaultUserFacade implements UserFacade
     public function createUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId)
     {
         $user = new User();
-        $user->setId($username)->setFirstName($firstName)->setLastName($lastName)->setEmail($email)->setRole($role)->setAssociatedMemberId($associatedMemberId)->initializePassword($password);
+        $user->setId($username)
+             ->setFirstName($firstName)
+             ->setLastName($lastName)
+             ->setEmail($email)
+             ->setRole($role)
+             ->setAssociatedMemberId($associatedMemberId)
+             ->initializePassword($password)
+        ;
+
         $newUser = $this->userRepository->save($user);
         return UserDTOAssembler::toDTO($user);
     }
@@ -76,11 +85,16 @@ class DefaultUserFacade implements UserFacade
 
     public static function getDefaultInstance($config)
     {
+        // get configuration file settings
         $mongoConfig = $config->modules->default->db->mongodb;
+
+        // build a DSN string
         $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
-        $mongo = new \Mongo(
-                        'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/'
-                                        . $mongoConfig->dbname);
+        $dsn = 'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/' . $mongoConfig->dbname;
+
+        // connect to mongo
+        // TODO add error handling?
+        $mongo = new \Mongo($dsn);
         $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $userRepository = new MongoUserRepository($mongoDb);
         return new DefaultUserFacade($userRepository);
