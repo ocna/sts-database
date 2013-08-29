@@ -315,14 +315,15 @@ class Admin_MemberController extends SecureBaseController
                     // check if we are changing an existing user's name
                     if ($postData['memberType'] == 'TYPE_SYSTEM_USER' && $postData['hiddenSystemUsername'] != $postData['systemUsername']) {
                         $this->changeUsername($associatedUser, $dto, $postData);
+
                         // handle other form updates
+                        $postData['hiddenSystemUsername'] = $postData['systemUsername'];
                         $updatedMemberDto = $this->updateMember($id, $postData);
                     } else {
                         // if a member has be downgraded from a system user to a member
                         // its ok as that is handled by the saving
                         $updatedMemberDto = $this->updateMember($id, $postData);
                         $successMessage = "The member \"{$postData['firstName']} {$postData['lastName']}\" has been successfully updated.";
-
 
                         // if a system user is changed roles
                         // then confirm that and set the username to the hidden value

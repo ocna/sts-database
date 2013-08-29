@@ -65,7 +65,7 @@ class MemberDtoAssembler
         foreach ($areas as $area) {
             if ($region = $area->getRegion()) {
                 if (!in_array($region->getName(), $regionArray)) {
-                    $regionArray[] = $region->getName();
+                    $regionArray[$region->getName()] = $region->getName();
                 }
             }
         }
