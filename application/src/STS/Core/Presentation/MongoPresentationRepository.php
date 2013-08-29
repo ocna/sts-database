@@ -153,8 +153,6 @@ class MongoPresentationRepository implements PresentationRepository
             )
         );
 
-        echo '<pre>'; print_r($results); echo '</pre>';
-        die('oam 157 mongo pres');
         return $results;
     }
 }

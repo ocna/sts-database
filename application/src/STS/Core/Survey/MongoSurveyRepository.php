@@ -110,4 +110,23 @@ class MongoSurveyRepository implements SurveyRepository
                 break;
         }
     }
+
+    /**
+     * updateEnteredBy
+     *
+     * @param $old
+     * @param $new
+     */
+    public function updateEnteredBy($old, $new)
+    {
+        $results = $this->mongoDb->survey->update(
+            array('entered_by_user_id' => $old),
+            array('$set' => array('entered_by_user_id' => $new)),
+            array(
+                'multiple' => 1
+            )
+        );
+
+        return $results;
+    }
 }

@@ -313,13 +313,14 @@ class Admin_MemberController extends SecureBaseController
                     }
                     
                     // check if we are changing an existing user's name
-                    if ($postData['memberType'] == 'TYPE_SYSTEM_USER' && $postData['hiddenSystemUsername'] != $postData['systemUsername']) {
+                    if ($postData['role'] != '0' && $postData['hiddenSystemUsername'] != $postData['systemUsername']) {
                         $this->changeUsername($associatedUser, $dto, $postData);
 
                         // handle other form updates
                         $postData['hiddenSystemUsername'] = $postData['systemUsername'];
                         $updatedMemberDto = $this->updateMember($id, $postData);
                     } else {
+                        $updatedMemberDto = $this->updateMember($id, $postData);
                         // if a member has be downgraded from a system user to a member
                         // its ok as that is handled by the saving
                         $updatedMemberDto = $this->updateMember($id, $postData);
@@ -797,18 +798,18 @@ class Admin_MemberController extends SecureBaseController
             $salt
         );
 
-        // delete old user
         $old_user_id = $srcUser->getId();
-        $results = $this->userFacade->deleteUser($old_user_id);
 
-        // update member to point at new user
+        // change all references in presentation collection (entered_by_user_id)
+        $core = Core::getDefaultInstance();
+        $presentationFacade = $core->load('PresentationFacade');
+        $presentationFacade->updateEnteredBy($old_user_id, $user->getId());
 
-        // TODO change all references in presentation collection (entered_by_user_id)
-        // TODO change all references in survey collection (entered_by_user_id)
+        // change all references in survey collection (entered_by_user_id)
+        $surveyFacade = $core->load('SurveyFacade');
+        $surveyFacade->updateEnteredBy($old_user_id, $user->getId());
 
-//        echo '<pre>'; print_r($srcUser); echo '</pre>';
-//        echo '<pre>'; print_r($dto); echo '</pre>';
-//        echo '<pre>'; print_r($postData); echo '</pre>';
-//        die('oam 785');
+        // finally, delete old user
+        $this->userFacade->deleteUser($old_user_id);
     }
 }

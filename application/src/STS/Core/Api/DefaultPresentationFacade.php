@@ -213,6 +213,8 @@ class DefaultPresentationFacade implements PresentationFacade
     }
 
     /**
+     * updateEnteredBy
+     * 
      * @param $old
      * @param $new
      */

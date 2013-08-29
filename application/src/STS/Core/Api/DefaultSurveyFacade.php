@@ -73,6 +73,16 @@ class DefaultSurveyFacade implements SurveyFacade
         return $surveyInstance;
     }
 
+    /**
+     * updateEnteredBy
+     *
+     * @param $old
+     * @param $new
+     */
+    public function updateEnteredBy($old, $new)
+    {
+        $this->surveyRepository->updateEnteredBy($old, $new);
+    }
 
     public static function getDefaultInstance($config)
     {
