@@ -4,7 +4,17 @@ use STS\Core;
 use STS\Web\Controller\SecureBaseController;
 use STS\Core\Api\ApiException;
 use STS\Domain\Member;
+use STS\Core\User\UserDTO;
 
+/**
+ * Class Admin_MemberController
+ *
+ * @property STS\Core\Api\MemberFacade $memberFacade
+ * @property STS\Core\Api\UserFacade $userFacade
+ * @property STS\Core\Api\LocationFacade $locationFacade
+ * @property STS\Core\Api\AuthFacade $authFacade
+ * @property STS\Core\Api\MailerFacade $mailerFacade
+ */
 class Admin_MemberController extends SecureBaseController
 {
     protected $memberFacade;
@@ -104,7 +114,7 @@ class Admin_MemberController extends SecureBaseController
             }else{
                 throw new ApiException("An error occured while deleting member.", 1);
             }
-        }catch (ApiException $e){
+        } catch (ApiException $e) {
             $this->setFlashMessageAndRedirect('An error occured while deleting member: ' . $e->getMessage() , 'error', array(
                         'module' => 'admin',
                         'controller' => 'member',
@@ -147,7 +157,7 @@ class Admin_MemberController extends SecureBaseController
     {
         $this->view->form = $this->getForm();
         $request = $this->getRequest();
-        $form = $this->getForm();
+        $form = $this->getForm();$results = $this->memberFacade->deleteMember($id);
         $form->setAction('/admin/member/new');
         if ($this->getRequest()->isPost()) {
             $postData = $request->getPost();
@@ -201,9 +211,11 @@ class Admin_MemberController extends SecureBaseController
         // for checking edit permissions
         $acl = $this->getAcl();
 
+        // load our member
+        $dto = $this->memberFacade->getMemberById($id);
+
         // make sure form posts back to self
         $form->setAction('/admin/member/edit?' .http_build_query(array('id' => $id)));
-        $dto = $this->memberFacade->getMemberById($id);
         $this->view->member = $dto;
         $this->view->layout()->pageHeader = $this->view->partial(
             'partials/page-header.phtml', array(
@@ -232,7 +244,7 @@ class Admin_MemberController extends SecureBaseController
 
             $form->getElement('tempPassword')->setRequired(false);
             $form->getElement('tempPassword')->setAttrib('placeholder', 'xxxxxxxxxx');
-            $form->getElement('tempPassword')->setDescription('This member has a user account and password. Only change these fields if you want to change thier password!');
+            $form->getElement('tempPassword')->setDescription('This member has a user account and password. Only change these fields if you want to change their password!');
             $form->getElement('tempPasswordConfirm')->setRequired(false);
             $form->getElement('tempPasswordConfirm')->setAttrib('placeholder', 'xxxxxxxxxx');
         }
@@ -287,41 +299,53 @@ class Admin_MemberController extends SecureBaseController
                     // and password to ensure no duplication
                     if (! empty($postData['systemUsername']) && $postData['role'] != '0') {
 
-                        if ($this->userFacade->findUserById($postData['systemUsername']) != array()) {
+                        // test if the username is used by another record
+                        $dupe = $this->userFacade->findUserById($postData['systemUsername']);
+                        if (!empty($dupe) && $dupe->getAssociatedMemberId() != $associatedUser->getAssociatedMemberId()) {
                             throw new ApiException("A system user with the username: \"{$postData['systemUsername']}\" already exists. System users must have a unique email and username.");
                         }
 
-                        if ($this->userFacade->findUserByEmail($postData['systemUserEmail']) != array()) {
+                        // test if the email is used by another record
+                        $dupe = $this->userFacade->findUserByEmail($postData['systemUserEmail']);
+                        if (!empty($dupe) && $dupe->getAssociatedMemberId() != $associatedUser->getAssociatedMemberId()) {
                             throw new ApiException("A system user with the email address: \"{$postData['systemUserEmail']}\" already exists. System users must have a unique email and username.");
                         }
                     }
+                    
+                    // check if we are changing an existing user's name
+                    if ($postData['memberType'] == 'TYPE_SYSTEM_USER' && $postData['hiddenSystemUsername'] != $postData['systemUsername']) {
+                        $this->changeUsername($associatedUser, $dto, $postData);
+                        // handle other form updates
+                        $updatedMemberDto = $this->updateMember($id, $postData);
+                    } else {
+                        // if a member has be downgraded from a system user to a member
+                        // its ok as that is handled by the saving
+                        $updatedMemberDto = $this->updateMember($id, $postData);
+                        $successMessage = "The member \"{$postData['firstName']} {$postData['lastName']}\" has been successfully updated.";
 
-                    // if a member has be downgraded from a system user to a member
-                    // its ok as that is handled by the saving
-                    $updatedMemberDto = $this->updateMember($id, $postData);
-                    $successMessage = "The member \"{$postData['firstName']} {$postData['lastName']}\" has been successfully updated.";
 
-                    // if a system user is changed roles
-                    // then confirm that and set the username to the hidden value
-                    if ($postData['role'] != '0') {
-                        if (! empty($postData['systemUsername'])) {
-                            // the user is new, we must add them
-                            $tempPassword = $postData['tempPassword'];
-                            $systemUserDto = $this->saveNewUser($postData, $updatedMemberDto, $tempPassword);
-                            // send credentials via email
-                            $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
-                            $this->mailerFacade->sendNewAccountNotification($name, $systemUserDto->getId(), $systemUserDto->getEmail(), $tempPassword);
-                            $successMessage .= " The new user with username: \"{$systemUserDto->getId()}\" and password: \"$tempPassword\" may now access the system. This information has been emailed to them.";
-                        } else {
-                            // the user has changed, we must modify
-                            $postData['systemUsername'] = $postData['hiddenSystemUsername'];
-                            $tempPassword = $postData['tempPassword'];
-                            $systemUserDto = $this->updateExistingUser($postData, $updatedMemberDto, $tempPassword);
+                        // if a system user is changed roles
+                        // then confirm that and set the username to the hidden value
+                        if ($postData['role'] != '0') {
+                            if (! empty($postData['systemUsername'])) {
+                                // the user is new, we must add them
+                                $tempPassword = $postData['tempPassword'];
+                                $systemUserDto = $this->saveNewUser($postData, $updatedMemberDto, $tempPassword);
+                                // send credentials via email
+                                $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
+                                $this->mailerFacade->sendNewAccountNotification($name, $systemUserDto->getId(), $systemUserDto->getEmail(), $tempPassword);
+                                $successMessage .= " The new user with username: \"{$systemUserDto->getId()}\" and password: \"$tempPassword\" may now access the system. This information has been emailed to them.";
+                            } else {
+                                // the user has changed, we must modify
+                                $postData['systemUsername'] = $postData['hiddenSystemUsername'];
+                                $tempPassword = $postData['tempPassword'];
+                                $systemUserDto = $this->updateExistingUser($postData, $updatedMemberDto, $tempPassword);
 
-                            // send credentials via email
-                            $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
-                            $this->mailerFacade->sendNewAccountNotification($name, $systemUserDto->getId(), $systemUserDto->getEmail(), $tempPassword);
-                            $successMessage .= " The user with username: \"{$systemUserDto->getId()}\" has been updated! Updated information has been emaild to them.";
+                                // send credentials via email
+                                $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
+                                $this->mailerFacade->sendNewAccountNotification($name, $systemUserDto->getId(), $systemUserDto->getEmail(), $tempPassword);
+                                $successMessage .= " The user with username: \"{$systemUserDto->getId()}\" has been updated! Updated information has been emaild to them.";
+                            }
                         }
                     }
 
@@ -329,10 +353,10 @@ class Admin_MemberController extends SecureBaseController
                         'module' => 'admin',
                         'controller' => 'member',
                         'action' => 'view',
-                        'params' => array('id'=>$updatedMemberDto->getId())
+                        'params' => array('id' => $updatedMemberDto->getId())
                     ));
                 } catch(ApiException $e) {
-                    $this->setFlashMessageAndUpdateLayout('An error occured while saving this information: ' . $e->getMessage() , 'error');
+                    $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage() , 'error');
                 }
             } else {
                 $this->setFlashMessageAndUpdateLayout('It looks like you missed some information, please make the corrections below.', 'error');
@@ -455,11 +479,20 @@ class Admin_MemberController extends SecureBaseController
         );
     }
 
+    /**
+     * updateMember
+     *
+     * @param $id
+     * @param $data
+     * @return mixed
+     */
     private function updateMember($id, $data)
     {
+        // persist the username
         if (empty($data['systemUsername'])) {
             $data['systemUsername'] = $data['hiddenSystemUsername'];
         }
+
         if ($data['memberStatus'] == 'STATUS_ACTIVE') {
             if ($data['role'] == 'ROLE_ADMIN') {
                 $userId = $data['systemUsername'];
@@ -727,5 +760,54 @@ class Admin_MemberController extends SecureBaseController
         } else {
             return false;
         }
+    }
+
+    /**
+     * changeUsername
+     * 
+     * Changes a username and updates references to it.
+     * 
+     * @param $associatedUser
+     * @param $dto
+     * @param $postData
+     */
+    private function changeUsername(UserDTO $srcUser, $dto, $postData) {
+        // create user w/new username from old user
+        // use data coming from the form in case its been edited
+        if (!empty($postData['tempPassword'])) {
+            $password = $postData['tempPassword'];
+            $salt = NULL;
+            $init_password = TRUE;
+        } else {
+            $password = $srcUser->getPassword();
+            $salt = $srcUser->getSalt();
+            $init_password = FALSE;
+        }
+
+        $user = $this->userFacade->createUser(
+            $postData['systemUsername'],
+            $postData['firstName'],
+            $postData['lastName'],
+            $postData['systemUserEmail'], // in case they update the form
+            $password,
+            AclFactory::getAvailableRole($postData['role']),
+            $srcUser->getAssociatedMemberId(),
+            $init_password,
+            $salt
+        );
+
+        // delete old user
+        $old_user_id = $srcUser->getId();
+        $results = $this->userFacade->deleteUser($old_user_id);
+
+        // update member to point at new user
+
+        // TODO change all references in presentation collection (entered_by_user_id)
+        // TODO change all references in survey collection (entered_by_user_id)
+
+//        echo '<pre>'; print_r($srcUser); echo '</pre>';
+//        echo '<pre>'; print_r($dto); echo '</pre>';
+//        echo '<pre>'; print_r($postData); echo '</pre>';
+//        die('oam 785');
     }
 }

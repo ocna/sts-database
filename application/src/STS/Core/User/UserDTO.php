@@ -3,7 +3,6 @@ namespace STS\Core\User;
 
 class UserDTO
 {
-
     private $id;
     private $email;
     private $firstName;
@@ -11,7 +10,10 @@ class UserDTO
     private $role;
     private $legacyId;
     private $associatedMemberId;
-    public function __construct($id, $email, $firstName, $lastName, $role, $legacyId, $associatedMemberId)
+    private $salt;
+    private $password;
+
+    public function __construct($id, $email, $firstName, $lastName, $role, $legacyId, $associatedMemberId, $pw, $salt)
     {
         $this->id = $id;
         $this->email = $email;
@@ -20,6 +22,8 @@ class UserDTO
         $this->role = $role;
         $this->legacyId = $legacyId;
         $this->associatedMemberId = $associatedMemberId;
+        $this->password = $pw;
+        $this->salt = $salt;
     }
     public function getEmail()
     {
@@ -49,4 +53,21 @@ class UserDTO
     {
         return $this->associatedMemberId;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSalt()
+    {
+        return $this->salt;
+    }
+
 }
