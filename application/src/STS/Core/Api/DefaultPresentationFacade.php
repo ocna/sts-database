@@ -19,6 +19,15 @@ class DefaultPresentationFacade implements PresentationFacade
     private $userRepository;
     private $memberRepository;
     private $schoolRepository;
+
+    /**
+     * __construct
+     *
+     * @param $presentationRepository
+     * @param $userRepository
+     * @param $memberRepository
+     * @param $schoolRepository
+     */
     public function __construct($presentationRepository, $userRepository, $memberRepository, $schoolRepository)
     {
         $this->presentationRepository = $presentationRepository;
@@ -26,6 +35,22 @@ class DefaultPresentationFacade implements PresentationFacade
         $this->memberRepository = $memberRepository;
         $this->schoolRepository = $schoolRepository;
     }
+
+    /**
+     * savePresentation
+     *
+     * @param string $enteredByUserId
+     * @param string $schoolId
+     * @param string $typeCode
+     * @param string $date
+     * @param string $notes
+     * @param array $memberIds
+     * @param int $participants
+     * @param int $forms
+     * @param string $surveyId
+     * @param $preForms
+     * @return \STS\Core\Presentation\PresentationDto
+     */
     public function savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId, $preForms)
     {
         $school = $this->schoolRepository->load($schoolId);
@@ -48,6 +73,20 @@ class DefaultPresentationFacade implements PresentationFacade
         return PresentationDtoAssembler::toDto($updatedPresentation);
     }
 
+    /**
+     * updatePresentation
+     *
+     * @param $id
+     * @param $schoolId
+     * @param $typeCode
+     * @param $date
+     * @param $notes
+     * @param $memberIds
+     * @param $participants
+     * @param $postForms
+     * @param $preForms
+     * @return \STS\Core\Presentation\PresentationDto
+     */
     public function updatePresentation($id, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $postForms, $preForms)
     {
         $presentation = $this->presentationRepository->load($id);
@@ -69,16 +108,34 @@ class DefaultPresentationFacade implements PresentationFacade
         return PresentationDtoAssembler::toDto($updatedPresentation);
     }
 
+    /**
+     * getPresentationTypes
+     *
+     * @return array
+     */
     public function getPresentationTypes()
     {
         return Presentation::getAvailableTypes();
     }
 
+    /**
+     * getPresentationById
+     *
+     * @param $id
+     * @return \STS\Core\Presentation\PresentationDto
+     */
     public function getPresentationById($id)
     {
         $presentation = $this->presentationRepository->load($id);
         return PresentationDtoAssembler::toDto($presentation);
     }
+
+    /**
+     * getPresentationsForUserId
+     *
+     * @param string $userId
+     * @return array
+     */
     public function getPresentationsForUserId($userId)
     {
         $user = $this->userRepository->load($userId);
@@ -93,6 +150,12 @@ class DefaultPresentationFacade implements PresentationFacade
         return $dtos;
     }
 
+    /**
+     * getPresentationsSummary
+     *
+     * @param array $criteria
+     * @return \stdClass
+     */
     public function getPresentationsSummary($criteria = array())
     {
         $summary = new \stdClass();
@@ -119,11 +182,23 @@ class DefaultPresentationFacade implements PresentationFacade
         return $summary;
     }
 
+    /**
+     * getTypeKey
+     *
+     * @param $type
+     * @return mixed
+     */
     public function getTypeKey($type)
     {
         return array_search($type, Presentation::getAvailableTypes());
     }
 
+    /**
+     * getDefaultInstance
+     *
+     * @param $config
+     * @return DefaultPresentationFacade
+     */
     public static function getDefaultInstance($config)
     {
         $mongoConfig = $config->modules->default->db->mongodb;
@@ -135,5 +210,14 @@ class DefaultPresentationFacade implements PresentationFacade
         $memberRepository = new MongoMemberRepository($mongoDb);
         $schoolRepository = new MongoSchoolRepository($mongoDb);
         return new DefaultPresentationFacade($presentationRepository, $userRepository, $memberRepository, $schoolRepository);
+    }
+
+    /**
+     * @param $old
+     * @param $new
+     */
+    public function updateEnteredBy($old, $new)
+    {
+        $this->presentationRepository->updateEnteredBy($old, $new);
     }
 }

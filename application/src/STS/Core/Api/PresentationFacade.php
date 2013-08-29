@@ -29,11 +29,22 @@ interface PresentationFacade
     public function updatePresentation($id, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $postForms, $preForms);
 
     /**
-     *
+     * getPresentationsForUserId
      *
      * @param string  $userId
      */
     public function getPresentationsForUserId($userId);
 
     public function getPresentationById($id);
+
+    /**
+     * updateEnteredBy
+     *
+     * Changes the entered_by_user_id field from an old user id to a new one. Mainly used when a username is changed.
+     *
+     * @param $old
+     * @param $new
+     * @return mixed
+     */
+    public function updateEnteredBy($old, $new);
 }
