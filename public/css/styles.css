@@ -44,3 +44,8 @@ h1 span.label {
 	font-size: 25px;
 	margin-top: 6px;
 }
+
+label.required:after {
+    content: " *";
+    color: red;
+}

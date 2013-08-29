@@ -147,7 +147,8 @@ $(document).ready(function() {
 
 <?php if ($this->member->getAssociatedUserId()): ?>
 <div class="alert alert-info">
-    <strong>Note:</strong> This member can access the system with the username: "<?php echo $this->member->getAssociatedUserId(); ?>". This username can not be changed once it is set. This user's password, however, can be update below.
+    <strong>Note:</strong> This member can access the system with the username: "<?php echo $this->member->getAssociatedUserId(); ?>".
+    This username and password can be updated below.
 </div>
 <?php endif; ?>
 <?php echo $this->form; ?>
