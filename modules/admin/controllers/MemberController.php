@@ -157,7 +157,7 @@ class Admin_MemberController extends SecureBaseController
     {
         $this->view->form = $this->getForm();
         $request = $this->getRequest();
-        $form = $this->getForm();$results = $this->memberFacade->deleteMember($id);
+        $form = $this->getForm();
         $form->setAction('/admin/member/new');
         if ($this->getRequest()->isPost()) {
             $postData = $request->getPost();
