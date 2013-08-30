@@ -77,7 +77,8 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('STS\Domain\Survey', $presentation->getSurvey());
         $this->assertTrue(is_array($presentation->getMembers()));
         $this->assertEquals(array(MemberTestCase::createValidMember()), $presentation->getMembers());
-        $this->assertInstanceOf('STS\Domain\Member', array_pop($presentation->getMembers()));
+        $members = $presentation->getMembers();
+        $this->assertInstanceOf('STS\Domain\Member', array_pop($members));
     }
 
     protected function assertValidPresentationDto($dto)

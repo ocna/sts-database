@@ -19,6 +19,7 @@ class UserTestCase extends \PHPUnit_Framework_TestCase
     const VALID_FIRST_NAME = 'Member';
     const VALID_LAST_NAME = 'User';
     const ASSOCIATED_MEMBER_ID = '50234bc4fe65f50a9579a8cd';
+
     protected function getValidUser()
     {
         $user = new User();

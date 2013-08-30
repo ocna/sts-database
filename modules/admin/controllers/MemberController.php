@@ -238,7 +238,9 @@ class Admin_MemberController extends SecureBaseController
             $username = $associatedUser->getId();
             $hiddenUsername = $username;
 
-            if (!$acl->isAllowed('admin', AclFactory::RESOURCE_USER, 'change username')) {
+            // make sure user can change usernamme password
+            $role = $this->getAuth()->getIdentity()->getRole();
+            if (!$acl->isAllowed($role, AclFactory::RESOURCE_USER, 'change username')) {
                 $form->getElement('systemUsername')->setAttrib('disabled', 'disabled');
             }
 
