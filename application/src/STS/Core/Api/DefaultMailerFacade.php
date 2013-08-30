@@ -21,7 +21,6 @@ class DefaultMailerFacade implements MailerFacade
     public function sendNewAccountNotification($name, $username, $email, $password)
     {
         try {
-            $email = 'oscar@musketeers.me';
             $body = sprintf($this->getNewAccountNotificationTemplate(), $name, $username, $password);
             $subject = 'STS Database User Access Information';
             $message = new EmailMessage($subject, $body);
