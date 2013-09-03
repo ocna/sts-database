@@ -62,7 +62,7 @@ class Member extends EntityWithTypes
         return $this;
     }
 
-    public function clearActivitiess()
+    public function clearActivities()
     {
         $this->activities = array();
         return $this;
@@ -283,16 +283,19 @@ class Member extends EntityWithTypes
     {
         return $this->address;
     }
+
     public function setAddress($address)
     {
         $this->address = $address;
         return $this;
     }
+
     public function hasPassedAway()
     {
         $this->setStatus(self::STATUS_DECEASED);
         return $this;
     }
+
     public function isDeceased()
     {
         if ($this->getStatus()==self::STATUS_DECEASED) {
@@ -301,10 +304,12 @@ class Member extends EntityWithTypes
             return false;
         }
     }
+
     public function getNotes()
     {
         return $this->notes;
     }
+
     public function setNotes($notes)
     {
         $this->notes = $notes;
@@ -314,11 +319,13 @@ class Member extends EntityWithTypes
     {
         return $this->firstName;
     }
+
     public function setFirstName($firstName)
     {
         $this->firstName = $firstName;
         return $this;
     }
+
     public function getLastName()
     {
         return $this->lastName;
@@ -328,6 +335,7 @@ class Member extends EntityWithTypes
         $this->lastName = $lastName;
         return $this;
     }
+
     public function getLegacyId()
     {
         return $this->legacyId;
@@ -337,33 +345,40 @@ class Member extends EntityWithTypes
         $this->legacyId = $legacyId;
         return $this;
     }
+
     public function canPresentForArea($area)
     {
         $this->presentsFor[] = $area;
         return $this;
     }
+
     public function getPresentsForAreas()
     {
         return $this->presentsFor;
     }
+
     public function canFacilitateForArea($area)
     {
         $this->facilitatesFor[] = $area;
         return $this;
     }
+
     public function getFacilitatesForAreas()
     {
         return $this->facilitatesFor;
     }
+
     public function canCoordinateForArea($area)
     {
         $this->coordinatesFor[] = $area;
         return $this;
     }
+
     public function getCoordinatesForAreas()
     {
         return $this->coordinatesFor;
     }
+
     public function getAllAssociatedAreas()
     {
         $areas = array();

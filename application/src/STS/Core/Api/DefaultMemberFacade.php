@@ -248,18 +248,23 @@ class DefaultMemberFacade implements MemberFacade
                                           $addressLineOne, $addressLineTwo, $city, $state, $zip, $email,
                                           $dateTrained, $diagnosisInfo, $phoneNumbers)
     {
-        if (! in_array($diagnosisInfo['stage'], Diagnosis::getAvailableStages())) {
+        /// prepeare diagnosis
+        if (!in_array($diagnosisInfo['stage'], Diagnosis::getAvailableStages())) {
             $stage = null;
         } else {
             $stage = $diagnosisInfo['stage'];
         }
         $diagnosis = new Diagnosis($diagnosisInfo['date'], $stage);
+
+        // prepare address model
         $address = new Address();
         $address->setLineOne($addressLineOne)
                 ->setLineTwo($addressLineTwo)
                 ->setCity($city)
                 ->setState($state)
                 ->setZip($zip);
+
+        // hydrate member fields
         $member->setFirstName($firstName)
                 ->setLastName($lastName)
                 ->setType($type)
@@ -269,28 +274,36 @@ class DefaultMemberFacade implements MemberFacade
                 ->setAssociatedUserId($userId)
                 ->setEmail($email)
                 ->setDateTrained($dateTrained)
-                ->setDiagnosis($diagnosis)
-                ->clearPresentsFor()
-                ->clearFacilitatesFor()
-                ->clearCoordinatesFor()
-                ->clearPhoneNumbers();
+                ->setDiagnosis($diagnosis);
 
+        // clear array fields, may be changed by incoming data
+        $member->clearPresentsFor()
+               ->clearFacilitatesFor()
+               ->clearCoordinatesFor()
+               ->clearActivities()
+               ->clearPhoneNumbers();
+
+        // update presentation areas
         foreach ($this->getAreasForIds($presentsFor) as $area) {
             $member->canPresentForArea($area);
         }
 
+        // update facilitation areas
         foreach ($this->getAreasForIds($facilitatesFor) as $area) {
             $member->canFacilitateForArea($area);
         }
 
+        // update coordinates areas
         foreach ($this->getAreasForIds($coordinatesFor) as $area) {
             $member->canCoordinateForArea($area);
         }
 
+        // update member activities
         foreach ($activities as $activity) {
             $member->setActivity($activity);
         }
 
+        // set member phone number after fixing format
         foreach ($phoneNumbers as $type => $number) {
             $number = preg_replace('/[-]/', '', $number);
             if(preg_match('/\d{10}/', $number)){
