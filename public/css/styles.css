@@ -49,3 +49,8 @@ label.required:after {
     content: " *";
     color: red;
 }
+
+.radio input[type="radio"],
+.checkbox input[type="checkbox"] {
+    box-shadow: none;
+}

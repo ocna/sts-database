@@ -64,7 +64,6 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
         // status
         $this->addElement('multiCheckbox', 'memberStatusExt', array(
             'label' => 'Status',
-            'dimension' => 2,
             'MultiOptions' => $this->memberActivities,
             'required' => false,
             'description' => 'Additional activities for a user. These do not require system access.'
