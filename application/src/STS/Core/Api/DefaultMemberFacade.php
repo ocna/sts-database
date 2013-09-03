@@ -118,6 +118,9 @@ class DefaultMemberFacade implements MemberFacade
     {
         return Member::getAvailableStatuses();
     }
+    public function getMemberActivities() {
+        return Member::getAvailableActivities();
+    }
     public function getDiagnosisStages()
     {
         return Diagnosis::getAvailableStages();

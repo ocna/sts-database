@@ -16,6 +16,10 @@ class Member extends EntityWithTypes
     const STATUS_INACTIVE = 'Inactive';
     const STATUS_DECEASED = 'Deceased';
 
+    const ACTIVITY_PRESENTER = 'Presenter';
+    const ACTIVITY_ONSITE_FACILITATOR = 'On-site Facilitator';
+    const ACTIVITY_AREA_FACILITATOR = 'Area Facilitator';
+
     private $legacyId;
     private $firstName;
     private $lastName;
@@ -156,6 +160,7 @@ class Member extends EntityWithTypes
 
     public static function getAvailableStatuses()
     {
+        // TODO cache results?
         $reflected = new \ReflectionClass(get_called_class());
         $statuses = array();
         foreach ($reflected->getConstants() as $key => $value) {
@@ -165,6 +170,7 @@ class Member extends EntityWithTypes
         }
         return $statuses;
     }
+
     public static function getAvailableStatus($key)
     {
         if (substr($key, 0, 7) != 'STATUS_') {
@@ -176,6 +182,7 @@ class Member extends EntityWithTypes
         $reflected = new \ReflectionClass(get_called_class());
         return $reflected->getConstant($key);
     }
+
     public function setStatus($status)
     {
         if ($status !== null && !in_array($status, static::getAvailableStatuses(), true)) {
@@ -183,6 +190,21 @@ class Member extends EntityWithTypes
         }
         $this->status = $status;
         return $this;
+    }
+
+    public static function getAvailableActivities()
+    {
+        $reflected = new \ReflectionClass(get_called_class());
+        $statuses = array();
+
+        foreach ($reflected->getConstants() as $key => $value) {
+            // keep the ones that start with ACTIVITY_
+            if (0 === strpos($key, 'ACTIVITY_')) {
+                $statuses[$key] = $value;
+            }
+        }
+
+        return $statuses;
     }
 
     public function getAssociatedUserId()

@@ -8,6 +8,7 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
     protected $states;
     protected $roles;
     protected $memberStatuses;
+    protected $memberActivities;
     protected $diagnosisStages;
     protected $phoneNumberTypes;
 
@@ -51,7 +52,7 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
             )
         ));
 
-        //status
+        // status
         $this->addElement('select', 'memberStatus', array(
             'label' => 'Status',
             'dimension' => 2,
@@ -60,7 +61,16 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
             'description' => 'Note that unless a member is marked "Active" they may not be added as a system user.'
         ));
 
-        //date trained
+        // status
+        $this->addElement('multiCheckbox', 'memberStatusExt', array(
+            'label' => 'Status',
+            'dimension' => 2,
+            'MultiOptions' => $this->memberActivities,
+            'required' => false,
+            'description' => 'Additional activities for a user. These do not require system access.'
+        ));
+
+        // date trained
         $this->addElement('text', 'dateTrained', array(
             'label' => 'Date Trained', 
             'dimension' => 2,
@@ -72,14 +82,14 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
             )
         ));
 
-        //notes
+        // notes
         $this->addElement('textarea', 'notes', array(
             'label' => 'Notes',
             'dimension' => 4,
             'rows' => 5
         ));
 
-        //phone numbers
+        // phone numbers
         $this->addElement('text', 'homePhone', array(
             'label' => 'Home Phone',
             'dimension' => 2,
@@ -323,4 +333,14 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
     {
         $this->phoneNumberTypes = $phoneNumberTypes;
     }
+
+    /**
+     * @param mixed $memberActivities
+     */
+    public function setMemberActivities($memberActivities)
+    {
+        $this->memberActivities = $memberActivities;
+    }
+
+
 }

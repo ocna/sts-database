@@ -643,12 +643,16 @@ class Admin_MemberController extends SecureBaseController
         // get member types select options
         $memberTypesArray = array_merge(array('') , $this->memberFacade->getMemberTypes());
 
+        // get member activities checkbox options
+        $memberActivitiesArray = $this->memberFacade->getMemberActivities();
+
         // build the zend form
         $form = new \Admin_Member(array(
             'states' => $statesArray,
             'roles' => $this->getRolesArray(),
             'memberTypes' => $memberTypesArray,
             'memberStatuses' => $this->getMemberStatusesArray(),
+            'memberActivities' => $memberActivitiesArray,
             'diagnosisStages' => $diagnosisStagesArray,
             'phoneNumberTypes' => $this->memberFacade->getPhoneNumberTypes()
         ));
