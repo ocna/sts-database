@@ -61,9 +61,9 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
             'description' => 'Note that unless a member is marked "Active" they may not be added as a system user.'
         ));
 
-        // status
-        $this->addElement('multiCheckbox', 'memberStatusExt', array(
-            'label' => 'Status',
+        // activitites
+        $this->addElement('multiCheckbox', 'memberActivity', array(
+            'label' => 'Activities',
             'MultiOptions' => $this->memberActivities,
             'required' => false,
             'description' => 'Additional activities for a user. These do not require system access.'

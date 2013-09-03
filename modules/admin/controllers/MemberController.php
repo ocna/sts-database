@@ -153,14 +153,25 @@ class Admin_MemberController extends SecureBaseController
         $this->view->member = $member;
     }
 
+    /**
+     * newAction
+     *
+     * Add a new member. Display the form, process POST data.
+     *
+     * @access public
+     */
     public function newAction()
     {
         $this->view->form = $this->getForm();
         $request = $this->getRequest();
         $form = $this->getForm();
         $form->setAction('/admin/member/new');
+
+        // handle POST input
         if ($this->getRequest()->isPost()) {
             $postData = $request->getPost();
+            echo '<pre>'; print_r($postData); echo '</pre>';
+            die('oam 174');
             if ($this->formIsValid($form, $postData)) {
                 try {
                     if ($postData['role'] != '0') {
@@ -638,10 +649,10 @@ class Admin_MemberController extends SecureBaseController
         $diagnosisStagesArray = array_merge(array(''), $this->memberFacade->getDiagnosisStages());
 
         // get states select options
-        $statesArray = array_merge(array('') , $this->locationFacade->getStates());
+        $statesArray = array_merge(array('-- Select One --') , $this->locationFacade->getStates());
 
         // get member types select options
-        $memberTypesArray = array_merge(array('') , $this->memberFacade->getMemberTypes());
+        $memberTypesArray = array_merge(array('-- Select One --') , $this->memberFacade->getMemberTypes());
 
         // get member activities checkbox options
         $memberActivitiesArray = $this->memberFacade->getMemberActivities();
