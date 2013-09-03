@@ -170,8 +170,6 @@ class Admin_MemberController extends SecureBaseController
         // handle POST input
         if ($this->getRequest()->isPost()) {
             $postData = $request->getPost();
-            echo '<pre>'; print_r($postData); echo '</pre>';
-            die('oam 174');
             if ($this->formIsValid($form, $postData)) {
                 try {
                     if ($postData['role'] != '0') {
@@ -249,7 +247,7 @@ class Admin_MemberController extends SecureBaseController
             $username = $associatedUser->getId();
             $hiddenUsername = $username;
 
-            // make sure user can change usernamme password
+            // make sure user can change username
             $role = $this->getAuth()->getIdentity()->getRole();
             if (!$acl->isAllowed($role, AclFactory::RESOURCE_USER, 'change username')) {
                 $form->getElement('systemUsername')->setAttrib('disabled', 'disabled');
@@ -264,7 +262,7 @@ class Admin_MemberController extends SecureBaseController
 
         // if the id is null, the member is just a member, so don't show user details
         // TODO this test for if someone is "just a member" should be in the memberFacade or model
-        if (is_null($associatedUserId)){
+        if (is_null($associatedUserId) || empty($associatedUserId)){
             $role = '0';
         } else {
             //else set the role
@@ -306,11 +304,10 @@ class Admin_MemberController extends SecureBaseController
             $request = $this->getRequest();
             $postData = $request->getPost();
             if ($this->formIsValid($form, $postData)) {
-
                 try {
                     // if a member has been upgraded to a system user, check the email
                     // and password to ensure no duplication
-                    if (! empty($postData['systemUsername']) && $postData['role'] != '0') {
+                    if (!empty($postData['systemUsername']) && $postData['role'] != '0') {
 
                         // test if the username is used by another record
                         $dupe = $this->userFacade->findUserById($postData['systemUsername']);
@@ -333,7 +330,6 @@ class Admin_MemberController extends SecureBaseController
                         $postData['hiddenSystemUsername'] = $postData['systemUsername'];
                         $updatedMemberDto = $this->updateMember($id, $postData);
                     } else {
-                        $updatedMemberDto = $this->updateMember($id, $postData);
                         // if a member has be downgraded from a system user to a member
                         // its ok as that is handled by the saving
                         $updatedMemberDto = $this->updateMember($id, $postData);
@@ -472,11 +468,17 @@ class Admin_MemberController extends SecureBaseController
             $userId = null;
         }
 
+        $activities = array();
+        if ($data['memberActivity']) {
+            $activities = array_keys($data['memberActivity']);
+        }
+
         return $this->memberFacade->saveMember(
             $data['firstName'],
             $data['lastName'],
             Member::getAvailableType($data['memberType']),
             Member::getAvailableStatus($data['memberStatus']),
+            $activities,
             $data['notes'],
             $presentsFor,
             $facilitatesFor,
@@ -537,11 +539,17 @@ class Admin_MemberController extends SecureBaseController
             $userId = null;
         }
 
+        $activities = array();
+        if ($data['memberActivity']) {
+            $activities = $data['memberActivity'];
+        }
+
         return $this->memberFacade->updateMember($id,
             $data['firstName'],
             $data['lastName'],
             Member::getAvailableType($data['memberType']),
             Member::getAvailableStatus($data['memberStatus']),
+            $activities,
             $data['notes'],
             $presentsFor,
             $facilitatesFor,

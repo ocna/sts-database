@@ -146,30 +146,33 @@ class DefaultMemberFacade implements MemberFacade
 
         return $this->getArrayOfDtos($members);
     }
+
     public function getMemberByMemberAreaSpecForId($id)
     {
         $member = $this->memberRepository->load($id);
 
         return new MemberByMemberAreaSpecification($member);
     }
+
     public function getMemberSchoolSpecForId($id)
     {
         $member = $this->memberRepository->load($id);
 
         return new MemberSchoolSpecification($member);
     }
-    public function saveMember($firstName, $lastName, $type, $status, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers)
+
+    public function saveMember($firstName, $lastName, $type, $status, $activities, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers)
     {
         $member = new Member();
-        $this->setMemberProperties($member, $firstName, $lastName, $type, $status, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers);
+        $this->setMemberProperties($member, $firstName, $lastName, $type, $status, $activities, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers);
         $updatedMember = $this->memberRepository->save($member);
         return MemberDtoAssembler::toDTO($updatedMember);
     }
 
-    public function updateMember($id, $firstName, $lastName, $type, $status, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers)
+    public function updateMember($id, $firstName, $lastName, $type, $status, $activities, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers)
     {
         $member = $this->memberRepository->load($id);
-        $this->setMemberProperties($member, $firstName, $lastName, $type, $status, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers);
+        $this->setMemberProperties($member, $firstName, $lastName, $type, $status, $activities, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers);
         $updatedMember = $this->memberRepository->save($member);
         return MemberDtoAssembler::toDTO($updatedMember);
     }
@@ -216,7 +219,34 @@ class DefaultMemberFacade implements MemberFacade
         return $areas;
     }
 
-    private function setMemberProperties(&$member, $firstName, $lastName, $type, $status, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers)
+    /**
+     * setMemberProperties
+     *
+     * @param $member
+     * @param $firstName
+     * @param $lastName
+     * @param $type
+     * @param $status
+     * @param $activities
+     * @param $notes
+     * @param $presentsFor
+     * @param $facilitatesFor
+     * @param $coordinatesFor
+     * @param $userId
+     * @param $addressLineOne
+     * @param $addressLineTwo
+     * @param $city
+     * @param $state
+     * @param $zip
+     * @param $email
+     * @param $dateTrained
+     * @param $diagnosisInfo
+     * @param $phoneNumbers
+     */
+    private function setMemberProperties(&$member, $firstName, $lastName, $type, $status, $activities,
+                                          $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId,
+                                          $addressLineOne, $addressLineTwo, $city, $state, $zip, $email,
+                                          $dateTrained, $diagnosisInfo, $phoneNumbers)
     {
         if (! in_array($diagnosisInfo['stage'], Diagnosis::getAvailableStages())) {
             $stage = null;
@@ -225,12 +255,25 @@ class DefaultMemberFacade implements MemberFacade
         }
         $diagnosis = new Diagnosis($diagnosisInfo['date'], $stage);
         $address = new Address();
-        $address->setLineOne($addressLineOne)->setLineTwo($addressLineTwo)->setCity($city)->setState($state)->setZip($zip);
-        $member->setFirstName($firstName)->setLastName($lastName)
-               ->setType($type)->setStatus($status)->setNotes($notes)
-               ->setAddress($address)->setAssociatedUserId($userId)
-               ->setEmail($email)->setDateTrained($dateTrained)
-               ->setDiagnosis($diagnosis)->clearPresentsFor()->clearFacilitatesFor()->clearCoordinatesFor()->clearPhoneNumbers();
+        $address->setLineOne($addressLineOne)
+                ->setLineTwo($addressLineTwo)
+                ->setCity($city)
+                ->setState($state)
+                ->setZip($zip);
+        $member->setFirstName($firstName)
+                ->setLastName($lastName)
+                ->setType($type)
+                ->setStatus($status)
+                ->setNotes($notes)
+                ->setAddress($address)
+                ->setAssociatedUserId($userId)
+                ->setEmail($email)
+                ->setDateTrained($dateTrained)
+                ->setDiagnosis($diagnosis)
+                ->clearPresentsFor()
+                ->clearFacilitatesFor()
+                ->clearCoordinatesFor()
+                ->clearPhoneNumbers();
 
         foreach ($this->getAreasForIds($presentsFor) as $area) {
             $member->canPresentForArea($area);
@@ -243,6 +286,11 @@ class DefaultMemberFacade implements MemberFacade
         foreach ($this->getAreasForIds($coordinatesFor) as $area) {
             $member->canCoordinateForArea($area);
         }
+
+        foreach ($activities as $activity) {
+            $member->setActivity($activity);
+        }
+
         foreach ($phoneNumbers as $type => $number) {
             $number = preg_replace('/[-]/', '', $number);
             if(preg_match('/\d{10}/', $number)){

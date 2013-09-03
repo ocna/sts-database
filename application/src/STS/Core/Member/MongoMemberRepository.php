@@ -12,8 +12,8 @@ use STS\Domain\Member\PhoneNumber;
 
 class MongoMemberRepository implements MemberRepository
 {
-
     private $mongoDb;
+
     public function __construct($mongoDb)
     {
         $this->mongoDb = $mongoDb;
@@ -26,6 +26,13 @@ class MongoMemberRepository implements MemberRepository
             ));
         return $this->mapMultiple($memberData);
     }
+
+    /**
+     * Member
+     * @param Member $member
+     * @return Member
+     * @throws \InvalidArgumentException
+     */
     public function save($member)
     {
         if (!$member instanceof Member) {

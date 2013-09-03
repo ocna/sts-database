@@ -38,7 +38,7 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
             'validators' => array(
                 new \Zend_Validate_EmailAddress()
             ),
-            'description' => 'If this member is begin added as a system user, this email will also be associated with that account.'
+            'description' => 'If this member is added as a system user, this email will also be associated with that account.'
         ));
 
         // type

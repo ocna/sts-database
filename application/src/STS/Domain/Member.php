@@ -27,6 +27,7 @@ class Member extends EntityWithTypes
     private $presentsFor = array();
     private $facilitatesFor = array();
     private $coordinatesFor = array();
+    private $activities = array();
     private $notes;
     private $deceased = false;
     private $address;
@@ -58,6 +59,12 @@ class Member extends EntityWithTypes
     public function clearPhoneNumbers()
     {
         $this->phoneNumbers = array();
+        return $this;
+    }
+
+    public function clearActivitiess()
+    {
+        $this->activities = array();
         return $this;
     }
 
@@ -112,44 +119,66 @@ class Member extends EntityWithTypes
 
     public function toMongoArray()
     {
+        // prepare facilities array for storing
         $facilitatesFor = array();
         foreach ($this->facilitatesFor as $area) {
             $facilitatesFor[] = array("_id" => new \MongoId($area->getId()));
         }
+
+        // prepare presentsFor array for storing
         $presentsFor= array();
         foreach ($this->presentsFor as $area) {
             $presentsFor[] = array("_id" => new \MongoId($area->getId()));
         }
+
+        // prepare coordinatesFor array for storing
         $coordinatesFor = array();
         foreach ($this->coordinatesFor as $area) {
             $coordinatesFor[] = array("_id" => new \MongoId($area->getId()));
         }
+
+        // prepare phoneNumbers array for storing
         $phoneNumbers = array();
         foreach ($this->phoneNumbers as $phoneNumber) {
             $phoneNumbers[] = array("number"=> $phoneNumber->getNumber(), "type"=>$phoneNumber->getType());
         }
+
+        // prepare activities
+        $activities = array_values($this->getActivities());
+
+        // build the array that will get saved in mongodb
         $array = array(
-                'id' => $this->id, 'fname' => utf8_encode($this->firstName), 'lname'=>utf8_encode($this->lastName), 'type' => $this->type, 'notes' => utf8_encode($this->notes),
-                'legacyid' => $this->legacyId, 'status'=>$this->status, 'fullname' => utf8_encode($this->getFullName()),
-                'user_id' => $this->associatedUserId,
-                'address' => array(
-                        'line_one' => utf8_encode($this->address->getLineOne()), 'line_two' => utf8_encode($this->address->getLineTwo()),
-                        'city' => utf8_encode($this->address->getCity()), 'state' => $this->address->getState(),
-                        'zip' => $this->address->getZip()
-                ),
-                'facilitates_for' => $facilitatesFor,
-                'presents_for'=> $presentsFor,
-                'coordinates_for'=> $coordinatesFor,
-                'email'=> utf8_encode($this->email),
-                'date_trained' => $this->getMongoDateTrained(),
-                'diagnosis' => array(
-                    'stage' => $this->diagnosis->getStage(),
-                    'date' => $this->diagnosis->getMongoDate()
-                    ),
-                'phone_numbers' => $phoneNumbers,
-                'dateCreated' => new \MongoDate($this->getCreatedOn()),
-                'dateUpdated' => new \MongoDate($this->getUpdatedOn())
+            'id'       => $this->id,
+            'fname'    => utf8_encode($this->firstName),
+            'lname'    => utf8_encode($this->lastName),
+            'type'     => $this->type,
+            'notes'    => utf8_encode($this->notes),
+            'legacyid' => $this->legacyId,
+            'status'   => $this->status,
+            'activities' => $activities,
+            'fullname' => utf8_encode($this->getFullName()),
+            'user_id'  => $this->associatedUserId,
+            'address'  => array(
+                'line_one' => utf8_encode($this->address->getLineOne()),
+                'line_two' => utf8_encode($this->address->getLineTwo()),
+                'city' => utf8_encode($this->address->getCity()),
+                'state' => $this->address->getState(),
+                'zip' => $this->address->getZip()
+            ),
+            'facilitates_for' => $facilitatesFor,
+            'presents_for'    => $presentsFor,
+            'coordinates_for' => $coordinatesFor,
+            'email'           => utf8_encode($this->email),
+            'date_trained'    => $this->getMongoDateTrained(),
+            'diagnosis'       => array(
+                'stage' => $this->diagnosis->getStage(),
+                'date' => $this->diagnosis->getMongoDate()
+            ),
+            'phone_numbers' => $phoneNumbers,
+            'dateCreated'  => new \MongoDate($this->getCreatedOn()),
+            'dateUpdated'  => new \MongoDate($this->getUpdatedOn())
         );
+
         return $array;
     }
 
@@ -192,6 +221,22 @@ class Member extends EntityWithTypes
         return $this;
     }
 
+    /**
+     * getActivities
+     *
+     * @return array
+     */
+    public function getActivities() {
+        return $this->activities;
+    }
+
+    /**
+     * getAvailableActivities
+     *
+     * Return an array of allowed activities for members.
+     *
+     * @return array
+     */
     public static function getAvailableActivities()
     {
         $reflected = new \ReflectionClass(get_called_class());
@@ -203,19 +248,37 @@ class Member extends EntityWithTypes
                 $statuses[$key] = $value;
             }
         }
-
         return $statuses;
+    }
+
+    /**
+     * setActivity
+     *
+     * Sets an activity, if its a valid one.
+     *
+     * @param $activity
+     * @return $this
+     * @throws \InvalidArgumentException
+     */
+    public function setActivity($activity) {
+        if ($activity !== null && !array_key_exists($activity, static::getAvailableActivities())) {
+            throw new \InvalidArgumentException('No such activity with given value:' . $activity);
+        }
+        $this->activities[$activity] = $activity;
+        return $this;
     }
 
     public function getAssociatedUserId()
     {
         return $this->associatedUserId;
     }
+
     public function setAssociatedUserId($associatedUserId)
     {
         $this->associatedUserId = $associatedUserId;
         return $this;
     }
+
     public function getAddress()
     {
         return $this->address;
@@ -349,6 +412,7 @@ class Member extends EntityWithTypes
             }
         }
     }
+
     public function getFullName()
     {
         return $this->firstName . ' '. $this->lastName;

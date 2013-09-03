@@ -21,6 +21,7 @@ interface MemberFacade
      * @param $lastName
      * @param $type
      * @param $status
+     * @param $activities
      * @param $notes
      * @param $presentsFor
      * @param $facilitatesFor
@@ -37,7 +38,7 @@ interface MemberFacade
      * @param $phoneNumbers
      * @return mixed
      */
-    public function saveMember($firstName, $lastName, $type, $status, $notes, 
+    public function saveMember($firstName, $lastName, $type, $status, $activities, $notes,
         $presentsFor, $facilitatesFor, $coordinatesFor, $userId, 
         $addressLineOne, $addressLineTwo, $city, $state,
                     $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers);
@@ -48,6 +49,7 @@ interface MemberFacade
      * @param $lastName
      * @param $type
      * @param $status
+     * @param $activities
      * @param $notes
      * @param $presentsFor
      * @param $facilitatesFor
@@ -64,7 +66,7 @@ interface MemberFacade
      * @param $phoneNumbers
      * @return \Sts\Core\Member\MemberDto
      */
-    public function updateMember($id, $firstName, $lastName, $type, $status, $notes, 
+    public function updateMember($id, $firstName, $lastName, $type, $status, $activities, $notes,
         $presentsFor, $facilitatesFor, $coordinatesFor, $userId, 
         $addressLineOne, $addressLineTwo, $city, $state,
                     $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers);
