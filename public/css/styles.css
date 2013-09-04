@@ -54,3 +54,13 @@ label.required:after {
 .checkbox input[type="checkbox"] {
     box-shadow: none;
 }
+
+.right {
+    text-align: right;
+}
+
+@media (min-width: 900px) {
+    td.areaName {
+        white-space: nowrap;
+    }
+}

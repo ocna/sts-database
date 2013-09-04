@@ -44,9 +44,12 @@ class Admin_MemberController extends SecureBaseController
                 'addRoute' => '/admin/member/new'
                 )
         );
+
+        // setup filters
         $form = $this->getFilterForm();
         $criteria = array();
         $params = $this->getRequest()->getParams();
+
         if (array_key_exists('reset', $params)) {
             return $this->_helper->redirector('index');
         }
@@ -56,8 +59,11 @@ class Admin_MemberController extends SecureBaseController
             $this->filterParams('status', $params, $criteria);
             $this->filterParams('region', $params, $criteria);
         }
-        $members = $this->memberFacade->getMembersMatching($criteria);
         $this->view->form = $form;
+
+        // load all the members to display
+        // TODO add pagination?
+        $members = $this->memberFacade->getMembersMatching($criteria);
         $memberDtos = $this->getMembersArray($members);
         if(empty($memberDtos) && array_key_exists('update', $params)){
             $this->setFlashMessageAndRedirect('No members matched your selected filter criteria!','warning', array(
@@ -79,6 +85,14 @@ class Admin_MemberController extends SecureBaseController
             $criteria[$key] = $params[$key];
         }
     }
+
+    /**
+     * getFilterForm
+     *
+     * Return the filter form for list of all members
+     *
+     * @return Admin_MemberFilter
+     */
     private function getFilterForm()
     {
         $form = new \Admin_MemberFilter(
