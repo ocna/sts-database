@@ -18,22 +18,37 @@ class DefaultMemberFacade implements MemberFacade
 {
     private $memberRepository;
     private $areaRepository;
+
     public function __construct($memberRepository, $areaRepository, $userRepository)
     {
         $this->memberRepository = $memberRepository;
         $this->areaRepository = $areaRepository;
         $this->userRepository = $userRepository;
     }
+
+    /**
+     * getMemberById
+     *
+     * @param $id
+     * @return MemberDto
+     */
     public function getMemberById($id)
     {
         $member = $this->memberRepository->load($id);
         return MemberDtoAssembler::toDTO($member);
     }
+
+    /**
+     * getAllMembers
+     *
+     * @return array
+     */
     public function getAllMembers()
     {
         $members = $this->memberRepository->find();
         return $this->getArrayOfDtos($members);
     }
+
     public function getMembersMatching($criteria)
     {
         if (empty($criteria)) {
@@ -71,7 +86,6 @@ class DefaultMemberFacade implements MemberFacade
             }
         }
             return $filteredMembers;
-
     }
 
     private function filterMembersByLinkedUserRoles($roles, $members)
@@ -106,29 +120,36 @@ class DefaultMemberFacade implements MemberFacade
     {
         return Member::getAvailableTypes();
     }
+
     public function getMemberTypeKey($key)
     {
         return array_search($key, Member::getAvailableTypes());
     }
+
     public function getMemberStatusKey($key)
     {
         return array_search($key, Member::getAvailableStatuses());
     }
+
     public function getMemberStatuses()
     {
         return Member::getAvailableStatuses();
     }
+
     public function getMemberActivities() {
         return Member::getAvailableActivities();
     }
+
     public function getDiagnosisStages()
     {
         return Diagnosis::getAvailableStages();
     }
+
     public function getPhoneNumberTypes()
     {
         return PhoneNumber::getAvailableTypes();
     }
+
     public function searchForMembersByNameWithSpec($searchString, $spec)
     {
         $foundMembers = $this->memberRepository->searchByName($searchString);
@@ -178,16 +199,24 @@ class DefaultMemberFacade implements MemberFacade
     }
 
     public function deleteMember($id){
-        try{
+        try {
             $member = $this->memberRepository->load($id);
             if(! $member->canBeDeleted()){
                 throw new ApiException('Unable to delete member.');
             }
             return $this->memberRepository->delete($id);
-        }catch(\InvalidArgumentException $e){
+        } catch(\InvalidArgumentException $e) {
             throw new ApiException('Error deleting member.', $e->getCode(), $e);
         }
     }
+
+    /**
+     * getDefaultInstance
+     *
+     * @acess public
+     * @param $config
+     * @return DefaultMemberFacade
+     */
     public static function getDefaultInstance($config)
     {
         $mongoConfig = $config->modules->default->db->mongodb;
@@ -199,6 +228,7 @@ class DefaultMemberFacade implements MemberFacade
         $userRepository = new MongoUserRepository($mongoDb);
         return new DefaultMemberFacade($memberRepository, $areaRepository, $userRepository);
     }
+
     private function getArrayOfDtos($array)
     {
         $dtos = array();

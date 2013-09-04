@@ -9,6 +9,7 @@ class MemberDtoBuilder
     private $lastName = null;
     private $type = null;
     private $notes = null;
+    private $activities = null;
     private $status = null;
     private $addressLineOne = null;
     private $addressLineTwo = null;
@@ -129,6 +130,11 @@ class MemberDtoBuilder
         return $this;
     }
 
+    public function withActivities($activities)
+    {
+        $this->activities = $activities;
+    }
+
     public function withEmail($email)
     {
         $this->email = $email;
@@ -158,11 +164,13 @@ class MemberDtoBuilder
         $this->phoneNumbers = $phoneNumbers;
         return $this;
     }
+
     public function withCanBeDeleted($canBeDeleted)
     {
         $this->canBeDeleted = $canBeDeleted;
         return $this;
     }
+
     public function build()
     {
         return new MemberDto(
@@ -173,6 +181,7 @@ class MemberDtoBuilder
             $this->type,
             $this->notes,
             $this->status,
+            $this->activities,
             $this->addressLineOne,
             $this->addressLineTwo,
             $this->addressCity,

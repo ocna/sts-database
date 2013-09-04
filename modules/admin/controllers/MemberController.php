@@ -211,6 +211,8 @@ class Admin_MemberController extends SecureBaseController
 
     /**
      * editAction
+     *
+     * @access public
      **/
     public function editAction()
     {
@@ -277,6 +279,7 @@ class Admin_MemberController extends SecureBaseController
                 'systemUserEmail' => $dto->getEmail(),
                 'memberType' => $this->memberFacade->getMemberTypeKey($dto->getType()),
                 'memberStatus' => $this->memberFacade->getMemberStatusKey($dto->getStatus()),
+                'memberActivity' => $dto->getActivities(),
                 'dateTrained' => $dto->getDateTrained(),
                 'notes' => $dto->getNotes(),
                 'workPhone' => $this->getPhoneNumberFromDto('work', $dto->getPhoneNumbers()),
@@ -378,18 +381,18 @@ class Admin_MemberController extends SecureBaseController
 
     private function getUserRoleFromDto($dto)
     {
-        if(is_null($dto)){
+        if (is_null($dto)) {
             return '0';
-        }else{
+        } else {
            return $this->userFacade->getUserRoleKey($dto->getRole());
         }
     }
 
     private function getUserNameFromDto($dto)
     {
-        if(is_null($dto)){
+        if (is_null($dto)) {
             return null;
-        }else{
+        } else {
            return $dto->getId();
         }
     }

@@ -9,6 +9,7 @@ class MemberDto
     private $firstName;
     private $lastName;
     private $type;
+    private $activities;
     private $notes;
     private $addressLineOne;
     private $addressLineTwo;
@@ -36,6 +37,7 @@ class MemberDto
         $type,
         $notes,
         $status,
+        $activities,
         $addressLineOne,
         $addressLineTwo,
         $addressCity,
@@ -60,6 +62,7 @@ class MemberDto
         $this->type = $type;
         $this->notes = $notes;
         $this->status = $status;
+        $this->activities = $activities;
         $this->addressLineOne = $addressLineOne;
         $this->addressLineTwo = $addressLineTwo;
         $this->addressCity = $addressCity;
@@ -175,7 +178,12 @@ class MemberDto
     {
         return $this->status;
     }
-    public function canBeDeleted(){
+    public function canBeDeleted()
+    {
         return $this->canBeDeleted;
+    }
+    public function getActivities()
+    {
+        return $this->activities;
     }
 }

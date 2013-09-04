@@ -34,15 +34,22 @@ class MemberDtoAssembler
                 ->withCoordinatesForRegions(self::getRegionNamesForAreas($member->getCoordinatesForAreas()))
                 ->withEmail($member->getEmail())
                 ->withDateTrained($member->getDateTrained());
+
         if ($diagnosis = $member->getDiagnosis()) {
                 $builder->withDiagnosisDate($diagnosis->getDate())
                         ->withDiagnosisStage($diagnosis->getStage());
         }
+
+        if ($activities = $member->getActivities()) {
+            $builder->withActivities($activities);
+        }
+
         if ($phoneNumbers = $member->getPhoneNumbers()) {
             $builder->withPhoneNumbers(self::getPhoneNumbersArray($phoneNumbers));
         }
         return $builder->build();
     }
+
     private static function getPhoneNumbersArray($phoneNumbers)
     {
         $phoneNumbersArray = array();
@@ -51,6 +58,7 @@ class MemberDtoAssembler
         }
         return $phoneNumbersArray;
     }
+
     private static function getAreaNamesArray($areas)
     {
         $areaArray = array();
@@ -59,6 +67,7 @@ class MemberDtoAssembler
         }
         return $areaArray;
     }
+
     private static function getRegionNamesForAreas($areas)
     {
         $regionArray = array();
