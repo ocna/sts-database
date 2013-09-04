@@ -49,6 +49,12 @@ class DefaultMemberFacade implements MemberFacade
         return $this->getArrayOfDtos($members);
     }
 
+    /**
+     * getMembersMatching
+     *
+     * @param $criteria
+     * @return array
+     */
     public function getMembersMatching($criteria)
     {
         if (empty($criteria)) {
@@ -75,29 +81,32 @@ class DefaultMemberFacade implements MemberFacade
     }
 
     private function filterMembersByRegions($regions, $members)
-    {   $filteredMembers = $members;
+    {
+        $filteredMembers = $members;
         if (!empty($regions)) {
             $filteredMembers = array();
             foreach ($members as $member) {
                 $intersection = array_intersect($regions, $member->getAllAssociatedRegions());
-                if (! empty($intersection)) {
+                if (!empty($intersection)) {
                     $filteredMembers[] = $member;
                 }
             }
         }
-            return $filteredMembers;
+
+        return $filteredMembers;
     }
 
     private function filterMembersByLinkedUserRoles($roles, $members)
     {
-        //to implement get role for linked user, filter as needed
+        // to implement get role for linked user, filter as needed
         $filteredMembers = array();
         foreach ($members as $member){
             if (in_array('ROLE_MEMBER', $roles) && is_null($member->getAssociatedUserId())) {
                 $filteredMembers[] = $member;
             }
+
             if (! is_null($member->getAssociatedUserId()) && (in_array('ROLE_ADMIN', $roles)||in_array('ROLE_COORDINATOR', $roles)||in_array('ROLE_FACILITATOR', $roles))) {
-                try{
+                try {
                     $user = $this->userRepository->load($member->getAssociatedUserId());
                 } catch (\InvalidArgumentException $e) {
                     continue;

@@ -27,14 +27,19 @@ class Admin_SchoolController extends SecureBaseController
         }
         if (array_key_exists('update', $params)) {
             $form->setDefaults($params);
-            $this->filterParams('role', $params, $criteria);
-            $this->filterParams('status', $params, $criteria);
             $this->filterParams('region', $params, $criteria);
+            $this->filterParams('type', $params, $criteria);
         }
+
+        if (!empty($criteria)) {
+            // turn it into a specification?
+            $this->view->objects = $this->schoolFacade->getSchoolsMatching($criteria);
+        } else {
+            $this->view->objects = $this->schoolFacade->getAllSchools();
+        }
+
         $this->view->form = $form;
 
-
-        $this->view->objects = $this->schoolFacade->getSchoolsForSpecification(null);
         $this->view->layout()->pageHeader = $this->view
             ->partial('partials/page-header.phtml', array(
                 'title' => 'Schools', 'add' => 'Add New School', 'addRoute' => '/admin/school/new'
@@ -181,5 +186,16 @@ class Admin_SchoolController extends SecureBaseController
     private function getSchoolTypesArray()
     {
         return array_merge(array(''), $this->schoolFacade->getSchoolTypes());
+    }
+
+    private function filterParams($key, &$params, &$criteria)
+    {
+        if (array_key_exists($key, $params)) {
+            $chaff = array_search('0', $params[$key]);
+            if($chaff !== false){
+                unset($params[$key][$chaff]);
+            }
+            $criteria[$key] = $params[$key];
+        }
     }
 }

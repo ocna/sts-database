@@ -11,19 +11,35 @@ use STS\Core\Location\MongoAreaRepository;
 
 class DefaultSchoolFacade implements SchoolFacade
 {
-
     private $schoolRepository;
     private $areaRepository;
+
     public function __construct($schoolRepository, $areaRepository)
     {
         $this->schoolRepository = $schoolRepository;
         $this->areaRepository = $areaRepository;
     }
+
+    /**
+     * getSchoolById
+     *
+     * @param $id
+     * @return SchoolDto
+     */
     public function getSchoolById($id)
     {
         $school = $this->schoolRepository->load($id);
         return SchoolDtoAssembler::toDTO($school);
     }
+
+    /**
+     * getSchoolsForSpecification
+     *
+     * NOTE: not sure where this is used.
+     *
+     * @param $spec
+     * @return array
+     */
     public function getSchoolsForSpecification($spec)
     {
         $allSchools = $this->schoolRepository->find();
@@ -37,16 +53,123 @@ class DefaultSchoolFacade implements SchoolFacade
         } else {
             $schools = $allSchools;
         }
+
+        return $this->toDtos($schools);
+    }
+
+    /**
+     * toDtos
+     *
+     * Return an array of SchoolsDTOs from repository results;
+     *
+     * @param $schools
+     * @return array
+     */
+    private function toDtos($schools)
+    {
         $schoolDtos = array();
         foreach ($schools as $school) {
             $schoolDtos[] = SchoolDtoAssembler::toDTO($school);
         }
         return $schoolDtos;
     }
+
+    /**
+     * getSchoolsMatching
+     *
+     * Return an array of schools that match some predefined criteria. Available criteria array:
+     *   'region': a valid region name
+     *
+     * @param $criteria
+     * @return mixed
+     */
+    public function getSchoolsMatching($criteria)
+    {
+        // get DTOs
+        $schools = $this->getAllSchools();
+
+        // filter by region
+        if (isset($criteria['region']) && !empty($criteria['region'])) {
+            $schools = $this->filterSchoolsByRegions($criteria['region'], $schools);
+        }
+
+        // filter by type of school
+        if (isset($criteria['type']) && !empty($criteria['type'])) {
+            $schools = $this->filterSchoolsByTypes($criteria['type'], $schools);
+        }
+        return $schools;
+    }
+
+    /**
+     * getAllSchools
+     *
+     * @return array
+     */
+    public function getAllSchools()
+    {
+        return $this->getSchoolsForSpecification(null);
+    }
+
+    /**
+     * filterSchoolsByRegions
+     *
+     * @param $regions
+     * @param $schools
+     * @return array
+     */
+    public function filterSchoolsByRegions($regions, $schools)
+    {
+        if (!empty($regions)) {
+            $schools = array_filter($schools, function($school) use ($regions) {
+                return in_array($school->getRegionName(), $regions, true);
+            });
+        }
+
+        return $schools;
+    }
+
+    /**
+     * filterSchoolsByTypes
+     *
+     * @param $types
+     * @param $schools
+     * @return array
+     */
+    public function filterSchoolsByTypes($types, $schools)
+    {
+        if (!empty($types)) {
+            $schools = array_filter($schools, function($school) use ($types) {
+                return in_array($school->getTypeKey(), $types, true);
+            });
+        }
+
+        return $schools;
+    }
+
+    /**
+     * getSchoolTypes
+     *
+     * @return array
+     */
     public function getSchoolTypes()
     {
         return School::getAvailableTypes();
     }
+
+    /**
+     * saveSchool
+     *
+     * @param $name
+     * @param $areaId
+     * @param $schoolType
+     * @param $notes
+     * @param $addressLineOne
+     * @param $addressLineTwo
+     * @param $city
+     * @param $state
+     * @param $zip
+     * @return SchoolDto
+     */
     public function saveSchool($name, $areaId, $schoolType, $notes, $addressLineOne, $addressLineTwo, $city, $state, $zip)
     {
         $address = new Address();
@@ -67,11 +190,23 @@ class DefaultSchoolFacade implements SchoolFacade
         return SchoolDtoAssembler::toDTO($savedSchool);
     }
 
-     /**
-      * updateSchool updates a schools values
-      * 
-      * @return SchoolDto
-      */
+    /**
+     * updateSchool
+     *
+     * updates a schools values
+     *
+     * @param $id
+     * @param $name
+     * @param $areaId
+     * @param $schoolType
+     * @param $notes
+     * @param $addressLineOne
+     * @param $addressLineTwo
+     * @param $city
+     * @param $state
+     * @param $zip
+     * @return SchoolDto
+     */
     public function updateSchool($id, $name, $areaId, $schoolType, $notes, $addressLineOne, $addressLineTwo, $city, $state, $zip)
     {
         $oldSchool = $this->schoolRepository->load($id);
@@ -90,6 +225,12 @@ class DefaultSchoolFacade implements SchoolFacade
         return SchoolDtoAssembler::toDTO($updatedSchool);
     }
 
+    /**
+     * getDefaultInstance
+     *
+     * @param $config
+     * @return DefaultSchoolFacade
+     */
     public static function getDefaultInstance($config)
     {
         $mongoConfig = $config->modules->default->db->mongodb;
