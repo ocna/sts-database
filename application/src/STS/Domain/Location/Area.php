@@ -1,67 +1,104 @@
 <?php
 namespace STS\Domain\Location;
 
-class Area
-{
+use STS\Domain\Entity;
 
-    private $id;
-    private $name;
-    private $legacyId;
-    private $city;
-    private $state;
-    private $region;
+class Area extends Entity
+{
+    protected $id;
+    protected $name;
+    protected $legacyId;
+    protected $city;
+    protected $state;
+    protected $region;
+
     public function getRegion()
     {
         return $this->region;
     }
+
     public function setRegion($region)
     {
         $this->region = $region;
         return $this;
     }
+
     public function getState()
     {
         return $this->state;
     }
+
     public function setState($state)
     {
         $this->state = $state;
         return $this;
     }
+
     public function getCity()
     {
         return $this->city;
     }
+
     public function setCity($city)
     {
         $this->city = $city;
         return $this;
     }
+
     public function getLegacyId()
     {
         return $this->legacyId;
     }
+
     public function setLegacyId($legacyId)
     {
         $this->legacyId = $legacyId;
         return $this;
     }
+
     public function getName()
     {
         return $this->name;
     }
+
     public function setName($name)
     {
         $this->name = $name;
         return $this;
     }
+
     public function getId()
     {
         return $this->id;
     }
+
     public function setId($id)
     {
         $this->id = $id;
         return $this;
+    }
+
+    public function toMongoArray()
+    {
+        // copy values into an array
+        $array = array(
+            'id' => $this->id,
+            'city' => utf8_encode($this->city),
+            'name' => utf8_encode($this->name),
+            'region' => array(
+                'legacyid' => $this->region->getLegacyId(),
+                'name' => $this->region->getName(),
+            ),
+            'state' => $this->state,
+            'dateCreated' => new \MongoDate($this->getCreatedOn()),
+            'dateUpdated' => new \MongoDate($this->getUpdatedOn())
+        );
+
+        // add legacyId if we have one
+        if (!empty($this->legacyId)) {
+            $array['legacyid'] = $this->legacyId;
+        }
+
+        return $array;
     }
 }

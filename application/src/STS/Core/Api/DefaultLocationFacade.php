@@ -2,15 +2,20 @@
 namespace STS\Core\Api;
 use STS\Core\Location\AreaDto;
 use STS\Core\Location\RegionDto;
+use STS\Domain\Location\Area;
+use STS\Core\Location\MongoAreaRepository;
 
 class DefaultLocationFacade implements LocationFacade
 {
-
     private $mongoDb;
-    public function __construct($mongoDb)
+    protected $areaRepository;
+
+    public function __construct($mongoDb, $areaRepository)
     {
         $this->mongoDb = $mongoDb;
+        $this->areaRepository = $areaRepository;
     }
+
     public function getStates()
     {
         return array(
@@ -28,6 +33,7 @@ class DefaultLocationFacade implements LocationFacade
                 'WY' => "Wyoming"
         );
     }
+
     public function getAllAreas()
     {
         $areas = $this->mongoDb->area->find()->sort(array(
@@ -36,19 +42,18 @@ class DefaultLocationFacade implements LocationFacade
 
         $returnData = array();
         foreach ($areas as $area) {
-
-            if(!array_key_exists('legacyid', $area)){
-            $lid = null;
-        }else{
-            $lid = $area['legacyid'];
-        }
-
+            if (!array_key_exists('legacyid', $area)){
+                $lid = null;
+            } else {
+                $lid = $area['legacyid'];
+            }
 
             $returnData[] = new AreaDto($area['_id']->__toString(), $area['name'], $lid, $area['city'],
                             $area['state'], $area['region']['name']);
         }
         return $returnData;
     }
+
     public function searchAreasByName($term)
     {
         $regex = new \MongoRegex("/$term/i");
@@ -59,8 +64,14 @@ class DefaultLocationFacade implements LocationFacade
             ));
         $returnData = array();
         foreach ($areas as $area) {
-            $returnData[] = new AreaDto($area['_id']->__toString(), $area['name'], $area['legacyid'], $area['city'],
-                            $area['state'], $area['region']['name']);
+            $returnData[] = new AreaDto(
+                $area['_id']->__toString(),
+                $area['name'],
+                $area['legacyid'],
+                $area['city'],
+                $area['state'],
+                $area['region']['name']
+            );
         }
         return $returnData;
     }
@@ -75,12 +86,18 @@ class DefaultLocationFacade implements LocationFacade
 
         foreach ($areas as $area) {
             if(!array_key_exists('legacyid', $area)){
-            $lid = null;
-        }else{
-            $lid = $area['legacyid'];
-        }
-            $returnData[] = new AreaDto($area['_id']->__toString(), $area['name'], $lid, $area['city'],
-                            $area['state'], $area['region']['name']);
+                $lid = null;
+            } else {
+                $lid = $area['legacyid'];
+            }
+            $returnData[] = new AreaDto(
+                $area['_id']->__toString(),
+                $area['name'],
+                $lid,
+                $area['city'],
+                $area['state'],
+                $area['region']['name']
+            );
         }
         return $returnData;
     }
@@ -101,14 +118,54 @@ class DefaultLocationFacade implements LocationFacade
         return $returnData;
     }
 
+    /**
+     * getRegion
+     *
+     * Lookup a region by name
+     *
+     * @param $name
+     * @return RegionDto
+     */
+    public function getRegion($name)
+    {
+        if ($region = $this->mongoDb->area->findOne(array('region.name' => "$name"))) {
+            return new RegionDto($region['region']['legacyid'], $region['region']['name']);
+        }
+    }
+
     public static function getDefaultInstance($config)
     {
+        // get the mongo instance
         $mongoConfig = $config->modules->default->db->mongodb;
         $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
         $mongo = new \Mongo(
                         'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/'
                                         . $mongoConfig->dbname);
         $mongoDb = $mongo->selectDB($mongoConfig->dbname);
-        return new DefaultLocationFacade($mongoDb);
+
+        $areaRepository = new MongoAreaRepository($mongoDb);
+        return new DefaultLocationFacade($mongoDb, $areaRepository);
+    }
+
+    /**
+     * saveArea
+     * Save a region to the data store
+     *
+     * @param $name
+     * @param $city
+     * @param $state
+     * @param $region
+     * @return mixed
+     */
+    public function saveArea($name, $city, $state, $region)
+    {
+        $area = new Area;
+        $area->setName($name);
+        $area->setCity($city);
+        $area->setState($state);
+        $area->setRegion($region);
+
+        $savedArea = $this->areaRepository->save($area);
+        return AreaDto::assembleFromArea($savedArea);
     }
 }

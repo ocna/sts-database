@@ -14,6 +14,15 @@ class Admin_AreaRegionValidate extends Zend_Validate_Abstract
         self::PICKONE      => 'Cannot pick an existing region AND create a new region. Pick just one.',
     );
 
+    /**
+     * isValid
+     *
+     * Ensures that only region or region_new have a value.
+     *
+     * @param mixed $value
+     * @param null $context
+     * @return bool
+     */
     public function isValid($value, $context = null)
     {
         if (empty($context['region']) && empty($context['region_new'])) {

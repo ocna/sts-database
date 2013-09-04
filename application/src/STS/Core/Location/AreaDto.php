@@ -1,15 +1,17 @@
 <?php
 namespace STS\Core\Location;
 
+use STS\Domain\Location\Area;
+
 class AreaDto
 {
-
     private $id;
     private $name;
     private $legacyId;
     private $city;
     private $state;
     private $regionName;
+
     public function __construct($id, $name, $legacyId, $city, $state, $regionName)
     {
         $this->id = $id;
@@ -42,5 +44,21 @@ class AreaDto
     public function getId()
     {
         return $this->id;
+    }
+
+    static public function assembleFromArea(Area $area) {
+
+        $region = $area->getRegion();
+        $class = __CLASS__;
+        $dto = new $class(
+            $area->getId(),
+            $area->getName(),
+            $area->getLegacyId(),
+            $area->getCity(),
+            $area->getState(),
+            $region->getName()
+        );
+
+        return $dto;
     }
 }

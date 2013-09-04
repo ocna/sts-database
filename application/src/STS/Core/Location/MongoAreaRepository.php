@@ -39,4 +39,27 @@ class MongoAreaRepository implements AreaRepository
              ->setCity($areaData['city']);
         return $area;
     }
+
+    public function save(Area $area) {
+        // new or update?
+        if (is_null($area->getId())) {
+            $area->markCreated();
+        } else {
+            $area->markUpdated();
+        }
+
+        $array = $area->toMongoArray();
+
+        $id = array_shift($array);
+        $results = $this->mongoDb->area->update(
+            array('_id' => new \MongoId($id)),
+            $array,
+            array('upsert' => 1, 'safe' => 1)
+        );
+
+        if (array_key_exists('upserted', $results)) {
+            $area->setId($results['upserted']->__toString());
+        }
+        return $area;
+    }
 }

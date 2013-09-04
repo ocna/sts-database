@@ -25,27 +25,24 @@ class Admin_AreaController extends SecureBaseController
         $form = $this->getForm();
         $form->setAction('/admin/area/new');
 
-        $request = $this->getRequest();
         if ($this->getRequest()->isPost()) {
-
-
-            $postData = $request->getPost();
+            $postData = $this->getRequest()->getPost();
             if ($form->isValid($postData)) {
-                die('oam 31 - AreaController');
                 try {
-                    $this->saveSchool($postData);
-                    $this
-                        ->setFlashMessageAndRedirect("The new school: \"{$postData['name']}\" has been created!", 'success', array(
-                            'module' => 'admin', 'controller' => 'school', 'action' => 'index'
-                        ));
+                    $this->saveArea($postData);
+                    $this->setFlashMessageAndRedirect(
+                        "The new area: \"{$postData['name']}\" has been created!",
+                        'success',
+                        array('module' => 'admin', 'controller' => 'region', 'action' => 'index'));
                 } catch (ApiException $e) {
                     $this->setFlashMessageAndUpdateLayout('An error occured while saving this information: ' . $e->getMessage(), 'error');
                 }
             } else {
-                $this
-                    ->setFlashMessageAndUpdateLayout('It looks like you missed some information, please make the corrections below.', 'error');
+                $this->setFlashMessageAndUpdateLayout('It looks like you missed some information, please make the corrections below.', 'error');
             }
         }
+
+        // display the form
         $this->view->form = $form;
     }
 
@@ -84,5 +81,19 @@ class Admin_AreaController extends SecureBaseController
                             'regions' => $regionsArray
                         ));
         return $form;
+    }
+
+    protected function saveArea($data)
+    {
+        if (!empty($data['region'])) {
+            $region = $this->locationFacade->getRegion($data['region']);
+        } else if (!empty($data['region_new'])) {
+            $region = array('name' => $data['region_new']);
+        } else {
+            throw new \ApiException('Location needs a region value.');
+        }
+
+        $area = $this->locationFacade->saveArea($data['name'], $data['city'], $data['state'], $region);
+        return $area;
     }
 }
