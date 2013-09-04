@@ -41,8 +41,9 @@ class Admin_Area extends Twitter_Bootstrap_Form_Horizontal
                 'label' => 'State',
                 'dimension' => 3,
                 'MultiOptions' => $this->states,
-                'required' => true,
-                'validators' => array(new \Zend_Validate_NotEmpty(\Zend_Validate_NotEmpty::ZERO))
+                'required' => false,
+                'allowEmpty' => true,
+//                'validators' => array(new \Zend_Validate_NotEmpty(\Zend_Validate_NotEmpty::ZERO))
             )
         );
 

@@ -1,29 +1,22 @@
-<?php 
+<?php
 $n = 1;
 foreach ($this->regions as $name => $region):
 ?>
-<h3><?= $name ?></h3>
-<div class="well">
-<ul class="thumbnails">
-	<? foreach ($region['areas'] as $area): ?>
-		<li class="span3">
-			<div class="thumbnail sortable-row">
-				<div class="row-fluid">
-					<!--
-					<div class="span2"><i class="icon-move"></i></div>
-					-->
-					<div class="span6"><?= $area->getCity() ?></div>
-					<div class="span2"><?= $area->getState() ?></div>
-					<!--
-					<div class="span2" style="text-align:right;">
-						<div class="btn-group">
-	                    <a class="btn btn-mini"><i class="icon-edit"></i></a>
-					</div>
-					-->
-			</div>
-			</div>
-		</li>
-	<? endforeach; ?>
-</ul>
-</div>
+    <h3><?= $name ?></h3>
+    <div class="well">
+        <ul class="thumbnails">
+            <? foreach ($region['areas'] as $area): ?>
+                <li class="span3">
+                    <div class="thumbnail sortable-row">
+                        <div class="row-fluid">
+                            <div class="span6"><?= $area->getCity() ?></div>
+                            <?php if ($area->getState()) :?>
+                                <div class="span2"><?= $area->getState() ?></div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </li>
+            <? endforeach; ?>
+        </ul>
+    </div>
 <? endforeach; ?>

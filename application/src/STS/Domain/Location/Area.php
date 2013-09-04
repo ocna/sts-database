@@ -80,6 +80,7 @@ class Area extends Entity
 
     public function toMongoArray()
     {
+        echo '<pre>'; print_r($this->region); echo '</pre>';
         // copy values into an array
         $array = array(
             'id' => $this->id,

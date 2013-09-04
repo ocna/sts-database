@@ -1,6 +1,7 @@
 <?php
 use STS\Web\Controller\SecureBaseController;
 use STS\Core;
+use STS\Core\Location\RegionDto;
 
 class Admin_AreaController extends SecureBaseController
 {
@@ -88,7 +89,7 @@ class Admin_AreaController extends SecureBaseController
         if (!empty($data['region'])) {
             $region = $this->locationFacade->getRegion($data['region']);
         } else if (!empty($data['region_new'])) {
-            $region = array('name' => $data['region_new']);
+            $region = new RegionDto(null, $data['region_new']);
         } else {
             throw new \ApiException('Location needs a region value.');
         }
