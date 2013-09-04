@@ -2,10 +2,10 @@
 
 class Admin_School extends Twitter_Bootstrap_Form_Horizontal
 {
-
     protected $schoolTypes;
     protected $areas;
     protected $states;
+
     public function init()
     {
         $this->setName('schoolForm');

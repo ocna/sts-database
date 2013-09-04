@@ -85,6 +85,11 @@ class DefaultLocationFacade implements LocationFacade
         return $returnData;
     }
 
+    /**
+     * getAllRegions
+     *
+     * @return array
+     */
     public function getAllRegions()
     {
         $regions = $this->mongoDb->area->distinct('region.name');
@@ -95,6 +100,7 @@ class DefaultLocationFacade implements LocationFacade
         }
         return $returnData;
     }
+
     public static function getDefaultInstance($config)
     {
         $mongoConfig = $config->modules->default->db->mongodb;
