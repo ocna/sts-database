@@ -666,7 +666,8 @@ class Admin_MemberController extends SecureBaseController
         $memberTypesArray = array_merge(array('-- Select One --') , $this->memberFacade->getMemberTypes());
 
         // get member activities checkbox options
-        $memberActivitiesArray = $this->memberFacade->getMemberActivities();
+        $vals = array_values($this->memberFacade->getMemberActivities());
+        $memberActivitiesArray = array_combine($vals, $vals);
 
         // build the zend form
         $form = new \Admin_Member(array(

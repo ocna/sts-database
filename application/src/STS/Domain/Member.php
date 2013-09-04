@@ -239,16 +239,20 @@ class Member extends EntityWithTypes
      */
     public static function getAvailableActivities()
     {
-        $reflected = new \ReflectionClass(get_called_class());
-        $statuses = array();
+        static $activities;
 
-        foreach ($reflected->getConstants() as $key => $value) {
-            // keep the ones that start with ACTIVITY_
-            if (0 === strpos($key, 'ACTIVITY_')) {
-                $statuses[$key] = $value;
+        if (!isset($activities)) {
+            $reflected = new \ReflectionClass(get_called_class());
+            $activities = array();
+
+            foreach ($reflected->getConstants() as $key => $value) {
+                // keep the ones that start with ACTIVITY_
+                if (0 === strpos($key, 'ACTIVITY_')) {
+                    $activities[$key] = $value;
+                }
             }
         }
-        return $statuses;
+        return $activities;
     }
 
     /**
@@ -261,12 +265,13 @@ class Member extends EntityWithTypes
      * @throws \InvalidArgumentException
      */
     public function setActivity($activity) {
-        if ($activity !== null && !array_key_exists($activity, static::getAvailableActivities())) {
+        if ($activity !== null && !in_array($activity, static::getAvailableActivities(), true)) {
             throw new \InvalidArgumentException('No such activity with given value:' . $activity);
         }
         $this->activities[$activity] = $activity;
         return $this;
     }
+
 
     public function getAssociatedUserId()
     {
