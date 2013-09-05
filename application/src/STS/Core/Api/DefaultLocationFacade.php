@@ -34,6 +34,27 @@ class DefaultLocationFacade implements LocationFacade
         );
     }
 
+    /**
+     * getAreaById
+     *
+     * @param $id
+     * @return AreaDto|boolean
+     */
+    public function getAreaById($id)
+    {
+        if ($area = $this->areaRepository->load($id)) {
+            return AreaDto::assembleFromArea($area);
+        }
+
+        // not found
+        return false;
+    }
+
+    /**
+     * getAllAreas
+     *
+     * @return array
+     */
     public function getAllAreas()
     {
         $areas = $this->mongoDb->area->find()->sort(array(
@@ -160,6 +181,19 @@ class DefaultLocationFacade implements LocationFacade
     public function saveArea($name, $city, $state, $region)
     {
         $area = new Area;
+        $area->setName($name);
+        $area->setCity($city);
+        $area->setState($state);
+        $area->setRegion($region);
+
+        $savedArea = $this->areaRepository->save($area);
+        return AreaDto::assembleFromArea($savedArea);
+    }
+
+    public function updateArea($id, $name, $city, $state, $region)
+    {
+        $area = new Area;
+        $area->setId($id);
         $area->setName($name);
         $area->setCity($city);
         $area->setState($state);

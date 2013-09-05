@@ -40,6 +40,12 @@ class MongoAreaRepository implements AreaRepository
         return $area;
     }
 
+    /**
+     * save
+     *
+     * @param Area $area
+     * @return Area
+     */
     public function save(Area $area) {
         // new or update?
         if (is_null($area->getId())) {
