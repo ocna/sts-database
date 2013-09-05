@@ -131,7 +131,9 @@ class MongoPresentationRepository implements PresentationRepository
         $memberRepository = new MongoMemberRepository($this->mongoDb);
         $members = array();
         foreach ($data['members'] as $memberId) {
-            $members[] = $memberRepository->load($memberId);
+            if ($memberId) {
+                $members[] = $memberRepository->load($memberId);
+            }
         }
         $presentation->setMembers($members);
         return $presentation;
