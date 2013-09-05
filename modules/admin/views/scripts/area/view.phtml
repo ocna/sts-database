@@ -1,0 +1,16 @@
+<dl class="dl-horizontal">
+  <dt>City:</dt>
+  <dd><?=  $this->area->getCity()  ?></dd>
+  <dt>State:</dt>
+  <dd><?=  $this->area->getState()? $this->area->getState(): '-'; ?></dd>
+  <dt>Region:</dt>
+  <dd><?=  $this->area->getRegionName() ? $this->area->getRegionName(): '-'; ?></dd>
+</dl>
+<br>
+<div class="well">
+<div class="btn-toolbar">
+  <div class="btn-group">
+  <a class="btn btn-primary" href="/admin/area/edit?id=<?=  $this->area->getId() ?>"><i class="icon-edit"></i> Edit</a>
+  </div>
+  <a class="btn" href="/admin/region">Go Back</a>
+</div></div>

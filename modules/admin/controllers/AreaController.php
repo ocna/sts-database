@@ -51,8 +51,6 @@ class Admin_AreaController extends SecureBaseController
 
     /**
      * editAction
-     *
-     * Not implemented
      */
     public function editAction()
     {
@@ -103,6 +101,22 @@ class Admin_AreaController extends SecureBaseController
 
         // display the form
         $this->view->form = $form;
+    }
+
+    public function viewAction()
+    {
+        // get our area
+        $id = $this->getRequest()->getParam('id');
+        $dto = $this->locationFacade->getAreaById($id);
+
+        $this->view->layout()->pageHeader = $this->view->partial(
+            'partials/page-header.phtml',
+            array(
+                'title' => 'Details: ' . $dto->getName(),
+            )
+        );
+
+        $this->view->area = $dto;
     }
 
     public function deleteAction()

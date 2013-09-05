@@ -6,7 +6,7 @@ foreach ($this->regions as $name => $region):
     <div class="well">
         <ul class="thumbnails">
             <? foreach ($region['areas'] as $area): ?>
-                <li class="span3">
+                <li class="span4">
                     <div class="thumbnail sortable-row">
                         <div class="row-fluid">
 
@@ -14,8 +14,9 @@ foreach ($this->regions as $name => $region):
                             <?php if ($area->getState()) :?>
                                 <div class="span2"><?= $area->getState() ?></div>
                             <?php endif; ?>
-                            <div class="btn-group span1">
+                            <div class="btn-group span2">
                                 <a class="btn btn-mini btn-primary" href="/admin/area/edit?id=<?= $area->getId() ?>"><i class="icon-edit"></i></a>
+                                <a class="btn btn-mini" href="/admin/area/view?id=<?= $area->getId() ?>"><i class="icon-info-sign"></i> Details</a>
                             </div>
                         </div>
                     </div>
