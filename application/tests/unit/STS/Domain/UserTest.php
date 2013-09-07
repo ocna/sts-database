@@ -27,7 +27,7 @@ class UserTest extends UserTestCase
         $user->initializePasswordIfNew('diffPW123');
         $this->assertNotEquals($password, $user->getPassword(), 'passwords were not changed when different');
     }
-    
+
     /**
      * @test
      */
@@ -41,7 +41,16 @@ class UserTest extends UserTestCase
         $user->initializePasswordIfNew('');
         $this->assertEquals($password, $user->getPassword(), 'passwords were changed when blank passed');
     }
-    
+
+    /**
+     * @test
+     */
+    public function validUserRoles()
+    {
+        $user = new User();
+        $valid_users = self::createUserRoles();
+        $this->assertEquals($valid_users, $user->getAvailableRoles());
+    }
 
     /**
      * @test
