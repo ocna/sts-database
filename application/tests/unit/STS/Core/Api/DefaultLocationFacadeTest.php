@@ -32,7 +32,8 @@ class DefaultLocationFacadeTest extends \PHPUnit_Framework_TestCase
     private function getFacadeWithMockedDeps()
     {
         $mongoDb = Mockery::mock('MongoDB');
-        $facade = new DefaultLocationFacade($mongoDb);
+        $areaRepository = new \STS\Core\Location\MongoAreaRepository($mongoDb);
+        $facade = new DefaultLocationFacade($mongoDb, $areaRepository);
         return $facade;
     }
 }
