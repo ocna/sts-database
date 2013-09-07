@@ -90,6 +90,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
             self::TYPE,
             self::NOTES,
             self::STATUS,
+            $this->getValidActivitiesArray(),
             AddressTestCase::LINE_ONE,
             AddressTestCase::LINE_TWO,
             AddressTestCase::CITY,
@@ -189,6 +190,15 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
                 'type'=>'cell'
                 )
             );
+    }
+
+    protected function getValidActivitiesArray()
+    {
+        return array(
+            'Presenter',
+            'On-site Facilitator',
+            'Area Facilitator'
+        );
     }
 
     protected function getTestAreas()
