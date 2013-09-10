@@ -47,4 +47,10 @@ interface PresentationFacade
      * @return mixed
      */
     public function updateEnteredBy($old, $new);
+
+    /**
+     * @param $id
+     * @return boolean
+     */
+    public function deletePresentation($id);
 }

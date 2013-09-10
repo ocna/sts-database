@@ -129,4 +129,17 @@ class MongoSurveyRepository implements SurveyRepository
 
         return $results;
     }
+
+    /**
+     * @param $id
+     * @return bool
+     */
+    public function delete($id)
+    {
+        $results = $this->mongoDb->survey->remove(
+            array('_id' => new \MongoId($id))
+        );
+
+        return ($results['n'] > 0);
+    }
 }

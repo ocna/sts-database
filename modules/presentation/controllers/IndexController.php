@@ -9,6 +9,10 @@ class Presentation_IndexController extends SecureBaseController
 {
 
     private $user;
+
+    /**
+     * @var \STS\Core\Api\DefaultPresentationFacade
+     */
     private $presentationFacade;
     private $surveyFacade;
     private $memberFacade;
@@ -34,6 +38,7 @@ class Presentation_IndexController extends SecureBaseController
 
         $dtos = $this->presentationFacade->getPresentationsForUserId($this->user->getId());
         $this->view->objects = $dtos;
+        $this->view->is_admin = (\STS\Domain\User::ROLE_ADMIN == $this->user->getRole());
     }
 
     public function viewAction()
@@ -50,7 +55,7 @@ class Presentation_IndexController extends SecureBaseController
         } catch (\InvalidArgumentException $e) {
              $this->view->survey = null;
         }
-        
+
     }
 
     public function newAction()
@@ -158,6 +163,28 @@ class Presentation_IndexController extends SecureBaseController
             }
         }
         $this->view->form = $form;
+    }
+
+    /**
+     * @throws Symfony\Component\Finder\Exception\AccessDeniedException
+     */
+    public function deleteAction()
+    {
+        if (! $this->getRequest()->isPost()) {
+            throw new \Symfony\Component\Finder\Exception\AccessDeniedException();
+        }
+        $post = $this->getRequest()->getPost();
+        $id = $post['id'];
+
+        $this->presentationFacade->deletePresentation($id);
+
+        $this->setFlashMessageAndRedirect(
+            'You have successfully deleted the presentation and survey!',
+            'success',
+            array(
+                'module' => 'presentation', 'controller' => 'index', 'action' => 'index'
+            )
+        );
     }
 
     private function getForm($surveyOrTemplate)

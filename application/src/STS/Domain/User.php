@@ -143,11 +143,20 @@ class User extends Entity
         }
     }
 
+    /**
+     * @param $key
+     * @return bool
+     */
     public function isRole($key)
     {
         return $this->getAvailableRole($key) == $this->getRole();
     }
 
+    /**
+     * @param $key
+     * @return mixed
+     * @throws \InvalidArgumentException
+     */
     public static function getAvailableRole($key)
     {
         if (substr($key, 0, 5) != 'ROLE_') {
@@ -160,15 +169,18 @@ class User extends Entity
         return $reflected->getConstant($key);
     }
 
+    /**
+     * @return array
+     */
     public static function getAvailableRoles()
     {
         $reflected = new \ReflectionClass(get_called_class());
         $roles = array();
         foreach ($reflected->getConstants() as $key => $value) {
             if (substr($key, 0, 5) == 'ROLE_') {
-                $types[$key] = $value;
+                $roles[$key] = $value;
             }
         }
-        return $types;
+        return $roles;
     }
 }

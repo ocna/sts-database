@@ -261,7 +261,7 @@ class DefaultMemberFacade implements MemberFacade
     /**
      * setMemberProperties
      *
-     * @param $member
+     * @param Member $member
      * @param $firstName
      * @param $lastName
      * @param $type
@@ -282,7 +282,8 @@ class DefaultMemberFacade implements MemberFacade
      * @param $diagnosisInfo
      * @param $phoneNumbers
      */
-    private function setMemberProperties(&$member, $firstName, $lastName, $type, $status, $activities,
+    private function setMemberProperties(Member &$member, $firstName, $lastName, $type, $status,
+                                         $activities,
                                           $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId,
                                           $addressLineOne, $addressLineTwo, $city, $state, $zip, $email,
                                           $dateTrained, $diagnosisInfo, $phoneNumbers)

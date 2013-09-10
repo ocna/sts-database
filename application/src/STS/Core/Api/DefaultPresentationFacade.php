@@ -11,6 +11,7 @@ use STS\Core\User\MongoUserRepository;
 use STS\Core\Member\MongoMemberRepository;
 use STS\Core\Presentation\PresentationDtoAssembler;
 use STS\Core\School\MongoSchoolRepository;
+use STS\Core\Survey\MongoSurveyRepository;
 
 class DefaultPresentationFacade implements PresentationFacade
 {
@@ -19,6 +20,7 @@ class DefaultPresentationFacade implements PresentationFacade
     private $userRepository;
     private $memberRepository;
     private $schoolRepository;
+    private $surveyRepository;
 
     /**
      * __construct
@@ -28,12 +30,15 @@ class DefaultPresentationFacade implements PresentationFacade
      * @param $memberRepository
      * @param $schoolRepository
      */
-    public function __construct($presentationRepository, $userRepository, $memberRepository, $schoolRepository)
+    public function __construct(Presentation\PresentationRepository $presentationRepository,
+                                $userRepository, $memberRepository,
+                                $schoolRepository, Survey\SurveyRepository $surveyRepository)
     {
         $this->presentationRepository = $presentationRepository;
         $this->userRepository = $userRepository;
         $this->memberRepository = $memberRepository;
         $this->schoolRepository = $schoolRepository;
+        $this->surveyRepository = $surveyRepository;
     }
 
     /**
@@ -209,17 +214,31 @@ class DefaultPresentationFacade implements PresentationFacade
         $userRepository = new MongoUserRepository($mongoDb);
         $memberRepository = new MongoMemberRepository($mongoDb);
         $schoolRepository = new MongoSchoolRepository($mongoDb);
-        return new DefaultPresentationFacade($presentationRepository, $userRepository, $memberRepository, $schoolRepository);
+        $surveyRepository = new MongoSurveyRepository($mongoDb);
+        return new DefaultPresentationFacade($presentationRepository, $userRepository,
+            $memberRepository, $schoolRepository, $surveyRepository);
     }
 
     /**
      * updateEnteredBy
-     * 
+     *
      * @param $old
      * @param $new
      */
     public function updateEnteredBy($old, $new)
     {
         $this->presentationRepository->updateEnteredBy($old, $new);
+    }
+
+    /**
+     * @param $id
+     * @return bool
+     */
+    public function deletePresentation($id)
+    {
+        $presentation = $this->presentationRepository->load($id);
+        $survey = $presentation->getSurvey();
+        $this->surveyRepository->delete($survey->getId());
+        return $this->presentationRepository->delete($presentation->getId());
     }
 }

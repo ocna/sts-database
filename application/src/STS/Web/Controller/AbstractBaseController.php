@@ -42,7 +42,7 @@ abstract class AbstractBaseController extends \Zend_Controller_Action implements
         $this->_helper->flashMessenger->setNamespace($this->flashMessengerNamespace);
         switch (strtolower($messageType)) {
             case 'error':
-                $title = ' Ut Oh! ';
+                $title = ' Uh Oh! ';
                 $flashClass = 'alert-error';
                 break;
             case 'success':
