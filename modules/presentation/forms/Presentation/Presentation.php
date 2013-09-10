@@ -81,6 +81,7 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
                 'label' => 'Members Attended',
                 'class' => 'membersAttended',
                 'isArray' => true,
+                'required' => true,
                 'description' => 'Begin typing names to search for and add members...',
                 'validators' => array(new \Zend_Validate_NotEmpty(\Zend_Validate_NotEmpty::EMPTY_ARRAY))
             )
@@ -93,7 +94,7 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
             array(
                 'label' => 'Number of Participants',
                 'dimension' => 1,
-                'required' => true,
+                'required' => false,
                 'validators' => array('int')
             )
         );
@@ -105,7 +106,7 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
             array(
                 'label' => 'Number of Forms Returned (Pre Class)',
                 'dimension' => 1,
-                'required' => true,
+                'required' => false,
                 'validators' => array('int')
             )
         );
@@ -117,7 +118,7 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
             array(
                 'label' => 'Number of Forms Returned (Post Class)',
                 'dimension' => 1,
-                'required' => true,
+                'required' => false,
                 'validators' => array('int')
             )
         );
@@ -180,7 +181,7 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
                             array(
                                 'label' => $choice,
                                 'dimension' => 1,
-                                'required' => true,
+                                'required' => false,
                                 'value' => $this->getMultiResponse($question, $choiceId, $ask),
                                 'validators' => array('int')
                             )
@@ -199,7 +200,7 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
                             'label' => '',
                             'dimension' => 3,
                             'rows' => 10,
-                            'required' => true,
+                            'required' => false,
                             'value' => $this->getShortResponse($question, $ask),
                         )
                     );
