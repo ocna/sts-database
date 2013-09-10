@@ -340,7 +340,9 @@ class Admin_MemberController extends SecureBaseController
                     }
                     
                     // check if we are changing an existing user's name
-                    if ($postData['role'] != '0' && $postData['hiddenSystemUsername'] != $postData['systemUsername']) {
+                    if ($postData['role'] != '0' && !empty($postData['hiddenSystemUsername'])
+                        && $postData['hiddenSystemUsername'] != $postData['systemUsername']
+                    ) {
                         $this->changeUsername($associatedUser, $dto, $postData);
 
                         // handle other form updates
