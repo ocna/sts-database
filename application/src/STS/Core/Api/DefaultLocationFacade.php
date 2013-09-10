@@ -221,8 +221,7 @@ class DefaultLocationFacade implements LocationFacade
                     $new_dto);
             }
 
-            // TODO update schools
-            // TODO update members
+            return $new_dto;
         }
     }
 }
