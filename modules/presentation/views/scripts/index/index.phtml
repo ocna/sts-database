@@ -29,13 +29,27 @@ $columns = array('date'=>'Date', 'schoolName'=>'School','schoolAreaCity'=>'City'
             }?>
             <td style="text-align:right;">
                 <div class="btn-group">
-                <a class="btn btn-mini" href="/presentation/index/view?id=<?php echo $object->getId()?>"><i class="icon-info-sign">
-                </i> Details</a>
-                <a class="btn btn-mini btn-primary" href="/presentation/index/edit?id=<?php echo $object->getId() ?>"><i class="icon-edit"></i></a>
-            </div>
+                    <a class="btn btn-mini btn-primary" href="/presentation/index/edit?id=<?php echo $object->getId() ?>"><i class="icon-edit"></i></a>
+                    <a class="btn btn-mini"
+                       href="/presentation/index/view?id=<?php echo $object->getId()?>">
+                        <i class="icon-info-sign"></i> Details
+                    </a>
+
+                    <?php if (true == $this->is_admin): ?>
+                        <a class="btn btn-mini btn-danger"
+                           href="#" data-delete="<?php echo $object->getId() ?>"
+                            data-name="<?php echo $object->getSchoolName() ?>">
+                            <i class="icon-trash"></i>
+                        </a>
+                    <?php endif; ?>
+                </div>
             </td>
         <?php }?>
         </tr>
     </tbody>
 </table>
+    <form action="/presentation/index/delete" method="POST" id="deleteForm">
+        <div><input name="id" type="hidden" value="" id="deleteID"></div>
+    </form>
+    <script src="/js/presentations.js" type="text/javascript"></script>
 <?php endif; ?>

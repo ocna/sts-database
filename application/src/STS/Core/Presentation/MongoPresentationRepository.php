@@ -157,4 +157,13 @@ class MongoPresentationRepository implements PresentationRepository
 
         return $results;
     }
+
+    public function delete($id)
+    {
+        $results = $this->mongoDb->presentation->remove(
+            array('_id' => new \MongoId($id))
+        );
+
+        return ($results['n'] > 0);
+    }
 }
