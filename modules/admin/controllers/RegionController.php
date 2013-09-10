@@ -33,4 +33,75 @@ class Admin_RegionController extends SecureBaseController
         }
         $this->view->regions = $dataArray;
     }
+
+    public function renameAction()
+    {
+        // get our area
+        $name = $this->getRequest()->getParam('name');
+        $dto = $this->locationFacade->getRegion($name);
+
+        if (!$dto) {
+            throw new Core\Api\ApiException('Could not load regions');
+        }
+
+        // get our form
+        $form = $this->getRenameForm();
+        $form->setAction('/admin/region/rename?name=' . $name);
+
+        $form->populate(array(
+            'name' => $dto->getName(),
+        ));
+
+
+        // process updates
+        if ($this->getRequest()->isPost()) {
+            $postData = $this->getRequest()->getPost();
+
+            if ($postData['name'] == $name) {
+                $this->setFlashMessageAndUpdateLayout('If you wish to rename the region, please indicate a new name.', 'error');
+            } elseif ($form->isValid($postData)) {
+                try {
+                    $updatedRegion = $this->renameRegion($name, $postData['name']);
+                    $this->setFlashMessageAndRedirect(
+                        "The area: \"{$updatedRegion->getName()}\" has been renamed!",
+                        'success',
+                        array(
+                            'module' => 'admin',
+                            'controller' => 'region',
+                            'action' => 'index',
+                        )
+                    );
+                } catch (ApiException $e) {
+                    $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage(), 'error');
+                }
+            } else {
+                $this->setFlashMessageAndUpdateLayout('It looks like you missed some information, please make the corrections below.', 'error');
+            }
+        }
+        $this->view->layout()->pageHeader = $this->view->partial(
+            'partials/page-header.phtml',
+            array(
+                'title' => 'Rename: ' . $dto->getName(),
+            )
+        );
+
+        $this->view->form = $form;
+    }
+
+    /**
+     * getRenameForm
+     *
+     * @return Admin_RegionRename
+     */
+    protected function getRenameForm()
+    {
+        $form = new \Admin_RegionRename();
+        return $form;
+    }
+    
+    protected function renameRegion($old, $new)
+    {
+        $region = $this->locationFacade->renameRegion($old, $new);
+        return $region;
+    }
 }

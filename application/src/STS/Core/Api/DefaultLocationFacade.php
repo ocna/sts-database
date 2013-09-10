@@ -202,4 +202,27 @@ class DefaultLocationFacade implements LocationFacade
         $savedArea = $this->areaRepository->save($area);
         return AreaDto::assembleFromArea($savedArea);
     }
+
+    public function renameRegion($old_name, $new_name)
+    {
+        if ($areas = $this->mongoDb->area->find(array('region.name' => $old_name))) {
+
+            // prepare a regionDTO and keep legacyId
+            $old_dto = $this->getRegion($old_name);
+            $new_dto = new RegionDto($old_dto->getLegacyId(), $new_name);
+
+            // update all areas pointing to the old region with the new region name
+            foreach ($areas as $area) {
+                $this->updateArea(
+                    $area['_id']->__toString(),
+                    $area['name'],
+                    $area['city'],
+                    $area['state'],
+                    $new_dto);
+            }
+
+            // TODO update schools
+            // TODO update members
+        }
+    }
 }
