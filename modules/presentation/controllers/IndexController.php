@@ -1,4 +1,5 @@
 <?php
+use STS\Web\Security\AclFactory;
 use STS\Core\Api\ApiException;
 use STS\Domain\School\Specification\MemberSchoolSpecification;
 use STS\Domain\Presentation;
@@ -17,6 +18,12 @@ class Presentation_IndexController extends SecureBaseController
     private $surveyFacade;
     private $memberFacade;
     private $schoolFacade;
+
+    /**
+     * @var \STS\Core\Api\AuthFacade
+     */
+    private $authFacade;
+
     public function init()
     {
         parent::init();
@@ -26,6 +33,8 @@ class Presentation_IndexController extends SecureBaseController
         $this->surveyFacade = $core->load('SurveyFacade');
         $this->memberFacade = $core->load('MemberFacade');
         $this->schoolFacade = $core->load('SchoolFacade');
+        $this->authFacade = $core->load('AuthFacade');
+
     }
 
     public function indexAction()
@@ -38,7 +47,14 @@ class Presentation_IndexController extends SecureBaseController
 
         $dtos = $this->presentationFacade->getPresentationsForUserId($this->user->getId());
         $this->view->objects = $dtos;
-        $this->view->is_admin = (\STS\Domain\User::ROLE_ADMIN == $this->user->getRole());
+
+        // make sure user can edit presentations
+        $role = $this->getAuth()->getIdentity()->getRole();
+        if ($this->getAcl()->isAllowed($role, AclFactory::RESOURCE_PRESENTATION, 'edit')) {
+            $this->view->can_edit = TRUE;
+        } else {
+            $this->view->can_edit = FALSE;
+        }
     }
 
     public function viewAction()
@@ -190,15 +206,13 @@ class Presentation_IndexController extends SecureBaseController
     private function getForm($surveyOrTemplate)
     {
         $schools = $this->getSchoolsVisableToMember();
-        $schoolsArray = array(
-            ''
-        );
+        $schoolsArray = array();
         foreach ($schools as $school) {
             $schoolsArray[$school->getId()] = $school->getName();
         }
-        $typesArray = array_merge(array(
-            ''
-        ), $this->presentationFacade->getPresentationTypes());
+
+        $typesArray = array_merge(array(''), $this->presentationFacade->getPresentationTypes());
+
         $form = new \Presentation_Presentation(
                         array(
                                 'schools' => $schoolsArray, 'presentationTypes' => $typesArray,

@@ -1,32 +1,35 @@
-<?php if(empty($this->objects)): ?>
+<?php if (empty($this->objects)): ?>
 <div class="alert alert-info">
-<h3>
-<span>
-  <i class="icon-info-sign"></i>
-</span>
-No presentations yet.</h3>
-<p>You have not entered any presentations yet.</p>
+    <h3><span><i class="icon-info-sign"></i></span>No presentations yet.</h3>
+    <p>You have not entered any presentations yet.</p>
 </div>
+
 <?php else:
-$columns = array('date'=>'Date', 'schoolName'=>'School','schoolAreaCity'=>'City', 'numberOfParticipants'=>'Participants', 'type'=>'Type');
+$columns = array(
+    'date' => 'Date',
+    'schoolName' => 'School',
+    'schoolAreaCity' => 'City',
+    'numberOfParticipants' => 'Participants',
+    'type' => 'Type'
+);
 ?>
 <table class="table table-striped table-bordered">
     <thead>
         <tr>
-        <?php foreach ($columns as $title){
-            echo "<th>$title</th>";
-            }?>
+        <?php foreach ($columns as $title): ?>
+            <th><?php echo $title ?></th>
+        <?php endforeach ?>
             <th style="text-align:right;">Actions</th>
         </tr>
     </thead>
     <tbody>
-    <?php   foreach ($this->objects as $object) {
-        ?>
+
+    <?php foreach ($this->objects as $object): ?>
         <tr>
-        <?php foreach ($columns as $get=>$title){
-            $method = 'get' . ucfirst($get);
-            echo "<td>{$object->$method()}</td>";
-            }?>
+        <?php foreach ($columns as $get=>$title):
+            $method = 'get' . ucfirst($get); ?>
+            <td><?php echo $object->$method() ?></td>
+        <?php endforeach?>
             <td style="text-align:right;">
                 <div class="btn-group">
                     <a class="btn btn-mini btn-primary" href="/presentation/index/edit?id=<?php echo $object->getId() ?>"><i class="icon-edit"></i></a>
@@ -35,7 +38,7 @@ $columns = array('date'=>'Date', 'schoolName'=>'School','schoolAreaCity'=>'City'
                         <i class="icon-info-sign"></i> Details
                     </a>
 
-                    <?php if (true == $this->is_admin): ?>
+                    <?php if (true == $this->can_edit): ?>
                         <a class="btn btn-mini btn-danger"
                            href="#" data-delete="<?php echo $object->getId() ?>"
                             data-name="<?php echo $object->getSchoolName() ?>">
@@ -44,7 +47,7 @@ $columns = array('date'=>'Date', 'schoolName'=>'School','schoolAreaCity'=>'City'
                     <?php endif; ?>
                 </div>
             </td>
-        <?php }?>
+     <?php endforeach ?>
         </tr>
     </tbody>
 </table>
