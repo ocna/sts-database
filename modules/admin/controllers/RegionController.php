@@ -61,16 +61,20 @@ class Admin_RegionController extends SecureBaseController
                 $this->setFlashMessageAndUpdateLayout('If you wish to rename the region, please indicate a new name.', 'error');
             } elseif ($form->isValid($postData)) {
                 try {
-                    $updatedRegion = $this->renameRegion($name, $postData['name']);
-                    $this->setFlashMessageAndRedirect(
-                        "The area: \"{$updatedRegion->getName()}\" has been renamed!",
-                        'success',
-                        array(
-                            'module' => 'admin',
-                            'controller' => 'region',
-                            'action' => 'index',
-                        )
-                    );
+                    if ($updatedRegion = $this->renameRegion($name, $postData['name'])) {
+                        $this->setFlashMessageAndRedirect(
+                            "The area: \"{$updatedRegion->getName()}\" has been renamed!",
+                            'success',
+                            array(
+                                'module' => 'admin',
+                                'controller' => 'region',
+                                'action' => 'index',
+                            )
+                        );
+                    } else {
+                        throw new Core\Api\ApiException("Could not rename region, please check name.");
+                    }
+
                 } catch (ApiException $e) {
                     $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage(), 'error');
                 }

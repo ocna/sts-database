@@ -170,6 +170,7 @@ class DefaultLocationFacade implements LocationFacade
 
     /**
      * saveArea
+     *
      * Save a region to the data store
      *
      * @param $name
@@ -190,6 +191,18 @@ class DefaultLocationFacade implements LocationFacade
         return AreaDto::assembleFromArea($savedArea);
     }
 
+    /**
+     * updateArea
+     *
+     * Update an existing area
+     *
+     * @param $id
+     * @param $name
+     * @param $city
+     * @param $state
+     * @param $region
+     * @return mixed
+     */
     public function updateArea($id, $name, $city, $state, $region)
     {
         $area = new Area;
@@ -203,6 +216,15 @@ class DefaultLocationFacade implements LocationFacade
         return AreaDto::assembleFromArea($savedArea);
     }
 
+    /**
+     * renameRegoin
+     *
+     * Renames an existing region
+     *
+     * @param $old_name
+     * @param $new_name
+     * @return RegionDto
+     */
     public function renameRegion($old_name, $new_name)
     {
         if ($areas = $this->mongoDb->area->find(array('region.name' => $old_name))) {
