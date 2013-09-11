@@ -97,6 +97,11 @@ class DefaultSchoolFacade implements SchoolFacade
         if (isset($criteria['type']) && !empty($criteria['type'])) {
             $schools = $this->filterSchoolsByTypes($criteria['type'], $schools);
         }
+        
+        // filter by area
+        if (isset($criteria['area']) && !empty($criteria['area'])) {
+            $schools = $this->filterSchoolsByAreas($criteria['area'], $schools);
+        }
         return $schools;
     }
 
@@ -145,6 +150,27 @@ class DefaultSchoolFacade implements SchoolFacade
 
         return $schools;
     }
+    /**
+     * filterSchoolsByAreas
+     *
+     * @param $areas
+     * @param $schools
+     * @return array
+     */
+    public function filterSchoolsByAreas($areas, $schools)
+    {
+        if (!empty($areas)) {
+            if (!is_array($areas)) {
+                $areas = (array) $areas;
+            }
+            $schools = array_filter($schools, function($school) use ($areas) {
+                return in_array($school->getAreaId(), $areas, true);
+            });
+        }
+
+        return $schools;
+    }
+
 
     /**
      * getSchoolTypes

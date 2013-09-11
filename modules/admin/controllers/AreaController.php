@@ -116,11 +116,25 @@ class Admin_AreaController extends SecureBaseController
             )
         );
 
+        // can only delete an area that is not referred to by presentations/summary/members, etc
+        $this->view->can_delete = false;
+        if ($this->canDeleteArea($id)) {
+            $this->view->can_delete = true;
+        }
+
         $this->view->area = $dto;
     }
 
     public function deleteAction()
     {
+        // get our area
+        $id = $this->getRequest()->getParam('id');
+        $dto = $this->locationFacade->getAreaById($id);
+
+        if ($dto) {
+            // TODO remove id
+        }
+        die('oam 134');
     }
 
     public function getForm()
@@ -171,4 +185,21 @@ class Admin_AreaController extends SecureBaseController
         $area = $this->locationFacade->updateArea($id, $data['name'], $data['city'], $data['state'], $region);
         return $area;
     }
+
+    protected function canDeleteArea($id)
+    {
+        $core = Core::getDefaultInstance();
+
+        // can't delete if its used in a school
+        $schoolFacade = $core->load('SchoolFacade');
+        $dtos = $schoolFacade->getSchoolsMatching(array('area' => $id));
+        if (0 < count($dtos)) {
+            return false;
+        }
+
+        // can't delete if a member uses it
+        return true;
+    }
+
+
 }

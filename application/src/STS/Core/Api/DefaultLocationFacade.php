@@ -1,5 +1,6 @@
 <?php
 namespace STS\Core\Api;
+
 use STS\Core\Location\AreaDto;
 use STS\Core\Location\RegionDto;
 use STS\Domain\Location\Area;
@@ -85,6 +86,10 @@ class DefaultLocationFacade implements LocationFacade
             ));
         $returnData = array();
         foreach ($areas as $area) {
+
+            if (!isset($area['legacyid'])) {
+                $area['legacyid'] = null;
+            }
             $returnData[] = new AreaDto(
                 $area['_id']->__toString(),
                 $area['name'],
@@ -217,7 +222,7 @@ class DefaultLocationFacade implements LocationFacade
     }
 
     /**
-     * renameRegoin
+     * renameRegion
      *
      * Renames an existing region
      *
