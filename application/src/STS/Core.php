@@ -15,6 +15,9 @@ class Core
     const CORE_CONFIG_PATH = '/config/core.xml';
 
     private $config;
+
+    static protected $_default;
+
     public function __construct(\Zend_Config $config)
     {
         $this->config = $config;
@@ -52,11 +55,27 @@ class Core
         }
         return $facade;
     }
+
+    /**
+     * @return \Zend_Config
+     */
+    public function getConfig() {
+        return $this->config;
+    }
+
+    /**
+     * getDefaultInstance
+     *
+     * @return Core
+     */
     public static function getDefaultInstance()
     {
-        $configPath = APPLICATION_PATH . self::CORE_CONFIG_PATH;
-        $config = new \Zend_Config_Xml($configPath, 'all');
-        $instance = new Core($config);
-        return $instance;
+        if (!isset(self::$_default)) {
+            $configPath = APPLICATION_PATH . self::CORE_CONFIG_PATH;
+            $config = new \Zend_Config_Xml($configPath, 'all');
+            self::$_default = new Core($config);
+        }
+
+        return self::$_default;
     }
 }

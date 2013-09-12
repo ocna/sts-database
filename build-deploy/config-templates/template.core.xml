@@ -20,5 +20,8 @@
                 </email>
 			</default>
 		</modules>
+        <calendar>
+            <src></src>
+        </calendar>
 	</all>
 </config>

@@ -6,6 +6,22 @@
         <controller>presentation</controller>
         <action>index</action>
         <resource>presentation</resource>
+        <pages>
+            <presentations>
+                <label>Presentations &amp; Surveys</label>
+                <module>main</module>
+                <controller>presentation</controller>
+                <action>index</action>
+                <resource>presentation</resource>
+            </presentations>
+            <calendar>
+                <label>Upcoming Calendar</label>
+                <module>main</module>
+                <controller>presentation</controller>
+                <action>calendar</action>
+                <resource>presentation</resource>
+            </calendar>
+        </pages>
     </presentation>
     <report>
         <label>Reports</label>
