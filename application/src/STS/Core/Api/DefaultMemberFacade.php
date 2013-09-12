@@ -52,6 +52,12 @@ class DefaultMemberFacade implements MemberFacade
     /**
      * getMembersMatching
      *
+     * Criteria can be a single value or array of:
+     *  'status'
+     *  'region': valid regions names
+     *  'role': valid role names
+     *  'area_any': area ids (matches any field, presents for, facilitates for, etc.)
+     *
      * @param $criteria
      * @return array
      */
@@ -71,12 +77,22 @@ class DefaultMemberFacade implements MemberFacade
                 );
         }
         $members = $this->memberRepository->find($query);
+
+        // filter by region
         if (array_key_exists('region', $criteria) && ! empty($criteria['region'])) {
             $members = $this->filterMembersByRegions($criteria['region'], $members);
         }
+
+        // filter by  role
         if (array_key_exists('role', $criteria) && ! empty($criteria['role'])) {
             $members = $this->filterMembersByLinkedUserRoles($criteria['role'], $members);
         }
+
+        // filter by area id
+        if (array_key_exists('area_any', $criteria) && ! empty($criteria['area_any'])) {
+            $members = $this->filterMembersByArea($criteria['area_any'], $members);
+        }
+
         return $this->getArrayOfDtos($members);
     }
 
@@ -93,6 +109,37 @@ class DefaultMemberFacade implements MemberFacade
             }
         }
 
+        return $filteredMembers;
+    }
+
+    /**
+     * filterMembersByArea
+     *
+     * Matches as long as their is at least one association to the area
+     *
+     * @param $areas
+     * @param $members
+     * @return array
+     */
+    private function filterMembersByArea($areas, $members)
+    {
+        if (!empty($areas)) {
+            $filteredMembers = array();
+            if (!is_array($areas)) {
+                $areas = (array) $areas;
+            }
+
+            foreach ($members as $member) {
+                $assoc_areas = $member->getAllAssociatedAreas();
+                foreach ($assoc_areas as $test) {
+                    if (in_array($test->getId(), $areas)) {
+                        $filteredMembers[] = $member;
+                    }
+                }
+            }
+        } else {
+            $filteredMembers = $members;
+        }
         return $filteredMembers;
     }
 
@@ -177,6 +224,13 @@ class DefaultMemberFacade implements MemberFacade
         return $this->getArrayOfDtos($members);
     }
 
+    /**
+     * getMemberByMemberAreaSpecForId
+     *
+     *
+     * @param $id
+     * @return MemberByMemberAreaSpecification
+     */
     public function getMemberByMemberAreaSpecForId($id)
     {
         $member = $this->memberRepository->load($id);

@@ -39,6 +39,24 @@ class MongoAreaRepository implements AreaRepository
              ->setCity($areaData['city']);
         return $area;
     }
+    
+    /**
+     * delete
+     *
+     * @param $id string
+     * @return bool
+     */
+    public function delete($id) {
+        $results = $this->mongoDb->area->remove(
+            array('_id' => new \MongoId($id)),
+            array('justOne' => true, 'safe' => true)
+        );
+
+        if (1 == $results['ok']) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * save

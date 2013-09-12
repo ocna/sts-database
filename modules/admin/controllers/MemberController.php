@@ -119,13 +119,13 @@ class Admin_MemberController extends SecureBaseController
         $id = $this->getRequest()->getParam('id');
         try{
             $results = $this->memberFacade->deleteMember($id);
-            if($results === true){
+            if ($results === true) {
                 $this->setFlashMessageAndRedirect('The member has been removed from the system!', 'success', array(
                         'module' => 'admin',
                         'controller' => 'member',
                         'action' => 'index'
                     ));
-            }else{
+            } else {
                 throw new ApiException("An error occured while deleting member.", 1);
             }
         } catch (ApiException $e) {

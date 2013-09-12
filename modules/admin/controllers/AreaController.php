@@ -129,12 +129,28 @@ class Admin_AreaController extends SecureBaseController
     {
         // get our area
         $id = $this->getRequest()->getParam('id');
-        $dto = $this->locationFacade->getAreaById($id);
 
-        if ($dto) {
-            // TODO remove id
+        try {
+            $dto = $this->locationFacade->getAreaById($id);
+
+            if ($dto) {
+                $results = $this->locationFacade->deleteArea($id);
+                if($results === true) {
+                    $this->setFlashMessageAndRedirect('The area has been removed from the system!', 'success', array(
+                        'module' => 'admin',
+                        'controller' => 'region',
+                        'action' => 'index'
+                    ));
+                } else {
+                    throw new ApiException("An error occured while deleting area.", 1);
+                }
+            }
+        } catch (ApiException $e) {
+            $this->setFlashMessageAndRedirect('An error occured while deleting area: ' . $e->getMessage() , 'error', array(
+                        'module' => 'admin',
+                        'controller' => 'member',
+                        'action' => 'index'));
         }
-        die('oam 134');
     }
 
     public function getForm()
@@ -192,14 +208,19 @@ class Admin_AreaController extends SecureBaseController
 
         // can't delete if its used in a school
         $schoolFacade = $core->load('SchoolFacade');
-        $dtos = $schoolFacade->getSchoolsMatching(array('area' => $id));
-        if (0 < count($dtos)) {
+        $schoolDtos = $schoolFacade->getSchoolsMatching(array('area' => $id));
+        if (0 < count($schoolDtos)) {
             return false;
         }
 
         // can't delete if a member uses it
+        $memberFacade = $core->load('MemberFacade');
+        $memberDtos = $memberFacade->getMembersMatching(array('area_any' => $id));
+        if (0 < count($memberDtos)) {
+            return false;
+        }
+
+        // not used, safe to delete
         return true;
     }
-
-
 }

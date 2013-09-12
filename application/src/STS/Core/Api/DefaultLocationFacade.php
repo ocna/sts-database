@@ -251,4 +251,15 @@ class DefaultLocationFacade implements LocationFacade
             return $new_dto;
         }
     }
+
+    /**
+     * deleteArea
+     *
+     * @param $id string
+     * @return mixed
+     */
+    public function deleteArea($id)
+    {
+        return $this->areaRepository->delete($id);
+    }
 }
