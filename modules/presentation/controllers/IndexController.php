@@ -132,13 +132,13 @@ class Presentation_IndexController extends SecureBaseController
         //populate form from existing values
         $form->populate(
             array(
-                'location'=>$dto->getSchoolId(),
-                'presentationType'=> $this->presentationFacade->getTypeKey($dto->getType()),
-                'dateOfPresentation'=>$dto->getDate(),
-                'notes'=>$dto->getNotes(),
-                'participants'=>$dto->getNumberOfParticipants(),
-                'formsReturnedPre'=>$dto->getNumberOfFormsReturnedPre(),
-                'formsReturnedPost'=>$dto->getNumberOfFormsReturnedPost()
+                'location' => $dto->getSchoolId(),
+                'presentationType' => $this->presentationFacade->getTypeKey($dto->getType()),
+                'dateOfPresentation' => $dto->getDate(),
+                'notes' => $dto->getNotes(),
+                'participants' => $dto->getNumberOfParticipants(),
+                'formsReturnedPre' => $dto->getNumberOfFormsReturnedPre(),
+                'formsReturnedPost' => $dto->getNumberOfFormsReturnedPost()
             )
         );
         //populate members
@@ -186,9 +186,10 @@ class Presentation_IndexController extends SecureBaseController
      */
     public function deleteAction()
     {
-        if (! $this->getRequest()->isPost()) {
+        if (!$this->getRequest()->isPost()) {
             throw new \Symfony\Component\Finder\Exception\AccessDeniedException();
         }
+
         $post = $this->getRequest()->getPost();
         $id = $post['id'];
 
@@ -220,6 +221,7 @@ class Presentation_IndexController extends SecureBaseController
                         ));
         return $form;
     }
+
     private function getSchoolsVisableToMember()
     {
         $schoolSpec = null;
@@ -228,6 +230,7 @@ class Presentation_IndexController extends SecureBaseController
         }
         return $this->schoolFacade->getSchoolsForSpecification($schoolSpec);
     }
+    
     private function savePresentation($postData)
     {
         //Get User

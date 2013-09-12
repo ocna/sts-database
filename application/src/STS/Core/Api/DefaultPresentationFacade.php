@@ -176,6 +176,12 @@ class DefaultPresentationFacade implements PresentationFacade
             );
         $presentations = $this->presentationRepository->find($query);
 
+        // filter by regions
+        if (isset($criteria['regions']) && !empty($criteria['regions'])) {
+            $presentations = $this->filterByRegions($presentations, $criteria['regions']);
+        }
+
+        // summarize results
         $summary->totalPresentations = count($presentations);
         $summary->totalStudents = 0;
         foreach ($presentations as $presentation) {
@@ -187,6 +193,25 @@ class DefaultPresentationFacade implements PresentationFacade
         return $summary;
     }
 
+    /**
+     * filterByRegions
+     *
+     * @param $presentations
+     * @param $regions
+     * @return array
+     */
+    public function filterByRegions($presentations, $regions)
+    {
+        if (!is_array($regions)) {
+            $regions = (array) $regions;
+        }
+        $presentations = array_filter($presentations, function($presentation) use ($regions) {
+            $area = $presentation->getLocation()->getArea();
+            return in_array($area->getRegion()->getName(), $regions);
+        });
+
+        return $presentations;
+    }
     /**
      * getTypeKey
      *
