@@ -20,6 +20,11 @@ class Admin_ReportController extends SecureBaseController
      */
     protected $memberFacade;
 
+    /**
+     * @var \Sts\Core\Api\SchoolFacade
+     */
+    protected $schoolFacade;
+
     public function init()
     {
         parent::init();
@@ -28,6 +33,7 @@ class Admin_ReportController extends SecureBaseController
         $this->presentationFacade = $core->load('PresentationFacade');
         $this->locationFacade = $core->load('LocationFacade');
         $this->memberFacade = $core->load('MemberFacade');
+        $this->schoolFacade = $core->load('SchoolFacade');
     }
 
     public function indexAction()
@@ -43,17 +49,18 @@ class Admin_ReportController extends SecureBaseController
                 'title' => 'Presentation Summary Report'
             )
         );
-        $form = $this->getForm();
+
         $params = $this->getRequest()->getParams();
-        
-        // $form->setDefaults($params);
+        $form = $this->getForm();
+
         if ($form->isValid($params) && array_key_exists('submit', $params)) {
             $criteria = array(
-                'startDate' => $params['startDate'],
-                'endDate'   => $params['endDate'],
-                'regions'   => $params['region'],
-                'states'    => $params['state'],
-                'members'   => $params['member'],
+                'startDate'   => $params['startDate'],
+                'endDate'     => $params['endDate'],
+                'regions'     => isset($params['region']) ? $params['region'] : null,
+                'states'      => isset($params['state']) ? $params['state'] : null,
+                'members'     => isset($params['member']) ? $params['member'] : null,
+                'schoolTypes' => isset($params['school_type']) ? $params['school_type'] : null,
             );
 
             $summary = $this->presentationFacade->getPresentationsSummary($criteria);
@@ -77,6 +84,7 @@ class Admin_ReportController extends SecureBaseController
             'regions' => $this->getRegionsArray(),
             'states'  => $this->locationFacade->getStates(),
             'members' => $this->getMembersArray(),
+            'schoolTypes' => $this->schoolFacade->getSchoolTypes(),
         ));
         return $form;
     }

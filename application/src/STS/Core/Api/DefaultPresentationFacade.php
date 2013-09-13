@@ -186,6 +186,11 @@ class DefaultPresentationFacade implements PresentationFacade
             $presentations = $this->filterByRegions($presentations, $criteria['regions']);
         }
 
+        // filter by school type
+        if (isset($criteria['schoolTypes']) && !empty($criteria['schoolTypes'])) {
+            $presentations = $this->filterBySchoolTypes($presentations, $criteria['schoolTypes']);
+        }
+
         // filter by members
         if (isset($criteria['members']) && !empty($criteria['members'])) {
             $presentations = $this->filterByMembers($presentations, $criteria['members']);
@@ -302,6 +307,34 @@ class DefaultPresentationFacade implements PresentationFacade
                 return count($matches);
             }
         );
+
+        return $presentations;
+    }
+
+    public function filterBySchoolTypes($presentations, $types)
+    {
+        if (!is_array($types)) {
+            $types = (array) $types;
+        }
+
+        // remove empty values
+        $types = array_filter($types);
+        if (empty($types)) {
+            return $presentations;
+        }
+
+        // switch the types to test into the labels
+        $types = array_map(
+            function($key) {
+                return School::getAvailableType($key);
+            },
+            $types
+        );
+
+        // look for matches
+        $presentations = array_filter($presentations, function($presentation) use ($types) {
+            return in_array($presentation->getLocation()->getType(), $types);
+        });
 
         return $presentations;
     }

@@ -5,6 +5,7 @@ class Admin_ReportBasicForm extends Twitter_Bootstrap_Form_Vertical
     protected $regions = array();
     protected $states  = array();
     protected $members = array();
+    protected $schoolTypes = array();
 
     public function init()
     {
@@ -44,7 +45,10 @@ class Admin_ReportBasicForm extends Twitter_Bootstrap_Form_Vertical
                     'name' => 'endDateButton',
                     'label' => '',
                     'icon' => 'calendar'
-               )
+                ),
+                'attribs' => array(
+                    'required' => 'required'
+                ),
             )
         );
 
@@ -77,6 +81,23 @@ class Admin_ReportBasicForm extends Twitter_Bootstrap_Form_Vertical
                     'attribs' => array(
                         'class' => 'chosen',
                         'data-placeholder' => 'Filter by State',
+                    ),
+                )
+            );
+        }
+
+        // schoolTypes
+        if ($this->schoolTypes) {
+            $this->addElement(
+                'multiselect',
+                'school_type',
+                array(
+                    'label' => 'School Types',
+                    'dimension' => 3,
+                    'MultiOptions' => $this->schoolTypes,
+                    'attribs' => array(
+                        'class' => 'chosen',
+                        'data-placeholder' => 'Filter by School Type',
                     ),
                 )
             );
@@ -141,5 +162,13 @@ class Admin_ReportBasicForm extends Twitter_Bootstrap_Form_Vertical
     public function setMembers($members)
     {
         $this->members = $members;
+    }
+
+    /**
+     * @param array $schoolTypes
+     */
+    public function setSchoolTypes($schoolTypes)
+    {
+        $this->schoolTypes = $schoolTypes;
     }
 }
