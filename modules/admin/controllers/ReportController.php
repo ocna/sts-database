@@ -13,21 +13,21 @@ class Admin_ReportController extends SecureBaseController
      * @var \Sts\Core\Api\LocationFacade
      */
     protected $locationFacade;
-    
+
+
+    /**
+     * @var \Sts\Core\Api\MemberFacade
+     */
+    protected $memberFacade;
+
     public function init()
     {
         parent::init();
+
         $core = Core::getDefaultInstance();
-
-        /**
-         * @var \Sts\Core\Api\DefaultPresentationFacade
-         */
         $this->presentationFacade = $core->load('PresentationFacade');
-
-        /**
-         * @var \Sts\Core\Api\DefaultLocationFacade
-         */
         $this->locationFacade = $core->load('LocationFacade');
+        $this->memberFacade = $core->load('MemberFacade');
     }
 
     public function indexAction()
@@ -53,6 +53,7 @@ class Admin_ReportController extends SecureBaseController
                 'endDate'   => $params['endDate'],
                 'regions'   => $params['region'],
                 'states'    => $params['state'],
+                'members'   => $params['member'],
             );
 
             $summary = $this->presentationFacade->getPresentationsSummary($criteria);
@@ -75,7 +76,8 @@ class Admin_ReportController extends SecureBaseController
         $states = array_merge(array('' => '-- Any State --'), $this->locationFacade->getStates());
         $form = new \Admin_ReportBasicForm(array(
             'regions' => $this->getRegionsArray(),
-            'states' => $states,
+            'states'  => $states,
+            'members' => $this->getMembersArray(),
         ));
         return $form;
     }
@@ -87,5 +89,15 @@ class Admin_ReportController extends SecureBaseController
             $regionsArray[$region->getName()] = $region->getName();
         }
         return $regionsArray;
+    }
+
+    private function getMembersArray($label = "-- Any Member --")
+    {
+        $membersArray = array('' => $label);
+        foreach ($this->memberFacade->getAllMembers() as $key => $member) {
+            $membersArray[$member->getId()] = $member->getDisplayName();
+        }
+
+        return $membersArray;
     }
 }

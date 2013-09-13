@@ -4,15 +4,7 @@ class Admin_ReportBasicForm extends Twitter_Bootstrap_Form_Vertical
 {
     protected $regions = array();
     protected $states  = array();
-
-    public function __construct($opts = null)
-    {
-        parent::__construct($opts);
-
-        if (isset($opts['regions'])) {
-            $this->setRegions($opts['regions']);
-        }
-    }
+    protected $members = array();
 
     public function init()
     {
@@ -63,7 +55,7 @@ class Admin_ReportBasicForm extends Twitter_Bootstrap_Form_Vertical
                 'region',
                 array(
                     'label' => 'Region',
-                    'dimension' => 2,
+                    'dimension' => 3,
                     'MultiOptions' => $this->regions
                 )
             );
@@ -76,8 +68,21 @@ class Admin_ReportBasicForm extends Twitter_Bootstrap_Form_Vertical
                 'state',
                 array(
                     'label' => 'State',
-                    'dimension' => 2,
+                    'dimension' => 3,
                     'MultiOptions' => $this->states
+                )
+            );
+        }
+
+        // states
+        if ($this->members) {
+            $this->addElement(
+                'multiselect',
+                'member',
+                array(
+                    'label' => 'Member',
+                    'dimension' => 3,
+                    'MultiOptions' => $this->members
                 )
             );
         }
@@ -116,5 +121,13 @@ class Admin_ReportBasicForm extends Twitter_Bootstrap_Form_Vertical
     public function setStates($states)
     {
         $this->states = $states;
+    }
+
+    /**
+     * @param array $members
+     */
+    public function setMembers($members)
+    {
+        $this->members = $members;
     }
 }

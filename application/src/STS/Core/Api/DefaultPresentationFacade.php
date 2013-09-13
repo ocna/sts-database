@@ -186,6 +186,11 @@ class DefaultPresentationFacade implements PresentationFacade
             $presentations = $this->filterByRegions($presentations, $criteria['regions']);
         }
 
+        // filter by members
+        if (isset($criteria['members']) && !empty($criteria['members'])) {
+            $presentations = $this->filterByMembers($presentations, $criteria['members']);
+        }
+
         // summarize results
         $summary->totalPresentations = count($presentations);
         $summary->totalStudents = 0;
@@ -257,6 +262,46 @@ class DefaultPresentationFacade implements PresentationFacade
             $area = $presentation->getLocation()->getArea();
             return in_array($area->getState(), $states);
         });
+
+        return $presentations;
+    }
+
+    /**
+     * filterByMembers
+     *
+     * @param $presentations
+     * @param $members
+     * @return array
+     */
+    public function filterByMembers($presentations, $members)
+    {
+        if (!is_array($members)) {
+            $members = (array) $members;
+        }
+
+        // remove empty values
+        $members = array_filter($members);
+        if (empty($members)) {
+            return $presentations;
+        }
+
+        // look for matches
+        $presentations = array_filter(
+            $presentations,
+            function($presentation) use ($members) {
+                $participants = $presentation->getMembers();
+
+                // get only the ids
+                $ids = array_map(
+                    function($item) {
+                        return $item->getId();
+                    },
+                    $participants);
+
+                $matches = array_intersect($ids, $members);
+                return count($matches);
+            }
+        );
 
         return $presentations;
     }
