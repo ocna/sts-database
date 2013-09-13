@@ -176,6 +176,11 @@ class DefaultPresentationFacade implements PresentationFacade
             );
         $presentations = $this->presentationRepository->find($query);
 
+        // filter by state
+        if (isset($criteria['states']) && !empty($criteria['states'])) {
+            $presentations = $this->filterByStates($presentations, $criteria['states']);
+        }
+
         // filter by regions
         if (isset($criteria['regions']) && !empty($criteria['regions'])) {
             $presentations = $this->filterByRegions($presentations, $criteria['regions']);
@@ -184,9 +189,16 @@ class DefaultPresentationFacade implements PresentationFacade
         // summarize results
         $summary->totalPresentations = count($presentations);
         $summary->totalStudents = 0;
+        $summary->geo = new \StdClass;
+
         foreach ($presentations as $presentation) {
             $summary->totalStudents += $presentation->getNumberOfParticipants();
             $state = $presentation->getLocation()->getArea()->getState();
+
+            if (!isset($summary->geo->$state)) {
+                $summary->geo->$state = new \StdClass;
+            }
+
             $summary->geo->$state->participants += $presentation->getNumberOfParticipants();
             $summary->geo->$state->presentations += 1;
         }
@@ -205,6 +217,13 @@ class DefaultPresentationFacade implements PresentationFacade
         if (!is_array($regions)) {
             $regions = (array) $regions;
         }
+        // remove empty values
+        $regions = array_filter($regions);
+        if (empty($regions)) {
+            return $presentations;
+        }
+
+        // look for matches
         $presentations = array_filter($presentations, function($presentation) use ($regions) {
             $area = $presentation->getLocation()->getArea();
             return in_array($area->getRegion()->getName(), $regions);
@@ -212,6 +231,36 @@ class DefaultPresentationFacade implements PresentationFacade
 
         return $presentations;
     }
+
+
+    /**
+     * filterByStates
+     *
+     * @param $presentations
+     * @param $states
+     * @return array
+     */
+    public function filterByStates($presentations, $states)
+    {
+        if (!is_array($states)) {
+            $states = (array) $states;
+        }
+
+        // remove empty values
+        $states = array_filter($states);
+        if (empty($states)) {
+            return $presentations;
+        }
+
+        // look for matches
+        $presentations = array_filter($presentations, function($presentation) use ($states) {
+            $area = $presentation->getLocation()->getArea();
+            return in_array($area->getState(), $states);
+        });
+
+        return $presentations;
+    }
+
     /**
      * getTypeKey
      *

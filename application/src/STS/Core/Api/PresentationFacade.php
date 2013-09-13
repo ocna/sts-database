@@ -35,7 +35,19 @@ interface PresentationFacade
      */
     public function getPresentationsForUserId($userId);
 
+    /**
+     * @param $id
+     * @return mixed
+     */
     public function getPresentationById($id);
+
+    /**
+     * getPresentationsSummary
+     *
+     * @param array $criteria
+     * @return \stdClass
+     */
+    public function getPresentationsSummary($criteria = array());
 
     /**
      * updateEnteredBy

@@ -3,6 +3,7 @@
 class Admin_ReportBasicForm extends Twitter_Bootstrap_Form_Vertical
 {
     protected $regions = array();
+    protected $states  = array();
 
     public function __construct($opts = null)
     {
@@ -31,8 +32,11 @@ class Admin_ReportBasicForm extends Twitter_Bootstrap_Form_Vertical
                 'append' => array(
                     'name' => 'startDateButton',
                     'label' => '',
-                    'icon' => 'calendar'
-                )
+                    'icon' => 'calendar',
+                ),
+                'attribs' => array(
+                    'required' => 'required'
+                ),
             )
         );
 
@@ -53,15 +57,30 @@ class Admin_ReportBasicForm extends Twitter_Bootstrap_Form_Vertical
         );
 
         // region
-        $this->addElement(
-            'multiselect',
-            'region',
-            array(
-                'label' => 'Region',
-                'dimension' => 2,
-                'MultiOptions' => $this->regions
-            )
-        );
+        if ($this->regions) {
+            $this->addElement(
+                'multiselect',
+                'region',
+                array(
+                    'label' => 'Region',
+                    'dimension' => 2,
+                    'MultiOptions' => $this->regions
+                )
+            );
+        }
+
+        // states
+        if ($this->states) {
+            $this->addElement(
+                'multiselect',
+                'state',
+                array(
+                    'label' => 'State',
+                    'dimension' => 2,
+                    'MultiOptions' => $this->states
+                )
+            );
+        }
 
         $this->addElement(
             'button',
@@ -89,5 +108,13 @@ class Admin_ReportBasicForm extends Twitter_Bootstrap_Form_Vertical
     public function setRegions($regions)
     {
         $this->regions = $regions;
+    }
+
+    /**
+     * @param array $states
+     */
+    public function setStates($states)
+    {
+        $this->states = $states;
     }
 }

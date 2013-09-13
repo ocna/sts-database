@@ -4,14 +4,29 @@ use STS\Web\Controller\SecureBaseController;
 
 class Admin_ReportController extends SecureBaseController
 {
+    /**
+     * @var \Sts\Core\Api\PresentationFacade
+     */
     protected $presentationFacade;
+
+    /**
+     * @var \Sts\Core\Api\LocationFacade
+     */
     protected $locationFacade;
     
     public function init()
     {
         parent::init();
         $core = Core::getDefaultInstance();
+
+        /**
+         * @var \Sts\Core\Api\DefaultPresentationFacade
+         */
         $this->presentationFacade = $core->load('PresentationFacade');
+
+        /**
+         * @var \Sts\Core\Api\DefaultLocationFacade
+         */
         $this->locationFacade = $core->load('LocationFacade');
     }
 
@@ -31,12 +46,13 @@ class Admin_ReportController extends SecureBaseController
         $form = $this->getForm();
         $params = $this->getRequest()->getParams();
         
-        //$form->setDefaults($params);
+        // $form->setDefaults($params);
         if ($form->isValid($params) && array_key_exists('submit', $params)) {
             $criteria = array(
                 'startDate' => $params['startDate'],
                 'endDate'   => $params['endDate'],
                 'regions'   => $params['region'],
+                'states'    => $params['state'],
             );
 
             $summary = $this->presentationFacade->getPresentationsSummary($criteria);
@@ -56,8 +72,10 @@ class Admin_ReportController extends SecureBaseController
 
     private function getForm()
     {
+        $states = array_merge(array('' => '-- Any State --'), $this->locationFacade->getStates());
         $form = new \Admin_ReportBasicForm(array(
             'regions' => $this->getRegionsArray(),
+            'states' => $states,
         ));
         return $form;
     }
