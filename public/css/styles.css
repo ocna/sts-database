@@ -59,8 +59,13 @@ label.required:after {
     text-align: right;
 }
 
+.chosen-container {
+    margin-bottom:10px;
+}
+
 @media (min-width: 900px) {
     td.areaName {
         white-space: nowrap;
     }
 }
+

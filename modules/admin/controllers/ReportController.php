@@ -73,27 +73,26 @@ class Admin_ReportController extends SecureBaseController
 
     private function getForm()
     {
-        $states = array_merge(array('' => '-- Any State --'), $this->locationFacade->getStates());
         $form = new \Admin_ReportBasicForm(array(
             'regions' => $this->getRegionsArray(),
-            'states'  => $states,
+            'states'  => $this->locationFacade->getStates(),
             'members' => $this->getMembersArray(),
         ));
         return $form;
     }
 
-    private function getRegionsArray($label = "-- Any Region --")
+    private function getRegionsArray()
     {
-        $regionsArray = array('' => $label);
+        $regionsArray = array();
         foreach ($this->locationFacade->getAllRegions() as $region) {
             $regionsArray[$region->getName()] = $region->getName();
         }
         return $regionsArray;
     }
 
-    private function getMembersArray($label = "-- Any Member --")
+    private function getMembersArray()
     {
-        $membersArray = array('' => $label);
+        $membersArray = array();
         foreach ($this->memberFacade->getAllMembers() as $key => $member) {
             $membersArray[$member->getId()] = $member->getDisplayName();
         }

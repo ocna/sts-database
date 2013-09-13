@@ -56,7 +56,11 @@ class Admin_ReportBasicForm extends Twitter_Bootstrap_Form_Vertical
                 array(
                     'label' => 'Region',
                     'dimension' => 3,
-                    'MultiOptions' => $this->regions
+                    'MultiOptions' => $this->regions,
+                    'attribs' => array(
+                        'class' => 'chosen',
+                        'data-placeholder' => 'Filter by Region',
+                    ),
                 )
             );
         }
@@ -69,12 +73,16 @@ class Admin_ReportBasicForm extends Twitter_Bootstrap_Form_Vertical
                 array(
                     'label' => 'State',
                     'dimension' => 3,
-                    'MultiOptions' => $this->states
+                    'MultiOptions' => $this->states,
+                    'attribs' => array(
+                        'class' => 'chosen',
+                        'data-placeholder' => 'Filter by State',
+                    ),
                 )
             );
         }
 
-        // states
+        // members
         if ($this->members) {
             $this->addElement(
                 'multiselect',
@@ -82,7 +90,11 @@ class Admin_ReportBasicForm extends Twitter_Bootstrap_Form_Vertical
                 array(
                     'label' => 'Member',
                     'dimension' => 3,
-                    'MultiOptions' => $this->members
+                    'MultiOptions' => $this->members,
+                    'attribs' => array(
+                        'class' => 'chosen',
+                        'data-placeholder' => 'Filter by Member',
+                    ),
                 )
             );
         }

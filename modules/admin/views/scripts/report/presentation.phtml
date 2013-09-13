@@ -1,16 +1,8 @@
-<script type="text/javascript">
-    $(document).ready(function() {
-        $( "#startDate" ).datepicker();
-        $("#startDateButton").click(function(){
-            $( "#startDate" ).datepicker( "show" );
-        })
-
-        $( "#endDate" ).datepicker();
-        $("#endDateButton").click(function(){
-            $( "#endDate" ).datepicker( "show" );
-        })
-    })
-</script>
+<?php
+$this->headLink()->appendStylesheet('/js/chosen/chosen.min.css');
+$this->headScript()->appendFile('/js/chosen/chosen.jquery.min.js');
+$this->headScript()->appendFile('/js/admin/report/presentation.js');
+?>
 <?php if($this->noData != true): ?>
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
     <script type='text/javascript'>
