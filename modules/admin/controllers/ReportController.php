@@ -121,10 +121,19 @@ class Admin_ReportController extends SecureBaseController
             '# forms post',
         );
 
-        if (in_array('schoolType', $vars)) {
+        if (in_array('schoolName', $vars)) {
             $header[] = 'school';
+        }
+
+        if (in_array('schoolType', $vars)) {
             $header[] = 'school type';
+        }
+
+        if (in_array('schoolNotes', $vars)) {
             $header[] = 'school notes';
+        }
+
+        if (in_array('schoolAddress', $vars)) {
             $header[] = 'address';
             $header[] = 'address2';
             $header[] = 'city';
@@ -146,7 +155,10 @@ class Admin_ReportController extends SecureBaseController
             $header[] = 'members';
         }
 
-        $header[] = 'notes';
+        if (in_array('presentationNotes', $vars)) {
+            $header[] = 'presentation notes';
+        }
+
         $csv = array();
         $csv[] = $header;
 
@@ -165,10 +177,20 @@ class Admin_ReportController extends SecureBaseController
 
             $school = $presentation->getLocation();
 
-            if (in_array('schoolType', $vars)) {
+            if (in_array('schoolName', $vars)) {
                 $row[] = $school->getName();
+            }
+
+            if (in_array('schoolType', $vars)) {
+                $row[] = $school->getType();
+            }
+
+            if (in_array('schoolNotes', $vars)) {
                 $row[] = $school->getType();
                 $row[] = $school->getNotes();
+            }
+
+            if (in_array('schoolAddress', $vars)) {
                 $row[] = $school->getAddress()->getLineOne();
                 $row[] = $school->getAddress()->getLineTwo();
                 $row[] = $school->getAddress()->getCity();
@@ -198,7 +220,9 @@ class Admin_ReportController extends SecureBaseController
             }
 
             // last column is notes
-            $row[] = $presentation->getNotes();
+            if (in_array('presentationNotes', $vars)) {
+                $row[] = $presentation->getNotes();
+            }
 
             // add to overall file
             $csv[] = $row;

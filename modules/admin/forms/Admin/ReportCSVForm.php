@@ -2,10 +2,14 @@
 class Admin_ReportCSVForm extends Twitter_Bootstrap_Form_Vertical
 {
     protected $variables = array(
-        'region' => 'Region',
-        'state' => "States",
+        'schoolName' => 'School Name',
         'schoolType' => 'School Type',
+        'schoolAddress' => 'School Address',
+        'schoolNotes' => 'School Notes',
+        'region' => 'Region Name',
+        'state' => "State, City Name",
         'member' => 'Member Names',
+        'presentationNotes' => 'Member Names',
     );
     public function init()
     {
@@ -18,7 +22,7 @@ class Admin_ReportCSVForm extends Twitter_Bootstrap_Form_Vertical
         $this->addElement('hidden', 'region');
         $this->addElement('hidden', 'state');
         $this->addElement('hidden', 'member');
-        $this->addElement('hidden', 'schoolType');
+        $this->addElement('hidden', 'schoolName');
 
         // download options
         $this->addElement(
