@@ -13,12 +13,14 @@
                 content = $('.modal-body p').html();
                 $('.confirm-message').html(content.replace(/~member~/, name));
                 removeBtn.attr('href', href.replace(/\?id=.*/, '?id=' + id));
-        }).modal({ 
+        }).modal({
             backdrop: true,
             show: false
         });
     });
 </script>
+
+
 
 <div class="accordion" id="accordion2">
   <div class="accordion-group">
@@ -37,6 +39,7 @@
 <?php
 $columns = array('Role', 'Status' ,'Last Name, First Name', 'City', 'State');
 ?>
+<p><a class="btn btn-info" href="/admin/member/excel">Download</a></p>
 <table class="table table-striped table-bordered">
     <thead>
         <tr>
@@ -50,7 +53,7 @@ $columns = array('Role', 'Status' ,'Last Name, First Name', 'City', 'State');
     <?php foreach ($this->members as $id => $member) { ?>
         <tr <?php echo $member['deceased'] ? 'class="muted"' : ""; ?>>
         <td>
-            <span class="label <?php echo $member['roleClass']; ?>"><?php echo $member['role']; ?></span> 
+            <span class="label <?php echo $member['roleClass']; ?>"><?php echo $member['role']; ?></span>
             <?php if($member['hasNotes']) { echo '<i class="icon-paper-clip"/>'; } ?>
         </td>
         <td <?php echo $member['deceased'] ? 'class="deceased"' : ""; ?>>

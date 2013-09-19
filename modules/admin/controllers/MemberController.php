@@ -22,6 +22,7 @@ class Admin_MemberController extends SecureBaseController
     protected $locationFacade;
     protected $authFacade;
     protected $mailerFacade;
+    protected $session;
 
     public function init()
     {
@@ -32,6 +33,7 @@ class Admin_MemberController extends SecureBaseController
         $this->locationFacade = $core->load('LocationFacade');
         $this->authFacade = $core->load('AuthFacade');
         $this->mailerFacade = $core->load('MailerFacade');
+        $this->session = new \Zend_Session_Namespace('admin');
     }
 
     public function indexAction()
@@ -48,6 +50,7 @@ class Admin_MemberController extends SecureBaseController
         // setup filters
         $form = $this->getFilterForm();
         $criteria = array();
+        $this->session->criteria = $criteria;
         $params = $this->getRequest()->getParams();
 
         if (array_key_exists('reset', $params)) {
@@ -58,6 +61,7 @@ class Admin_MemberController extends SecureBaseController
             $this->filterParams('role', $params, $criteria);
             $this->filterParams('status', $params, $criteria);
             $this->filterParams('region', $params, $criteria);
+            $this->session->criteria = $criteria;
         }
         $this->view->form = $form;
 
@@ -73,6 +77,30 @@ class Admin_MemberController extends SecureBaseController
                     ));
         }
         $this->view->members = $memberDtos;
+    }
+
+    public function excelAction()
+    {
+        $criteria = $this->session->criteria;
+        $members = $this->memberFacade->getMembersMatching($criteria);
+        $member_array = $this->getMembersArray($members);
+
+        $headers = array(
+            'First Name',
+            'Last Name',
+            'Email',
+            'Deceased? 1=yes',
+            'City',
+            'State',
+            'Status',
+            'Has Notes? 1=yes',
+            'Notes',
+            'Can Be Deleted? 1=yes',
+            'Role',
+            'Role Class (ignore)'
+        );
+
+        $this->outputCSV('members', $member_array, $headers);
     }
 
     private function filterParams($key, &$params, &$criteria)
@@ -338,7 +366,7 @@ class Admin_MemberController extends SecureBaseController
                             throw new ApiException("A system user with the email address: \"{$postData['systemUserEmail']}\" already exists. System users must have a unique email and username.");
                         }
                     }
-                    
+
                     // check if we are changing an existing user's name
                     if ($postData['role'] != '0' && !empty($postData['hiddenSystemUsername'])
                         && $postData['hiddenSystemUsername'] != $postData['systemUsername']
@@ -596,14 +624,16 @@ class Admin_MemberController extends SecureBaseController
             $notes =$member->getNotes();
             $hasNotes = empty($notes) ? false : true;
             $data = array(
-                'firstName' => $member->getFirstName() ,
-                'lastName' => $member->getLastName() ,
-                'deceased' => $member->isDeceased() ,
-                'city' => $member->getAddressCity() ,
-                'state' => $member->getAddressState() ,
-                'status' => $member->getStatus(),
-                'hasNotes' => $hasNotes,
-                'canBeDeleted' => $member->canBeDeleted()
+                'firstName'     => $member->getFirstName(),
+                'lastName'      => $member->getLastName(),
+                'email'         => $member->getEmail(),
+                'deceased'      => $member->isDeceased(),
+                'city'          => $member->getAddressCity(),
+                'state'         => $member->getAddressState(),
+                'status'        => $member->getStatus(),
+                'hasNotes'      => $hasNotes,
+                'Notes'         => $member->getNotes(),
+                'canBeDeleted'  => $member->canBeDeleted()
             );
             if ($member->getAssociatedUserId() != null) {
                 $user = $this->userFacade->findUserById($member->getAssociatedUserId());
@@ -811,9 +841,9 @@ class Admin_MemberController extends SecureBaseController
 
     /**
      * changeUsername
-     * 
+     *
      * Changes a username and updates references to it.
-     * 
+     *
      * @param $associatedUser
      * @param $dto
      * @param $postData
