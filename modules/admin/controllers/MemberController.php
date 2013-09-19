@@ -153,6 +153,39 @@ class Admin_MemberController extends SecureBaseController
         $this->view->members = $memberDtos;
     }
 
+    public function trainingExcelAction()
+    {
+        $params = $this->getRequest()->getParams();
+        
+
+        // load all the members to display
+        $criteria = array();
+
+        $members = $this->memberFacade->getMembersMatching($criteria);
+        $memberDtos = $this->getMembersArray($members);
+        if(empty($memberDtos) && array_key_exists('update', $params)){
+            $this->setFlashMessageAndRedirect('No members matched your selected filter criteria!','warning', array(
+                        'module' => 'admin',
+                        'controller' => 'member',
+                        'action' => 'index'
+                    ));
+        }
+
+        $headers = array('role', 'status', 'name', 'email', 'date trained');
+        $csv = array();
+        foreach ($memberDtos as $member) {
+            $csv[] = array(
+                $member['role'],
+                $member['status'],
+                sprintf("%s, %s", $member['lastName'], $member['firstName']),
+                $member['email'],
+                ($member['dateTrained'] ? $member['dateTrained']->format("m/d/Y") : '')
+            );
+        }
+
+        $this->outputCSV('member_training-' . date('Ymd') . '.csv', $csv, $headers);
+    }
+
     /**
      * @param $key
      * @param array $params
@@ -727,8 +760,13 @@ class Admin_MemberController extends SecureBaseController
                 'hasNotes'      => $hasNotes,
                 'Notes'         => $member->getNotes(),
                 'canBeDeleted'  => $member->canBeDeleted(),
-                'dateTrained'   => new DateTime($member->getDateTrained()),
+                'dateTrained'   => false,
             );
+
+            if ($member->getDateTrained()) {
+                $data['dateTrained'] = new DateTime($member->getDateTrained());
+            }
+
             if ($member->getAssociatedUserId() != null) {
                 $user = $this->userFacade->findUserById($member->getAssociatedUserId());
                 $role = $user->getRole();

@@ -1,7 +1,9 @@
 <?php
 $columns = array('Role', 'Status' ,'Last Name, First Name', 'Date Trained');
 ?>
-
+<p>
+    <a class="btn btn-info" href="/admin/member/training-excel">Download</a>
+</p>
 <table class="table table-striped table-bordered">
     <thead>
         <tr>
@@ -25,7 +27,7 @@ $columns = array('Role', 'Status' ,'Last Name, First Name', 'Date Trained');
                 <?php echo $member['lastName'].', '. $member['firstName']; ?>
             </td>
             <td <?php echo $member['deceased'] ? 'class="deceased"' : ""; ?>>
-                <?php echo $member['dateTrained']->format('F j, Y') ?>
+                <?php echo $member['dateTrained'] ? $member['dateTrained']->format('F j, Y') : '-' ?>
             </td>
             <td style="text-align:right;">
                 <div class="btn-group">
