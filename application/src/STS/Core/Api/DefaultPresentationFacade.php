@@ -156,18 +156,16 @@ class DefaultPresentationFacade implements PresentationFacade
     }
 
     /**
-     * getPresentationsSummary
-     *
      * @param array $criteria
-     * @return \stdClass
      */
-    public function getPresentationsSummary($criteria = array())
-    {
-        $summary = new \stdClass();
-        $summary->startDate = $criteria['startDate'];
-        $summary->endDate = $criteria['endDate'];
-        $startDate = strtotime($summary->startDate);
-        $endDate = strtotime($summary->endDate);
+    public function getPresentationsMatching($criteria = array()) {
+        if (empty($criteria['startDate']) || empty($criteria['endDate'])) {
+            throw new \ApiException('Start and End date for presentations reporting required.');
+        }
+
+        $startDate = strtotime($criteria['startDate']);
+        $endDate = strtotime($criteria['endDate']);
+
         $query = array(
             'date' => array(
                 '$gte'=> new \MongoDate(min($startDate, $endDate)),
@@ -195,6 +193,23 @@ class DefaultPresentationFacade implements PresentationFacade
         if (isset($criteria['members']) && !empty($criteria['members'])) {
             $presentations = $this->filterByMembers($presentations, $criteria['members']);
         }
+
+        return $presentations;
+    }
+
+    /**
+     * getPresentationsSummary
+     *
+     * @param array $criteria
+     * @return \stdClass
+     */
+    public function getPresentationsSummary($criteria = array())
+    {
+        $presentations = $this->getPresentationsMatching($criteria);
+
+        $summary = new \stdClass();
+        $summary->startDate = $criteria['startDate'];
+        $summary->endDate = $criteria['endDate'];
 
         // summarize results
         $summary->totalPresentations = count($presentations);
@@ -232,8 +247,9 @@ class DefaultPresentationFacade implements PresentationFacade
                 $summary->members[$member->getFullname()]['participants'] += $students;
             }
         }
-        $compare = function($a, $b) {
 
+        // sorting function
+        $compare = function($a, $b) {
             if ($a['presentations'] > $b['presentations']) {
                 return -1;
             } elseif ($a['presentations'] < $b['presentations']) {

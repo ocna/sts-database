@@ -41,6 +41,9 @@ class Admin_ReportController extends SecureBaseController
         $this->_redirect('/admin/report/presentation');
     }
 
+    /**
+     * presentationAction
+     */
     public function presentationAction()
     {
         $this->view->layout()->pageHeader = $this->view->partial(
@@ -52,7 +55,6 @@ class Admin_ReportController extends SecureBaseController
 
         $params = $this->getRequest()->getParams();
         $form = $this->getForm();
-
         if ($form->isValid($params) && array_key_exists('submit', $params)) {
             $criteria = array(
                 'startDate'   => $params['startDate'],
@@ -62,6 +64,9 @@ class Admin_ReportController extends SecureBaseController
                 'members'     => isset($params['member']) ? $params['member'] : null,
                 'schoolTypes' => isset($params['school_type']) ? $params['school_type'] : null,
             );
+
+            $csv_form = $this->getCSVForm();
+            $csv_form->populate($params);
 
             $summary = $this->presentationFacade->getPresentationsSummary($criteria);
             if (0 == $summary->totalPresentations) {
@@ -76,8 +81,35 @@ class Admin_ReportController extends SecureBaseController
         }
 
         $this->view->form = $form;
+        $this->view->csv_form = $csv_form;
     }
 
+    public function downloadAction()
+    {
+        $params = $this->getRequest()->getParams();
+        $form = $this->getCSVForm();
+        
+        if ($form->isValid($params) && array_key_exists('submit', $params)) {
+            $criteria = array(
+                'startDate'   => $params['startDate'],
+                'endDate'     => $params['endDate'],
+                'regions'     => isset($params['region']) ? $params['region'] : null,
+                'states'      => isset($params['state']) ? $params['state'] : null,
+                'members'     => isset($params['member']) ? $params['member'] : null,
+                'schoolTypes' => isset($params['school_type']) ? $params['school_type'] : null,
+            );
+
+            $presentations = $this->presentationFacade->getPresentationsMatching($criteria);
+            
+            echo count($presentations);
+            die('oam 105');
+        }
+    }
+    /**
+     * getForm
+     *
+     * @return Admin_ReportBasicForm
+     */
     private function getForm()
     {
         $form = new \Admin_ReportBasicForm(array(
@@ -86,6 +118,15 @@ class Admin_ReportController extends SecureBaseController
             'members' => $this->getMembersArray(),
             'schoolTypes' => $this->schoolFacade->getSchoolTypes(),
         ));
+        return $form;
+    }
+
+    /**
+     * @return Admin_ReportBasicForm
+     */
+    private function getCSVForm()
+    {
+        $form = new \Admin_ReportCSVForm();
         return $form;
     }
 

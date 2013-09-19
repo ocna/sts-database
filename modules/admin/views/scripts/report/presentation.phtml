@@ -30,6 +30,10 @@ $this->headScript()->appendFile('/js/admin/report/presentation.js');
         <div class="row">
             <div class="span3 well">
                 <?php echo $this->form; ?>
+
+                <?php if (!$this->noData == true): ?>
+                    <?php echo $this->csv_form; ?>
+                <?php endif; ?>
             </div>
             <div class="span8">
                 <?php if($this->noData == true): ?>
@@ -43,14 +47,14 @@ $this->headScript()->appendFile('/js/admin/report/presentation.js');
                     <div class="span3 well well-small">
                         <h4><i class="icon-file icon-large"></i>&nbsp;Presentations</h4>
                         <div class="metric metric-large">
-                            <strong><?php echo $this->summary->totalPresentations; ?><small>&nbsp;held</small></strong>
+                            <strong><?php echo number_format($this->summary->totalPresentations); ?><br /><small>held</small></strong>
                         </div>
                         <br>
                     </div>
                     <div class="span3 well well-small">
                         <h4><i class="icon-user icon-large"></i>&nbsp;Students</h4>
                         <div class="metric metric-large">
-                            <strong><?php echo $this->summary->totalStudents; ?><small>&nbsp;reached</small></strong>
+                            <strong><?php echo number_format($this->summary->totalStudents); ?><br /><small>reached</small></strong>
                         </div>
                         <br>
                     </div>
