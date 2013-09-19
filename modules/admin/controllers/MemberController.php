@@ -99,6 +99,9 @@ class Admin_MemberController extends SecureBaseController
         $this->view->members = $memberDtos;
     }
 
+    /**
+     * excelAction
+     */
     public function excelAction()
     {
         $criteria = $this->session->criteria;
@@ -121,6 +124,33 @@ class Admin_MemberController extends SecureBaseController
         );
 
         $this->outputCSV('members', $member_array, $headers);
+    }
+    
+    public function trainingAction()
+    {
+        $params = $this->getRequest()->getParams();
+
+        $this->view->layout()->pageHeader = $this->view->partial(
+            'partials/page-header.phtml',
+            array(
+                'title' => 'Member Training',
+            )
+        );
+
+        // load all the members to display
+        // TODO add pagination?
+        $criteria = array();
+
+        $members = $this->memberFacade->getMembersMatching($criteria);
+        $memberDtos = $this->getMembersArray($members);
+        if(empty($memberDtos) && array_key_exists('update', $params)){
+            $this->setFlashMessageAndRedirect('No members matched your selected filter criteria!','warning', array(
+                        'module' => 'admin',
+                        'controller' => 'member',
+                        'action' => 'index'
+                    ));
+        }
+        $this->view->members = $memberDtos;
     }
 
     /**
@@ -696,7 +726,8 @@ class Admin_MemberController extends SecureBaseController
                 'status'        => $member->getStatus(),
                 'hasNotes'      => $hasNotes,
                 'Notes'         => $member->getNotes(),
-                'canBeDeleted'  => $member->canBeDeleted()
+                'canBeDeleted'  => $member->canBeDeleted(),
+                'dateTrained'   => new DateTime($member->getDateTrained()),
             );
             if ($member->getAssociatedUserId() != null) {
                 $user = $this->userFacade->findUserById($member->getAssociatedUserId());
