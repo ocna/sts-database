@@ -9,7 +9,7 @@ class Admin_ReportCSVForm extends Twitter_Bootstrap_Form_Vertical
         'region' => 'Region Name',
         'state' => "State, City Name",
         'member' => 'Member Names',
-        'presentationNotes' => 'Member Names',
+        'presentationNotes' => 'Presentation Notes',
     );
     public function init()
     {
