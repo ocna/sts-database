@@ -101,6 +101,10 @@ label.required:after {
     font-weight: bold;
 }
 
+.metric table .cell-25 {
+    width: 25%;
+}
+
 .metric table .row-int {
     text-align: right;
     padding-right: 40px;

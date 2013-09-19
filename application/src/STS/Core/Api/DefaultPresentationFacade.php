@@ -217,6 +217,8 @@ class DefaultPresentationFacade implements PresentationFacade
         $summary->geo = new \StdClass;
         $summary->schools = array();
         $summary->members = array();
+        $summary->schoolsUnique = array();
+        $summary->memberUnique = array();
 
         foreach ($presentations as $presentation) {
 
@@ -237,6 +239,8 @@ class DefaultPresentationFacade implements PresentationFacade
             $type = $presentation->getLocation()->getType();
             if (!isset($summary->schools[$type])) {
                 $summary->schools[$type] = array('presentations' => 0, 'participants' => 0);
+                $name = $presentation->getLocation()->getName();
+                $summary->schoolsUnique[$name] = $name;
             }
             $summary->schools[$type]['presentations'] += 1;
             $summary->schools[$type]['participants'] += $students;

@@ -44,21 +44,48 @@ $this->headScript()->appendFile('/js/admin/report/presentation.js');
                 <?php else: ?>
                 <h3>Data for <?php echo $this->startDate; ?> to <?php echo $this->endDate; ?></h3>
                 <div class="row-fluid">
-                    <div class="span3 well well-small">
-                        <h4><i class="icon-file icon-large"></i>&nbsp;Presentations</h4>
+                    <div class="span6 well well-small">
+                        <h4><i class="icon-file icon-large"></i>&nbsp;Presentations Held</h4>
                         <div class="metric metric-large">
-                            <strong><?php echo number_format($this->summary->totalPresentations); ?><br /><small>held</small></strong>
+                            <strong><?php echo number_format($this->summary->totalPresentations); ?></strong>
                         </div>
                         <br>
                     </div>
-                    <div class="span3 well well-small">
-                        <h4><i class="icon-user icon-large"></i>&nbsp;Students</h4>
+                    <div class="span6 well well-small">
+                        <h4><i class="icon-user icon-large"></i>&nbsp;Students Reached</h4>
                         <div class="metric metric-large">
-                            <strong><?php echo number_format($this->summary->totalStudents); ?><br /><small>reached</small></strong>
+                            <strong><?php echo number_format($this->summary->totalStudents); ?></strong>
                         </div>
                         <br>
                     </div>
-                    <div class="span5 well well-small">
+                </div>
+
+                <div class="row-fluid">
+                    <div class="span6 well well-small">
+                        <h4><i class="icon-share icon-large"></i>&nbsp;Schools Visited</h4>
+                        <div class="metric metric-large">
+                            <strong><?php echo number_format(count($this->summary->schoolsUnique)); ?></strong>
+                        </div>
+                        <br>
+                    </div>
+                    <div class="span6 well well-small">
+                        <h4><i class="icon-group icon-large"></i>&nbsp;Members Presented</h4>
+                        <div class="metric metric-large">
+                            <strong><?php echo number_format(count($this->summary->members)); ?></strong>
+                        </div>
+                        <br>
+                    </div>
+                </div>
+
+                <h3>Geographic Distribution</h3>
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div id="chart_div"></div>
+                    </div>
+                </div>
+
+                <div class="row-fluid">
+                    <div class="span12 well well-small">
                         <h4><i class="icon-beaker icon-large"></i>&nbsp;Medical Schools</h4>
 
                         <div class="metric">
@@ -74,29 +101,24 @@ $this->headScript()->appendFile('/js/admin/report/presentation.js');
                                 <?php foreach ($this->summary->schools as $type => $values): ?>
                                     <tr>
                                         <td class="row-label"><?= $type ?></td>
-                                        <td class="row-int"><?= $values['presentations'] ?></td>
-                                        <td class="row-int"><?= $values['participants'] ?></td>
+                                        <td class="row-int cell-25"><?= $values['presentations'] ?></td>
+                                        <td class="row-int cell-25"><?= $values['participants'] ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-
-
-                </div>
-                <h3>Geographic Distribution</h3>
-                <div class="row-fluid">
-                    <div class="span12">
-                        <div id="chart_div"></div>
-                    </div>
                 </div>
 
                 <div class="row-fluid">
-                    <div class="span12">
+                    <div class="span12 well well-small">
                         <h4><i class="icon-group icon-large"></i>&nbsp;Presenters</h4>
 
-                        <div class="metric well well-small">
+                        <div class="metric metric-large">
+                            <strong><?php echo number_format($this->summary->totalStudents); ?></strong>
+                        </div>
+                        <div class="metric">
                             <table>
                                 <thead>
                                     <tr>
@@ -109,8 +131,8 @@ $this->headScript()->appendFile('/js/admin/report/presentation.js');
                                 <?php foreach ($this->summary->members as $name => $values): ?>
                                     <tr>
                                         <td class="row-label"><?= $name ?></td>
-                                        <td class="row-int"><?= $values['presentations'] ?></td>
-                                        <td class="row-int"><?= $values['participants'] ?></td>
+                                        <td class="row-int cell-25"><?= $values['presentations'] ?></td>
+                                        <td class="row-int cell-25"><?= $values['participants'] ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                                 </tbody>
