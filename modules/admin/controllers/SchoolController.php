@@ -4,8 +4,20 @@ use STS\Web\Controller\SecureBaseController;
 
 class Admin_SchoolController extends SecureBaseController
 {
+    /**
+     * @var STS\Core\Api\DefaultSchoolFacade
+     */
     protected $schoolFacade;
+
+    /**
+     * @var STS\Core\Api\DefaultLocationFacade
+     */
     protected $locationFacade;
+
+    /**
+     * @var \Zend_Session_Namespace
+     */
+    protected $session;
 
     public function init()
     {
@@ -13,6 +25,7 @@ class Admin_SchoolController extends SecureBaseController
         $core = Core::getDefaultInstance();
         $this->schoolFacade = $core->load('SchoolFacade');
         $this->locationFacade = $core->load('LocationFacade');
+        $this->session = new \Zend_Session_Namespace('admin');
     }
 
     public function indexAction()
@@ -20,6 +33,7 @@ class Admin_SchoolController extends SecureBaseController
         // setup filters
         $form = $this->getFilterForm();
         $criteria = array();
+        $this->session->criteria = $criteria;
         $params = $this->getRequest()->getParams();
 
         if (array_key_exists('reset', $params)) {
@@ -29,6 +43,7 @@ class Admin_SchoolController extends SecureBaseController
             $form->setDefaults($params);
             $this->filterParams('region', $params, $criteria);
             $this->filterParams('type', $params, $criteria);
+            $this->session->criteria = $criteria;
         }
 
         if (!empty($criteria)) {
@@ -44,6 +59,44 @@ class Admin_SchoolController extends SecureBaseController
             ->partial('partials/page-header.phtml', array(
                 'title' => 'Schools', 'add' => 'Add New School', 'addRoute' => '/admin/school/new'
             ));
+    }
+
+    public function excelAction()
+    {
+        $criteria = $this->session->criteria;
+        $schools = $this->schoolFacade->getSchoolsMatching($criteria);
+
+        $headers = array(
+            'Name',
+            'Type',
+            'Notes',
+            'Region',
+            'Area',
+            'Address Line 1',
+            'Address Line 2',
+            'City',
+            'State',
+            'ZIP/PostalCode'
+        );
+
+        $data = array();
+
+        foreach ($schools as $school) {
+            $data[] = array(
+                $school->getName(),
+                $school->getType(),
+                $school->getNotes(),
+                $school->getRegionName(),
+                $school->getAreaName(),
+                $school->getAddressLineOne(),
+                $school->getAddressLineTwo(),
+                $school->getAddressCity(),
+                $school->getAddressState(),
+                $school->getAddressZip()
+            );
+        }
+
+        $this->outputCSV('schools', $data, $headers);
     }
 
     public function viewAction()
@@ -127,12 +180,19 @@ class Admin_SchoolController extends SecureBaseController
         $this->view->form = $form;
     }
 
+    /**
+     * @param array $postData
+     * @return Core\School\SchoolDto
+     */
     private function saveSchool($postData)
     {
         $school = $this->schoolFacade->saveSchool($postData['name'], $postData['area'], $postData['schoolType'], $postData['notes'], $postData['addressLineOne'], $postData['addressLineTwo'], $postData['city'], $postData['state'], $postData['zip']);
         return $school;
     }
 
+    /**
+     * @return Admin_School
+     */
     private function getForm()
     {
         $statesArray = array_merge(array(''), $this->locationFacade->getStates());
@@ -146,6 +206,9 @@ class Admin_SchoolController extends SecureBaseController
         return $form;
     }
 
+    /**
+     * @return array
+     */
     private function getAreasArray()
     {
         $areaDtos = $this->locationFacade->getAllAreas();
@@ -174,6 +237,9 @@ class Admin_SchoolController extends SecureBaseController
         return $form;
     }
 
+    /**
+     * @return array
+     */
     private function getRegionsArray()
     {
         $regionsArray = array('');
@@ -183,11 +249,19 @@ class Admin_SchoolController extends SecureBaseController
         return $regionsArray;
     }
 
+    /**
+     * @return array
+     */
     private function getSchoolTypesArray()
     {
         return array_merge(array(''), $this->schoolFacade->getSchoolTypes());
     }
 
+    /**
+     * @param $key
+     * @param array $params
+     * @param array $criteria
+     */
     private function filterParams($key, &$params, &$criteria)
     {
         if (array_key_exists($key, $params)) {
