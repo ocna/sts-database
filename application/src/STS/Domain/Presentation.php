@@ -111,6 +111,9 @@ class Presentation extends EntityWithTypes
         return $this;
     }
 
+    /**
+     * @return \STS\Domain\School
+     */
     public function getLocation()
     {
         return $this->location;

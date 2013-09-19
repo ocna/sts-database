@@ -88,7 +88,8 @@ class Admin_ReportController extends SecureBaseController
     {
         $params = $this->getRequest()->getParams();
         $form = $this->getCSVForm();
-        
+        $form->populate($params);
+
         if ($form->isValid($params) && array_key_exists('submit', $params)) {
             $criteria = array(
                 'startDate'   => $params['startDate'],
@@ -100,11 +101,111 @@ class Admin_ReportController extends SecureBaseController
             );
 
             $presentations = $this->presentationFacade->getPresentationsMatching($criteria);
-            
-            echo count($presentations);
-            die('oam 105');
+            $presentations = $this->prepareReportCSV($presentations, $params['vars']);
+
+            // send output
+            $this->outputCSV('presentations-'. date('Ymd') . '.csv', $presentations);
+        } else {
+            $go = '/admin/report/presentation?' . http_build_query($params);
+            $this->setFlashMessageAndRedirect('Could not generate report output', 'error', $go);
         }
     }
+
+    protected function prepareReportCSV($presentations, $vars)
+    {
+        // Prepare headers
+        $header = array(
+            'date',
+            '# participants',
+            '# forms pre',
+            '# forms post',
+        );
+
+        if (in_array('schoolType', $vars)) {
+            $header[] = 'school';
+            $header[] = 'school type';
+            $header[] = 'school notes';
+            $header[] = 'address';
+            $header[] = 'address2';
+            $header[] = 'city';
+            $header[] = 'state';
+            $header[] = 'zip';
+        }
+
+        if (in_array('region', $vars)) {
+            $header[] = 'region';
+        }
+
+        if (in_array('state', $vars)) {
+            $header[] = 'state';
+            $header[] = 'city';
+            $header[] = 'area name';
+        }
+
+        if (in_array('member', $vars)) {
+            $header[] = 'members';
+        }
+
+        $header[] = 'notes';
+        $csv = array();
+        $csv[] = $header;
+
+        // prepare data rows
+        foreach ($presentations as $presentation) {
+            /**
+             * @var $presentation Sts\Domain\Presentation
+             */
+            $date = new DateTime($presentation->getDate());
+            $row = array(
+                $date->format('m/d/Y'),
+                $presentation->getNumberOfParticipants(),
+                $presentation->getNumberOfFormsReturnedPre(),
+                $presentation->getNumberOfFormsReturnedPost(),
+            );
+
+            $school = $presentation->getLocation();
+
+            if (in_array('schoolType', $vars)) {
+                $row[] = $school->getName();
+                $row[] = $school->getType();
+                $row[] = $school->getNotes();
+                $row[] = $school->getAddress()->getLineOne();
+                $row[] = $school->getAddress()->getLineTwo();
+                $row[] = $school->getAddress()->getCity();
+                $row[] = $school->getAddress()->getState();
+                $row[] = $school->getAddress()->getZip();
+            }
+
+            if (in_array('region', $vars)) {
+                $row[] = $school->getArea()->getRegion()->getName();
+            }
+            
+            if (in_array('state', $vars)) {
+                $row[] = $school->getArea()->getState();
+                $row[] = $school->getArea()->getCity();
+                $row[] = $school->getArea()->getName();
+            }
+            
+            if (in_array('member', $vars)) {
+                $members = array_map(
+                    function($member) {
+                        return $member->getFullName();
+                    },
+                    $presentation->getMembers()
+                );
+
+                $row[] = join('; ', $members);
+            }
+
+            // last column is notes
+            $row[] = $presentation->getNotes();
+
+            // add to overall file
+            $csv[] = $row;
+        }
+        return $csv;
+    }
+
     /**
      * getForm
      *

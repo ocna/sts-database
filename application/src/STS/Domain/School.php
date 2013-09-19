@@ -48,6 +48,10 @@ class School extends EntityWithTypes
         $this->notes = $notes;
         return $this;
     }
+
+    /**
+     * @return \STS\Domain\Location\Address
+     */
     public function getAddress()
     {
         return $this->address;
@@ -57,6 +61,10 @@ class School extends EntityWithTypes
         $this->address = $address;
         return $this;
     }
+
+    /**
+     * @return \STS\Domain\Location\Area
+     */
     public function getArea()
     {
         return $this->area;
