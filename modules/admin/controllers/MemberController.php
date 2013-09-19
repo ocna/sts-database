@@ -17,11 +17,31 @@ use STS\Core\User\UserDTO;
  */
 class Admin_MemberController extends SecureBaseController
 {
+    /**
+     * @var STS\Core\Api\MemberFacade MemberFacade
+     */
     protected $memberFacade;
+    /**
+     * @var STS\Core\Api\UserFacade
+     */
     protected $userFacade;
+    /**
+     * @var STS\Core\Api\LocationFacade
+     */
     protected $locationFacade;
+    /**
+     * @var STS\Core\Api\AuthFacade
+     */
     protected $authFacade;
+
+    /**
+     * @var STS\Core\Api\MailerFacade
+     */
     protected $mailerFacade;
+
+    /**
+     * @var \Zend_Session_Namespace
+     */
     protected $session;
 
     public function init()
@@ -103,6 +123,11 @@ class Admin_MemberController extends SecureBaseController
         $this->outputCSV('members', $member_array, $headers);
     }
 
+    /**
+     * @param $key
+     * @param array $params
+     * @param array $criteria
+     */
     private function filterParams($key, &$params, &$criteria)
     {
         if (array_key_exists($key, $params)) {
@@ -423,6 +448,10 @@ class Admin_MemberController extends SecureBaseController
         $this->view->form = $form;
     }
 
+    /**
+     * @param UserDTO $dto
+     * @return string
+     */
     private function getUserRoleFromDto($dto)
     {
         if (is_null($dto)) {
@@ -432,6 +461,10 @@ class Admin_MemberController extends SecureBaseController
         }
     }
 
+    /**
+     * @param UserDTO $dto
+     * @return null or int
+     */
     private function getUserNameFromDto($dto)
     {
         if (is_null($dto)) {
@@ -441,6 +474,11 @@ class Admin_MemberController extends SecureBaseController
         }
     }
 
+    /**
+     * @param $type
+     * @param array $numbers
+     * @return null|string
+     */
     private function getPhoneNumberFromDto($type, $numbers)
     {
         if (! is_null($numbers) && array_key_exists($type, $numbers)) {
@@ -451,7 +489,11 @@ class Admin_MemberController extends SecureBaseController
         }
     }
 
-    private function sendNotificationOfNewAccount($systemUserDto, $tempPassword)
+    /**
+     * @param UserDTO $systemUserDto
+     * @param $tempPassword
+     */
+    private function sendNotificationOfNewAccount(UserDTO $systemUserDto, $tempPassword)
     {
         $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
         $username = $systemUserDto->getId();
@@ -459,7 +501,13 @@ class Admin_MemberController extends SecureBaseController
         $this->mailerFacade->sendNewAccountNotification($name, $username, $email, $tempPassword);
     }
 
-    private function saveNewUser($postData, $newMemberDto, $tempPassword)
+    /**
+     * @param array $postData
+     * @param Core\Member\MemberDto $newMemberDto
+     * @param $tempPassword
+     * @return mixed
+     */
+    private function saveNewUser(array $postData, Core\Member\MemberDto $newMemberDto, $tempPassword)
     {
         $firstName = $newMemberDto->getFirstName();
         $lastName = $newMemberDto->getLastName();
@@ -472,7 +520,14 @@ class Admin_MemberController extends SecureBaseController
         return $this->userFacade->createUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId);
     }
 
-    private function updateExistingUser($postData, $memberDto, $tempPassword)
+    /**
+     * @param array $postData
+     * @param Core\Member\MemberDto $memberDto
+     * @param $tempPassword
+     * @return mixed
+     */
+    private function updateExistingUser(array $postData, Core\Member\MemberDto $memberDto,
+                                        $tempPassword)
     {
         $firstName = $memberDto->getFirstName();
         $lastName = $memberDto->getLastName();
@@ -484,7 +539,11 @@ class Admin_MemberController extends SecureBaseController
         return $this->userFacade->updateUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId);
     }
 
-    private function saveNewMember($data)
+    /**
+     * @param array $data
+     * @return mixed
+     */
+    private function saveNewMember(array $data)
     {
         if ($data['memberStatus'] == 'STATUS_ACTIVE') {
             if ($data['role'] == 'ROLE_ADMIN') {
@@ -614,6 +673,10 @@ class Admin_MemberController extends SecureBaseController
         );
     }
 
+    /**
+     * @param array $members
+     * @return array
+     */
     private function getMembersArray($members)
     {
         $memberData = array();
@@ -677,6 +740,10 @@ class Admin_MemberController extends SecureBaseController
         return $role;
     }
 
+    /**
+     * @param string $role
+     * @return string
+     */
     private function getRoleClassForRole($role)
     {
         switch ($role) {
@@ -700,6 +767,9 @@ class Admin_MemberController extends SecureBaseController
         return $roleClass;
     }
 
+    /**
+     * @return Admin_Member
+     */
     private function getForm()
     {
         // get diagnosis select options
@@ -729,16 +799,26 @@ class Admin_MemberController extends SecureBaseController
         return $form;
     }
 
+    /**
+     * @return array
+     */
     private function getRolesArray()
     {
         return array_merge(array('Member'), AclFactory::getAvailableRoles());
     }
 
+    /**
+     * @return mixed
+     */
     private function getMemberStatusesArray()
     {
         return $this->memberFacade->getMemberStatuses();
     }
 
+    /**
+     * @param array $array
+     * @return array
+     */
     private function getAreasForRegionsArray($array)
     {
         $dtos = $this->locationFacade->getAreasForRegions($array);
@@ -751,7 +831,12 @@ class Admin_MemberController extends SecureBaseController
         return $keys;
     }
 
-    private function formIsValid(&$form, $postData)
+    /**
+     * @param Admin_Member $form
+     * @param $postData
+     * @return bool
+     */
+    private function formIsValid(Admin_Member &$form, $postData)
     {
         $validations = array();
         $validations[] = $form->getElement('firstName')->isValid($postData['firstName']);
