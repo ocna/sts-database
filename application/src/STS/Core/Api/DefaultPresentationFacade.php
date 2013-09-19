@@ -201,6 +201,7 @@ class DefaultPresentationFacade implements PresentationFacade
         $summary->totalStudents = 0;
         $summary->geo = new \StdClass;
         $summary->schools = array();
+        $summary->members = array();
 
         foreach ($presentations as $presentation) {
 
@@ -224,8 +225,33 @@ class DefaultPresentationFacade implements PresentationFacade
             }
             $summary->schools[$type]['presentations'] += 1;
             $summary->schools[$type]['participants'] += $students;
-        }
 
+            // report by member
+            foreach ($presentation->getMembers() as $member) {
+                $summary->members[$member->getFullname()]['presentations'] += 1;
+                $summary->members[$member->getFullname()]['participants'] += $students;
+            }
+        }
+        $compare = function($a, $b) {
+
+            if ($a['presentations'] > $b['presentations']) {
+                return -1;
+            } elseif ($a['presentations'] < $b['presentations']) {
+                return 1;
+            }
+
+            if ($a['participants'] > $b['participants']) {
+                return -1;
+            } elseif ($a['participants'] < $b['participants']) {
+                return 1;
+            }
+
+            return 0;
+        };
+
+        // sort schools by number of presentations
+        uasort($summary->schools, $compare);
+        uasort($summary->members, $compare);
         return $summary;
     }
 

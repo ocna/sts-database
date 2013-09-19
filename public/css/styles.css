@@ -68,8 +68,12 @@ label.required:after {
     line-height: 100%;
 }
 
+.metric small {
+    font-size: 18px;
+}
+
 .metric-large {
-    font-size: 63px;
+    font-size: 48px;
 }
 
 .metric table {
