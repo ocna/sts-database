@@ -200,18 +200,58 @@ class DefaultPresentationFacade implements PresentationFacade
         $summary->totalPresentations = count($presentations);
         $summary->totalStudents = 0;
         $summary->geo = new \StdClass;
+        $summary->schools = array();
+        $summary->members = array();
 
         foreach ($presentations as $presentation) {
-            $summary->totalStudents += $presentation->getNumberOfParticipants();
-            $state = $presentation->getLocation()->getArea()->getState();
 
+            // participants
+            $students = $presentation->getNumberOfParticipants();
+            // count number of students
+            $summary->totalStudents += $students;
+
+            // report by state
+            $state = $presentation->getLocation()->getArea()->getState();
             if (!isset($summary->geo->$state)) {
                 $summary->geo->$state = new \StdClass;
             }
-
             $summary->geo->$state->participants += $presentation->getNumberOfParticipants();
             $summary->geo->$state->presentations += 1;
+
+            // report medical schools by type
+            $type = $presentation->getLocation()->getType();
+            if (!isset($summary->schools[$type])) {
+                $summary->schools[$type] = array('presentations' => 0, 'participants' => 0);
+            }
+            $summary->schools[$type]['presentations'] += 1;
+            $summary->schools[$type]['participants'] += $students;
+
+            // report by member
+            foreach ($presentation->getMembers() as $member) {
+                $summary->members[$member->getFullname()]['presentations'] += 1;
+                $summary->members[$member->getFullname()]['participants'] += $students;
+            }
         }
+        $compare = function($a, $b) {
+
+            if ($a['presentations'] > $b['presentations']) {
+                return -1;
+            } elseif ($a['presentations'] < $b['presentations']) {
+                return 1;
+            }
+
+            if ($a['participants'] > $b['participants']) {
+                return -1;
+            } elseif ($a['participants'] < $b['participants']) {
+                return 1;
+            }
+
+            return 0;
+        };
+
+        // sort schools by number of presentations
+        uasort($summary->schools, $compare);
+        uasort($summary->members, $compare);
         return $summary;
     }
 
@@ -311,6 +351,13 @@ class DefaultPresentationFacade implements PresentationFacade
         return $presentations;
     }
 
+    /**
+     * filterBySchoolTypes
+     *
+     * @param $presentations
+     * @param $types
+     * @return array
+     */
     public function filterBySchoolTypes($presentations, $types)
     {
         if (!is_array($types)) {
