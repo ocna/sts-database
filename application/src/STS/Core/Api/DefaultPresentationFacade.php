@@ -239,9 +239,11 @@ class DefaultPresentationFacade implements PresentationFacade
             $type = $presentation->getLocation()->getType();
             if (!isset($summary->schools[$type])) {
                 $summary->schools[$type] = array('presentations' => 0, 'participants' => 0);
-                $name = $presentation->getLocation()->getName();
-                $summary->schoolsUnique[$name] = $name;
             }
+
+            $name = $presentation->getLocation()->getName();
+            $summary->schoolsUnique[$name] = $name;
+            $summary->schools[$type]['unique'][$name] = $name;
             $summary->schools[$type]['presentations'] += 1;
             $summary->schools[$type]['participants'] += $students;
 

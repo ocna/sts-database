@@ -93,6 +93,7 @@ $this->headScript()->appendFile('/js/admin/report/presentation.js');
                                 <thead>
                                     <tr>
                                         <th>Type</th>
+                                        <th>Schools</th>
                                         <th>Presentations</th>
                                         <th>Students</th>
                                     </tr>
@@ -101,6 +102,7 @@ $this->headScript()->appendFile('/js/admin/report/presentation.js');
                                 <?php foreach ($this->summary->schools as $type => $values): ?>
                                     <tr>
                                         <td class="row-label"><?= $type ?></td>
+                                        <td class="row-int cell-25"><?= count($values['unique']) ?></td>
                                         <td class="row-int cell-25"><?= $values['presentations'] ?></td>
                                         <td class="row-int cell-25"><?= $values['participants'] ?></td>
                                     </tr>
@@ -116,7 +118,7 @@ $this->headScript()->appendFile('/js/admin/report/presentation.js');
                         <h4><i class="icon-group icon-large"></i>&nbsp;Presenters</h4>
 
                         <div class="metric metric-large">
-                            <strong><?php echo number_format($this->summary->totalStudents); ?></strong>
+                            <strong><?php echo number_format(count($this->summary->members)); ?></strong>
                         </div>
                         <div class="metric">
                             <table>
