@@ -4,7 +4,9 @@ use STS\Web\Security\AuthAware;
 
 abstract class AbstractBaseController extends \Zend_Controller_Action implements AuthAware
 {
-
+    /**
+     * @var Zend_Auth
+     */
     private $auth;
     protected $flashMessenger = null;
     protected $flashMessengerNamespace = 'flashMessagesPulseNamespace';
@@ -22,14 +24,26 @@ abstract class AbstractBaseController extends \Zend_Controller_Action implements
                     'authenticated' => $this->getAuth()->hasIdentity(), 'userName' => $this->getFormatedName()
             ));
     }
+
+    /**
+     * @param \Zend_Auth $auth
+     */
     public function setAuth(\Zend_Auth $auth)
     {
         $this->auth = $auth;
     }
+
+    /**
+     * @return Zend_Auth
+     */
     public function getAuth()
     {
         return $this->auth;
     }
+
+    /**
+     * @return string
+     */
     private function getFormatedName()
     {
         if ($this->getAuth()->hasIdentity()) {
@@ -37,6 +51,13 @@ abstract class AbstractBaseController extends \Zend_Controller_Action implements
                             . ucfirst($this->getAuth()->getIdentity()->getLastName());
         }
     }
+
+    /**
+     * @param string $message
+     * @param string $messageType
+     * @return mixed
+     * @throws \InvalidArgumentException
+     */
     protected function buildAndSetFlashMessage($message, $messageType)
     {
         $this->_helper->flashMessenger->setNamespace($this->flashMessengerNamespace);

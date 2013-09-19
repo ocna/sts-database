@@ -4,13 +4,22 @@ use STS\Core;
 
 class Admin_RegionController extends SecureBaseController
 {
+    /**
+     * @var STS\Core\Api\DefaultLocationFacade
+     */
     protected $locationFacade;
+
+    /**
+     * @var \Zend_Session_Namespace
+     */
+    protected $session;
 
     public function init()
     {
         parent::init();
         $core = Core::getDefaultInstance();
         $this->locationFacade = $core->load('LocationFacade');
+        $this->session = new \Zend_Session_Namespace('admin');
     }
 
     public function indexAction()
@@ -32,6 +41,29 @@ class Admin_RegionController extends SecureBaseController
             $dataArray[$region->getName()] = array('region' => $region->getName(), 'areas' => $areas);
         }
         $this->view->regions = $dataArray;
+    }
+
+    public function excelAction()
+    {
+        $regions = $this->locationFacade->getAllRegions();
+        $headers = array(
+            'Region',
+            'City',
+            'State'
+        );
+        $data = array();
+        foreach ($regions as $region) {
+            $areas = $this->locationFacade->getAreasForRegions(array($region->getName()));
+            foreach ($areas as $area) {
+                $data[] = array(
+                    $region->getName(),
+                    $area->getCity(),
+                    $area->getState()
+                );
+            }
+        }
+
+        $this->outputCSV('regions', $data, $headers);
     }
 
     public function renameAction()
@@ -102,7 +134,12 @@ class Admin_RegionController extends SecureBaseController
         $form = new \Admin_RegionRename();
         return $form;
     }
-    
+
+    /**
+     * @param string $old
+     * @param string $new
+     * @return Core\Location\RegionDto
+     */
     protected function renameRegion($old, $new)
     {
         $region = $this->locationFacade->renameRegion($old, $new);
