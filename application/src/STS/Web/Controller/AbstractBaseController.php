@@ -102,4 +102,43 @@ abstract class AbstractBaseController extends \Zend_Controller_Action implements
         $layout = $this->getHelper('layout');
         $layout->assign('flashMessage', $decoratedMessage);
     }
+
+    /**
+     * Takes array data and outputs as CSV
+     *
+     * @param string $file_name Base name for file (before .csv)
+     * @param array $data
+     * @param array $headers Optional array of column headers
+     */
+    protected function outputCSV($file_name, array $data, array $headers = null)
+    {
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender();
+
+        $this->getResponse()
+            ->setHeader('Content-Description','File Transfer', true)
+            ->setHeader('Content-Type','text/csv', true)
+            ->setHeader('Content-Disposition','attachment; filename=' . $file_name,
+                true)
+            ->setHeader('Content-Transfer-Encoding','binary', true)
+            ->setHeader('Expires','0', true)
+            ->setHeader('Cache-Control','must-revalidate, post-check=0, pre-check=0', true)
+            ->setHeader('Pragma','public', true);
+
+        $output = fopen('php://output', 'w');
+        ob_start();
+
+        if (false == is_null($headers)) {
+            fputcsv($output, $headers);
+        }
+
+        foreach ($data as $key => $values) {
+            fputcsv($output, $values);
+        }
+
+        fclose($output);
+        $csv = ob_get_clean();
+
+        $this->getResponse()->setBody($csv);
+    }
 }
