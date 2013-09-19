@@ -22,7 +22,7 @@ class Admin_ReportCSVForm extends Twitter_Bootstrap_Form_Vertical
         $this->addElement('hidden', 'region');
         $this->addElement('hidden', 'state');
         $this->addElement('hidden', 'member');
-        $this->addElement('hidden', 'schoolName');
+        $this->addElement('hidden', 'schoolType');
 
         // download options
         $this->addElement(

@@ -66,7 +66,14 @@ class Admin_ReportController extends SecureBaseController
             );
 
             $csv_form = $this->getCSVForm();
-            $csv_form->populate($params);
+
+            $csv_params['startDate'] = $params['startDate'];
+            $csv_params['endDate'] = $params['endDate'];
+            $csv_params['state'] = join(',' , $params['state']);
+            $csv_params['region'] = join(',' , $params['region']);
+            $csv_params['member'] = join(',' , $params['member']);
+            $csv_params['schoolType'] = join(',' , $params['school_type']);
+            $csv_form->populate($csv_params);
 
             $summary = $this->presentationFacade->getPresentationsSummary($criteria);
             if (0 == $summary->totalPresentations) {
@@ -88,6 +95,14 @@ class Admin_ReportController extends SecureBaseController
     {
         $params = $this->getRequest()->getParams();
         $form = $this->getCSVForm();
+
+        $multi = array('region', 'state', 'member', 'schoolType');
+
+        foreach ($multi as $key) {
+            if (!empty($params[$key])) {
+                $params[$key] = explode(',', $params[$key]);
+            }
+        }
         $form->populate($params);
 
         if ($form->isValid($params) && array_key_exists('submit', $params)) {
@@ -247,7 +262,7 @@ class Admin_ReportController extends SecureBaseController
     }
 
     /**
-     * @return Admin_ReportBasicForm
+     * @return Admin_ReportCSVForm
      */
     private function getCSVForm()
     {
