@@ -1041,4 +1041,13 @@ class Admin_MemberController extends SecureBaseController
         // finally, delete old user
         $this->userFacade->deleteUser($old_user_id);
     }
+    
+    public function dashboardAction()
+    {
+        $this->view->layout()->pageHeader = $this->view->partial(
+            'partials/page-header.phtml', array(
+                'title' => 'Member Dashboard'
+            )
+        );
+    }
 }

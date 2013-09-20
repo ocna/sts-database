@@ -67,6 +67,13 @@
                 <action>index</action>
                 <resource>region</resource>
             </region>
+            <member_dashboard>
+                <label>Members Dashboard</label>
+                <module>admin</module>
+                <controller>member</controller>
+                <action>dashboard</action>
+                <resource>member</resource>
+            </member_dashboard>
         </pages>
     </admin>
 </config>
