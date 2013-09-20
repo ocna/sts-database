@@ -4,6 +4,7 @@ use STS\Core;
 use STS\Web\Controller\SecureBaseController;
 use STS\Core\Api\ApiException;
 use STS\Domain\Member;
+use STS\Core\Member\MemberDto;
 use STS\Core\User\UserDTO;
 
 /**
@@ -1044,10 +1045,59 @@ class Admin_MemberController extends SecureBaseController
     
     public function dashboardAction()
     {
+        // set title
         $this->view->layout()->pageHeader = $this->view->partial(
             'partials/page-header.phtml', array(
                 'title' => 'Member Dashboard'
             )
         );
+
+        $criteria = array();
+        $members = $this->memberFacade->getMembersMatching($criteria);
+        $summary = $this->getMemberSummary($members);
+
+        $this->view->summary = $summary;
+    }
+
+    public function getMemberSummary($members)
+    {
+        $summary = new StdClass;
+        $summary->count = 0;
+        $summary->regions = array();
+        $summary->areas = array();
+
+        foreach ($members as $member) {
+            $summary->count++;
+
+            if ($coord = $member->getCoordinatesForRegions()) {
+                foreach ($coord as $region) {
+                    if ($region) {
+                        $summary->regions[$region]['coordinates']++;
+                    }
+                }                
+            }
+            ksort($summary->regions);
+            
+            if ($areas = $member->getCoordinatesForAreas()) {
+                foreach ($areas as $id => $area) {
+                    $summary->areas[$area]['coordinates']++;
+                }
+            }
+
+            if ($areas = $member->getFacilitatesForAreas()) {
+                foreach ($areas as $id => $area) {
+                    $summary->areas[$area]['facilitates']++;
+                }
+            }
+
+            if ($areas = $member->getPresentsForAreas()) {
+                foreach ($areas as $id => $area) {
+                    $summary->areas[$area]['presents']++;
+                }
+            }
+            ksort($summary->areas);
+        }
+
+        return $summary;
     }
 }

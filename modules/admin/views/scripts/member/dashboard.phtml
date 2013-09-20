@@ -1,0 +1,60 @@
+<?php
+$summary = $this->summary;
+?>
+                <div class="row-fluid">
+                    <div class="span12 well well-small">
+                        <h4><i class="icon-group icon-large"></i>&nbsp;Members by Region</h4>
+
+                        <div class="metric">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Region</th>
+                                        <th>Coordinators</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($summary->regions as $region => $values): ?>
+                                    <tr>
+                                        <td class="row-label"><?= $region ?></td>
+                                        <td class="row-int cell-25"><?= $values['coordinates'] ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row-fluid">
+                    <div class="span12 well well-small">
+                        <h4><i class="icon-group icon-large"></i>&nbsp;Members</h4>
+
+                        <div class="metric metric-large">
+                            <strong><?php echo number_format($summary->count); ?></strong>
+                        </div>
+                        <div class="metric">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Area</th>
+                                        <th>Presenters</th>
+                                        <th>Coordinators</th>
+                                        <th>Facilitators</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($summary->areas as $area => $values): ?>
+                                    <tr>
+                                        <td class="row-label"><?= $area ?></td>
+                                        <td class="row-int cell-25"><?= $values['presents'] ?></td>
+                                        <td class="row-int cell-25"><?= $values['coordinates'] ?></td>
+                                        <td class="row-int cell-25"><?= $values['facilitates'] ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
