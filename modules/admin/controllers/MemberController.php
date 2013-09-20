@@ -1052,23 +1052,27 @@ class Admin_MemberController extends SecureBaseController
             )
         );
 
-        $criteria = array();
-        $members = $this->memberFacade->getMembersMatching($criteria);
-        $summary = $this->getMemberSummary($members);
-
+        $summary = $this->getMemberSummary();
         $this->view->summary = $summary;
     }
 
-    public function getMemberSummary($members)
+    public function getMemberSummary()
     {
+        $criteria = array();
+        $members = $this->memberFacade->getMembersMatching($criteria);
+
         $summary = new StdClass;
         $summary->count = 0;
         $summary->regions = array();
         $summary->areas = array();
-
+        $summary->status = array();
         foreach ($members as $member) {
             $summary->count++;
 
+            // by status
+            $summary->status[$member->getStatus()]++;
+
+            // by region
             if ($coord = $member->getCoordinatesForRegions()) {
                 foreach ($coord as $region) {
                     if ($region) {
@@ -1077,27 +1081,72 @@ class Admin_MemberController extends SecureBaseController
                 }                
             }
             ksort($summary->regions);
-            
+
+            // area coordinators
             if ($areas = $member->getCoordinatesForAreas()) {
                 foreach ($areas as $id => $area) {
                     $summary->areas[$area]['coordinates']++;
                 }
             }
 
+            // area facilitators
             if ($areas = $member->getFacilitatesForAreas()) {
                 foreach ($areas as $id => $area) {
                     $summary->areas[$area]['facilitates']++;
                 }
             }
 
+            // area presenters
             if ($areas = $member->getPresentsForAreas()) {
                 foreach ($areas as $id => $area) {
                     $summary->areas[$area]['presents']++;
                 }
             }
-            ksort($summary->areas);
+
         }
 
+        ksort($summary->status);
+        ksort($summary->areas);
         return $summary;
     }
+    
+    public function excelBystatusAction()
+    {
+        $summary = $this->getMemberSummary();
+
+        $header = array('status', 'count');
+        $csv = array();
+        foreach ($summary->status as $status => $count) {
+            $csv[] = array($status, $count);
+        }
+
+        $this->outputCSV('MemberByStatus-' . date('Y-m-d') . '.csv', $csv, $header);
+    }
+    
+    public function excelByregionAction()
+    {
+        $summary = $this->getMemberSummary();
+        $header = array('region', 'coordinator');
+        $csv = array();
+        foreach ($summary->regions as $region => $values) {
+            $csv[] = array($region, $values['coordinates']);
+        }
+
+        $this->outputCSV('MemberByRegion-' . date('Y-m-d') . '.csv', $csv, $header);
+    }
+
+
+    public function excelByareaAction()
+    {
+        $summary = $this->getMemberSummary();
+        $header = array('area', 'presenters', 'coordinators', 'facilitators');
+        $csv = array();
+
+        foreach ($summary->areas as $area => $values) {
+            $csv[] = array($area, $values['presents'], $values['coordinates'], $values['facilitates']);
+        }
+
+        $this->outputCSV('MemberByArea-' . date('Y-m-d') . '.csv', $csv, $header);
+    }
 }
+

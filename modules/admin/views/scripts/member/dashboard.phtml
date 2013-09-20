@@ -1,10 +1,40 @@
 <?php
 $summary = $this->summary;
+//echo '<pre>'; print_r($summary); echo '</pre>';
 ?>
                 <div class="row-fluid">
-                    <div class="span12 well well-small">
-                        <h4><i class="icon-group icon-large"></i>&nbsp;Members by Region</h4>
+                    <div class="span6 well well-small">
+                        <h4><i class="icon-flag icon-large"></i>&nbsp;Members by Status</h4>
 
+                        <div class="btn-group">
+                            <a class="btn btn-mini" href="/admin/member/excel-bystatus">Download</a>
+                        </div>
+                        <div class="metric">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Status</th>
+                                        <th>Members</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($summary->status as $status => $count): ?>
+                                    <tr>
+                                        <td class="row-label"><?= $status ?></td>
+                                        <td class="row-int cell-25"><?= $count ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="span6 well well-small">
+                        <h4><i class="icon-globe icon-large"></i>&nbsp;Members by Region</h4>
+
+                        <div class="btn-group">
+                            <a class="btn btn-mini" href="/admin/member/excel-byregion">Download</a>
+                        </div>
                         <div class="metric">
                             <table>
                                 <thead>
@@ -33,6 +63,9 @@ $summary = $this->summary;
 
                         <div class="metric metric-large">
                             <strong><?php echo number_format($summary->count); ?></strong>
+                        </div>
+                        <div class="btn-group">
+                            <a class="btn btn-mini" href="/admin/member/excel-byarea">Download</a>
                         </div>
                         <div class="metric">
                             <table>
