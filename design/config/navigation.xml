@@ -21,6 +21,13 @@
                 <action>calendar</action>
                 <resource>presentation</resource>
             </calendar>
+            <effectiveness>
+                <label>Presentation Effectiveness Report</label>
+                <module>admin</module>
+                <controller>report</controller>
+                <action>effectiveness</action>
+                <resource>report</resource>
+            </effectiveness>
         </pages>
     </presentation>
     <report>

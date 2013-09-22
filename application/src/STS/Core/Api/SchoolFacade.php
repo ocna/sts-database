@@ -2,6 +2,10 @@
 namespace STS\Core\Api;
 interface SchoolFacade
 {
+    /**
+     * @param \STS\Domain\School\Specification\MemberSchoolSpecification $spec
+     * @return mixed
+     */
     public function getSchoolsForSpecification($spec);
 
     public function getSchoolTypes();

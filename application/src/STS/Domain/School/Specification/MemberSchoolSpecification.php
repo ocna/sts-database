@@ -1,6 +1,7 @@
 <?php
 namespace STS\Domain\School\Specification;
 use STS\Domain\Member;
+use STS\Domain\School;
 
 class MemberSchoolSpecification
 {
@@ -13,7 +14,7 @@ class MemberSchoolSpecification
         }
         $this->member = $member;
     }
-    public function isSatisfiedBy($school)
+    public function isSatisfiedBy(School $school)
     {
         if (in_array($school->getArea(), $this->member->getAllAssociatedAreas())) {
             return true;

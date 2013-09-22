@@ -5,13 +5,21 @@ use STS\Domain\Location\Address;
 use STS\Domain\School;
 use STS\Core\School\SchoolDtoAssembler;
 use STS\Core\School\SchoolDto;
+use \STS\Domain\School\Specification\MemberSchoolSpecification;
 use STS\Core\Api\SchoolFacade;
 use STS\Core\School\MongoSchoolRepository;
 use STS\Core\Location\MongoAreaRepository;
 
 class DefaultSchoolFacade implements SchoolFacade
 {
+    /**
+     * @var MongoSchoolRepository
+     */
     private $schoolRepository;
+
+    /**
+     * @var MongoAreaRepository
+     */
     private $areaRepository;
 
     public function __construct($schoolRepository, $areaRepository)
@@ -37,10 +45,10 @@ class DefaultSchoolFacade implements SchoolFacade
      *
      * NOTE: not sure where this is used.
      *
-     * @param $spec
+     * @param MemberSchoolSpecification $spec
      * @return array
      */
-    public function getSchoolsForSpecification($spec)
+    public function getSchoolsForSpecification($spec = null)
     {
         $allSchools = $this->schoolRepository->find();
         if ($spec !== null) {
@@ -97,7 +105,7 @@ class DefaultSchoolFacade implements SchoolFacade
         if (isset($criteria['type']) && !empty($criteria['type'])) {
             $schools = $this->filterSchoolsByTypes($criteria['type'], $schools);
         }
-        
+
         // filter by area
         if (isset($criteria['area']) && !empty($criteria['area'])) {
             $schools = $this->filterSchoolsByAreas($criteria['area'], $schools);
@@ -125,7 +133,7 @@ class DefaultSchoolFacade implements SchoolFacade
     public function filterSchoolsByRegions($regions, $schools)
     {
         if (!empty($regions)) {
-            $schools = array_filter($schools, function($school) use ($regions) {
+            $schools = array_filter($schools, function(SchoolDto $school) use ($regions) {
                 return in_array($school->getRegionName(), $regions, true);
             });
         }
@@ -143,7 +151,7 @@ class DefaultSchoolFacade implements SchoolFacade
     public function filterSchoolsByTypes($types, $schools)
     {
         if (!empty($types)) {
-            $schools = array_filter($schools, function($school) use ($types) {
+            $schools = array_filter($schools, function(SchoolDto $school) use ($types) {
                 return in_array($school->getTypeKey(), $types, true);
             });
         }
@@ -163,7 +171,7 @@ class DefaultSchoolFacade implements SchoolFacade
             if (!is_array($areas)) {
                 $areas = (array) $areas;
             }
-            $schools = array_filter($schools, function($school) use ($areas) {
+            $schools = array_filter($schools, function(SchoolDto $school) use ($areas) {
                 return in_array($school->getAreaId(), $areas, true);
             });
         }

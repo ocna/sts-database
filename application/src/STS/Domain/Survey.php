@@ -9,10 +9,15 @@ use STS\Domain\Survey\Question;
 
 class Survey
 {
-
+    const NUM_SCORABLE_QUESTIONS = 17;
     private $id;
     private $enteredByUserId;
     private $questions = array();
+    private $correctBeforePerQuestion = null;
+    private $correctAfterPerQuestion = null;
+    private $incorrectBeforePerQuestion = null;
+    private $incorrectAfterPerQuestion = null;
+
     public function __construct($questions)
     {
         foreach ($questions as $question) {
@@ -64,6 +69,12 @@ class Survey
             }
         }
     }
+
+    /**
+     * @param $questionId
+     * @param null $choiceId
+     * @return mixed
+     */
     public function getResponse($questionId, $choiceId = NULL)
     {
         if ($this->questions[$questionId] instanceof ShortAnswer) {
@@ -72,9 +83,122 @@ class Survey
             return $this->questions[$questionId]->getResponse($choiceId);
         }
     }
+
+    /**
+     * @return array
+     */
+    private function getScorableResponses()
+    {
+        $responses = array();
+
+        /** @var MultipleChoice $question */
+        foreach ($this->questions as $question) {
+            if ($question->whenAsked() == Question::BOTH && in_array($question->getType(), array(
+                MultipleChoice::QUESTION_TYPE, TrueFalse::QUESTION_TYPE
+            ))) {
+                $answers = array();
+                foreach ($question->getChoices() as $id => $choice) {
+                    /** @var \STS\Domain\Survey\Response\PairResponse $response */
+                    $answers[] = $question->getResponse($id);
+                }
+                $responses[] = array(
+                    'question'  => $question->getId(),
+                    'answers'   => $answers
+                );
+            }
+        }
+
+        return $responses;
+    }
+
+    protected function scoreSurvey()
+    {
+        $answer_key = array(
+            1 => array(true, true, true),
+            2 => array(false, true),
+            3 => array(true, true, false, true, false),
+            4 => array(true, true, false, false),
+            5 => array(false, false, true)
+        );
+        $before_correct_responses = 0;
+        $after_correct_responses = 0;
+        $before_incorrect_responses = 0;
+        $after_incorrect_responses = 0;
+
+        foreach ($this->getScorableResponses() as $response) {
+            /** @var \STS\Domain\Survey\Response\PairResponse $response_answer */
+            $response_answers = $response['answers'];
+            foreach ($answer_key[$response['question']] as $answer_number => $answer) {
+                $response_answer = $response_answers[$answer_number];
+                if ($answer) {
+                    $before_correct_responses += $response_answer->getBeforeResponse();
+                    $after_correct_responses += $response_answer->getAfterResponse();
+                } else {
+                    $before_incorrect_responses += $response_answer->getBeforeResponse();
+                    $after_incorrect_responses += $response_answer->getAfterResponse();
+                }
+            }
+        }
+
+        $this->correctBeforePerQuestion = $before_correct_responses / self::NUM_SCORABLE_QUESTIONS;
+        $this->correctAfterPerQuestion = $after_correct_responses / self::NUM_SCORABLE_QUESTIONS;
+        $this->incorrectBeforePerQuestion = $before_incorrect_responses /
+            self::NUM_SCORABLE_QUESTIONS;
+        $this->incorrectAfterPerQuestion = $after_incorrect_responses /
+            self::NUM_SCORABLE_QUESTIONS;
+    }
+
+    /**
+     * @return float
+     */
+    public function getCorrectBeforePerQuestion() {
+        if (null === $this->correctBeforePerQuestion) {
+            $this->scoreSurvey();
+        }
+
+        return $this->correctBeforePerQuestion;
+    }
+
+    /**
+     * @return float
+     */
+    public function getCorrectAfterPerQuestion() {
+        if (null === $this->correctAfterPerQuestion) {
+            $this->scoreSurvey();
+        }
+
+        return $this->correctAfterPerQuestion;
+    }
+
+    /**
+     * @return float
+     */
+    public function getIncorrectBeforePerQuestion() {
+        if (null === $this->incorrectBeforePerQuestion) {
+            $this->scoreSurvey();
+        }
+
+        return $this->incorrectBeforePerQuestion;
+    }
+
+    /**
+     * @return float
+     */
+    public function getIncorrectAfterPerQuestion() {
+        if (null == $this->incorrectAfterPerQuestion) {
+            $this->scoreSurvey();
+        }
+
+        return $this->incorrectAfterPerQuestion;
+    }
+
+    /**
+     * @return array
+     */
     public function toArray()
     {
         $questions = array();
+        /** @var Question $question */
         foreach ($this->questions as $question) {
             $questionArray = array(
                     'id' => $question->getId(), 'type' => $question->getType(), 'prompt' => $question->getPrompt(),

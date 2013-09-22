@@ -9,7 +9,7 @@ class MongoAreaRepository implements AreaRepository
 {
 
     private $mongoDb;
-    public function __construct($mongoDb)
+    public function __construct(\MongoDB $mongoDb)
     {
         $this->mongoDb = $mongoDb;
     }
@@ -39,7 +39,7 @@ class MongoAreaRepository implements AreaRepository
              ->setCity($areaData['city']);
         return $area;
     }
-    
+
     /**
      * delete
      *

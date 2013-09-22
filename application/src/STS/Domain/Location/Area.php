@@ -10,14 +10,21 @@ class Area extends Entity
     protected $legacyId;
     protected $city;
     protected $state;
+
+    /**
+     * @var Region
+     */
     protected $region;
 
+    /**
+     * @return Region
+     */
     public function getRegion()
     {
         return $this->region;
     }
 
-    public function setRegion($region)
+    public function setRegion(Region $region)
     {
         $this->region = $region;
         return $this;

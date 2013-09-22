@@ -1,0 +1,68 @@
+<?php
+$this->headLink()->appendStylesheet('/js/chosen/chosen.min.css');
+$this->headScript()->appendFile('/js/chosen/chosen.jquery.min.js');
+$this->headScript()->appendFile('/js/admin/report/presentation.js');
+?>
+<div class="row">
+    <div class="span3 well">
+        <?php echo $this->form; ?>
+
+        <?php if (!$this->noData == true): ?>
+            <?php echo $this->csv_form; ?>
+        <?php endif; ?>
+    </div>
+    <div class="span8">
+        <?php if($this->noData == true): ?>
+            <div class="alert alert-info">
+                <h4>Data Unavailable!</h4>
+                There is no information for the choices you selected. Please try again.
+            </div>
+        <?php else: ?>
+            <h3>Data for <?php echo $this->startDate; ?> to <?php echo $this->endDate; ?></h3>
+            <div class="row-fluid">
+                <div class="well well-small">
+                    <div class="btn-group">
+                        <a class="btn btn-info"
+                           href="/admin/report/download_effectiveness"><i class="icon-save"></i>
+                            Download</a>
+                    </div>
+                    <div class="metric">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>School</th>
+                                <th>% Knowledge Increase</th>
+                                <th>% Effectiveness</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php
+                            /** @var \STS\Domain\Presentation $presentation */
+                            foreach ($this->presentations as $presentation):
+                                /** @var \STS\Core\Presentation\PresentationDto $dto */
+                                $dto = $presentation['dto'];
+                                /** @var \STS\Domain\Presentation $entity */
+                                $entity = $presentation['entity'];
+                                ?>
+                                <tr>
+                                    <td class="row-label"><?= $dto->getDate() ?></td>
+                                    <td class="row-label"><?= $dto->getSchoolName() ?></td>
+                                    <td class="row-int">
+                                        <?= number_format
+                                        ($entity->getKnowledgeIncreasePercentage(), 2) ?>%
+                                    </td>
+                                    <td class="row-int">
+                                        <?= number_format
+                                        ($entity->getEffectivenessPercentage(), 2) ?>%
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>

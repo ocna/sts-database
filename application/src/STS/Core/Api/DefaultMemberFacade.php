@@ -16,10 +16,24 @@ use STS\Domain\Member\PhoneNumber;
 
 class DefaultMemberFacade implements MemberFacade
 {
+    /**
+     * @var \STS\Core\Member\MongoMemberRepository
+     */
     private $memberRepository;
+
+    /**
+     * @var \STS\Core\Location\MongoAreaRepository
+     */
     private $areaRepository;
 
-    public function __construct($memberRepository, $areaRepository, $userRepository)
+    /**
+     * @var \STS\Core\User\MongoUserRepository
+     */
+    private $userRepository;
+
+    public function __construct(MongoMemberRepository $memberRepository,
+                                MongoAreaRepository $areaRepository,
+                                MongoUserRepository $userRepository)
     {
         $this->memberRepository = $memberRepository;
         $this->areaRepository = $areaRepository;
@@ -101,6 +115,7 @@ class DefaultMemberFacade implements MemberFacade
         $filteredMembers = $members;
         if (!empty($regions)) {
             $filteredMembers = array();
+            /** @var Member $member */
             foreach ($members as $member) {
                 $intersection = array_intersect($regions, $member->getAllAssociatedRegions());
                 if (!empty($intersection)) {
@@ -130,8 +145,10 @@ class DefaultMemberFacade implements MemberFacade
             }
 
             foreach ($members as $member) {
+                /** @var Member $member */
                 $assoc_areas = $member->getAllAssociatedAreas();
                 foreach ($assoc_areas as $test) {
+                    /** @var \STS\Domain\Location\Area $test */
                     if (in_array($test->getId(), $areas)) {
                         $filteredMembers[] = $member;
                     }
@@ -148,6 +165,7 @@ class DefaultMemberFacade implements MemberFacade
         // to implement get role for linked user, filter as needed
         $filteredMembers = array();
         foreach ($members as $member){
+            /** @var Member $member */
             if (in_array('ROLE_MEMBER', $roles) && is_null($member->getAssociatedUserId())) {
                 $filteredMembers[] = $member;
             }
