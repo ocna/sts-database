@@ -60,8 +60,6 @@ class Admin_MemberController extends SecureBaseController
 
     public function indexAction()
     {
-
-
         // setup filters
         $criteria = array();
         $form_opts = array();
@@ -85,6 +83,7 @@ class Admin_MemberController extends SecureBaseController
                 // default to only their regions
                 $params['region'] = array_values($regions);
                 $this->filterParams('region', $params, $criteria);
+                $this->session->criteria = $criteria;
             }
         } else {
             $page['add'] = 'Add New Member';
