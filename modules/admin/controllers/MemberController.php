@@ -441,19 +441,23 @@ class Admin_MemberController extends SecureBaseController
                 try {
                     // if a member has been upgraded to a system user, check the email
                     // and password to ensure no duplication
+                    $is_self = false;
                     if (!empty($postData['systemUsername']) && $postData['role'] != '0') {
-
                         // test if the username is used by another record
                         $dupe = $this->userFacade->findUserById($postData['systemUsername']);
-                        if (!empty($dupe) && $dupe->getAssociatedMemberId() != $associatedUser->getAssociatedMemberId()) {
+                        $is_self = ($dupe->getAssociatedMemberId() == $associatedUser->getAssociatedMemberId());
+
+                        if (!empty($dupe) && !$is_self) {
                             throw new ApiException("A system user with the username: \"{$postData['systemUsername']}\" already exists. System users must have a unique email and username.");
                         }
 
                         // test if the email is used by another record
                         $dupe = $this->userFacade->findUserByEmail($postData['systemUserEmail']);
-                        if (!empty($dupe) && $dupe->getAssociatedMemberId() != $associatedUser->getAssociatedMemberId()) {
+                        if (!empty($dupe) && !$is_self) {
                             throw new ApiException("A system user with the email address: \"{$postData['systemUserEmail']}\" already exists. System users must have a unique email and username.");
                         }
+
+
                     }
 
                     // check if we are changing an existing user's name
@@ -468,13 +472,14 @@ class Admin_MemberController extends SecureBaseController
                     } else {
                         // if a member has be downgraded from a system user to a member
                         // its ok as that is handled by the saving
+
                         $updatedMemberDto = $this->updateMember($id, $postData);
                         $successMessage = "The member \"{$postData['firstName']} {$postData['lastName']}\" has been successfully updated.";
 
                         // if a system user is changed roles
                         // then confirm that and set the username to the hidden value
                         if ($postData['role'] != '0') {
-                            if (! empty($postData['systemUsername'])) {
+                            if (!$is_self && ! empty($postData['systemUsername'])) {
                                 // the user is new, we must add them
                                 $tempPassword = $postData['tempPassword'];
                                 $systemUserDto = $this->saveNewUser($postData, $updatedMemberDto, $tempPassword);
@@ -482,7 +487,7 @@ class Admin_MemberController extends SecureBaseController
                                 $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
                                 $this->mailerFacade->sendNewAccountNotification($name, $systemUserDto->getId(), $systemUserDto->getEmail(), $tempPassword);
                                 $successMessage .= " The new user with username: \"{$systemUserDto->getId()}\" and password: \"$tempPassword\" may now access the system. This information has been emailed to them.";
-                            } else {
+                            } else if (!empty($postData['tempPassword'])) {
                                 // the user has changed, we must modify
                                 $postData['systemUsername'] = $postData['hiddenSystemUsername'];
                                 $tempPassword = $postData['tempPassword'];
@@ -491,7 +496,7 @@ class Admin_MemberController extends SecureBaseController
                                 // send credentials via email
                                 $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
                                 $this->mailerFacade->sendNewAccountNotification($name, $systemUserDto->getId(), $systemUserDto->getEmail(), $tempPassword);
-                                $successMessage .= " The user with username: \"{$systemUserDto->getId()}\" has been updated! Updated information has been emaild to them.";
+                                $successMessage .= " The user with username: \"{$systemUserDto->getId()}\" has been updated! Updated information has been emailed to them.";
                             }
                         }
                     }
@@ -590,8 +595,7 @@ class Admin_MemberController extends SecureBaseController
      * @param $tempPassword
      * @return mixed
      */
-    private function updateExistingUser(array $postData, Core\Member\MemberDto $memberDto,
-                                        $tempPassword)
+    private function updateExistingUser(array $postData, Core\Member\MemberDto $memberDto, $tempPassword)
     {
         $firstName = $memberDto->getFirstName();
         $lastName = $memberDto->getLastName();
