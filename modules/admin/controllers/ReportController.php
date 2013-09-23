@@ -297,7 +297,6 @@ class Admin_ReportController extends SecureBaseController
             }
 
             if (in_array('schoolNotes', $vars)) {
-                $row[] = $school->getType();
                 $row[] = $school->getNotes();
             }
 
