@@ -15,16 +15,25 @@ class SecureBaseController extends AbstractBaseController implements AclAware
         $this->setAcl($acl);
         $this->_helper->layout->assign('acl', $this->getAcl());
     }
+
     public function preDispatch()
     {
         parent::preDispatch();
         $this->sendToLoginIfNotAuthenticated();
         $this->sendToAccessDeniedIfNotAllowed();
     }
+
+    /**
+     * @param \Zend_Acl $acl
+     */
     public function setAcl(\Zend_Acl $acl)
     {
         $this->acl = $acl;
     }
+
+    /**
+     * @return \Zend_Acl
+     */
     public function getAcl()
     {
         return $this->acl;
@@ -42,12 +51,12 @@ class SecureBaseController extends AbstractBaseController implements AclAware
         $acl = $this->getAcl();
         $role = $this->getAuth()->getIdentity()->getRole();
         if ($acl->has($module)) {
-            if (!$acl->isAllowed($role, $module)) {
+            if (!$acl->isAllowed($role, $module, 'view')) {                
                 $this->_redirect('/error/index/access-denied');
             }
         }
         if ($acl->has($controller) && $acl->inherits($controller, $module, true)) {
-            if (!$acl->isAllowed($role, $controller)) {
+            if (!$acl->isAllowed($role, $controller, 'view')) {
                 $this->_redirect('/error/index/access-denied');
             }
         }

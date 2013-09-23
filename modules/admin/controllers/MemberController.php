@@ -4,6 +4,7 @@ use STS\Core;
 use STS\Web\Controller\SecureBaseController;
 use STS\Core\Api\ApiException;
 use STS\Domain\Member;
+use STS\Domain\User;
 use STS\Core\Member\MemberDto;
 use STS\Core\User\UserDTO;
 
@@ -59,20 +60,42 @@ class Admin_MemberController extends SecureBaseController
 
     public function indexAction()
     {
-        $this->view->layout()->pageHeader = $this->view->partial(
-            'partials/page-header.phtml',
-            array(
-                'title' => 'Members',
-                'add' => 'Add New Member',
-                'addRoute' => '/admin/member/new'
-                )
-        );
+
 
         // setup filters
-        $form = $this->getFilterForm();
         $criteria = array();
-        $this->session->criteria = $criteria;
+        $form_opts = array();
         $params = $this->getRequest()->getParams();
+
+        $this->session->criteria = $criteria;
+
+        /** @var STS\Core\User\UserDTO $user */
+        $user = $this->getAuth()->getIdentity();
+
+        $page['title'] = 'Members';
+        if (User::ROLE_COORDINATOR == $user->getRole()) {
+            // limit filter options to regions they coordinate for
+            $member = $this->memberFacade->getMemberById($user->getAssociatedMemberId());
+            $regions = $member->getCoordinatesForRegions();
+            $form_opts['regions'] = array_merge(array('0' => ''), $regions);
+            if (!empty($params['region'])) {
+                // ensure they only request items from their regions in filter
+                $params['region'] = array_intersect($params['region'], array_values($regions));
+            } else {
+                // default to only their regions
+                $params['region'] = array_values($regions);
+                $this->filterParams('region', $params, $criteria);
+            }
+        } else {
+            $page['add'] = 'Add New Member';
+            $page['addRoute'] = '/admin/member/new';
+        }
+
+        // set page header
+        $this->view->layout()->pageHeader = $this->view->partial('partials/page-header.phtml', $page);
+
+        // get our form
+        $form = $this->getFilterForm($form_opts);
 
         if (array_key_exists('reset', $params)) {
             return $this->_helper->redirector('index');
@@ -84,7 +107,6 @@ class Admin_MemberController extends SecureBaseController
             $this->filterParams('region', $params, $criteria);
             $this->session->criteria = $criteria;
         }
-        $this->view->form = $form;
 
         // load all the members to display
         // TODO add pagination?
@@ -97,7 +119,14 @@ class Admin_MemberController extends SecureBaseController
                         'action' => 'index'
                     ));
         }
+
+        // pass permissions to view
+        $this->view->can_view = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'view');
+        $this->view->can_edit = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'edit');
+        $this->view->can_delete = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'delete');
+        $this->view->can_view_training = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'trainingReport');
         $this->view->members = $memberDtos;
+        $this->view->form = $form;
     }
 
     /**
@@ -208,14 +237,25 @@ class Admin_MemberController extends SecureBaseController
      *
      * Return the filter form for list of all members
      *
+     * @param array
      * @return Admin_MemberFilter
      */
-    private function getFilterForm()
+    private function getFilterForm($form_opts)
     {
+        // override regions
+        if (isset($form_opts['regions'])) {
+            $regions = $form_opts['regions'];
+        } else {
+            $regions = $this->getRegionsArray();
+        }
+        
         $form = new \Admin_MemberFilter(
             array(
-                'roles' => array_merge(array(0=>'', 'ROLE_MEMBER'=>'Member'), AclFactory::getAvailableRoles()),
-                'regions' => $this->getRegionsArray(),
+                'roles' => array_merge(array(
+                    0 => '', 'ROLE_MEMBER' => 'Member'),
+                    AclFactory::getAvailableRoles()
+                ),
+                'regions' => $regions,
                 'memberStatuses' => array_merge(array(''), $this->getMemberStatusesArray())
             )
         );
@@ -282,6 +322,14 @@ class Admin_MemberController extends SecureBaseController
         }
         $this->view->layout()->pageHeader = $this->view->partial('partials/page-header.phtml', $parameters);
         $this->view->member = $member;
+
+        /** @var STS\Core\User\UserDTO $user */
+        $user = $this->getAuth()->getIdentity();
+
+        // pass permissions to view
+        $this->view->can_view = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'view');
+        $this->view->can_edit = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'edit');
+        $this->view->can_delete = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'delete');
     }
 
     /**

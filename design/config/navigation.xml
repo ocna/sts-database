@@ -45,6 +45,7 @@
         <controller>index</controller>
         <action>index</action>
         <resource>admin</resource>
+        <privilege>view</privilege>
         <pages>
             <school>
                 <label>Schools</label>
@@ -59,6 +60,7 @@
                 <controller>member</controller>
                 <action>index</action>
                 <resource>member</resource>
+                <privilege>view</privilege>
             </member>
             <region>
                 <label>Regions</label>
