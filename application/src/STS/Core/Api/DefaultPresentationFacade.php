@@ -280,8 +280,10 @@ class DefaultPresentationFacade implements PresentationFacade
             // report by member
             foreach ($presentation->getMembers() as $member) {
                 /** @var Member $member */
-                $summary->members[$member->getFullname()]['presentations'] += 1;
-                $summary->members[$member->getFullname()]['participants'] += $students;
+                if (empty($criteria['members']) || in_array($member->getId(), $criteria['members'])) {
+                    $summary->members[$member->getFullname()]['presentations'] += 1;
+                    $summary->members[$member->getFullname()]['participants'] += $students;
+                }
             }
         }
 
