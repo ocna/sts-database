@@ -2,6 +2,10 @@
 namespace STS\Core\Api;
 interface MemberFacade
 {
+    /**
+     * @param $id
+     * @return \STS\Core\Member\MemberDto
+     */
     public function getMemberById($id);
 
     public function getAllMembers();

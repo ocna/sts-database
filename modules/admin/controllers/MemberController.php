@@ -4,6 +4,7 @@ use STS\Core;
 use STS\Web\Controller\SecureBaseController;
 use STS\Core\Api\ApiException;
 use STS\Domain\Member;
+use STS\Domain\User;
 use STS\Core\Member\MemberDto;
 use STS\Core\User\UserDTO;
 
@@ -59,20 +60,41 @@ class Admin_MemberController extends SecureBaseController
 
     public function indexAction()
     {
-        $this->view->layout()->pageHeader = $this->view->partial(
-            'partials/page-header.phtml',
-            array(
-                'title' => 'Members',
-                'add' => 'Add New Member',
-                'addRoute' => '/admin/member/new'
-                )
-        );
-
         // setup filters
-        $form = $this->getFilterForm();
         $criteria = array();
-        $this->session->criteria = $criteria;
+        $form_opts = array();
         $params = $this->getRequest()->getParams();
+
+        $this->session->criteria = $criteria;
+
+        /** @var STS\Core\User\UserDTO $user */
+        $user = $this->getAuth()->getIdentity();
+
+        $page['title'] = 'Members';
+        if (User::ROLE_COORDINATOR == $user->getRole()) {
+            // limit filter options to regions they coordinate for
+            $member = $this->memberFacade->getMemberById($user->getAssociatedMemberId());
+            $regions = $member->getCoordinatesForRegions();
+            $form_opts['regions'] = array_merge(array('0' => ''), $regions);
+            if (!empty($params['region'])) {
+                // ensure they only request items from their regions in filter
+                $params['region'] = array_intersect($params['region'], array_values($regions));
+            } else {
+                // default to only their regions
+                $params['region'] = array_values($regions);
+                $this->filterParams('region', $params, $criteria);
+                $this->session->criteria = $criteria;
+            }
+        } else {
+            $page['add'] = 'Add New Member';
+            $page['addRoute'] = '/admin/member/new';
+        }
+
+        // set page header
+        $this->view->layout()->pageHeader = $this->view->partial('partials/page-header.phtml', $page);
+
+        // get our form
+        $form = $this->getFilterForm($form_opts);
 
         if (array_key_exists('reset', $params)) {
             return $this->_helper->redirector('index');
@@ -84,7 +106,6 @@ class Admin_MemberController extends SecureBaseController
             $this->filterParams('region', $params, $criteria);
             $this->session->criteria = $criteria;
         }
-        $this->view->form = $form;
 
         // load all the members to display
         // TODO add pagination?
@@ -97,7 +118,14 @@ class Admin_MemberController extends SecureBaseController
                         'action' => 'index'
                     ));
         }
+
+        // pass permissions to view
+        $this->view->can_view = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'view');
+        $this->view->can_edit = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'edit');
+        $this->view->can_delete = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'delete');
+        $this->view->can_view_training = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'trainingReport');
         $this->view->members = $memberDtos;
+        $this->view->form = $form;
     }
 
     /**
@@ -208,14 +236,25 @@ class Admin_MemberController extends SecureBaseController
      *
      * Return the filter form for list of all members
      *
+     * @param array
      * @return Admin_MemberFilter
      */
-    private function getFilterForm()
+    private function getFilterForm($form_opts)
     {
+        // override regions
+        if (isset($form_opts['regions'])) {
+            $regions = $form_opts['regions'];
+        } else {
+            $regions = $this->getRegionsArray();
+        }
+        
         $form = new \Admin_MemberFilter(
             array(
-                'roles' => array_merge(array(0=>'', 'ROLE_MEMBER'=>'Member'), AclFactory::getAvailableRoles()),
-                'regions' => $this->getRegionsArray(),
+                'roles' => array_merge(array(
+                    0 => '', 'ROLE_MEMBER' => 'Member'),
+                    AclFactory::getAvailableRoles()
+                ),
+                'regions' => $regions,
                 'memberStatuses' => array_merge(array(''), $this->getMemberStatusesArray())
             )
         );
@@ -282,6 +321,14 @@ class Admin_MemberController extends SecureBaseController
         }
         $this->view->layout()->pageHeader = $this->view->partial('partials/page-header.phtml', $parameters);
         $this->view->member = $member;
+
+        /** @var STS\Core\User\UserDTO $user */
+        $user = $this->getAuth()->getIdentity();
+
+        // pass permissions to view
+        $this->view->can_view = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'view');
+        $this->view->can_edit = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'edit');
+        $this->view->can_delete = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'delete');
     }
 
     /**
@@ -441,19 +488,23 @@ class Admin_MemberController extends SecureBaseController
                 try {
                     // if a member has been upgraded to a system user, check the email
                     // and password to ensure no duplication
+                    $is_self = false;
                     if (!empty($postData['systemUsername']) && $postData['role'] != '0') {
-
                         // test if the username is used by another record
                         $dupe = $this->userFacade->findUserById($postData['systemUsername']);
-                        if (!empty($dupe) && $dupe->getAssociatedMemberId() != $associatedUser->getAssociatedMemberId()) {
+                        $is_self = ($dupe->getAssociatedMemberId() == $associatedUser->getAssociatedMemberId());
+
+                        if (!empty($dupe) && !$is_self) {
                             throw new ApiException("A system user with the username: \"{$postData['systemUsername']}\" already exists. System users must have a unique email and username.");
                         }
 
                         // test if the email is used by another record
                         $dupe = $this->userFacade->findUserByEmail($postData['systemUserEmail']);
-                        if (!empty($dupe) && $dupe->getAssociatedMemberId() != $associatedUser->getAssociatedMemberId()) {
+                        if (!empty($dupe) && !$is_self) {
                             throw new ApiException("A system user with the email address: \"{$postData['systemUserEmail']}\" already exists. System users must have a unique email and username.");
                         }
+
+
                     }
 
                     // check if we are changing an existing user's name
@@ -468,13 +519,14 @@ class Admin_MemberController extends SecureBaseController
                     } else {
                         // if a member has be downgraded from a system user to a member
                         // its ok as that is handled by the saving
+
                         $updatedMemberDto = $this->updateMember($id, $postData);
                         $successMessage = "The member \"{$postData['firstName']} {$postData['lastName']}\" has been successfully updated.";
 
                         // if a system user is changed roles
                         // then confirm that and set the username to the hidden value
                         if ($postData['role'] != '0') {
-                            if (! empty($postData['systemUsername'])) {
+                            if (!$is_self && ! empty($postData['systemUsername'])) {
                                 // the user is new, we must add them
                                 $tempPassword = $postData['tempPassword'];
                                 $systemUserDto = $this->saveNewUser($postData, $updatedMemberDto, $tempPassword);
@@ -482,7 +534,7 @@ class Admin_MemberController extends SecureBaseController
                                 $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
                                 $this->mailerFacade->sendNewAccountNotification($name, $systemUserDto->getId(), $systemUserDto->getEmail(), $tempPassword);
                                 $successMessage .= " The new user with username: \"{$systemUserDto->getId()}\" and password: \"$tempPassword\" may now access the system. This information has been emailed to them.";
-                            } else {
+                            } else if (!empty($postData['tempPassword'])) {
                                 // the user has changed, we must modify
                                 $postData['systemUsername'] = $postData['hiddenSystemUsername'];
                                 $tempPassword = $postData['tempPassword'];
@@ -491,7 +543,7 @@ class Admin_MemberController extends SecureBaseController
                                 // send credentials via email
                                 $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
                                 $this->mailerFacade->sendNewAccountNotification($name, $systemUserDto->getId(), $systemUserDto->getEmail(), $tempPassword);
-                                $successMessage .= " The user with username: \"{$systemUserDto->getId()}\" has been updated! Updated information has been emaild to them.";
+                                $successMessage .= " The user with username: \"{$systemUserDto->getId()}\" has been updated! Updated information has been emailed to them.";
                             }
                         }
                     }
@@ -590,8 +642,7 @@ class Admin_MemberController extends SecureBaseController
      * @param $tempPassword
      * @return mixed
      */
-    private function updateExistingUser(array $postData, Core\Member\MemberDto $memberDto,
-                                        $tempPassword)
+    private function updateExistingUser(array $postData, Core\Member\MemberDto $memberDto, $tempPassword)
     {
         $firstName = $memberDto->getFirstName();
         $lastName = $memberDto->getLastName();
