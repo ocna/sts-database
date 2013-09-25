@@ -1121,8 +1121,6 @@ class Admin_MemberController extends SecureBaseController
 
     public function getMemberSummary()
     {
-        error_reporting(E_ALL);
-        ini_set('display_errors', 1);
         $criteria = array();
         $members = $this->memberFacade->getMembersMatching($criteria);
 
