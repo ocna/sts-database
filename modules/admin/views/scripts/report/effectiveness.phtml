@@ -47,7 +47,11 @@ $this->headScript()->appendFile('/js/admin/report/presentation.js');
                                 ?>
                                 <tr>
                                     <td class="row-label"><?= $dto->getDate() ?></td>
-                                    <td class="row-label"><?= $dto->getSchoolName() ?></td>
+                                    <td class="row-label">
+                                        <a href="/presentation/index/view?id=<?= $dto->getId()
+                                            ?>"><?=
+                                        $dto->getSchoolName() ?></a>
+                                    </td>
                                     <td class="row-int">
                                         <?= number_format
                                         ($entity->getKnowledgeIncreasePercentage(), 2) ?>%

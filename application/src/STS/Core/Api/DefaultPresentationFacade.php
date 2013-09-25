@@ -183,7 +183,7 @@ class DefaultPresentationFacade implements PresentationFacade
         $query = array(
             'date' => array(
                 '$gte'=> new \MongoDate(min($startDate, $endDate)),
-                '$lt'=> new \MongoDate(max($startDate, $endDate))
+                '$lte'=> new \MongoDate(max($startDate, $endDate))
                 )
             );
         $presentations = $this->presentationRepository->find($query);
