@@ -133,6 +133,11 @@ abstract class AbstractBaseController extends \Zend_Controller_Action implements
      */
     protected function outputCSV($file_name, array $data, array $headers = null)
     {
+        // add extension if missing
+        if (!preg_match('/\.csv$/', $file_name)) {
+            $file_name .= ".csv";
+        }
+
         $this->_helper->layout->disableLayout();
         $this->_helper->viewRenderer->setNoRender();
 
