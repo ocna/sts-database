@@ -13,7 +13,7 @@ $summary = $this->summary;
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>Status</th>
+                                        <th class="pull-left">Status</th>
                                         <th>Members</th>
                                     </tr>
                                 </thead>
@@ -39,7 +39,7 @@ $summary = $this->summary;
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>Region</th>
+                                        <th class="pull-left">Region</th>
                                         <th>Coordinators</th>
                                     </tr>
                                 </thead>
@@ -71,19 +71,23 @@ $summary = $this->summary;
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>Area</th>
-                                        <th>Presenters</th>
-                                        <th>Coordinators</th>
-                                        <th>Facilitators</th>
+                                        <th class="pull-left">Area</th>
+                                        <th class="right">Presenters</th>
+                                        <th class="right">Coordinators</th>
+                                        <th class="right">Facilitators</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 <?php foreach ($summary->areas as $area => $values): ?>
                                     <tr>
                                         <td class="row-label"><?= $area ?></td>
-                                        <td class="row-int cell-25"><?= $values['presents'] ?></td>
-                                        <td class="row-int cell-25"><?= $values['coordinates'] ?></td>
-                                        <td class="row-int cell-25"><?= $values['facilitates'] ?></td>
+                                        <td class="row-int cell-25"><?= isset
+                                            ($values['presents']) ? $values['presents'] : 0
+                                            ?></td>
+                                        <td class="row-int cell-25"><?= isset
+                                            ($values['coordinates']) ? $values['coordinates'] : 0 ?></td>
+                                        <td class="row-int cell-25"><?= isset
+                                            ($values['facilitates']) ? $values['facilitates'] : 0 ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                                 </tbody>
