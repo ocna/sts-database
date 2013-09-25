@@ -152,9 +152,21 @@ class Admin_MemberController extends SecureBaseController
             'Role Class (ignore)'
         );
 
-        $this->outputCSV('members', $member_array, $headers);
+        $csv = array();
+
+        foreach ($member_array as $member) {
+            $date = '';
+            if ($member['dateTrained']) {
+                $date = $member['dateTrained']->format("m/d/Y");
+            }
+            $member['dateTrained'] = $date;
+
+            $csv[] = $member;
+        }
+
+        $this->outputCSV('members', $csv, $headers);
     }
-    
+
     public function trainingAction()
     {
         $params = $this->getRequest()->getParams();
@@ -185,7 +197,7 @@ class Admin_MemberController extends SecureBaseController
     public function trainingExcelAction()
     {
         $params = $this->getRequest()->getParams();
-        
+
 
         // load all the members to display
         $criteria = array();
@@ -247,7 +259,7 @@ class Admin_MemberController extends SecureBaseController
         } else {
             $regions = $this->getRegionsArray();
         }
-        
+
         $form = new \Admin_MemberFilter(
             array(
                 'roles' => array_merge(array(
@@ -1093,7 +1105,7 @@ class Admin_MemberController extends SecureBaseController
         // finally, delete old user
         $this->userFacade->deleteUser($old_user_id);
     }
-    
+
     public function dashboardAction()
     {
         // set title
@@ -1129,7 +1141,7 @@ class Admin_MemberController extends SecureBaseController
                     if ($region) {
                         $summary->regions[$region]['coordinates']++;
                     }
-                }                
+                }
             }
             ksort($summary->regions);
 
@@ -1160,7 +1172,7 @@ class Admin_MemberController extends SecureBaseController
         ksort($summary->areas);
         return $summary;
     }
-    
+
     public function excelBystatusAction()
     {
         $summary = $this->getMemberSummary();
@@ -1173,7 +1185,7 @@ class Admin_MemberController extends SecureBaseController
 
         $this->outputCSV('MemberByStatus-' . date('Y-m-d') . '.csv', $csv, $header);
     }
-    
+
     public function excelByregionAction()
     {
         $summary = $this->getMemberSummary();
