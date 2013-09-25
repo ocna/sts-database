@@ -1121,6 +1121,8 @@ class Admin_MemberController extends SecureBaseController
 
     public function getMemberSummary()
     {
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
         $criteria = array();
         $members = $this->memberFacade->getMembersMatching($criteria);
 
@@ -1133,21 +1135,31 @@ class Admin_MemberController extends SecureBaseController
             $summary->count++;
 
             // by status
+            if (!isset($summary->status[$member->getStatus()])) {
+                $summary->status[$member->getStatus()] = 0;
+            }
             $summary->status[$member->getStatus()]++;
 
             // by region
             if ($coord = $member->getCoordinatesForRegions()) {
                 foreach ($coord as $region) {
                     if ($region) {
+                        if (!isset($summary->regions[$region]['coordinates'])) {
+                            $summary->regions[$region]['coordinates'] = 0;
+                        }
+
                         $summary->regions[$region]['coordinates']++;
                     }
                 }
             }
-            ksort($summary->regions);
 
             // area coordinators
             if ($areas = $member->getCoordinatesForAreas()) {
                 foreach ($areas as $id => $area) {
+                    if (!isset($summary->areas[$area]['coordinates'])) {
+                        $summary->areas[$area]['coordinates'] = 0;
+                    }
+
                     $summary->areas[$area]['coordinates']++;
                 }
             }
@@ -1155,6 +1167,10 @@ class Admin_MemberController extends SecureBaseController
             // area facilitators
             if ($areas = $member->getFacilitatesForAreas()) {
                 foreach ($areas as $id => $area) {
+                    if (!isset($summary->areas[$area]['facilitates'])) {
+                        $summary->areas[$area]['facilitates'] = 0;
+                    }
+
                     $summary->areas[$area]['facilitates']++;
                 }
             }
@@ -1162,14 +1178,19 @@ class Admin_MemberController extends SecureBaseController
             // area presenters
             if ($areas = $member->getPresentsForAreas()) {
                 foreach ($areas as $id => $area) {
+                    if (!isset($summary->areas[$area]['presents'])) {
+                        $summary->areas[$area]['presents'] = 0;
+                    }
+
                     $summary->areas[$area]['presents']++;
                 }
             }
-
         }
 
+        ksort($summary->regions);
         ksort($summary->status);
         ksort($summary->areas);
+
         return $summary;
     }
 
