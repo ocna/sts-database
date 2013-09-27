@@ -201,8 +201,7 @@ class Admin_ReportController extends SecureBaseController
             'School',
             '% Correct Before',
             '% Correct After',
-            '% Knowledge Increase',
-            '% Effectiveness'
+            '% Knowledge Increase'
         );
         /** @var STS\Domain\Presentation $presentation */
         foreach ($presentations as $presentation) {
@@ -214,8 +213,7 @@ class Admin_ReportController extends SecureBaseController
                 $dto->getSchoolName(),
                 number_format($presentation->getCorrectBeforePercentage(), 2),
                 number_format($presentation->getCorrectAfterPercentage(), 2),
-                number_format($presentation->getKnowledgeIncreasePercentage(), 2),
-                number_format($presentation->getEffectivenessPercentage(), 2)
+                number_format($presentation->getKnowledgeIncreasePercentage(), 2)
             );
         }
 
