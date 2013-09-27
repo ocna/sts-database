@@ -141,25 +141,32 @@ class Admin_MemberController extends SecureBaseController
             'First Name',
             'Last Name',
             'Email',
-            'Deceased? 1=yes',
+            'Deceased?',
             'City',
             'State',
             'Status',
-            'Has Notes? 1=yes',
             'Notes',
-            'Can Be Deleted? 1=yes',
-            'Role',
-            'Role Class (ignore)'
+            'Can Be Deleted?',
+            'Date Trained',
+            'Role'
         );
 
         $csv = array();
 
         foreach ($member_array as $member) {
+            if (1 == $member['canBeDeleted']) {
+                $member['canBeDeleted'] = 'Yes';
+            }
+            if (1 == $member['deceased']) {
+                $member['deceased'] = 'Yes';
+            }
             $date = '';
             if ($member['dateTrained']) {
                 $date = $member['dateTrained']->format("m/d/Y");
             }
             $member['dateTrained'] = $date;
+            unset($member['roleClass']);
+            unset($member['hasNotes']);
 
             $csv[] = $member;
         }
