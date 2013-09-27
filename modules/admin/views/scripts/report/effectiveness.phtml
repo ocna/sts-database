@@ -33,7 +33,6 @@ $this->headScript()->appendFile('/js/admin/report/presentation.js');
                                 <th>Date</th>
                                 <th>School</th>
                                 <th>% Knowledge Increase</th>
-                                <th>% Effectiveness</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -55,10 +54,6 @@ $this->headScript()->appendFile('/js/admin/report/presentation.js');
                                     <td class="row-int">
                                         <?= number_format
                                         ($entity->getKnowledgeIncreasePercentage(), 2) ?>%
-                                    </td>
-                                    <td class="row-int">
-                                        <?= number_format
-                                        ($entity->getEffectivenessPercentage(), 2) ?>%
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
