@@ -56,13 +56,11 @@ $summary = $this->summary;
                     </div>
                 </div>
 
-
                 <div class="row-fluid">
                     <div class="span12 well well-small">
-                        <h4><i class="icon-group icon-large"></i>&nbsp;Members</h4>
-
+                        <h4><i class="icon-group icon-large"></i>&nbsp;Active Members</h4>
                         <div class="metric metric-large">
-                            <strong><?php echo number_format($summary->count); ?></strong>
+                            <strong><?php echo number_format($summary->status['Active']); ?></strong>
                         </div>
                         <div class="btn-group">
                             <a class="btn btn-mini" href="/admin/member/excel-byarea">Download</a>

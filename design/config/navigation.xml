@@ -83,6 +83,13 @@
                 <action>dashboard</action>
                 <resource>member</resource>
             </member_dashboard>
+             <coordinator>
+                <label>Regional Coordinators</label>
+                <module>admin</module>
+                <controller>member</controller>
+                <action>coordinators</action>
+                <resource>member</resource>
+            </coordinator>
         </pages>
     </admin>
 </config>

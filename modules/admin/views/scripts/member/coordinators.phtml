@@ -1,0 +1,30 @@
+<?php
+$columns = array('Status' ,'Last Name, First Name', 'Regions', 'Areas');
+?>
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+        <?php foreach ($columns as $title): ?>
+            <th><?= $title ?></th>
+        <?php endforeach; ?>
+            <th style="text-align:right;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php foreach ($this->members as $id => $member):
+        /** @var \STS\Core\Member\MemberDto $member */
+    ?>
+        <tr>
+            <td><?php echo $member->getStatus() ?></td>
+            <td><?php echo $member->getDisplayName() ?></td>
+            <td><?php echo join(', ',  $member->getCoordinatesForRegions()) ?></td>
+            <td><?php echo join(', ',  $member->getCoordinatesForAreas()) ?></td>
+            <td style="text-align:right;">
+                <div class="btn-group">
+                    <a class="btn btn-mini" href="/admin/member/view?id=<?php echo $id; ?>"><i class="icon-info-sign"></i> Details</a>
+                </div>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    </tbody>
+</table>

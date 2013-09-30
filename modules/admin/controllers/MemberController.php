@@ -1237,5 +1237,34 @@ class Admin_MemberController extends SecureBaseController
 
         $this->outputCSV('MemberByArea-' . date('Y-m-d') . '.csv', $csv, $header);
     }
-}
 
+    public function coordinatorsAction()
+    {
+        $criteria = array();
+        $members = $this->memberFacade->getMembersMatching($criteria);
+
+        // set title
+        $this->view->layout()->pageHeader = $this->view->partial(
+            'partials/page-header.phtml', array(
+                'title' => 'Regional Coordinators'
+            )
+        );
+
+        // get only coordinators
+        $members = array_filter($members, function($member) {
+
+            /** @var \STS\Core\Member\MemberDto $member */
+            if ($member->getCoordinatesForRegions()) {
+                return true;
+            }
+
+            if ($member->getCoordinatesForAreas()) {
+                return true;
+            }
+
+            return false;
+        });
+
+        $this->view->members = $members;
+    }
+}
