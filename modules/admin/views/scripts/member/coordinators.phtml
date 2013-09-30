@@ -21,7 +21,7 @@ $columns = array('Status' ,'Last Name, First Name', 'Regions', 'Areas');
             <td><?php echo join(', ',  $member->getCoordinatesForAreas()) ?></td>
             <td style="text-align:right;">
                 <div class="btn-group">
-                    <a class="btn btn-mini" href="/admin/member/view?id=<?php echo $id; ?>"><i class="icon-info-sign"></i> Details</a>
+                    <a class="btn btn-mini" href="/admin/member/view?id=<?php echo $member->getId() ?>"><i class="icon-info-sign"></i> Details</a>
                 </div>
             </td>
         </tr>
