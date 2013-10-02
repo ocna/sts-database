@@ -247,6 +247,7 @@ class DefaultPresentationFacade implements PresentationFacade
         $summary->geo = new \StdClass;
         $summary->schools = array();
         $summary->members = array();
+        $summary->regions = array();
         $summary->schoolsUnique = array();
         $summary->memberUnique = array();
 
@@ -264,6 +265,11 @@ class DefaultPresentationFacade implements PresentationFacade
             }
             $summary->geo->$state->participants += $presentation->getNumberOfParticipants();
             $summary->geo->$state->presentations += 1;
+
+            // report by region
+            $region = $presentation->getLocation()->getArea()->getRegion();
+            $summary->regions[$region->getName()]['participants'] += $presentation->getNumberOfParticipants();
+            $summary->regions[$region->getName()]['presentations'] += 1;
 
             // report medical schools by type
             $type = $presentation->getLocation()->getType();
@@ -307,6 +313,7 @@ class DefaultPresentationFacade implements PresentationFacade
         // sort schools by number of presentations
         uasort($summary->schools, $compare);
         uasort($summary->members, $compare);
+        uasort($summary->regions, $compare);
         return $summary;
     }
 
