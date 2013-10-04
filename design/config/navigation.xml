@@ -36,6 +36,7 @@
         <controller>report</controller>
         <action>index</action>
         <resource>report</resource>
+        <privilege>view</privilege>
         <pages>
             <presentation>
                 <label>Presentation Summary Report</label>
@@ -43,6 +44,7 @@
                 <controller>report</controller>
                 <action>presentation</action>
                 <resource>report</resource>
+                <privilege>view</privilege>
             </presentation>
         </pages>
     </report>

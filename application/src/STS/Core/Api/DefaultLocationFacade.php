@@ -36,6 +36,20 @@ class DefaultLocationFacade implements LocationFacade
     }
 
     /**
+     * @param $regions
+     * @return array
+     */
+    public function getStatesForRegions($regions)
+    {
+        $areas = $this->getAreasForRegions($regions);
+        $states = array();
+        foreach ($areas as $area) {
+            $states[$area->getState()] = $area->getState();
+        }
+        return $states;
+    }
+
+    /**
      * getAreaById
      *
      * @param $id

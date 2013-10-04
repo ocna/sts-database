@@ -8,6 +8,7 @@ class AclFactory
     const ROLE_ADMIN = 'admin';
     const ROLE_COORDINATOR = 'coordinator';
     const ROLE_FACILITATOR = 'facilitator';
+
     const RESOURCE_ADMIN = 'admin';
     const RESOURCE_PRESENTATION = 'presentation';
     const RESOURCE_MEMBER = 'member';
@@ -33,7 +34,8 @@ class AclFactory
         $acl->addResource(self::RESOURCE_MEMBER, self::RESOURCE_ADMIN);
         $acl->addResource(self::RESOURCE_USER, self::RESOURCE_ADMIN);
         $acl->addResource(self::RESOURCE_SCHOOL, self::RESOURCE_ADMIN);
-        $acl->addResource(self::RESOURCE_REPORT, self::RESOURCE_ADMIN);
+//        $acl->addResource(self::RESOURCE_REPORT, self::RESOURCE_ADMIN);
+        $acl->addResource(self::RESOURCE_REPORT);
         $acl->addResource(self::RESOURCE_REGION, self::RESOURCE_ADMIN);
 
         // Establish Rules
@@ -43,9 +45,11 @@ class AclFactory
         $acl->allow(self::ROLE_FACILITATOR, self::RESOURCE_SEARCH);
         $acl->allow(self::ROLE_COORDINATOR, self::RESOURCE_ADMIN, 'view');
         $acl->allow(self::ROLE_COORDINATOR, self::RESOURCE_MEMBER, 'view');
+        $acl->allow(self::ROLE_COORDINATOR, self::RESOURCE_REPORT, 'view');
+
+        // explicit deny
         $acl->deny(self::ROLE_COORDINATOR, self::RESOURCE_MEMBER, 'edit');
         $acl->deny(self::ROLE_COORDINATOR, self::RESOURCE_MEMBER, 'delete');
-
         return $acl;
     }
 

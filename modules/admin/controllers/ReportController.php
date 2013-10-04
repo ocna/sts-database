@@ -2,6 +2,7 @@
 use STS\Core;
 use STS\Web\Controller\SecureBaseController;
 use \STS\Core\Presentation\PresentationDtoAssembler;
+use STS\Domain\User;
 
 class Admin_ReportController extends SecureBaseController
 {
@@ -66,8 +67,20 @@ class Admin_ReportController extends SecureBaseController
         );
 
         $params = $this->getRequest()->getParams();
-        $form = $this->getForm();
+
+        /** @var STS\Core\User\UserDTO $user */
+        $user = $this->getAuth()->getIdentity();
+
+        $form = $this->getForm($user);
         $csv_form = $this->getCSVForm();
+
+        if (User::ROLE_COORDINATOR == $user->getRole()) {
+            if (!isset($params['region'])) {
+                // limit filter options to regions they coordinate for
+                $member = $this->memberFacade->getMemberById($user->getAssociatedMemberId());
+                $params['region'] = $member->getCoordinatesForRegions();
+            }
+        }
         if ($form->isValid($params) && array_key_exists('submit', $params)) {
             $criteria = array(
                 'startDate'   => $params['startDate'],
@@ -108,14 +121,16 @@ class Admin_ReportController extends SecureBaseController
         $form = $this->getCSVForm();
 
         $multi = array('region', 'state', 'member', 'schoolType');
-
         foreach ($multi as $key) {
             if (!empty($params[$key])) {
                 $params[$key] = explode(',', $params[$key]);
             }
         }
-        $form->populate($params);
 
+        if (isset($params['schoolType'])) {
+            $params['school_type'] = $params['schoolType'];
+        }
+        $form->populate($params);
         if ($form->isValid($params) && array_key_exists('submit', $params)) {
             $criteria = array(
                 'startDate'   => $params['startDate'],
@@ -145,7 +160,6 @@ class Admin_ReportController extends SecureBaseController
                 'title' => 'Presentation Effectiveness Report'
             )
         );
-
 
         $params = $this->getRequest()->getParams();
         $form = $this->getEffectivenessForm();
@@ -341,14 +355,26 @@ class Admin_ReportController extends SecureBaseController
     /**
      * getForm
      *
+     * @var STS\Core\User\UserDTO $user
      * @return Admin_ReportBasicForm
      */
-    private function getForm()
+    private function getForm($user)
     {
+        if (User::ROLE_COORDINATOR == $user->getRole()) {
+            // limit filter options to regions they coordinate for
+            $member = $this->memberFacade->getMemberById($user->getAssociatedMemberId());
+            $regions = $member->getCoordinatesForRegions();
+            $states = $this->locationFacade->getStatesForRegions($regions);
+            $members = $this->getMembersArray($states);
+        } else {
+            $regions = $this->getRegionsArray();
+            $states = $this->locationFacade->getStates();
+            $members = $this->getMembersArray();
+        }
         $form = new \Admin_ReportBasicForm(array(
-            'regions' => $this->getRegionsArray(),
-            'states'  => $this->locationFacade->getStates(),
-            'members' => $this->getMembersArray(),
+            'regions' => $regions,
+            'states'  => $states,
+            'members' => $members,
             'schoolTypes' => $this->schoolFacade->getSchoolTypes(),
         ));
         return $form;
@@ -391,11 +417,17 @@ class Admin_ReportController extends SecureBaseController
     /**
      * @return array
      */
-    private function getMembersArray()
+    private function getMembersArray($states = null)
     {
         $membersArray = array();
         foreach ($this->memberFacade->getAllMembers() as $member) {
             /** @var STS\Core\Member\MemberDto $member */
+            
+            if ($states != null) {
+                if (!in_array($member->getAddressState(), $states)) {
+                    continue;
+                }
+            }
             $membersArray[$member->getId()] = $member->getDisplayName();
         }
 
