@@ -46,10 +46,13 @@ class AclFactory
         $acl->allow(self::ROLE_COORDINATOR, self::RESOURCE_ADMIN, 'view');
         $acl->allow(self::ROLE_COORDINATOR, self::RESOURCE_MEMBER, 'view');
         $acl->allow(self::ROLE_COORDINATOR, self::RESOURCE_REPORT, 'view');
+        $acl->allow(self::ROLE_COORDINATOR, self::RESOURCE_SCHOOL, 'view');
 
         // explicit deny
         $acl->deny(self::ROLE_COORDINATOR, self::RESOURCE_MEMBER, 'edit');
         $acl->deny(self::ROLE_COORDINATOR, self::RESOURCE_MEMBER, 'delete');
+        $acl->deny(self::ROLE_COORDINATOR, self::RESOURCE_SCHOOL, 'edit');
+        $acl->deny(self::ROLE_COORDINATOR, self::RESOURCE_SCHOOL, 'delete');
         return $acl;
     }
 

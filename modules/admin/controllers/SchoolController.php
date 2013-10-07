@@ -1,6 +1,8 @@
 <?php
 use STS\Core;
+use STS\Web\Security\AclFactory;
 use STS\Web\Controller\SecureBaseController;
+use STS\Domain\User;
 
 class Admin_SchoolController extends SecureBaseController
 {
@@ -25,14 +27,27 @@ class Admin_SchoolController extends SecureBaseController
         $core = Core::getDefaultInstance();
         $this->schoolFacade = $core->load('SchoolFacade');
         $this->locationFacade = $core->load('LocationFacade');
+        $this->memberFacade = $core->load('MemberFacade');
         $this->session = new \Zend_Session_Namespace('admin');
+
+        /** @var STS\Core\User\UserDTO $user */
+        $user = $this->getAuth()->getIdentity();
+
+        // permissions
+        $this->view->can_view = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_SCHOOL, 'view');
+        $this->view->can_edit = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_SCHOOL, 'edit');
+        $this->view->can_delete = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_SCHOOL, 'delete');
     }
 
     public function indexAction()
     {
+        // filter by role
+        $user = $this->getAuth()->getIdentity();
+
         // setup filters
-        $form = $this->getFilterForm();
+        $form = $this->getFilterForm($user);
         $criteria = array();
+
         $this->session->criteria = $criteria;
         $params = $this->getRequest()->getParams();
 
@@ -46,6 +61,15 @@ class Admin_SchoolController extends SecureBaseController
             $this->session->criteria = $criteria;
         }
 
+        if (User::ROLE_COORDINATOR == $user->getRole()) {
+            if (!isset($criteria['region'])) {
+                $member = $this->memberFacade->getMemberById($user->getAssociatedMemberId());
+                $regions = array_merge(array(''), $member->getCoordinatesForRegions());
+                $criteria->region = $regions;
+                $this->session->criteria = $criteria;
+            }
+        }
+
         if (!empty($criteria)) {
             // turn it into a specification?
             $this->view->objects = $this->schoolFacade->getSchoolsMatching($criteria);
@@ -55,10 +79,15 @@ class Admin_SchoolController extends SecureBaseController
 
         $this->view->form = $form;
 
-        $this->view->layout()->pageHeader = $this->view
-            ->partial('partials/page-header.phtml', array(
-                'title' => 'Schools', 'add' => 'Add New School', 'addRoute' => '/admin/school/new'
-            ));
+        $add = array();
+        if ($this->view->can_edit) {
+            $add['add'] = 'Add New School';
+            $add['addRoute'] = '/admin/school/new';
+        }
+        $this->view->layout()->pageHeader = $this->view->partial(
+            'partials/page-header.phtml',
+            array('title' => 'Schools') + $add
+        );
     }
 
     public function excelAction()
@@ -226,11 +255,19 @@ class Admin_SchoolController extends SecureBaseController
      *
      * @return Admin_MemberFilter
      */
-    private function getFilterForm()
+    private function getFilterForm($user)
     {
+        if (User::ROLE_COORDINATOR == $user->getRole()) {
+            // limit filter options to regions they coordinate for
+            $member = $this->memberFacade->getMemberById($user->getAssociatedMemberId());
+            $regions = array_merge(array(''), $member->getCoordinatesForRegions());
+        } else {
+            $regions =  $this->getRegionsArray();
+        }
+
         $form = new \Admin_SchoolFilter(
             array(
-                'regions' => $this->getRegionsArray(),
+                'regions' => $regions,
                 'types' => $this->getSchoolTypesArray(),
             )
         );

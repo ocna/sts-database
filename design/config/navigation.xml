@@ -62,6 +62,7 @@
                 <controller>school</controller>
                 <action>index</action>
                 <resource>school</resource>
+                <privilege>view</privilege>
             </school>
             <member>
                 <label>Members</label>

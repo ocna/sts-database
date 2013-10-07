@@ -46,8 +46,12 @@ $columns = array(
     <?php endforeach; ?>
         <td class="right">
             <div class="btn-group">
+                <?php if ($this->can_edit): ?>
                 <a class="btn btn-mini btn-primary" href="/admin/school/edit?id=<?php echo $object->getId() ?>"><i class="icon-edit"></i></a>
+                <?php endif; ?>
+                <?php if ($this->can_view): ?>
                 <a class="btn btn-mini" href="/admin/school/view?id=<?php echo $object->getId()?>"><i class="icon-info-sign"></i> Details</a>
+                <?php endif; ?>
             </div>
         </td>
     </tr>
