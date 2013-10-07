@@ -1122,13 +1122,27 @@ class Admin_MemberController extends SecureBaseController
             )
         );
 
-        $summary = $this->getMemberSummary();
+        /** @var STS\Core\User\UserDTO $user */
+        $user = $this->getAuth()->getIdentity();
+        $criteria = $this->getDefaultUserCriteria($user);
+        $summary = $this->getMemberSummary($criteria);
         $this->view->summary = $summary;
     }
 
-    public function getMemberSummary()
+    protected function getDefaultUserCriteria($user)
     {
         $criteria = array();
+        if (User::ROLE_COORDINATOR == $user->getRole()) {
+            // limit filter options to regions they coordinate for
+            $member = $this->memberFacade->getMemberById($user->getAssociatedMemberId());
+            $criteria['region'] = $member->getCoordinatesForRegions();
+        }
+
+        return $criteria;
+    }
+
+    public function getMemberSummary($criteria = array())
+    {
         $members = $this->memberFacade->getMembersMatching($criteria);
 
         $summary = new StdClass;
@@ -1201,7 +1215,10 @@ class Admin_MemberController extends SecureBaseController
 
     public function excelBystatusAction()
     {
-        $summary = $this->getMemberSummary();
+        /** @var STS\Core\User\UserDTO $user */
+        $user = $this->getAuth()->getIdentity();
+        $criteria = $this->getDefaultUserCriteria($user);
+        $summary = $this->getMemberSummary($criteria);
 
         $header = array('status', 'count');
         $csv = array();
@@ -1214,7 +1231,11 @@ class Admin_MemberController extends SecureBaseController
 
     public function excelByregionAction()
     {
-        $summary = $this->getMemberSummary();
+        /** @var STS\Core\User\UserDTO $user */
+        $user = $this->getAuth()->getIdentity();
+        $criteria = $this->getDefaultUserCriteria($user);
+        $summary = $this->getMemberSummary($criteria);
+
         $header = array('region', 'coordinator');
         $csv = array();
         foreach ($summary->regions as $region => $values) {
@@ -1227,7 +1248,11 @@ class Admin_MemberController extends SecureBaseController
 
     public function excelByareaAction()
     {
-        $summary = $this->getMemberSummary();
+        /** @var STS\Core\User\UserDTO $user */
+        $user = $this->getAuth()->getIdentity();
+        $criteria = $this->getDefaultUserCriteria($user);
+        $summary = $this->getMemberSummary($criteria);
+
         $header = array('area', 'presenters', 'coordinators', 'facilitators');
         $csv = array();
 

@@ -85,6 +85,7 @@
                 <controller>member</controller>
                 <action>dashboard</action>
                 <resource>member</resource>
+                <privilege>view</privilege>
             </member_dashboard>
              <coordinator>
                 <label>Regional Coordinators</label>
