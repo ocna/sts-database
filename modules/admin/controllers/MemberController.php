@@ -1159,6 +1159,10 @@ class Admin_MemberController extends SecureBaseController
             }
             $summary->status[$member->getStatus()]++;
 
+            if (Member::STATUS_ACTIVE != $member->getStatus()) {
+                continue;
+            }
+
             // by region
             if ($coord = $member->getCoordinatesForRegions()) {
                 foreach ($coord as $region) {
@@ -1168,6 +1172,7 @@ class Admin_MemberController extends SecureBaseController
                         }
 
                         $summary->regions[$region]['coordinates']++;
+                        $summary->regions[$region]['raw'][$member->getID()] = 1;
                     }
                 }
             }
@@ -1180,6 +1185,7 @@ class Admin_MemberController extends SecureBaseController
                     }
 
                     $summary->areas[$area]['coordinates']++;
+                    $summary->areas[$area]['raw'][$member->getID()] = 1;
                 }
             }
 
@@ -1190,7 +1196,17 @@ class Admin_MemberController extends SecureBaseController
                         $summary->areas[$area]['facilitates'] = 0;
                     }
 
+                    // increment area facilitator count
                     $summary->areas[$area]['facilitates']++;
+                    $summary->areas[$area]['raw'][$member->getID()] = 1;
+
+                    // add to list of region facilitators (track uniques to prevent double counting)
+                    /** @var STS\Core\Location\AreaDto $areaDto */
+                    $areaDto = $this->locationFacade->getAreaById($id);
+                    $summary->regions[$areaDto->getRegionName()]['facilitates'][$member->getID()] = 1;
+
+                    // track raw count
+                    $summary->regions[$areaDto->getRegionName()]['raw'][$member->getID()] = 1;
                 }
             }
 
@@ -1202,13 +1218,56 @@ class Admin_MemberController extends SecureBaseController
                     }
 
                     $summary->areas[$area]['presents']++;
+                    $summary->areas[$area]['facilitates']++;
+
+                    $summary->areas[$area]['raw'][$member->getID()] = 1;
+
+                    // add to list of region facilitators (track uniques to prevent double counting)
+                    /** @var STS\Core\Location\AreaDto $areaDto */
+                    $areaDto = $this->locationFacade->getAreaById($id);
+                    $summary->regions[$areaDto->getRegionName()]['presents'][$member->getID()] = 1;
+
+                    // track raw count
+                    $summary->regions[$areaDto->getRegionName()]['raw'][$member->getID()] = 1;
                 }
             }
         }
 
+        // total up each region by member type
+        foreach ($summary->regions as $region => $totals) {
+            $summary->regions[$region]['facilitates'] = array_sum($summary->regions[$region]['facilitates']);
+            $summary->regions[$region]['presents'] = array_sum($summary->regions[$region]['presents']);
+            $summary->regions[$region]['raw'] = array_sum($summary->regions[$region]['raw']);
+        }
+
+        // add summary totals to regions
         ksort($summary->regions);
-        ksort($summary->status);
+        foreach ($summary->regions as $region => $counts) {
+            $summary->regions['Total']['presents'] += $counts['presents'];
+            $summary->regions['Total']['facilitates'] += $counts['facilitates'];
+            $summary->regions['Total']['coordinates'] += $counts['coordinates'];
+            $summary->regions['Total']['raw'] += $counts['raw'];
+        }
+
+        // total up each area by member type
+        foreach ($summary->areas as $area => $totals) {
+            $summary->areas[$area]['raw'] = array_sum($summary->areas[$area]['raw']);
+        }
+
         ksort($summary->areas);
+
+        /*
+         * We can't really total the columns by area, since anyone who is active in
+         * more than one area will be counted multiple times.
+         */
+        // add summary totals to areas
+//        foreach ($summary->areas as $area => $counts) {
+//            $summary->areas['Total']['presents'] += $counts['presents'];
+//            $summary->areas['Total']['facilitates'] += $counts['facilitates'];
+//            $summary->areas['Total']['coordinates'] += $counts['coordinates'];
+//            $summary->areas['Total']['raw'] += $counts['raw'];
+//        }
+        ksort($summary->status);
 
         return $summary;
     }
@@ -1236,10 +1295,11 @@ class Admin_MemberController extends SecureBaseController
         $criteria = $this->getDefaultUserCriteria($user);
         $summary = $this->getMemberSummary($criteria);
 
-        $header = array('region', 'coordinator');
+        $header = array('region', 'presenter', 'facilitator', 'coordinator', 'unique');
         $csv = array();
         foreach ($summary->regions as $region => $values) {
-            $csv[] = array($region, $values['coordinates']);
+            $csv[] = array($region, $values['presents'], $values['facilitates']
+                            , $values['coordinates'], $values['raw']);
         }
 
         $this->outputCSV('MemberByRegion-' . date('Y-m-d') . '.csv', $csv, $header);
@@ -1253,11 +1313,12 @@ class Admin_MemberController extends SecureBaseController
         $criteria = $this->getDefaultUserCriteria($user);
         $summary = $this->getMemberSummary($criteria);
 
-        $header = array('area', 'presenters', 'coordinators', 'facilitators');
+        $header = array('area', 'presenters', 'facilitators', 'coordinators', 'unique');
         $csv = array();
 
         foreach ($summary->areas as $area => $values) {
-            $csv[] = array($area, $values['presents'], $values['coordinates'], $values['facilitates']);
+            $csv[] = array($area, $values['presents'], $values['facilitates']
+                    , $values['coordinates'], $values['raw']);
         }
 
         $this->outputCSV('MemberByArea-' . date('Y-m-d') . '.csv', $csv, $header);
