@@ -1173,6 +1173,9 @@ class Admin_MemberController extends SecureBaseController
 
                         $summary->regions[$region]['coordinates']++;
                         $summary->regions[$region]['raw'][$member->getID()] = 1;
+
+                        // track unique for totals
+                        $summary->region_total['coordinates'][$member->getID()] = 1;
                     }
                 }
             }
@@ -1186,6 +1189,9 @@ class Admin_MemberController extends SecureBaseController
 
                     $summary->areas[$area]['coordinates']++;
                     $summary->areas[$area]['raw'][$member->getID()] = 1;
+
+                    // track unique for totals
+                    $summary->area_total['coordinates'][$member->getID()] = 1;
                 }
             }
 
@@ -1207,6 +1213,11 @@ class Admin_MemberController extends SecureBaseController
 
                     // track raw count
                     $summary->regions[$areaDto->getRegionName()]['raw'][$member->getID()] = 1;
+                    // track unique for totals
+                    $summary->region_total['facilitates'][$member->getID()] = 1;
+
+                    // track unique for totals
+                    $summary->area_total['facilitates'][$member->getID()] = 1;
                 }
             }
 
@@ -1229,25 +1240,28 @@ class Admin_MemberController extends SecureBaseController
 
                     // track raw count
                     $summary->regions[$areaDto->getRegionName()]['raw'][$member->getID()] = 1;
+                    // track unique for totals
+                    $summary->region_total['presents'][$member->getID()] = 1;
+
+                    // track unique for totals
+                    $summary->area_total['presents'][$member->getID()] = 1;
                 }
             }
         }
 
-        // total up each region by member type
+        // total up each region row by member type
         foreach ($summary->regions as $region => $totals) {
             $summary->regions[$region]['facilitates'] = array_sum($summary->regions[$region]['facilitates']);
             $summary->regions[$region]['presents'] = array_sum($summary->regions[$region]['presents']);
             $summary->regions[$region]['raw'] = array_sum($summary->regions[$region]['raw']);
         }
 
-        // add summary totals to regions
+        // add summary totals to region columns
         ksort($summary->regions);
-        foreach ($summary->regions as $region => $counts) {
-            $summary->regions['Total']['presents'] += $counts['presents'];
-            $summary->regions['Total']['facilitates'] += $counts['facilitates'];
-            $summary->regions['Total']['coordinates'] += $counts['coordinates'];
-            $summary->regions['Total']['raw'] += $counts['raw'];
-        }
+        $summary->regions['Total']['presents'] = array_sum($summary->region_total['presents']);
+        $summary->regions['Total']['facilitates'] = array_sum($summary->region_total['facilitates']);
+        $summary->regions['Total']['coordinates'] = array_sum($summary->region_total['coordinates']);
+        $summary->regions['Total']['raw'] = '-';
 
         // total up each area by member type
         foreach ($summary->areas as $area => $totals) {
@@ -1255,18 +1269,11 @@ class Admin_MemberController extends SecureBaseController
         }
 
         ksort($summary->areas);
+        $summary->areas['Total']['presents'] = array_sum($summary->area_total['presents']);
+        $summary->areas['Total']['facilitates'] = array_sum($summary->area_total['facilitates']);
+        $summary->areas['Total']['coordinates'] = array_sum($summary->area_total['coordinates']);
+        $summary->areas['Total']['raw'] = '-';
 
-        /*
-         * We can't really total the columns by area, since anyone who is active in
-         * more than one area will be counted multiple times.
-         */
-        // add summary totals to areas
-//        foreach ($summary->areas as $area => $counts) {
-//            $summary->areas['Total']['presents'] += $counts['presents'];
-//            $summary->areas['Total']['facilitates'] += $counts['facilitates'];
-//            $summary->areas['Total']['coordinates'] += $counts['coordinates'];
-//            $summary->areas['Total']['raw'] += $counts['raw'];
-//        }
         ksort($summary->status);
 
         return $summary;
