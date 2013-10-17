@@ -65,7 +65,7 @@ class Admin_SchoolController extends SecureBaseController
             if (!isset($criteria['region'])) {
                 $member = $this->memberFacade->getMemberById($user->getAssociatedMemberId());
                 $regions = array_merge(array(''), $member->getCoordinatesForRegions());
-                $criteria->region = $regions;
+                $criteria['region'] = $regions;
                 $this->session->criteria = $criteria;
             }
         }
