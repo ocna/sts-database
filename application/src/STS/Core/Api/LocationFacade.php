@@ -12,5 +12,15 @@ interface LocationFacade
 
     public function updateArea($id, $name, $city, $state, $region);
 
+    public function deleteArea($id);
+
+    public function renameRegion($old_name, $new_name);
+
     public function getAreaById($id);
+
+    public function searchAreasByName($term);
+
+    public function getAreasForRegions($regions);
+
+    public function getRegion($name);
 }

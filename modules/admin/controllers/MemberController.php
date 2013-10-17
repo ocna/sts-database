@@ -1124,24 +1124,31 @@ class Admin_MemberController extends SecureBaseController
 
         /** @var STS\Core\User\UserDTO $user */
         $user = $this->getAuth()->getIdentity();
-        $criteria = $this->getDefaultUserCriteria($user);
-        $summary = $this->getMemberSummary($criteria);
+        list($criteria, $options) = $this->getDefaultUserCriteria($user);
+        $summary = $this->getMemberSummary($criteria, $options);
         $this->view->summary = $summary;
     }
 
     protected function getDefaultUserCriteria($user)
     {
         $criteria = array();
+        $options = array();
         if (User::ROLE_COORDINATOR == $user->getRole()) {
             // limit filter options to regions they coordinate for
             $member = $this->memberFacade->getMemberById($user->getAssociatedMemberId());
             $criteria['region'] = $member->getCoordinatesForRegions();
+            $options['allowed_regions']= $criteria['region'];
+            $areas = $this->locationFacade->getAreasForRegions($criteria['region']);
+
+            foreach ($areas as $area) {
+                $options['allowed_areas'][$area->getID()] = $area->getName();
+            }
         }
 
-        return $criteria;
+        return array($criteria, $options);
     }
 
-    public function getMemberSummary($criteria = array())
+    public function getMemberSummary($criteria = array(), $options = array())
     {
         $members = $this->memberFacade->getMembersMatching($criteria);
 
@@ -1167,6 +1174,11 @@ class Admin_MemberController extends SecureBaseController
             if ($coord = $member->getCoordinatesForRegions()) {
                 foreach ($coord as $region) {
                     if ($region) {
+                        // check if allowed
+                        if (!empty($options['allowed_regions']) && !isset($options['allowed_regions'][$region])) {
+                            continue;
+                        }
+
                         if (!isset($summary->regions[$region]['coordinates'])) {
                             $summary->regions[$region]['coordinates'] = 0;
                         }
@@ -1178,11 +1190,21 @@ class Admin_MemberController extends SecureBaseController
                         $summary->region_total['coordinates'][$member->getID()] = 1;
                     }
                 }
+//                echo '<pre>'; print_r($options); echo '</pre>';
+//                echo '<pre>'; print_r($summary); echo '</pre>';
+//                die('oam 1187');
             }
+
+
 
             // area coordinators
             if ($areas = $member->getCoordinatesForAreas()) {
                 foreach ($areas as $id => $area) {
+                    // check if allowed
+                    if (!empty($options['allowed_areas']) && !isset($options['allowed_areas'][$id])) {
+                        continue;
+                    }
+
                     if (!isset($summary->areas[$area]['coordinates'])) {
                         $summary->areas[$area]['coordinates'] = 0;
                     }
@@ -1197,7 +1219,14 @@ class Admin_MemberController extends SecureBaseController
 
             // area facilitators
             if ($areas = $member->getFacilitatesForAreas()) {
+
                 foreach ($areas as $id => $area) {
+
+                    // check if allowed
+                    if (!empty($options['allowed_areas']) && !isset($options['allowed_areas'][$id])) {
+                        continue;
+                    }
+
                     if (!isset($summary->areas[$area]['facilitates'])) {
                         $summary->areas[$area]['facilitates'] = 0;
                     }
@@ -1209,10 +1238,15 @@ class Admin_MemberController extends SecureBaseController
                     // add to list of region facilitators (track uniques to prevent double counting)
                     /** @var STS\Core\Location\AreaDto $areaDto */
                     $areaDto = $this->locationFacade->getAreaById($id);
-                    $summary->regions[$areaDto->getRegionName()]['facilitates'][$member->getID()] = 1;
 
-                    // track raw count
-                    $summary->regions[$areaDto->getRegionName()]['raw'][$member->getID()] = 1;
+                    // check if allowed
+                    if (empty($options['allowed_regions']) || isset($options['allowed_regions'][$areaDto->getRegionName()])) {
+                        $summary->regions[$areaDto->getRegionName()]['facilitates'][$member->getID()] = 1;
+
+                        // track raw count
+                        $summary->regions[$areaDto->getRegionName()]['raw'][$member->getID()] = 1;
+                    }
+
                     // track unique for totals
                     $summary->region_total['facilitates'][$member->getID()] = 1;
 
@@ -1224,6 +1258,12 @@ class Admin_MemberController extends SecureBaseController
             // area presenters
             if ($areas = $member->getPresentsForAreas()) {
                 foreach ($areas as $id => $area) {
+
+                    // check if allowed
+                    if (!empty($options['allowed_areas']) && !isset($options['allowed_areas'][$id])) {
+                        continue;
+                    }
+
                     if (!isset($summary->areas[$area]['presents'])) {
                         $summary->areas[$area]['presents'] = 0;
                     }
@@ -1236,10 +1276,14 @@ class Admin_MemberController extends SecureBaseController
                     // add to list of region facilitators (track uniques to prevent double counting)
                     /** @var STS\Core\Location\AreaDto $areaDto */
                     $areaDto = $this->locationFacade->getAreaById($id);
-                    $summary->regions[$areaDto->getRegionName()]['presents'][$member->getID()] = 1;
 
-                    // track raw count
-                    $summary->regions[$areaDto->getRegionName()]['raw'][$member->getID()] = 1;
+                    if (empty($options['allowed_regions']) || isset($options['allowed_regions'][$areaDto->getRegionName()])) {
+                        $summary->regions[$areaDto->getRegionName()]['presents'][$member->getID()] = 1;
+
+                        // track raw count
+                        $summary->regions[$areaDto->getRegionName()]['raw'][$member->getID()] = 1;
+                    }
+
                     // track unique for totals
                     $summary->region_total['presents'][$member->getID()] = 1;
 
@@ -1248,7 +1292,7 @@ class Admin_MemberController extends SecureBaseController
                 }
             }
         }
-
+        
         // total up each region row by member type
         foreach ($summary->regions as $region => $totals) {
             $summary->regions[$region]['facilitates'] = array_sum($summary->regions[$region]['facilitates']);
