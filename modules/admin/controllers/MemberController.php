@@ -538,7 +538,6 @@ class Admin_MemberController extends SecureBaseController
                     } else {
                         // if a member has be downgraded from a system user to a member
                         // its ok as that is handled by the saving
-
                         $updatedMemberDto = $this->updateMember($id, $postData);
                         $successMessage = "The member \"{$postData['firstName']} {$postData['lastName']}\" has been successfully updated.";
 

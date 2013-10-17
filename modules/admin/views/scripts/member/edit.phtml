@@ -9,7 +9,7 @@ $this->headScript()->appendFile('/js/admin/member/edit.js');
 
 <?php if ($this->storedCoordinatesFor) : ?>
 <?php foreach (array_values($this->storedCoordinatesFor) as $key => $value) : ?>
-    <input type="text" name="coordinatesFor[<?php echo $key ?>]" class="coordinatesFor" value="<?php echo $value ?>"/>
+    <input type="text" name="coordinatesFor[<?php echo $value ?>]" class="coordinatesFor" value="<?php echo $value ?>"/>
 <?php endforeach; ?>
 <?php endif; ?>
 
