@@ -110,4 +110,36 @@ class MongoSurveyRepository implements SurveyRepository
                 break;
         }
     }
+
+    /**
+     * updateEnteredBy
+     *
+     * @param $old
+     * @param $new
+     */
+    public function updateEnteredBy($old, $new)
+    {
+        $results = $this->mongoDb->survey->update(
+            array('entered_by_user_id' => $old),
+            array('$set' => array('entered_by_user_id' => $new)),
+            array(
+                'multiple' => 1
+            )
+        );
+
+        return $results;
+    }
+
+    /**
+     * @param $id
+     * @return bool
+     */
+    public function delete($id)
+    {
+        $results = $this->mongoDb->survey->remove(
+            array('_id' => new \MongoId($id))
+        );
+
+        return ($results['n'] > 0);
+    }
 }

@@ -1,0 +1,20 @@
+<script>
+function fixCalWidth() {
+    var docWidth = $('.container-fluid').first().width();
+    $('#calemb').attr('width', docWidth).attr('height', Math.floor(docWidth *.66));
+
+};
+
+var resizeTimer;
+$(window).resize(function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(fixCalWidth, 50);
+});
+
+$(document).ready(function() {
+    fixCalWidth();
+})
+</script>
+
+<p>To edit and add events, please login to <a href="https://www.google.com/calendar">Google Calendar</a>.</p>
+<iframe id="calemb" src="https://www.google.com/calendar/embed?showCalendars=0&amp;height=<?= $this->height ?>&amp;wkst=1&amp;bgcolor=%23ffffff&amp;src=<?= $this->cal_src ?>&amp;color=%232F6309&amp;ctz=America%2FNew_York" style=" border-width:0 " width="<?= $this->width ?>" height="<?= $this->height ?>" frameborder="0" scrolling="no"></iframe>

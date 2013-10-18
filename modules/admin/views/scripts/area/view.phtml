@@ -1,0 +1,56 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.confirm-delete').bind('click', function(){
+            var id = $(this).data('id'),
+                name = $(this).data('fullname');
+            $('#areaDeleteModal').data({'id': id, 'fullname': name}).modal('show');
+        });
+
+        $('#areaDeleteModal').bind('show', function() {
+            var id = $(this).data('id'),
+                name = $(this).data('fullname'),
+                removeBtn = $(this).find('.btn-danger'),
+                href = removeBtn.attr('href');
+                content = $('.modal-body p').html();
+                $('.confirm-message').html(content.replace(/~area~/, name));
+                removeBtn.attr('href', href.replace(/\?id=.*/, '?id=' + id));
+        }).modal({
+            backdrop: true,
+            show: false
+        });
+    });
+</script>
+<dl class="dl-horizontal">
+  <dt>City:</dt>
+  <dd><?=  $this->area->getCity()  ?></dd>
+  <dt>State:</dt>
+  <dd><?=  $this->area->getState()? $this->area->getState(): '-'; ?></dd>
+  <dt>Region:</dt>
+  <dd><?=  $this->area->getRegionName() ? $this->area->getRegionName(): '-'; ?></dd>
+</dl>
+<br>
+<div class="well">
+<div class="btn-toolbar">
+  <div class="btn-group">
+  <a class="btn btn-primary" href="/admin/area/edit?id=<?=  $this->area->getId() ?>"><i class="icon-edit"></i> Edit</a>
+<?php if (1 == $this->can_delete): ?>
+  <a class="btn btn-danger confirm-delete" data-fullname="<?php echo $this->area->getName() ?>" data-id="<?php echo $this->area->getID() ?>" href="#"><i class="icon-trash"> Delete</i></a>
+      <?php endif; ?>
+  </div>
+  <a class="btn" href="/admin/region">Go Back</a>
+</div></div>
+
+<div id="areaDeleteModal" class="modal hide fade">
+    <div class="modal-header">
+      <a href="#" class="close">&times;</a>
+      <h3>Delete Member</h3>
+    </div>
+    <div class="modal-body">
+      <p class="confirm-message">You are about to delete the area ~area~, this procedure is irreversible.</p>
+      <p>Are you sure you want to do this?</p>
+    </div>
+    <div class="modal-footer">
+      <a href="/admin/area/delete?id=" class="btn btn-danger">Yes</a>
+      <a href="javascript:$('#memberDeleteModal').modal('hide')" class="btn btn-secondary">No</a>
+    </div>
+</div>

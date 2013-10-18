@@ -12,3 +12,4 @@ build-deploy
 .templates
 features
 data
+core.xml

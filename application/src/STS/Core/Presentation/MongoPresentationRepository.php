@@ -10,12 +10,25 @@ use STS\Domain\Survey\Template;
 
 class MongoPresentationRepository implements PresentationRepository
 {
-
     private $mongoDb;
+
+    /**
+     * __construct
+     *
+     * @param $mongoDb
+     */
     public function __construct($mongoDb)
     {
         $this->mongoDb = $mongoDb;
     }
+
+    /**
+     * save
+     *
+     * @param $presentation
+     * @return Presentation
+     * @throws \InvalidArgumentException
+     */
     public function save($presentation)
     {
         if (!$presentation instanceof Presentation) {
@@ -44,6 +57,15 @@ class MongoPresentationRepository implements PresentationRepository
         return $presentation;
     }
 
+    /**
+     * load
+     *
+     * Load a single presentation
+     *
+     * @param $id
+     * @return Presentation
+     * @throws \InvalidArgumentException
+     */
     public function load($id)
     {
         $data = $this->mongoDb->presentation->findOne(
@@ -59,6 +81,8 @@ class MongoPresentationRepository implements PresentationRepository
     }
 
      /**
+      * find
+      *
       * @param array $criteria
       */
     public function find($criteria = array())
@@ -77,6 +101,12 @@ class MongoPresentationRepository implements PresentationRepository
         return $presentations;
     }
 
+    /**
+     * mapData
+     *
+     * @param $data
+     * @return Presentation
+     */
     private function mapData($data)
     {
         $presentation = new Presentation();
@@ -101,9 +131,39 @@ class MongoPresentationRepository implements PresentationRepository
         $memberRepository = new MongoMemberRepository($this->mongoDb);
         $members = array();
         foreach ($data['members'] as $memberId) {
-            $members[] = $memberRepository->load($memberId);
+            if ($memberId) {
+                $members[] = $memberRepository->load($memberId);
+            }
         }
         $presentation->setMembers($members);
         return $presentation;
+    }
+
+    /**
+     * updateEnteredBy
+     *
+     * @param $old
+     * @param $new
+     */
+    public function updateEnteredBy($old, $new)
+    {
+        $results = $this->mongoDb->presentation->update(
+            array('entered_by_user_id' => $old),
+            array('$set' => array('entered_by_user_id' => $new)),
+            array(
+                'multiple' => 1
+            )
+        );
+
+        return $results;
+    }
+
+    public function delete($id)
+    {
+        $results = $this->mongoDb->presentation->remove(
+            array('_id' => new \MongoId($id))
+        );
+
+        return ($results['n'] > 0);
     }
 }

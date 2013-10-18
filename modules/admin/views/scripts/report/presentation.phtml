@@ -1,19 +1,10 @@
-
-<script type="text/javascript">
-    $(document).ready(function() {
-        $( "#startDate" ).datepicker();
-        $("#startDateButton").click(function(){
-            $( "#startDate" ).datepicker( "show" );
-        })
-
-        $( "#endDate" ).datepicker();
-        $("#endDateButton").click(function(){
-            $( "#endDate" ).datepicker( "show" );
-        })
-    })
-</script>
+<?php
+$this->headLink()->appendStylesheet('/js/chosen/chosen.min.css');
+$this->headScript()->appendFile('/js/chosen/chosen.jquery.min.js');
+$this->headScript()->appendFile('/js/admin/report/presentation.js');
+?>
 <?php if($this->noData != true): ?>
-<script type='text/javascript' src='https://www.google.com/jsapi'></script>
+    <script type='text/javascript' src='https://www.google.com/jsapi'></script>
     <script type='text/javascript'>
      google.load('visualization', '1', {'packages': ['geochart']});
      google.setOnLoadCallback(drawRegionsMap);
@@ -39,6 +30,10 @@
         <div class="row">
             <div class="span3 well">
                 <?php echo $this->form; ?>
+
+                <?php if (!$this->noData == true): ?>
+                    <?php echo $this->csv_form; ?>
+                <?php endif; ?>
             </div>
             <div class="span8">
                 <?php if($this->noData == true): ?>
@@ -50,26 +45,131 @@
                 <h3>Data for <?php echo $this->startDate; ?> to <?php echo $this->endDate; ?></h3>
                 <div class="row-fluid">
                     <div class="span6 well well-small">
-                        <h4><i class="icon-file icon-large"></i>&nbsp;Presentations Held</h4><br><br>
-                        <div style="font-size: 63px;">
-                            <strong><?php echo $this->summary->totalPresentations; ?></strong>
+                        <h4><i class="icon-file icon-large"></i>&nbsp;Presentations Held</h4>
+                        <div class="metric metric-large">
+                            <strong><?php echo number_format($this->summary->totalPresentations); ?></strong>
                         </div>
                         <br>
                     </div>
                     <div class="span6 well well-small">
-                        <h4><i class="icon-user icon-large"></i>&nbsp;Students Reached</h4><br><br>
-                        <div style="font-size: 63px;">
-                            <strong><?php echo $this->summary->totalStudents; ?></strong>
+                        <h4><i class="icon-user icon-large"></i>&nbsp;Students Reached</h4>
+                        <div class="metric metric-large">
+                            <strong><?php echo number_format($this->summary->totalStudents); ?></strong>
                         </div>
                         <br>
                     </div>
                 </div>
+
+                <div class="row-fluid">
+                    <div class="span6 well well-small">
+                        <h4><i class="icon-share icon-large"></i>&nbsp;Schools Visited</h4>
+                        <div class="metric metric-large">
+                            <strong><?php echo number_format(count($this->summary->schoolsUnique)); ?></strong>
+                        </div>
+                        <br>
+                    </div>
+                    <div class="span6 well well-small">
+                        <h4><i class="icon-group icon-large"></i>&nbsp;Members Presented</h4>
+                        <div class="metric metric-large">
+                            <strong><?php echo number_format(count($this->summary->members)); ?></strong>
+                        </div>
+                        <br>
+                    </div>
+                </div>
+
                 <h3>Geographic Distribution</h3>
                 <div class="row-fluid">
                     <div class="span12">
                         <div id="chart_div"></div>
                     </div>
                 </div>
+
+                <div class="row-fluid">
+                    <div class="span12 well well-small">
+                        <h4><i class="icon-beaker icon-large"></i>&nbsp;Medical Schools</h4>
+
+                        <div class="metric">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Schools</th>
+                                        <th>Presentations</th>
+                                        <th>Students</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($this->summary->schools as $type => $values): ?>
+                                    <tr>
+                                        <td class="row-label"><?= $type ?></td>
+                                        <td class="row-int cell-25"><?= count($values['unique']) ?></td>
+                                        <td class="row-int cell-25"><?= $values['presentations'] ?></td>
+                                        <td class="row-int cell-25"><?= $values['participants'] ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row-fluid">
+                    <div class="span12 well well-small">
+                        <h4><i class="icon-map-marker icon-large"></i>&nbsp;Regions</h4>
+
+                        <div class="metric">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Region</th>
+                                        <th>Presentations</th>
+                                        <th>Students</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($this->summary->regions as $region => $values): ?>
+                                    <tr>
+                                        <td class="row-label"><?= $region ?></td>
+                                        <td class="row-int cell-25"><?= $values['presentations'] ?></td>
+                                        <td class="row-int cell-25"><?= $values['participants'] ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row-fluid">
+                    <div class="span12 well well-small">
+                        <h4><i class="icon-group icon-large"></i>&nbsp;Presenters</h4>
+
+                        <div class="metric metric-large">
+                            <strong><?php echo number_format(count($this->summary->members)); ?></strong>
+                        </div>
+                        <div class="metric">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Member</th>
+                                        <th>Presentations</th>
+                                        <th>Students</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($this->summary->members as $name => $values): ?>
+                                    <tr>
+                                        <td class="row-label"><?= $name ?></td>
+                                        <td class="row-int cell-25"><?= $values['presentations'] ?></td>
+                                        <td class="row-int cell-25"><?= $values['participants'] ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 <?php endif; ?>
             </div>
         </div>

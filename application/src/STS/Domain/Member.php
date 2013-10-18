@@ -16,6 +16,10 @@ class Member extends EntityWithTypes
     const STATUS_INACTIVE = 'Inactive';
     const STATUS_DECEASED = 'Deceased';
 
+    const ACTIVITY_PRESENTER = 'Presenter';
+    const ACTIVITY_ONSITE_FACILITATOR = 'On-site Facilitator';
+    const ACTIVITY_AREA_FACILITATOR = 'Area Facilitator';
+
     private $legacyId;
     private $firstName;
     private $lastName;
@@ -23,6 +27,7 @@ class Member extends EntityWithTypes
     private $presentsFor = array();
     private $facilitatesFor = array();
     private $coordinatesFor = array();
+    private $activities = array();
     private $notes;
     private $deceased = false;
     private $address;
@@ -54,6 +59,12 @@ class Member extends EntityWithTypes
     public function clearPhoneNumbers()
     {
         $this->phoneNumbers = array();
+        return $this;
+    }
+
+    public function clearActivities()
+    {
+        $this->activities = array();
         return $this;
     }
 
@@ -108,44 +119,66 @@ class Member extends EntityWithTypes
 
     public function toMongoArray()
     {
+        // prepare facilities array for storing
         $facilitatesFor = array();
         foreach ($this->facilitatesFor as $area) {
             $facilitatesFor[] = array("_id" => new \MongoId($area->getId()));
         }
+
+        // prepare presentsFor array for storing
         $presentsFor= array();
         foreach ($this->presentsFor as $area) {
             $presentsFor[] = array("_id" => new \MongoId($area->getId()));
         }
+
+        // prepare coordinatesFor array for storing
         $coordinatesFor = array();
         foreach ($this->coordinatesFor as $area) {
             $coordinatesFor[] = array("_id" => new \MongoId($area->getId()));
         }
+
+        // prepare phoneNumbers array for storing
         $phoneNumbers = array();
         foreach ($this->phoneNumbers as $phoneNumber) {
             $phoneNumbers[] = array("number"=> $phoneNumber->getNumber(), "type"=>$phoneNumber->getType());
         }
+
+        // prepare activities
+        $activities = array_values($this->getActivities());
+
+        // build the array that will get saved in mongodb
         $array = array(
-                'id' => $this->id, 'fname' => utf8_encode($this->firstName), 'lname'=>utf8_encode($this->lastName), 'type' => $this->type, 'notes' => utf8_encode($this->notes),
-                'legacyid' => $this->legacyId, 'status'=>$this->status, 'fullname' => utf8_encode($this->getFullName()),
-                'user_id' => $this->associatedUserId,
-                'address' => array(
-                        'line_one' => utf8_encode($this->address->getLineOne()), 'line_two' => utf8_encode($this->address->getLineTwo()),
-                        'city' => utf8_encode($this->address->getCity()), 'state' => $this->address->getState(),
-                        'zip' => $this->address->getZip()
-                ),
-                'facilitates_for' => $facilitatesFor,
-                'presents_for'=> $presentsFor,
-                'coordinates_for'=> $coordinatesFor,
-                'email'=> utf8_encode($this->email),
-                'date_trained' => $this->getMongoDateTrained(),
-                'diagnosis' => array(
-                    'stage' => $this->diagnosis->getStage(),
-                    'date' => $this->diagnosis->getMongoDate()
-                    ),
-                'phone_numbers' => $phoneNumbers,
-                'dateCreated' => new \MongoDate($this->getCreatedOn()),
-                'dateUpdated' => new \MongoDate($this->getUpdatedOn())
+            'id'       => $this->id,
+            'fname'    => utf8_encode($this->firstName),
+            'lname'    => utf8_encode($this->lastName),
+            'type'     => $this->type,
+            'notes'    => utf8_encode($this->notes),
+            'legacyid' => $this->legacyId,
+            'status'   => $this->status,
+            'activities' => $activities,
+            'fullname' => utf8_encode($this->getFullName()),
+            'user_id'  => $this->associatedUserId,
+            'address'  => array(
+                'line_one' => utf8_encode($this->address->getLineOne()),
+                'line_two' => utf8_encode($this->address->getLineTwo()),
+                'city' => utf8_encode($this->address->getCity()),
+                'state' => $this->address->getState(),
+                'zip' => $this->address->getZip()
+            ),
+            'facilitates_for' => $facilitatesFor,
+            'presents_for'    => $presentsFor,
+            'coordinates_for' => $coordinatesFor,
+            'email'           => utf8_encode($this->email),
+            'date_trained'    => $this->getMongoDateTrained(),
+            'diagnosis'       => array(
+                'stage' => $this->diagnosis->getStage(),
+                'date' => $this->diagnosis->getMongoDate()
+            ),
+            'phone_numbers' => $phoneNumbers,
+            'dateCreated'  => new \MongoDate($this->getCreatedOn()),
+            'dateUpdated'  => new \MongoDate($this->getUpdatedOn())
         );
+
         return $array;
     }
 
@@ -156,6 +189,7 @@ class Member extends EntityWithTypes
 
     public static function getAvailableStatuses()
     {
+        // TODO cache results?
         $reflected = new \ReflectionClass(get_called_class());
         $statuses = array();
         foreach ($reflected->getConstants() as $key => $value) {
@@ -165,6 +199,7 @@ class Member extends EntityWithTypes
         }
         return $statuses;
     }
+
     public static function getAvailableStatus($key)
     {
         if (substr($key, 0, 7) != 'STATUS_') {
@@ -176,6 +211,7 @@ class Member extends EntityWithTypes
         $reflected = new \ReflectionClass(get_called_class());
         return $reflected->getConstant($key);
     }
+
     public function setStatus($status)
     {
         if ($status !== null && !in_array($status, static::getAvailableStatuses(), true)) {
@@ -185,29 +221,86 @@ class Member extends EntityWithTypes
         return $this;
     }
 
+    /**
+     * getActivities
+     *
+     * @return array
+     */
+    public function getActivities() {
+        return $this->activities;
+    }
+
+    /**
+     * getAvailableActivities
+     *
+     * Return an array of allowed activities for members.
+     *
+     * @return array
+     */
+    public static function getAvailableActivities()
+    {
+        static $activities;
+
+        if (!isset($activities)) {
+            $reflected = new \ReflectionClass(get_called_class());
+            $activities = array();
+
+            foreach ($reflected->getConstants() as $key => $value) {
+                // keep the ones that start with ACTIVITY_
+                if (0 === strpos($key, 'ACTIVITY_')) {
+                    $activities[$key] = $value;
+                }
+            }
+        }
+        return $activities;
+    }
+
+    /**
+     * setActivity
+     *
+     * Sets an activity, if its a valid one.
+     *
+     * @param $activity
+     * @return $this
+     * @throws \InvalidArgumentException
+     */
+    public function setActivity($activity) {
+        if ($activity !== null && !in_array($activity, static::getAvailableActivities(), true)) {
+            throw new \InvalidArgumentException('No such activity with given value:' . $activity);
+        }
+        $this->activities[$activity] = $activity;
+        return $this;
+    }
+
+
     public function getAssociatedUserId()
     {
         return $this->associatedUserId;
     }
+
     public function setAssociatedUserId($associatedUserId)
     {
         $this->associatedUserId = $associatedUserId;
         return $this;
     }
+
     public function getAddress()
     {
         return $this->address;
     }
+
     public function setAddress($address)
     {
         $this->address = $address;
         return $this;
     }
+
     public function hasPassedAway()
     {
         $this->setStatus(self::STATUS_DECEASED);
         return $this;
     }
+
     public function isDeceased()
     {
         if ($this->getStatus()==self::STATUS_DECEASED) {
@@ -216,10 +309,12 @@ class Member extends EntityWithTypes
             return false;
         }
     }
+
     public function getNotes()
     {
         return $this->notes;
     }
+
     public function setNotes($notes)
     {
         $this->notes = $notes;
@@ -229,11 +324,13 @@ class Member extends EntityWithTypes
     {
         return $this->firstName;
     }
+
     public function setFirstName($firstName)
     {
         $this->firstName = $firstName;
         return $this;
     }
+
     public function getLastName()
     {
         return $this->lastName;
@@ -243,6 +340,7 @@ class Member extends EntityWithTypes
         $this->lastName = $lastName;
         return $this;
     }
+
     public function getLegacyId()
     {
         return $this->legacyId;
@@ -252,33 +350,40 @@ class Member extends EntityWithTypes
         $this->legacyId = $legacyId;
         return $this;
     }
+
     public function canPresentForArea($area)
     {
         $this->presentsFor[] = $area;
         return $this;
     }
+
     public function getPresentsForAreas()
     {
         return $this->presentsFor;
     }
+
     public function canFacilitateForArea($area)
     {
         $this->facilitatesFor[] = $area;
         return $this;
     }
+
     public function getFacilitatesForAreas()
     {
         return $this->facilitatesFor;
     }
+
     public function canCoordinateForArea($area)
     {
         $this->coordinatesFor[] = $area;
         return $this;
     }
+
     public function getCoordinatesForAreas()
     {
         return $this->coordinatesFor;
     }
+
     public function getAllAssociatedAreas()
     {
         $areas = array();
@@ -327,6 +432,7 @@ class Member extends EntityWithTypes
             }
         }
     }
+
     public function getFullName()
     {
         return $this->firstName . ' '. $this->lastName;

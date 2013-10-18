@@ -13,17 +13,26 @@ class Presentation extends EntityWithTypes
     const TYPE_RES_OBGYN = 'RES OBGYN';
     const TYPE_RES_INT = 'RES INT';
     const TYPE_OTHER = 'OTHER';
-
+    const TYPE_PENDING = "PENDING";
 
     private $date;
     private $notes;
     private $numberOfParticipants;
     private $numberOfFormsReturnedPre;
     private $numberOfFormsReturnedPost;
+
+    /**
+     * @var School
+     */
     private $location;
     private $members = array();
+
+    /**
+     * @var Survey
+     */
     private $survey;
     private $enteredByUserId;
+
     public function toMongoArray()
     {
         $array = array(
@@ -43,10 +52,12 @@ class Presentation extends EntityWithTypes
         $array['members'] = $members;
         return $array;
     }
+
     public function getEnteredByUserId()
     {
         return $this->enteredByUserId;
     }
+
     public function setEnteredByUserId($enteredByUserId)
     {
         $this->enteredByUserId = $enteredByUserId;
@@ -57,84 +68,156 @@ class Presentation extends EntityWithTypes
     {
         return $this->date;
     }
+
     public function setDate($date)
     {
         $this->date = $date;
         return $this;
     }
+
     public function getNotes()
     {
         return $this->notes;
     }
+
     public function setNotes($notes)
     {
         $this->notes = $notes;
         return $this;
     }
+
     public function getNumberOfParticipants()
     {
         return $this->numberOfParticipants;
     }
+
     public function setNumberOfParticipants($numberOfParticipants)
     {
         $this->numberOfParticipants = $numberOfParticipants;
         return $this;
     }
+
     public function getNumberOfFormsReturnedPost()
     {
         return $this->numberOfFormsReturnedPost;
     }
+
     public function setNumberOfFormsReturnedPost($numberOfFormsReturnedPost)
     {
         $this->numberOfFormsReturnedPost = $numberOfFormsReturnedPost;
         return $this;
     }
+
     public function getNumberOfFormsReturnedPre()
     {
         return $this->numberOfFormsReturnedPre;
     }
+
     public function setNumberOfFormsReturnedPre($numberOfFormsReturnedPre)
     {
         $this->numberOfFormsReturnedPre = $numberOfFormsReturnedPre;
         return $this;
     }
+
+    /**
+     * @return \STS\Domain\School
+     */
     public function getLocation()
     {
         return $this->location;
     }
-    public function setLocation($location)
+
+    public function setLocation(School $location)
     {
         $this->location = $location;
         return $this;
     }
+
     public function getMembers()
     {
         return $this->members;
     }
+
     public function setMembers($members)
     {
         $this->members = $members;
         return $this;
     }
+
+    /**
+     * @return Survey
+     */
     public function getSurvey()
     {
         return $this->survey;
     }
-    public function setSurvey($survey)
+
+    /**
+     * @param Survey $survey
+     * @return $this
+     */
+    public function setSurvey(Survey $survey)
     {
         $this->survey = $survey;
         return $this;
     }
 
-    public function isAccessableByMemberUser($member, $user)
+    public function isAccessableByMemberUser($member, User $user)
     {
-        if($user->getRole() == 'admin'){
+        if ($user->getRole() == 'admin') {
             return true;
         }
-        if($user->getId() == $this->enteredByUserId){
+
+        if ($user->getId() == $this->enteredByUserId) {
             return true;
         }
+
         $spec = new MemberSchoolSpecification($member);
         return $spec->isSatisfiedBy($this->location);
+    }
+
+    /**
+     * @return float
+     */
+    public function getCorrectBeforePercentage() {
+        if (! $this->numberOfFormsReturnedPre) {
+            return 0;
+        }
+        return ($this->survey->getCorrectBeforePerQuestion() /
+            $this->numberOfFormsReturnedPre) * 100;
+    }
+
+    /**
+     * @return float
+     */
+    public function getCorrectAfterPercentage() {
+        if (! $this->numberOfFormsReturnedPost) {
+            return 0;
+        }
+        return ($this->survey->getCorrectAfterPerQuestion() /
+            $this->numberOfFormsReturnedPost) * 100;
+    }
+
+    /**
+     * @return float
+     */
+    public function getKnowledgeIncreasePercentage() {
+        if (! $this->numberOfParticipants || ! $this->numberOfFormsReturnedPre) {
+            return 0;
+        }
+        return (($this->getCorrectAfterPercentage() / $this->getCorrectBeforePercentage()) - 1) *
+        100;
+    }
+
+    /**
+     * @return float
+     */
+    public function getEffectivenessPercentage() {
+        if (! $this->numberOfParticipants || ! $this->getNumberOfFormsReturnedPre()) {
+            return 0;
+        }
+        return (($this->getCorrectAfterPercentage() -
+                $this->getCorrectBeforePercentage()) / (100
+         - $this->getCorrectBeforePercentage())) * 100;
     }
 }

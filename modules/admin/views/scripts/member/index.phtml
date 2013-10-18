@@ -13,12 +13,14 @@
                 content = $('.modal-body p').html();
                 $('.confirm-message').html(content.replace(/~member~/, name));
                 removeBtn.attr('href', href.replace(/\?id=.*/, '?id=' + id));
-        }).modal({ 
+        }).modal({
             backdrop: true,
             show: false
         });
     });
 </script>
+
+
 
 <div class="accordion" id="accordion2">
   <div class="accordion-group">
@@ -35,50 +37,63 @@
   </div>
 </div>
 <?php
-$columns = array('Role', 'Status' ,'Last Name, First Name', 'City', 'State');
+$columns = array('Role', 'Status' ,'Last Name, First Name', 'Email', 'City', 'State');
 ?>
+<p>
+    <?php if ($this->can_view_training): ?>
+    <a class="btn btn-info" href="/admin/member/training">View Training Completion</a>
+    <?php endif; ?>
+
+    <a class="btn btn-info" href="/admin/member/excel">Download</a>
+</p>
 <table class="table table-striped table-bordered">
     <thead>
         <tr>
-        <?php foreach ($columns as $title){
-            echo "<th>$title</th>";
-            }?>
+        <?php foreach ($columns as $title): ?>
+            <th><?= $title ?></th>
+        <?php endforeach; ?>
             <th style="text-align:right;">Actions</th>
         </tr>
     </thead>
     <tbody>
-    <?php    foreach ($this->members as $id => $member) {
-        ?>
+    <?php foreach ($this->members as $id => $member): ?>
         <tr <?php echo $member['deceased'] ? 'class="muted"' : ""; ?>>
-        <td>
-            <span class="label <?php echo $member['roleClass']; ?>"><?php echo $member['role']; ?></span> 
-            <?php if($member['hasNotes']) { echo '<i class="icon-paper-clip"/>'; } ?>
-        </td>
-        <td <?php echo $member['deceased'] ? 'class="deceased"' : ""; ?>>
-            <?php echo $member['status']; ?>
-        </td>
-        <td <?php echo $member['deceased'] ? 'class="deceased"' : ""; ?>>
-            <?php echo $member['lastName'].', '. $member['firstName']; ?>
-        </td>
-        <td <?php echo $member['deceased'] ? 'class="deceased"' : ""; ?>>
-            <?php echo $member['city']; ?>
-        </td>
-        <td <?php echo $member['deceased'] ? 'class="deceased"' : ""; ?>>
-            <?php echo $member['state']; ?>
-        </td>
+            <td>
+                <span class="label <?php echo $member['roleClass']; ?>"><?php echo $member['role']; ?></span>
+                <?php if($member['hasNotes']) { echo '<i class="icon-paper-clip"/>'; } ?>
+            </td>
+            <td <?php echo $member['deceased'] ? 'class="deceased"' : ""; ?>>
+                <?php echo $member['status']; ?>
+            </td>
+            <td <?php echo $member['deceased'] ? 'class="deceased"' : ""; ?>>
+                <?php echo $member['lastName'].', '. $member['firstName']; ?>
+            </td>
+            <td <?php echo $member['deceased'] ? 'class="deceased"' : ""; ?>>
+                <?php echo sprintf('<a href="mailto:%s">%s</a>', $member['email'], $member['email']) ?>
+            </td>
+            <td <?php echo $member['deceased'] ? 'class="deceased"' : ""; ?>>
+                <?php echo $member['city']; ?>
+            </td>
+            <td <?php echo $member['deceased'] ? 'class="deceased"' : ""; ?>>
+                <?php echo $member['state']; ?>
+            </td>
             <td style="text-align:right;">
                 <div class="btn-group">
+                <?php if ($this->can_view): ?>
                     <a class="btn btn-mini" href="/admin/member/view?id=<?php echo $id; ?>"><i class="icon-info-sign"></i> Details</a>
+                <?php endif; ?>
+                <?php if ($this->can_edit): ?>
                     <a class="btn btn-mini btn-primary" href="/admin/member/edit?id=<?php echo $id ?>"><i class="icon-edit"></i></a>
-            <?php if($member['canBeDeleted']): ?>
-                <a class="btn btn-mini btn-danger confirm-delete" data-fullname="<?php echo $member['firstName'] .' ' . $member['lastName']; ?>" data-id="<?php echo $id; ?>" href="#"><i class="icon-trash"></i></a>
-            <?php else: ?>
-                <a class="btn btn-mini btn-danger disabled" href="#"><i class="icon-trash"></i></a>
-            <?php endif; ?>
-        </div>
+                <?php endif; ?>
+                <?php if ($this->can_delete && $member['canBeDeleted']): ?>
+                    <a class="btn btn-mini btn-danger confirm-delete" data-fullname="<?php echo $member['firstName'] .' ' . $member['lastName']; ?>" data-id="<?php echo $id; ?>" href="#"><i class="icon-trash"></i></a>
+                <?php elseif ($this->can_delete): ?>
+                    <a class="btn btn-mini btn-danger disabled" href="#"><i class="icon-trash"></i></a>
+                <?php endif; ?>
+                </div>
             </td>
-        <?php }?>
         </tr>
+    <?php endforeach ?>
     </tbody>
 </table>
 

@@ -43,11 +43,13 @@ class MongoSchoolRepository implements SchoolRepository
         if (!$school instanceof School) {
             throw new \InvalidArgumentException('Instance of School expected.');
         }
-        if(is_null($school->getId())){
+
+        if (is_null($school->getId())) {
             $school->markCreated();
-        }else{
+        } else {
             $school->markUpdated();
         }
+
         $array = $school->toMongoArray();
         $id = array_shift($array);
         $results = $this->mongoDb->school

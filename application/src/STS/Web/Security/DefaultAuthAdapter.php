@@ -3,24 +3,26 @@ namespace STS\Web\Security;
 use STS\Core\Api\ApiException;
 use STS\Core\Api\DefaultAuthFacade;
 use STS\Core;
+use \Zend_Auth_Result;
 
 class DefaultAuthAdapter implements \Zend_Auth_Adapter_Interface
 {
-
     private $userName;
     private $password;
     private $authFacade;
+
     public function __construct($userName, $password, $authFacade)
     {
         $this->userName = $userName;
         $this->password = $password;
         $this->authFacade = $authFacade;
     }
+
     public function authenticate()
     {
         try {
             $userDto = $this->authFacade->authenticate($this->userName, $this->password);
-            return new \Zend_Auth_Result(\Zend_Auth_Result::SUCCESS, $userDto);
+            return new Zend_Auth_Result(Zend_Auth_Result::SUCCESS, $userDto);
         } catch (ApiException $e) {
             $messages = array(
                 $e->getMessage()

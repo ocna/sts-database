@@ -23,6 +23,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
         $memberRepository = \Mockery::mock('STS\Core\Member\MongoMemberRepository', array('load'=>$oldMember, 'save'=>$member));
         $areaRepository = $this->getMockAreaRepository();
         $userRepository = $this->getMockUserRepository();
+        $activities = $this->getValidActivitiesArray();
         $facade = new DefaultMemberFacade($memberRepository, $areaRepository, $userRepository);
         $presentsFor = array_keys($this->getValidPresentsForAreasArray());
         $facilitatesFor = array_keys($this->getValidFacilitatesForAreasArray());
@@ -34,6 +35,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
             self::LAST_NAME,
             self::TYPE,
             self::STATUS,
+            $activities,
             self::NOTES,
             $presentsFor,
             $facilitatesFor,
@@ -56,7 +58,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
         $this->assertInstanceOf('STS\Core\Member\MemberDto', $updatedMemberDto);
         $this->assertEquals($updatedFirstName, $updatedMemberDto->getFirstName());
     }
-    
+
 
     /**
      * @test
@@ -64,6 +66,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
     public function validSaveNewMember()
     {
         $facade = new DefaultMemberFacade($this->getMockMemberRepoForSave(), $this->getMockAreaRepository(), $this->getMockUserRepository());
+        $activities = $this->getValidActivitiesArray();
         $presentsFor = array_keys($this->getValidPresentsForAreasArray());
         $facilitatesFor = array_keys($this->getValidFacilitatesForAreasArray());
         $coordinatesFor = array_keys($this->getValidCoordinatesForAreasArray());
@@ -72,6 +75,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
             self::LAST_NAME,
             self::TYPE,
             self::STATUS,
+            $activities,
             self::NOTES,
             $presentsFor,
             $facilitatesFor,
@@ -150,8 +154,8 @@ class DefaultMemberFacadeTest extends MemberTestCase
             'TYPE_WORK'=> 'work'
             ), $facade->getPhoneNumberTypes());
     }
-    
-    
+
+
 
     /**
      * @test

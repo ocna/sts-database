@@ -4,7 +4,9 @@ use STS\Web\Security\AuthAware;
 
 abstract class AbstractBaseController extends \Zend_Controller_Action implements AuthAware
 {
-
+    /**
+     * @var Zend_Auth
+     */
     private $auth;
     protected $flashMessenger = null;
     protected $flashMessengerNamespace = 'flashMessagesPulseNamespace';
@@ -22,14 +24,26 @@ abstract class AbstractBaseController extends \Zend_Controller_Action implements
                     'authenticated' => $this->getAuth()->hasIdentity(), 'userName' => $this->getFormatedName()
             ));
     }
+
+    /**
+     * @param \Zend_Auth $auth
+     */
     public function setAuth(\Zend_Auth $auth)
     {
         $this->auth = $auth;
     }
+
+    /**
+     * @return Zend_Auth
+     */
     public function getAuth()
     {
         return $this->auth;
     }
+
+    /**
+     * @return string
+     */
     private function getFormatedName()
     {
         if ($this->getAuth()->hasIdentity()) {
@@ -37,12 +51,19 @@ abstract class AbstractBaseController extends \Zend_Controller_Action implements
                             . ucfirst($this->getAuth()->getIdentity()->getLastName());
         }
     }
+
+    /**
+     * @param string $message
+     * @param string $messageType
+     * @return mixed
+     * @throws \InvalidArgumentException
+     */
     protected function buildAndSetFlashMessage($message, $messageType)
     {
         $this->_helper->flashMessenger->setNamespace($this->flashMessengerNamespace);
         switch (strtolower($messageType)) {
             case 'error':
-                $title = ' Ut Oh! ';
+                $title = ' Uh Oh! ';
                 $flashClass = 'alert-error';
                 break;
             case 'success':
@@ -101,5 +122,49 @@ abstract class AbstractBaseController extends \Zend_Controller_Action implements
         $decoratedMessage = $this->buildAndSetFlashMessage($message, $messageType);
         $layout = $this->getHelper('layout');
         $layout->assign('flashMessage', $decoratedMessage);
+    }
+
+    /**
+     * Takes array data and outputs as CSV
+     *
+     * @param string $file_name Base name for file (before .csv)
+     * @param array $data
+     * @param array $headers Optional array of column headers
+     */
+    protected function outputCSV($file_name, array $data, array $headers = null)
+    {
+        // add extension if missing
+        if (!preg_match('/\.csv$/', $file_name)) {
+            $file_name .= ".csv";
+        }
+
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender();
+
+        $this->getResponse()
+            ->setHeader('Content-Description','File Transfer', true)
+            ->setHeader('Content-Type','text/csv', true)
+            ->setHeader('Content-Disposition','attachment; filename=' . $file_name,
+                true)
+            ->setHeader('Content-Transfer-Encoding','binary', true)
+            ->setHeader('Expires','0', true)
+            ->setHeader('Cache-Control','must-revalidate, post-check=0, pre-check=0', true)
+            ->setHeader('Pragma','public', true);
+
+        $output = fopen('php://output', 'w');
+        ob_start();
+
+        if (false == is_null($headers)) {
+            fputcsv($output, $headers);
+        }
+
+        foreach ($data as $key => $values) {
+            fputcsv($output, $values);
+        }
+
+        fclose($output);
+        $csv = ob_get_clean();
+
+        $this->getResponse()->setBody($csv);
     }
 }

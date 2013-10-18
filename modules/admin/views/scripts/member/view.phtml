@@ -52,45 +52,52 @@
   <br>
   <dt>Address:</dt>
   <dd><address>
-  <?php echo $this->member->getAddressLineOne() ? $this->member->getAddressLineOne() : '-' ?><br>
-    <?php echo $this->member->getAddressLineTwo() ? $this->member->getAddressLineTwo().'<br>' : '' ?>
-  <?php echo $this->member->getAddressCity() ? $this->member->getAddressCity().',':''?> <?php echo $this->member->getAddressState() ?> <?php echo $this->member->getAddressZip() ?><br>
-</address></dd>
+    <?php echo $this->member->getAddressLineOne() ? $this->member->getAddressLineOne() : '-' ?><br />
+    <?php echo $this->member->getAddressLineTwo() ? $this->member->getAddressLineTwo().'<br />' : '' ?>
+    <?php echo $this->member->getAddressCity() ? $this->member->getAddressCity().',':''?> <?php echo $this->member->getAddressState() ?> <?php echo $this->member->getAddressZip() ?><br />
+  </address></dd>
 
-<?php if(! $this->member->getPresentsForAreas()==array() ):?>
+<?php if (!$this->member->getPresentsForAreas() == array()): ?>
     <dt>Presents For:</dt>
     <dd>
-    <?php foreach($this->member->getPresentsForAreas() as $area):?>
+    <?php foreach ($this->member->getPresentsForAreas() as $area):?>
         <span class="label"><?php echo $area; ?></span>
     <?php endforeach; ?>
     </dd>
 <?php endif;?>
 
-<?php if(! $this->member->getFacilitatesForAreas()==array() ):?>
+<?php if (!$this->member->getFacilitatesForAreas() == array()): ?>
     <dt>Facilitates For:</dt>
     <dd>
-    <?php foreach($this->member->getFacilitatesForAreas() as $area):?>
+    <?php foreach ($this->member->getFacilitatesForAreas() as $area): ?>
         <span class="label label-info"><?php echo $area; ?></span>
     <?php endforeach; ?>
     </dd>
 <?php endif;?>
 
-<?php if(! $this->member->getCoordinatesForRegions()==array() ):?>
+<?php if (!$this->member->getCoordinatesForRegions() == array()): ?>
     <dt>Coordinates For:</dt>
     <dd>
-    <?php foreach($this->member->getCoordinatesForRegions() as $region):?>
+    <?php foreach ($this->member->getCoordinatesForRegions() as $region): ?>
         <span class="label label-warning"><?php echo $region; ?></span>
     <?php endforeach; ?>
     </dd>
 <?php endif;?>
-
+<?php if (!$this->member->getActivities() == array()): ?>
+    <dt>Activities:</dt>    
+    <dd>
+    <?php foreach ($this->member->getActivities() as $activity): ?>
+        <span class="label"><?= $activity ?></span>
+    <?php endforeach; ?>
+    </dd>
+<?php endif; ?>
 </dl>
 <br>
 
 <?php if($this->user):?>
 <div class="alert alert-info">
 <h4>System User Details</h4>
-<small class="muted">This member has an account to access this system, thier details are below:</small>
+<small class="muted">This member has an account to access this system, their details are below:</small>
 <dl class="dl-horizontal">
 <dt>System Role:</dt>
   <dd><?php echo $this->user->getRole() ? $this->user->getRole() : '-'; ?></dd>
@@ -113,14 +120,16 @@
 <?php endif; ?>
 
 <div class="well">
-<div class="btn-toolbar">
-<div class="btn-group">
-<a class="btn btn-primary" href="/admin/member/edit?id=<?php echo $this->member->getId() ?>"><i class="icon-edit"></i> Edit</a>
-<?php if($this->member->canBeDeleted()): ?>
-        <a class="btn btn-danger confirm-delete" data-fullname="<?php echo $this->member->getFirstName() .' ' . $this->member->getLastName() ?>" data-id="<?php echo $this->member->getId(); ?>" href="#"><i class="icon-trash"></i> Delete</a>
-      <?php else: ?>
-        <a id="delete-button" rel="tooltip" data-original-title="This member is linked with other items and can not be deleted." class="btn btn-danger disabled" href="#"><i class="icon-trash"></i> Delete</a> 
-      <?php endif; ?>
+    <div class="btn-toolbar">
+        <div class="btn-group">
+        <?php if ($this->can_edit): ?>
+            <a class="btn btn-primary" href="/admin/member/edit?id=<?php echo $this->member->getId() ?>"><i class="icon-edit"></i> Edit</a>
+        <?php endif; ?>
+        <?php if ($this->can_delete && $this->member->canBeDeleted()): ?>
+            <a class="btn btn-danger confirm-delete" data-fullname="<?php echo $this->member->getFirstName() .' ' . $this->member->getLastName() ?>" data-id="<?php echo $this->member->getId(); ?>" href="#"><i class="icon-trash"></i> Delete</a>
+        <?php elseif ($this->can_delete): ?>
+            <a id="delete-button" rel="tooltip" data-original-title="This member is linked with other items and can not be deleted." class="btn btn-danger disabled" href="#"><i class="icon-trash"></i> Delete</a>
+        <?php endif; ?>
 </div>
       <a class="btn" href="/admin/member">Go Back</a>
 </div>

@@ -19,12 +19,16 @@ class SessionController extends AbstractBaseController
                 $authResult = $auth->authenticate($defaultAuthAdapter);
                 if ($authResult->getCode() == \Zend_Auth_Result::SUCCESS) {
                     if ($authResult->getIdentity()->getRole() == 'admin') {
-                        $this
-                            ->setFlashMessageAndRedirect('You have logged in with Administrator priveleges, be carful!', 'warning', array('module'=>'main', 'controller'=>'home'));
+                        $this->setFlashMessageAndRedirect(
+                                'You have logged in with Administrator privileges. Be careful!',
+                                'warning',
+                                array('module'=>'main', 'controller'=>'home')
+                        );
                     }
                     $this->_redirect('/main/home');
                 } else {
-                    $this->view->loginError = "Your username or password is invalid, please check them and try again.";
+                    $this->view->loginError = "Your username or password is invalid. Please check
+                    them and try again.";
                 }
             }
         }

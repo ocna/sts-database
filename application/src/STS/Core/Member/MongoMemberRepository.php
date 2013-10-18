@@ -12,12 +12,13 @@ use STS\Domain\Member\PhoneNumber;
 
 class MongoMemberRepository implements MemberRepository
 {
-
     private $mongoDb;
+
     public function __construct($mongoDb)
     {
         $this->mongoDb = $mongoDb;
     }
+
     public function find($query = array())
     {
         $memberData = $this->mongoDb->selectCollection('member')->find($query)->sort(array(
@@ -25,6 +26,13 @@ class MongoMemberRepository implements MemberRepository
             ));
         return $this->mapMultiple($memberData);
     }
+
+    /**
+     * Member
+     * @param Member $member
+     * @return Member
+     * @throws \InvalidArgumentException
+     */
     public function save($member)
     {
         if (!$member instanceof Member) {
@@ -61,18 +69,31 @@ class MongoMemberRepository implements MemberRepository
             ));
         return $this->mapMultiple($memberData);
     }
+
+    /**
+     * load
+     *
+     * Retrieve a record by id
+     * 
+     * @param $id
+     * @return Member
+     * @throws \InvalidArgumentException
+     */
     public function load($id)
     {
         $mongoId = new \MongoId($id);
         $memberData = $this->mongoDb->selectCollection('member')->findOne(array(
                 '_id' => $mongoId
             ));
-        if(is_null($memberData)){
+        if (is_null($memberData)) {
             throw new \InvalidArgumentException('Member not found for given id.');
         }
+
         return $this->mapData($memberData);
     }
-    public function delete($id){
+
+    public function delete($id)
+    {
         $mongoId = new \MongoId($id);
         $results = $this->mongoDb->selectCollection('member')->remove(array(
                 '_id' => $mongoId
@@ -82,6 +103,7 @@ class MongoMemberRepository implements MemberRepository
         }
         return false;
     }
+
     private function mapMultiple($memberData)
     {
         $objects = array();
@@ -90,6 +112,13 @@ class MongoMemberRepository implements MemberRepository
         }
         return $objects;
     }
+
+    /**
+     * mapData
+     *
+     * @param $memberData
+     * @return Member
+     */
     private function mapData($memberData)
     {
         $member = new Member();
@@ -100,26 +129,33 @@ class MongoMemberRepository implements MemberRepository
         if (array_key_exists('dateCreated', $memberData)) {
             $member->setCreatedOn(strtotime(date('Y-M-d h:i:s', $memberData['dateCreated']->sec)));
         }
+
         if (array_key_exists('dateUpdated', $memberData)) {
             $member->setUpdatedOn(strtotime(date('Y-M-d h:i:s', $memberData['dateUpdated']->sec)));
         }
+
         if (array_key_exists('type', $memberData)) {
             $member->setType($memberData['type']);
         }
+
         if (array_key_exists('notes', $memberData)) {
             $member->setNotes($memberData['notes']);
         }
+
         if (array_key_exists('user_id', $memberData)) {
             $member->setAssociatedUserId($memberData['user_id']);
         }
+
         if (array_key_exists('date_trained', $memberData) && ! is_null($memberData['date_trained'])) {
             $member->setDateTrained(date('Y-M-d h:i:s', $memberData['date_trained']->sec));
         }
+
         if (array_key_exists('status', $memberData)) {
             $member->setStatus($memberData['status']);
-        }else{
+        } else {
             $member->setStatus(Member::STATUS_ACTIVE);
         }
+
         if (array_key_exists('address', $memberData)) {
             $address = new Address();
             $address->setLineOne($memberData['address']['line_one'])->setLineTwo($memberData['address']['line_two'])
@@ -127,6 +163,7 @@ class MongoMemberRepository implements MemberRepository
                 ->setZip($memberData['address']['zip']);
             $member->setAddress($address);
         }
+
         if (array_key_exists('presents_for', $memberData)) {
             $areaRepository = new MongoAreaRepository($this->mongoDb);
             foreach ($memberData['presents_for'] as $area) {
@@ -134,6 +171,7 @@ class MongoMemberRepository implements MemberRepository
                 $member->canPresentForArea($areaRepository->load($areaId));
             }
         }
+
         if (array_key_exists('facilitates_for', $memberData)) {
             $areaRepository = new MongoAreaRepository($this->mongoDb);
             foreach ($memberData['facilitates_for'] as $area) {
@@ -141,6 +179,7 @@ class MongoMemberRepository implements MemberRepository
                 $member->canFacilitateForArea($areaRepository->load($areaId));
             }
         }
+
         if (array_key_exists('coordinates_for', $memberData)) {
             $areaRepository = new MongoAreaRepository($this->mongoDb);
             foreach ($memberData['coordinates_for'] as $area) {
@@ -148,6 +187,7 @@ class MongoMemberRepository implements MemberRepository
                 $member->canCoordinateForArea($areaRepository->load($areaId));
             }
         }
+
         if (array_key_exists('email', $memberData)) {
             $member->setEmail($memberData['email']);
         } else {
@@ -157,6 +197,7 @@ class MongoMemberRepository implements MemberRepository
                 $member->setEmail($user->getEmail());
             }
         }
+
         if (array_key_exists('diagnosis', $memberData)) {
             $diagnosis = $memberData['diagnosis'];
             $diagnosisDate = array_key_exists('date', $diagnosis) && ! is_null($diagnosis['date']) ? date('Y-M-d h:i:s', $diagnosis['date']->sec) : null;
@@ -165,6 +206,7 @@ class MongoMemberRepository implements MemberRepository
                 new Diagnosis($diagnosisDate, $diagnosisStage)
             );
         }
+
         if (array_key_exists('phone_numbers', $memberData)) {
             foreach ($memberData['phone_numbers'] as $phoneNumber) {
                 $member->addPhoneNumber(
@@ -175,15 +217,30 @@ class MongoMemberRepository implements MemberRepository
                 );
             }
         }
+
+        if (array_key_exists('activities', $memberData)) {
+            foreach ($memberData['activities'] as $activity) {
+                $member->setActivity($activity);
+            }
+        }
+
         $member->setCanBeDeleted($this->canMemberBeDeleted($member->getId()));
         return $member;
     }
 
-    private function canMemberBeDeleted($id){
+    /**
+     * canMemberBeDeleted
+     *
+     * Protect members with presentations from being deleted.
+     *
+     * @param $id
+     * @return bool
+     */
+    private function canMemberBeDeleted($id) {
         $count = $this->mongoDb->selectCollection('presentation')->find(array('members'=>$id))->count();
-        if($count!=0){
+        if ($count != 0) {
             return false;
-        }else{
+        } else {
             return true;
         }
     }

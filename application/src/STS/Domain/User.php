@@ -16,6 +16,7 @@ class User extends Entity
     private $lastName;
     private $legacyId;
     private $associatedMemberId;
+
     public function toMongoArray()
     {
         $array = array(
@@ -33,10 +34,12 @@ class User extends Entity
         );
         return $array;
     }
+
     public function getEmail()
     {
         return $this->email;
     }
+
     public function setEmail($email)
     {
         $this->email = $email;
@@ -47,12 +50,13 @@ class User extends Entity
     {
         return $this->password;
     }
+
     public function setPassword($password)
     {
         $this->password = $password;
-
         return $this;
     }
+
     public function getRole()
     {
         return $this->role;
@@ -63,6 +67,7 @@ class User extends Entity
 
         return $this;
     }
+
     public function getSalt()
     {
         return $this->salt;
@@ -73,46 +78,55 @@ class User extends Entity
 
         return $this;
     }
+
     public function getFirstName()
     {
         return $this->firstName;
     }
+
     public function setFirstName($firstName)
     {
         $this->firstName = $firstName;
 
         return $this;
     }
+
     public function getLastName()
     {
         return $this->lastName;
     }
+
     public function setLastName($lastName)
     {
         $this->lastName = $lastName;
 
         return $this;
     }
+
     public function getLegacyId()
     {
         return $this->legacyId;
     }
+
     public function setLegacyId($legacyId)
     {
         $this->legacyId = $legacyId;
 
         return $this;
     }
+
     public function getAssociatedMemberId()
     {
         return $this->associatedMemberId;
     }
+
     public function setAssociatedMemberId($associatedMemberId)
     {
         $this->associatedMemberId = $associatedMemberId;
 
         return $this;
     }
+
     public function initializePassword($newPassword)
     {
         $this->salt = md5(time() . $newPassword . uniqid());
@@ -129,11 +143,20 @@ class User extends Entity
         }
     }
 
+    /**
+     * @param $key
+     * @return bool
+     */
     public function isRole($key)
     {
         return $this->getAvailableRole($key) == $this->getRole();
     }
 
+    /**
+     * @param $key
+     * @return mixed
+     * @throws \InvalidArgumentException
+     */
     public static function getAvailableRole($key)
     {
         if (substr($key, 0, 5) != 'ROLE_') {
@@ -146,15 +169,18 @@ class User extends Entity
         return $reflected->getConstant($key);
     }
 
+    /**
+     * @return array
+     */
     public static function getAvailableRoles()
     {
         $reflected = new \ReflectionClass(get_called_class());
         $roles = array();
         foreach ($reflected->getConstants() as $key => $value) {
             if (substr($key, 0, 5) == 'ROLE_') {
-                $types[$key] = $value;
+                $roles[$key] = $value;
             }
         }
-        return $types;
+        return $roles;
     }
 }

@@ -12,6 +12,9 @@ class UserDTOBuilder
     private $role = null;
     private $legacyId = null;
     private $associatedMemberId = null;
+    private $password = null;
+    private $salt = null;
+
     /**
      * sets up the id UserDTOBuilder property
      *
@@ -22,6 +25,7 @@ class UserDTOBuilder
         $this->id = $id;
         return $this;
     }
+
     /**
      * sets up the email UserDTOBuilder property
      *
@@ -32,16 +36,19 @@ class UserDTOBuilder
         $this->email = $email;
         return $this;
     }
+
     public function withFirstName($firstName)
     {
         $this->firstName = $firstName;
         return $this;
     }
+
     public function withLastName($lastName)
     {
         $this->lastName = $lastName;
         return $this;
     }
+
     /**
      * sets up the role UserDTOBuilder property
      *
@@ -52,6 +59,7 @@ class UserDTOBuilder
         $this->role = $role;
         return $this;
     }
+
     public function withLegacyId($legacyId)
     {
         $this->legacyId = $legacyId;
@@ -63,12 +71,32 @@ class UserDTOBuilder
         $this->associatedMemberId = $id;
         return $this;
     }
+
+    public function withPassword($pw) {
+        $this->password = $pw;
+        return $this;
+    }
+
+    public function withSalt($salt) {
+        $this->salt = $salt;
+        return $this;
+    }
     /**
      *
      * @return $userDTO object
      */
     public function build()
     {
-        return new UserDTO($this->id, $this->email, $this->firstName, $this->lastName, $this->role, $this->legacyId, $this->associatedMemberId);
+        return new UserDTO(
+            $this->id,
+            $this->email,
+            $this->firstName,
+            $this->lastName,
+            $this->role,
+            $this->legacyId,
+            $this->associatedMemberId,
+            $this->password,
+            $this->salt
+        );
     }
 }

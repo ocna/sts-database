@@ -8,7 +8,9 @@ class MemberDto
     private $legacyId;
     private $firstName;
     private $lastName;
+    private $displayName;
     private $type;
+    private $activities;
     private $notes;
     private $addressLineOne;
     private $addressLineTwo;
@@ -36,6 +38,7 @@ class MemberDto
         $type,
         $notes,
         $status,
+        $activities,
         $addressLineOne,
         $addressLineTwo,
         $addressCity,
@@ -56,10 +59,12 @@ class MemberDto
         $this->id = $id;
         $this->firstName = $firstName;
         $this->lastName = $lastName;
+        $this->displayName = $this->firstName . ' ' . $this->lastName;
         $this->legacyId = $legacyId;
         $this->type = $type;
         $this->notes = $notes;
         $this->status = $status;
+        $this->activities = $activities;
         $this->addressLineOne = $addressLineOne;
         $this->addressLineTwo = $addressLineTwo;
         $this->addressCity = $addressCity;
@@ -107,6 +112,7 @@ class MemberDto
     {
         return $this->coordinatesForRegions;
     }
+
     public function getCoordinatesForAreas()
     {
         return $this->coordinatesForAreas;
@@ -115,14 +121,17 @@ class MemberDto
     {
         return $this->facilitatesForAreas;
     }
+
     public function getPresentsForAreas()
     {
         return $this->presentsForAreas;
     }
+
     public function getAssociatedUserId()
     {
         return $this->associatedUserId;
     }
+
     public function getlegacyId()
     {
         return $this->legacyId;
@@ -131,51 +140,74 @@ class MemberDto
     {
         return $this->id;
     }
+
     public function getFirstName()
     {
         return $this->firstName;
     }
+
     public function getLastName()
     {
         return $this->lastName;
     }
+
     public function getNotes()
     {
         return $this->notes;
     }
+
     public function getType()
     {
         return $this->type;
     }
+
     public function getAddressLineOne()
     {
         return $this->addressLineOne;
     }
+
     public function getAddressLineTwo()
     {
         return $this->addressLineTwo;
     }
+
     public function getAddressCity()
     {
         return $this->addressCity;
     }
+
     public function getAddressState()
     {
         return $this->addressState;
     }
+
     public function getAddressZip()
     {
         return $this->addressZip;
     }
+
     public function isDeceased()
     {
         return $this->status == 'Deceased';
     }
+
     public function getStatus()
     {
         return $this->status;
     }
-    public function canBeDeleted(){
+
+    public function canBeDeleted()
+    {
         return $this->canBeDeleted;
+    }
+
+    public function getActivities()
+    {
+        return $this->activities;
+    }
+
+    public function getDisplayName()
+    {
+        return $this->displayName;
     }
 }

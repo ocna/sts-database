@@ -1,0 +1,40 @@
+<?php
+$columns = array('Role', 'Status' ,'Last Name, First Name', 'Date Trained');
+?>
+<p>
+    <a class="btn btn-info" href="/admin/member/training-excel">Download</a>
+</p>
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+        <?php foreach ($columns as $title): ?>
+            <th><?= $title ?></th>
+        <?php endforeach; ?>
+            <th style="text-align:right;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php foreach ($this->members as $id => $member): ?>
+        <tr <?php echo $member['deceased'] ? 'class="muted"' : ""; ?>>
+            <td>
+                <span class="label <?php echo $member['roleClass']; ?>"><?php echo $member['role']; ?></span>
+                <?php if($member['hasNotes']) { echo '<i class="icon-paper-clip"/>'; } ?>
+            </td>
+            <td <?php echo $member['deceased'] ? 'class="deceased"' : ""; ?>>
+                <?php echo $member['status']; ?>
+            </td>
+            <td <?php echo $member['deceased'] ? 'class="deceased"' : ""; ?>>
+                <?php echo $member['lastName'].', '. $member['firstName']; ?>
+            </td>
+            <td <?php echo $member['deceased'] ? 'class="deceased"' : ""; ?>>
+                <?php echo $member['dateTrained'] ? $member['dateTrained']->format('F j, Y') : '-' ?>
+            </td>
+            <td style="text-align:right;">
+                <div class="btn-group">
+                    <a class="btn btn-mini" href="/admin/member/view?id=<?php echo $id; ?>"><i class="icon-info-sign"></i> Details</a>
+                </div>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    </tbody>
+</table>

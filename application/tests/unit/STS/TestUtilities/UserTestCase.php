@@ -19,6 +19,7 @@ class UserTestCase extends \PHPUnit_Framework_TestCase
     const VALID_FIRST_NAME = 'Member';
     const VALID_LAST_NAME = 'User';
     const ASSOCIATED_MEMBER_ID = '50234bc4fe65f50a9579a8cd';
+
     protected function getValidUser()
     {
         $user = new User();
@@ -57,5 +58,14 @@ class UserTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::BASIC_USER_ROLE, $dto->getRole());
         $this->assertEquals(self::VALID_LEGACY_ID, $dto->getLegacyId());
         $this->assertEquals(self::ASSOCIATED_MEMBER_ID, $dto->getAssociatedMemberId());
+    }
+
+    protected function createUserRoles()
+    {
+        return array(
+            'ROLE_ADMIN' => 'admin',
+            'ROLE_COORDINATOR' => 'coordinator',
+            'ROLE_FACILITATOR' => 'facilitator'
+        );
     }
 }

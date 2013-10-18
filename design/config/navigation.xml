@@ -6,6 +6,29 @@
         <controller>presentation</controller>
         <action>index</action>
         <resource>presentation</resource>
+        <pages>
+            <presentations>
+                <label>Presentations &amp; Surveys</label>
+                <module>main</module>
+                <controller>presentation</controller>
+                <action>index</action>
+                <resource>presentation</resource>
+            </presentations>
+            <calendar>
+                <label>Upcoming Calendar</label>
+                <module>main</module>
+                <controller>presentation</controller>
+                <action>calendar</action>
+                <resource>presentation</resource>
+            </calendar>
+            <effectiveness>
+                <label>Presentation Effectiveness Report</label>
+                <module>admin</module>
+                <controller>report</controller>
+                <action>effectiveness</action>
+                <resource>report</resource>
+            </effectiveness>
+        </pages>
     </presentation>
     <report>
         <label>Reports</label>
@@ -13,6 +36,7 @@
         <controller>report</controller>
         <action>index</action>
         <resource>report</resource>
+        <privilege>view</privilege>
         <pages>
             <presentation>
                 <label>Presentation Summary Report</label>
@@ -20,6 +44,7 @@
                 <controller>report</controller>
                 <action>presentation</action>
                 <resource>report</resource>
+                <privilege>view</privilege>
             </presentation>
         </pages>
     </report>
@@ -29,6 +54,7 @@
         <controller>index</controller>
         <action>index</action>
         <resource>admin</resource>
+        <privilege>view</privilege>
         <pages>
             <school>
                 <label>Schools</label>
@@ -36,6 +62,7 @@
                 <controller>school</controller>
                 <action>index</action>
                 <resource>school</resource>
+                <privilege>view</privilege>
             </school>
             <member>
                 <label>Members</label>
@@ -43,6 +70,7 @@
                 <controller>member</controller>
                 <action>index</action>
                 <resource>member</resource>
+                <privilege>view</privilege>
             </member>
             <region>
                 <label>Regions</label>
@@ -51,6 +79,21 @@
                 <action>index</action>
                 <resource>region</resource>
             </region>
+            <member_dashboard>
+                <label>Members Dashboard</label>
+                <module>admin</module>
+                <controller>member</controller>
+                <action>dashboard</action>
+                <resource>member</resource>
+                <privilege>view</privilege>
+            </member_dashboard>
+             <coordinator>
+                <label>Regional Coordinators</label>
+                <module>admin</module>
+                <controller>member</controller>
+                <action>coordinators</action>
+                <resource>member</resource>
+            </coordinator>
         </pages>
     </admin>
 </config>

@@ -67,7 +67,6 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
         return $memberTestCase->getValidMember();
     }
 
-
     protected function assertValidMember($member)
     {
         $this->assertInstanceOf('STS\Domain\Member', $member);
@@ -80,6 +79,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('STS\Domain\Location\Address', $member->getAddress());
         $this->assertFalse($member->canBeDeleted());
     }
+
     protected function getValidMemberDto()
     {
         $memberDto = new MemberDto(
@@ -90,6 +90,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
             self::TYPE,
             self::NOTES,
             self::STATUS,
+            $this->getValidActivitiesArray(),
             AddressTestCase::LINE_ONE,
             AddressTestCase::LINE_TWO,
             AddressTestCase::CITY,
@@ -111,6 +112,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
 
         return $memberDto;
     }
+
     protected function assertValidMemberDto($dto, $skipCheck = array())
     {
         $this->assertInstanceOf('STS\Core\Member\MemberDto', $dto);
@@ -146,6 +148,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->getValidPhoneNumbersArray(), $dto->getPhoneNumbers());
         $this->assertFalse($dto->canBeDeleted());
     }
+
     protected function getValidPresentsForAreasArray()
     {
         return array(
@@ -153,6 +156,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
             '502d90100172cda7d649d461' => 'OH-Dayton'
         );
     }
+
     protected function getValidFacilitatesForAreasArray()
     {
         return array(
@@ -170,9 +174,10 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
     protected function getValidCoordinatesForRegionsArray()
     {
         return array(
-            'Great Lakes'
+            'Great Lakes' => 'Great Lakes'
         );
     }
+
     protected function getValidPhoneNumbersArray()
     {
         return array(
@@ -186,6 +191,16 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
                 )
             );
     }
+
+    protected function getValidActivitiesArray()
+    {
+        return array(
+            'Presenter',
+            'On-site Facilitator',
+            'Area Facilitator'
+        );
+    }
+
     protected function getTestAreas()
     {
         $areas = array();
