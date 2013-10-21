@@ -378,26 +378,30 @@ class Admin_MemberController extends SecureBaseController
                         }
                     }
                     //save new member
-                    $newMemberDto = $this->saveNewMember($postData);
-                    $successMessage = "The new member \"{$postData['firstName']} {$postData['lastName']}\" has been successfully saved.";
-                    if ($postData['role'] != '0') {
-                        //save new system user
-                        $tempPassword = $postData['tempPassword'];
-                        $systemUserDto = $this->saveNewUser($postData, $newMemberDto, $tempPassword);
-                        //send credentials via email
-                        $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
-                        $this->mailerFacade->sendNewAccountNotification($name, $systemUserDto->getId(), $systemUserDto->getEmail(), $tempPassword);
-                        //update success message
-                        $successMessage .= " The new user with username: \"{$systemUserDto->getId()}\" and password: \"$tempPassword\" may now access the system. This information has been emailed to them.";
-                    }
+                    try {
+                        $newMemberDto = $this->saveNewMember($postData);
+                        $successMessage = "The new member \"{$postData['firstName']} {$postData['lastName']}\" has been successfully saved.";
+                        if ($postData['role'] != '0') {
+                            //save new system user
+                            $tempPassword = $postData['tempPassword'];
+                            $systemUserDto = $this->saveNewUser($postData, $newMemberDto, $tempPassword);
+                            //send credentials via email
+                            $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
+                            $this->mailerFacade->sendNewAccountNotification($name, $systemUserDto->getId(), $systemUserDto->getEmail(), $tempPassword);
+                            //update success message
+                            $successMessage .= " The new user with username: \"{$systemUserDto->getId()}\" and password: \"$tempPassword\" may now access the system. This information has been emailed to them.";
+                        }
 
-                    $this->setFlashMessageAndRedirect($successMessage, 'success', array(
-                        'module' => 'admin',
-                        'controller' => 'member',
-                        'action' => 'index'
-                    ));
+                        $this->setFlashMessageAndRedirect($successMessage, 'success', array(
+                            'module' => 'admin',
+                            'controller' => 'member',
+                            'action' => 'index'
+                        ));
+                    } catch(\Exception $e) {
+                        $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage() , 'error');
+                    }
                 } catch(ApiException $e) {
-                    $this->setFlashMessageAndUpdateLayout('An error occured while saving this information: ' . $e->getMessage() , 'error');
+                    $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage() , 'error');
                 }
             } else {
                 $this->setFlashMessageAndUpdateLayout('It looks like you missed some information, please make the corrections below.', 'error');
@@ -709,7 +713,7 @@ class Admin_MemberController extends SecureBaseController
 
         $activities = array();
         if ($data['memberActivity']) {
-            $activities = array_keys($data['memberActivity']);
+            $activities = array_values($data['memberActivity']);
         }
 
         return $this->memberFacade->saveMember(
