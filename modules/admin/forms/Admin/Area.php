@@ -56,7 +56,7 @@ class Admin_Area extends Twitter_Bootstrap_Form_Horizontal
                 'dimension' => 3,
                 'MultiOptions' => $this->regions,
                 'allowEmpty' => false,
-                'description' => 'Select a pre-existing regions.',
+                'description' => 'Select a pre-existing region.',
                 'required' => false,
                 'validators' => array(new \Admin_AreaRegionValidate()),
             )
