@@ -24,7 +24,13 @@ class Area extends Entity
         return $this->region;
     }
 
-    public function setRegion(Region $region)
+    /**
+     * Note: can not typehint argument without some rearchitected, since it can be either a Region or RegipnDTO.
+     *
+     * @param $region
+     * @return $this
+     */
+    public function setRegion($region)
     {
         $this->region = $region;
         return $this;
