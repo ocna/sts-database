@@ -465,7 +465,7 @@ class Admin_MemberController extends SecureBaseController
 
         // if the id is null, the member is just a member, so don't show user details
         // TODO this test for if someone is "just a member" should be in the memberFacade or model
-        if (is_null($associatedUserId) || empty($associatedUserId)){
+        if (is_null($associatedUserId) || empty($associatedUserId) || is_null($associatedUser)){
             $role = '0';
         } else {
             //else set the role
@@ -509,13 +509,17 @@ class Admin_MemberController extends SecureBaseController
             $postData = $request->getPost();
             if ($this->formIsValid($form, $postData)) {
                 try {
+                  
                     // if a member has been upgraded to a system user, check the email
                     // and password to ensure no duplication
                     $is_self = false;
                     if (!empty($postData['systemUsername']) && $postData['role'] != '0') {
+                        
                         // test if the username is used by another record
                         $dupe = $this->userFacade->findUserById($postData['systemUsername']);
-                        $is_self = ($dupe->getAssociatedMemberId() == $associatedUser->getAssociatedMemberId());
+                        if (!empty($dupe)) {
+                            $is_self = ($dupe->getAssociatedMemberId() == $associatedUser->getAssociatedMemberId());
+                        }
 
                         if (!empty($dupe) && !$is_self) {
                             throw new ApiException("A system user with the username: \"{$postData['systemUsername']}\" already exists. System users must have a unique email and username.");
@@ -526,8 +530,6 @@ class Admin_MemberController extends SecureBaseController
                         if (!empty($dupe) && !$is_self) {
                             throw new ApiException("A system user with the email address: \"{$postData['systemUserEmail']}\" already exists. System users must have a unique email and username.");
                         }
-
-
                     }
 
                     // check if we are changing an existing user's name
@@ -842,8 +844,9 @@ class Admin_MemberController extends SecureBaseController
             }
 
             if ($member->getAssociatedUserId() != null) {
-                $user = $this->userFacade->findUserById($member->getAssociatedUserId());
-                $role = $user->getRole();
+                if ($user = $this->userFacade->findUserById($member->getAssociatedUserId())) {
+                    $role = $user->getRole();
+                }
             } else {
                 $role = 'member';
             }
