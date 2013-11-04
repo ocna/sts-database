@@ -1196,12 +1196,7 @@ class Admin_MemberController extends SecureBaseController
                         $summary->region_total['coordinates'][$member->getID()] = 1;
                     }
                 }
-//                echo '<pre>'; print_r($options); echo '</pre>';
-//                echo '<pre>'; print_r($summary); echo '</pre>';
-//                die('oam 1187');
             }
-
-
 
             // area coordinators
             if ($areas = $member->getCoordinatesForAreas()) {
@@ -1225,7 +1220,6 @@ class Admin_MemberController extends SecureBaseController
 
             // area facilitators
             if ($areas = $member->getFacilitatesForAreas()) {
-
                 foreach ($areas as $id => $area) {
 
                     // check if allowed
@@ -1275,8 +1269,6 @@ class Admin_MemberController extends SecureBaseController
                     }
 
                     $summary->areas[$area]['presents']++;
-                    $summary->areas[$area]['facilitates']++;
-
                     $summary->areas[$area]['raw'][$member->getID()] = 1;
 
                     // add to list of region facilitators (track uniques to prevent double counting)
