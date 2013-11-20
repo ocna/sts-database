@@ -521,12 +521,21 @@ class Admin_MemberController extends SecureBaseController
                             $is_self = ($dupe->getAssociatedMemberId() == $associatedUser->getAssociatedMemberId());
                         }
 
-                        if (!empty($dupe) && !$is_self) {
-                            throw new ApiException("A system user with the username: \"{$postData['systemUsername']}\" already exists. System users must have a unique email and username.");
+                        if (!empty($dupe) && !$is_self && $dupe->getAssociatedMemberId()) {
+                            $msg = sprintf(
+                                "A system user with the username: %s already exists. System users must have a unique email and username.",
+                                $postData['systemUsername']
+                            );
+
+                            throw new ApiException($msg);
                         }
 
                         // test if the email is used by another record
                         $dupe = $this->userFacade->findUserByEmail($postData['systemUserEmail']);
+                        if (!empty($dupe)) {
+                            $is_self = ($dupe->getAssociatedMemberId() == $associatedUser->getAssociatedMemberId());
+                        }
+
                         if (!empty($dupe) && !$is_self) {
                             throw new ApiException("A system user with the email address: \"{$postData['systemUserEmail']}\" already exists. System users must have a unique email and username.");
                         }
