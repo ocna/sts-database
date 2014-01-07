@@ -125,7 +125,7 @@ class DefaultUserFacade implements UserFacade
      * @return \STS\Core\User\UserDTO
      * @throws ApiException
      */
-    public function updateUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId)
+    public function updateUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId, $init_password = TRUE, $salt = NULL)
     {
         $user = $this->userRepository->load($username);
         if ($associatedMemberId != $user->getAssociatedMemberId()) {
@@ -134,8 +134,14 @@ class DefaultUserFacade implements UserFacade
         $user->setFirstName($firstName)
              ->setLastName($lastName)
              ->setEmail($email)
-             ->setRole($role)
-             ->initializePasswordIfNew($password);
+             ->setRole($role);
+
+        if ($init_password) {
+            $user->initializePassword($password);
+        } else {
+            $user->setPassword($password)->setSalt($salt);
+        }
+
         $updatedUser = $this->userRepository->save($user);
         return UserDTOAssembler::toDTO($updatedUser);
     }

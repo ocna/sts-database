@@ -514,7 +514,7 @@ class Admin_MemberController extends SecureBaseController
                     // and password to ensure no duplication
                     $is_self = false;
                     if (!empty($postData['systemUsername']) && $postData['role'] != '0') {
-                        
+
                         // test if the username is used by another record
                         $dupe = $this->userFacade->findUserById($postData['systemUsername']);
                         if (!empty($dupe)) {
@@ -577,6 +577,16 @@ class Admin_MemberController extends SecureBaseController
                                 $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
                                 $this->mailerFacade->sendNewAccountNotification($name, $systemUserDto->getId(), $systemUserDto->getEmail(), $tempPassword);
                                 $successMessage .= " The user with username: \"{$systemUserDto->getId()}\" has been updated! Updated information has been emailed to them.";
+                            } else {
+                                // simply update the user account, login and/or password haven't changed
+                                $systemUserDto = $this->updateExistingUser(
+                                    $postData,
+                                    $updatedMemberDto,
+                                    $associatedUser->getPassword(),
+                                    FALSE, // don't change the password
+                                    $associatedUser->getSalt()
+                                );
+                                $successMessage .= " The user with username: \"{$systemUserDto->getId()}\" has been updated!";
                             }
                         }
                     }
@@ -675,7 +685,7 @@ class Admin_MemberController extends SecureBaseController
      * @param $tempPassword
      * @return mixed
      */
-    private function updateExistingUser(array $postData, Core\Member\MemberDto $memberDto, $tempPassword)
+    private function updateExistingUser(array $postData, Core\Member\MemberDto $memberDto, $tempPassword, $init_password = TRUE, $salt = NULL)
     {
         $firstName = $memberDto->getFirstName();
         $lastName = $memberDto->getLastName();
@@ -684,7 +694,7 @@ class Admin_MemberController extends SecureBaseController
         $password = $tempPassword;
         $role = AclFactory::getAvailableRole($postData['role']);
         $associatedMemberId = $memberDto->getId();
-        return $this->userFacade->updateUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId);
+        return $this->userFacade->updateUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId, $init_password, $salt);
     }
 
     /**
