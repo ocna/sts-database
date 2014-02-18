@@ -14,13 +14,6 @@
                 <action>index</action>
                 <resource>presentation</resource>
             </presentations>
-            <calendar>
-                <label>Upcoming Calendar</label>
-                <module>main</module>
-                <controller>presentation</controller>
-                <action>calendar</action>
-                <resource>presentation</resource>
-            </calendar>
             <effectiveness>
                 <label>Presentation Effectiveness Report</label>
                 <module>admin</module>
