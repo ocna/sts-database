@@ -162,7 +162,13 @@ class Presentation extends EntityWithTypes
         return $this;
     }
 
-    public function isAccessableByMemberUser($member, User $user)
+	/**
+	 * @param $member
+	 * @param User $user
+	 *
+	 * @return bool
+	 */
+    public function isAccessableByMemberUser($member, $user)
     {
         if ($user->getRole() == 'admin') {
             return true;
