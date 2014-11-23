@@ -43,24 +43,4 @@ class MemberByMemberAreaSpecificationTest extends \PHPUnit_Framework_TestCase
         $spec = new MemberByMemberAreaSpecification($member);
         $this->assertTrue(true === $spec->isSatisfiedBy($candidateMember));
     }
-    /**
-     * @test
-     */
-    public function isNotSatisfiedBySchool()
-    {
-        $member = \Mockery::mock('STS\Domain\Member');
-        $candidateMember = \Mockery::mock('STS\Domain\Member');
-        $area = \Mockery::mock('STS\Domain\Location\Area');
-        $otherArea = \Mockery::mock('STS\Domain\Location\Area');
-        $member->shouldReceive('getAllAssociatedAreas')->withNoArgs()
-            ->andReturn(array(
-                $otherArea
-            ));
-        $candidateMember->shouldReceive('getAllAssociatedAreas')->withNoArgs()
-            ->andReturn(array(
-                $area
-            ));
-        $spec = new MemberByMemberAreaSpecification($member);
-        $this->assertTrue(false === $spec->isSatisfiedBy($candidateMember));
-    }
 }
