@@ -11,6 +11,10 @@ class DefaultLocationFacade implements LocationFacade
     private $mongoDb;
     protected $areaRepository;
 
+	/**
+	 * @param \MongoDB $mongoDb
+	 * @param STS\Domain\Location\AreaRepository $areaRepository
+	 */
     public function __construct($mongoDb, $areaRepository)
     {
         $this->mongoDb = $mongoDb;
@@ -43,7 +47,8 @@ class DefaultLocationFacade implements LocationFacade
     {
         $areas = $this->getAreasForRegions($regions);
         $states = array();
-        foreach ($areas as $area) {
+	    /** @var AreaDTO $area */
+	    foreach ($areas as $area) {
             $states[$area->getState()] = $area->getState();
         }
         return $states;
@@ -178,7 +183,7 @@ class DefaultLocationFacade implements LocationFacade
         // get the mongo instance
         $mongoConfig = $config->modules->default->db->mongodb;
         $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
-        $mongo = new \Mongo(
+        $mongo = new \MongoClient(
                         'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/'
                                         . $mongoConfig->dbname);
         $mongoDb = $mongo->selectDB($mongoConfig->dbname);

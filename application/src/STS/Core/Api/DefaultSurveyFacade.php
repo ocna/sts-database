@@ -89,7 +89,7 @@ class DefaultSurveyFacade implements SurveyFacade
         $templateRepository = new StaticTemplateRepository();
         $mongoConfig = $config->modules->default->db->mongodb;
         $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
-        $mongo = new \Mongo(
+        $mongo = new \MongoClient(
                         'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/'
                                         . $mongoConfig->dbname);
         $mongoDb = $mongo->selectDB($mongoConfig->dbname);

@@ -269,7 +269,7 @@ class DefaultSchoolFacade implements SchoolFacade
     {
         $mongoConfig = $config->modules->default->db->mongodb;
         $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
-        $mongo = new \Mongo('mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/' . $mongoConfig->dbname);
+        $mongo = new \MongoClient('mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/' . $mongoConfig->dbname);
         $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $schoolRepository = new MongoSchoolRepository($mongoDb);
         $areaRepository = new MongoAreaRepository($mongoDb);
