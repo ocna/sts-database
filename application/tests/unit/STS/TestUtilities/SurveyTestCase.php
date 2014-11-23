@@ -68,4 +68,10 @@ class SurveyTestCase extends \PHPUnit_Framework_TestCase
                 )
             );
     }
+
+	public static function createValidSurvey()
+	{
+		$surveyTestCase = new SurveyTestCase();
+		return $surveyTestCase->getValidSurvey();
+	}
 }

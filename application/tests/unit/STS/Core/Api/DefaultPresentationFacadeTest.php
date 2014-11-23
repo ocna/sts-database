@@ -2,6 +2,7 @@
 namespace STS\Core\Api;
 
 use STS\TestUtilities\PresentationTestCase;
+use STS\TestUtilities\SurveyTestCase;
 use STS\TestUtilities\UserTestCase;
 use STS\TestUtilities\MemberTestCase;
 use STS\TestUtilities\SchoolTestCase;
@@ -33,7 +34,10 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
         $userRepository = \Mockery::mock('STS\Core\User\MongoUserRepository', array('load'=>UserTestCase::createValidUser()));
         $memberRepository = \Mockery::mock('STS\Core\Member\MongoMemberRepository', array('load'=>MemberTestCase::createValidMember()));
         $schoolRepository = \Mockery::mock('STS\Core\School\MongoSchoolRepository', array('load'=>SchoolTestCase::createValidSchool()));
-        $facade = new DefaultPresentationFacade($presentationRepository, $userRepository, $memberRepository, $schoolRepository);
+	    $surveyRepository = \Mockery::mock('STS\Core\Survey\MongoSurveyRepository',
+		    array('load'=>SurveyTestCase::createValidSurvey()));
+        $facade = new DefaultPresentationFacade($presentationRepository, $userRepository,
+	        $memberRepository, $schoolRepository, $surveyRepository);
         //whens
         $updatedPresentationDto = $facade->updatePresentation(
             $presentation->getId(),
