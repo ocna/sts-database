@@ -1,2 +1,2 @@
 #!/bin/sh
-bin/phpunit -c application/tests/unit/phpunit.xml
+bin/phpunit --bootstrap application/tests/unit/Bootstrap.php -c application/tests/unit/phpunit.xml
