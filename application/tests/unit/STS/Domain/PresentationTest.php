@@ -15,8 +15,9 @@ class PresentationTest extends PresentationTestCase
     {
         $this
             ->assertEquals(array(
-                    'TYPE_MED' => 'MED', 'TYPE_PA' => 'PA', 'TYPE_NP' => 'NP', 'TYPE_NS' => 'NS',
-                    'TYPE_RES_OBGYN' => 'RES OBGYN', 'TYPE_RES_INT' => 'RES INT', 'TYPE_OTHER' => 'OTHER'
+                'TYPE_MED' => 'MED', 'TYPE_PA' => 'PA', 'TYPE_NP' => 'NP', 'TYPE_NS' => 'NS',
+                'TYPE_RES_OBGYN' => 'RES OBGYN', 'TYPE_RES_INT' => 'RES INT',
+                'TYPE_OTHER' => 'OTHER', 'TYPE_PENDING' => 'PENDING'
             ), Presentation::getAvailableTypes());
     }
     /**
