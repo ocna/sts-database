@@ -1,10 +1,4 @@
 {
-   "repositories":[
-      {
-         "type":"git",
-         "url":"https://github.com/jrobertfox/zend-form-decorators-bootstrap.git"
-      }
-   ],
    "require":{
       "mandrill/mandrill":"*",
       "breerly/zf1":"1.11.*",
