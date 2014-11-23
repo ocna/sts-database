@@ -386,10 +386,8 @@ class Member extends EntityWithTypes
 
     public function getAllAssociatedAreas()
     {
-        $areas = array();
-        $this->addUniqueElements($areas, $this->presentsFor);
-        $this->addUniqueElements($areas, $this->facilitatesFor);
-        $this->addUniqueElements($areas, $this->coordinatesFor);
+        $areas = array_merge($this->facilitatesFor, $this->presentsFor, $this->coordinatesFor);
+	    $areas = array_unique($areas, SORT_REGULAR);
         return $areas;
     }
 
@@ -422,15 +420,6 @@ class Member extends EntityWithTypes
     {
         $this->canBeDeleted = $canIt;
         return $this;
-    }
-
-    private function addUniqueElements(&$array, $elements)
-    {
-        foreach ($elements as $element) {
-            if (!in_array($element, $array)) {
-                $array[] = $element;
-            }
-        }
     }
 
     public function getFullName()
