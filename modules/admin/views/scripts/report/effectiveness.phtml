@@ -32,7 +32,9 @@ $this->headScript()->appendFile('/js/admin/report/presentation.js');
                             <tr>
                                 <th>Date</th>
                                 <th>School</th>
-                                <th>% Knowledge Increase</th>
+                                <th>Level of Knowledge (pre)</th>
+	                            <th>Level of Knowledge (post)</th>
+	                            <th>Effectiveness</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -41,8 +43,6 @@ $this->headScript()->appendFile('/js/admin/report/presentation.js');
                             foreach ($this->presentations as $presentation):
                                 /** @var \STS\Core\Presentation\PresentationDto $dto */
                                 $dto = $presentation['dto'];
-                                /** @var \STS\Domain\Presentation $entity */
-                                $entity = $presentation['entity'];
                                 ?>
                                 <tr>
                                     <td class="row-label"><?= $dto->getDate() ?></td>
@@ -52,9 +52,31 @@ $this->headScript()->appendFile('/js/admin/report/presentation.js');
                                         $dto->getSchoolName() ?></a>
                                     </td>
                                     <td class="row-int">
-                                        <?= number_format
-                                        ($entity->getKnowledgeIncreasePercentage(), 2) ?>%
+	                                    <?php if ('N/A' === $dto->getCorrectBeforePercentage()): ?>
+	                                        N/A
+	                                    <?php else: ?>
+	                                        <?= number_format(
+			                                    $dto->getCorrectBeforePercentage(), 2) ?>%
+	                                    <?php endif; ?>
                                     </td>
+	                                <td class="row-int">
+		                                <?php if ('N/A' === $dto->getCorrectAfterPercentage())
+			                                : ?>
+		                                    N/A
+		                                <?php else: ?>
+		                                    <?= number_format(
+				                                $dto->getCorrectAfterPercentage(), 2) ?>%
+		                                <?php endif; ?>
+	                                </td>
+	                                <td class="row-int">
+	                                    <?php if ('N/A' === $dto->getEffectivenessPercentage()
+	                                    ): ?>
+		                                    N/A
+		                                <?php else: ?>
+			                                <?= number_format(
+			                                    $dto->getEffectivenessPercentage(), 2) ?>%
+		                                <?php endif; ?>
+	                                </td>
                                 </tr>
                             <?php endforeach; ?>
                             </tbody>

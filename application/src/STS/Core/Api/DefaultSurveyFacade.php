@@ -12,6 +12,11 @@ class DefaultSurveyFacade implements SurveyFacade
 
     private $templateRepository;
     private $surveyRepository;
+
+	/**
+	 * @param StaticTemplateRepository $templateRepository
+	 * @param MongoSurveyRepository $surveyRepository
+	 */
     public function __construct($templateRepository, $surveyRepository)
     {
         $this->templateRepository = $templateRepository;

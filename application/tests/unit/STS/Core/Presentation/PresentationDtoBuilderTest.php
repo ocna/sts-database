@@ -30,6 +30,9 @@ class PresentationDtoBuilderTest extends PresentationTestCase
         $this->assertNull($dto->getSchoolId());
         $this->assertEmpty($dto->getMembersArray());
         $this->assertNull($dto->getNotes());
+	    $this->assertNull($dto->getCorrectBeforePercentage());
+	    $this->assertNull($dto->getCorrectAfterPercentage());
+	    $this->assertNull($dto->getEffectivenessPercentage());
     }
 
     /**
@@ -50,7 +53,10 @@ class PresentationDtoBuilderTest extends PresentationTestCase
                 ->withSurveyId($validDto->getSurveyId())
                 ->withSchoolId($validDto->getSchoolId())
                 ->withMembersArray($validDto->getMembersArray())
-                ->withNotes($validDto->getNotes());
+                ->withNotes($validDto->getNotes())
+	            ->withCorrectBeforePercentage($validDto->getCorrectBeforePercentage())
+	            ->withCorrectAfterPercentage($validDto->getCorrectAfterPercentage())
+	            ->withEffectivenessPercentage($validDto->getEffectivenessPercentage());
         $dto = $builder->build();
         $this->assertValidPresentationDto($dto);
     }

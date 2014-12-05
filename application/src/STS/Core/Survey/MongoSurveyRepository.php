@@ -13,10 +13,20 @@ class MongoSurveyRepository implements SurveyRepository
 {
 
     private $mongoDb;
+
+	/**
+	 * @param \MongoDb $mongoDb
+	 */
     public function __construct($mongoDb)
     {
         $this->mongoDb = $mongoDb;
     }
+
+	/**
+	 * @param Survey $survey
+	 *
+	 * @return Survey
+	 */
     public function save($survey)
     {
         if (!$survey instanceof Survey) {

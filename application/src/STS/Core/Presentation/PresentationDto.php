@@ -17,6 +17,9 @@ class PresentationDto
     private $surveyId;
     private $membersArray;
     private $notes;
+	private $correctBeforePercentage;
+	private $correctAfterPercentage;
+	private $effectivenessPercentage;
 
     /**
       * @param string $id
@@ -25,8 +28,18 @@ class PresentationDto
       * @param int $numberOfParticipants
       * @param string $date
       * @param string $type
+     * @param int $postForms
+     * @param int $preForms
+     * @param string $schoolId
+     * @param string $surveyId
+     * @param array $membersArray
+     * @param string $notes
+     * @param float $correctBeforePercentage
+     * @param float $correctAfterPercentage
+     * @param float $effectivenessPercentage
       */
-    public function __construct($id, $schoolName, $schoolAreaCity, $numberOfParticipants, $date, $type, $postForms, $preForms, $schoolId, $surveyId, $membersArray, $notes)
+    public function __construct($id, $schoolName, $schoolAreaCity, $numberOfParticipants, $date, $type, $postForms, $preForms, $schoolId, $surveyId, $membersArray, $notes, $correctBeforePercentage,
+	    $correctAfterPercentage, $effectivenessPercentage)
     {
         $this->id = $id;
         $this->schoolName = $schoolName;
@@ -40,6 +53,9 @@ class PresentationDto
         $this->surveyId = $surveyId;
         $this->membersArray = $membersArray;
         $this->notes = $notes;
+	    $this->correctBeforePercentage = $correctBeforePercentage;
+	    $this->correctAfterPercentage = $correctAfterPercentage;
+	    $this->effectivenessPercentage = $effectivenessPercentage;
     }
     public function getNotes()
     {
@@ -97,4 +113,16 @@ class PresentationDto
     {
         return round(($this->numberOfFormsReturnedPost/$this->numberOfParticipants)*100);
     }
+	public function getCorrectBeforePercentage()
+	{
+		return $this->correctBeforePercentage;
+	}
+	public function getCorrectAfterPercentage()
+	{
+		return $this->correctAfterPercentage;
+	}
+	public function getEffectivenessPercentage()
+	{
+		return $this->effectivenessPercentage;
+	}
 }

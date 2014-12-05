@@ -183,14 +183,18 @@ class Presentation extends EntityWithTypes
     }
 
     /**
-     * @return float
+     * @return float|string
      */
     public function getCorrectBeforePercentage() {
         if (! $this->numberOfFormsReturnedPre) {
-            return 0;
+            return 'N/A';
         }
-        return ($this->survey->getCorrectBeforePerQuestion() /
-            $this->numberOfFormsReturnedPre) * 100;
+
+	    $num_possible_correct = Survey::NUM_CORRECT_ANSWERS *
+	                            $this->numberOfFormsReturnedPre;
+	    $correct_before_percentage = ($this->survey->getNumCorrectBeforeResponses() /
+	                                  $num_possible_correct) * 100;
+	    return round($correct_before_percentage, 2);
     }
 
     /**
@@ -198,32 +202,38 @@ class Presentation extends EntityWithTypes
      */
     public function getCorrectAfterPercentage() {
         if (! $this->numberOfFormsReturnedPost) {
-            return 0;
+            return 'N/A';
         }
-        return ($this->survey->getCorrectAfterPerQuestion() /
-            $this->numberOfFormsReturnedPost) * 100;
-    }
 
-    /**
-     * @return float
-     */
-    public function getKnowledgeIncreasePercentage() {
-        if (! $this->numberOfParticipants || ! $this->numberOfFormsReturnedPre) {
-            return 0;
-        }
-        return (($this->getCorrectAfterPercentage() / $this->getCorrectBeforePercentage()) - 1) *
-        100;
+	    $num_possible_correct = Survey::NUM_CORRECT_ANSWERS *
+	                            $this->numberOfFormsReturnedPost;
+		$correct_after_percentage = ($this->survey->getNumCorrectAfterResponses() /
+		                             $num_possible_correct) * 100;
+        return round($correct_after_percentage, 2);
     }
 
     /**
      * @return float
      */
     public function getEffectivenessPercentage() {
-        if (! $this->numberOfParticipants || ! $this->getNumberOfFormsReturnedPre()) {
-            return 0;
+        if (! $this->numberOfParticipants || ! $this->numberOfFormsReturnedPost) {
+            return 'N/A';
         }
-        return (($this->getCorrectAfterPercentage() -
-                $this->getCorrectBeforePercentage()) / (100
-         - $this->getCorrectBeforePercentage())) * 100;
+
+	    if (! $this->numberOfFormsReturnedPre) {
+		    return 100;
+	    }
+	    $effectiveness = (
+		                     (
+			                     $this->getCorrectAfterPercentage()
+			                     -
+			                     $this->getCorrectBeforePercentage()
+		                     )
+		                     / (100 - $this->getCorrectBeforePercentage())
+	                     ) * 100;
+	    if (0 > $effectiveness) {
+		    return 0;
+	    }
+        return round($effectiveness, 2);
     }
 }

@@ -19,6 +19,9 @@ class ShortAnswer extends Question
         $this->response = $response;
     }
 
+	/**
+	 * @return AbstractResponse
+	 */
     public function getResponse()
     {
         return $this->response;

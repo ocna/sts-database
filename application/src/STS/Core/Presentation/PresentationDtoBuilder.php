@@ -16,6 +16,9 @@ class PresentationDtoBuilder
     private $surveyId = null;
     private $membersArray = array();
     private $notes = null;
+	private $correctBeforePercentage = null;
+	private $correctAfterPercentage = null;
+	private $effectivenessPercentage = null;
 
     public function build()
     {
@@ -31,7 +34,10 @@ class PresentationDtoBuilder
             $this->schoolId,
             $this->surveyId,
             $this->membersArray,
-            $this->notes
+            $this->notes,
+	        $this->correctBeforePercentage,
+            $this->correctAfterPercentage,
+            $this->effectivenessPercentage
         );
     }
      /**
@@ -60,6 +66,7 @@ class PresentationDtoBuilder
 
      /**
       * @param string $id
+      * @return PresentationDtoBuilder
       */
     public function withSchoolId($schoolId)
     {
@@ -69,6 +76,7 @@ class PresentationDtoBuilder
 
      /**
       * @param string $id
+      * @return PresentationDtoBuilder
       */
     public function withSurveyId($surveyId)
     {
@@ -78,6 +86,7 @@ class PresentationDtoBuilder
 
      /**
       * @param string $id
+      * @return PresentationDtoBuilder
       */
     public function withId($id)
     {
@@ -87,6 +96,7 @@ class PresentationDtoBuilder
 
      /**
       * @param string $schoolName
+      * @return PresentationDtoBuilder
       */
     public function withSchoolName($schoolName)
     {
@@ -96,6 +106,7 @@ class PresentationDtoBuilder
 
      /**
       * @param string $schoolAreaCity
+      * @return PresentationDtoBuilder
       */
     public function withSchoolAreaCity($schoolAreaCity)
     {
@@ -105,6 +116,7 @@ class PresentationDtoBuilder
 
      /**
       * @param int $numberOfParticipants
+      * @return PresentationDtoBuilder
       */
     public function withNumberOfParticipants($numberOfParticipants)
     {
@@ -114,6 +126,7 @@ class PresentationDtoBuilder
 
      /**
       * @param string $date
+      * @return PresentationDtoBuilder
       */
     public function withDate($date)
     {
@@ -123,6 +136,7 @@ class PresentationDtoBuilder
 
      /**
       * @param string $type
+      * @return PresentationDtoBuilder
       */
     public function withType($type)
     {
@@ -130,15 +144,53 @@ class PresentationDtoBuilder
         return $this;
     }
 
+	/**
+	 * @param int $formsPost
+	 * @return PresentationDtoBuilder
+	 */
     public function withNumberOfFormsReturnedPost($formsPost)
     {
         $this->numberOfFormsReturnedPost = $formsPost;
         return $this;
     }
 
+	/**
+	 * @param int $formsPre
+	 * @return PresentationDtoBuilder
+	 */
     public function withNumberOfFormsReturnedPre($formsPre)
     {
         $this->numberOfFormsReturnedPre = $formsPre;
         return $this;
     }
+
+	/**
+	 * @param float $percentage
+	 * @return PresentationDtoBuilder
+	 */
+	public function withCorrectBeforePercentage($percentage)
+	{
+		$this->correctBeforePercentage = $percentage;
+		return $this;
+	}
+
+	/**
+	 * @param float $percentage
+	 * @return PresentationDtoBuilder
+	 */
+	public function withCorrectAfterPercentage($percentage)
+	{
+		$this->correctAfterPercentage = $percentage;
+		return $this;
+	}
+
+	/**
+	 * @param float $percentage
+	 * @return $this
+	 */
+	public function withEffectivenessPercentage($percentage)
+	{
+		$this->effectivenessPercentage = $percentage;
+		return $this;
+	}
 }

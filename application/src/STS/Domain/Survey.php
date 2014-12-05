@@ -5,18 +5,19 @@ use STS\Domain\Survey\Question\TrueFalse;
 use STS\Domain\Survey\Question\MultipleChoice;
 use STS\Domain\Survey\Question\ShortAnswer;
 use STS\Domain\Survey\AbstractResponse;
+use STS\Domain\Survey\Response\PairResponse;
+use STS\Domain\Survey\Response\SingleResponse;
 use STS\Domain\Survey\Question;
 
 class Survey
 {
     const NUM_SCORABLE_QUESTIONS = 17;
+	const NUM_CORRECT_ANSWERS = 10;
     private $id;
     private $enteredByUserId;
     private $questions = array();
-    private $correctBeforePerQuestion = null;
-    private $correctAfterPerQuestion = null;
-    private $incorrectBeforePerQuestion = null;
-    private $incorrectAfterPerQuestion = null;
+	private $numCorrectBeforeResponses = null;
+	private $numCorrectAfterResponses = null;
 
     public function __construct($questions)
     {
@@ -45,6 +46,12 @@ class Survey
         $this->enteredByUserId = $enteredByUserId;
         return $this;
     }
+
+	/**
+	 * @param $id
+	 *
+	 * @return Question
+	 */
     public function getQuestion($id)
     {
         return $this->questions[$id];
@@ -73,7 +80,7 @@ class Survey
     /**
      * @param $questionId
      * @param null $choiceId
-     * @return mixed
+     * @return AbstractResponse
      */
     public function getResponse($questionId, $choiceId = NULL)
     {
@@ -87,7 +94,7 @@ class Survey
     /**
      * @return array
      */
-    private function getScorableResponses()
+    public function getScorableResponses()
     {
         $responses = array();
 
@@ -140,59 +147,35 @@ class Survey
             }
         }
 
-        $this->correctBeforePerQuestion = $before_correct_responses / self::NUM_SCORABLE_QUESTIONS;
-        $this->correctAfterPerQuestion = $after_correct_responses / self::NUM_SCORABLE_QUESTIONS;
-        $this->incorrectBeforePerQuestion = $before_incorrect_responses /
-            self::NUM_SCORABLE_QUESTIONS;
-        $this->incorrectAfterPerQuestion = $after_incorrect_responses /
-            self::NUM_SCORABLE_QUESTIONS;
+	    $this->numCorrectBeforeResponses = $before_correct_responses;
+	    $this->numCorrectAfterResponses = $after_correct_responses;
     }
 
-    /**
-     * @return float
-     */
-    public function getCorrectBeforePerQuestion() {
-        if (null === $this->correctBeforePerQuestion) {
-            $this->scoreSurvey();
-        }
+	/**
+	 * @return int
+	 */
+	public function getNumCorrectBeforeResponses()
+	{
+		if (null === $this->numCorrectBeforeResponses) {
+			$this->scoreSurvey();
+		}
 
-        return $this->correctBeforePerQuestion;
-    }
+		return $this->numCorrectBeforeResponses;
+	}
 
-    /**
-     * @return float
-     */
-    public function getCorrectAfterPerQuestion() {
-        if (null === $this->correctAfterPerQuestion) {
-            $this->scoreSurvey();
-        }
+	/**
+	 * @return int
+	 */
+	public function getNumCorrectAfterResponses()
+	{
+		if (null === $this->numCorrectAfterResponses) {
+			$this->scoreSurvey();
+		}
 
-        return $this->correctAfterPerQuestion;
-    }
+		return $this->numCorrectAfterResponses;
+	}
 
-    /**
-     * @return float
-     */
-    public function getIncorrectBeforePerQuestion() {
-        if (null === $this->incorrectBeforePerQuestion) {
-            $this->scoreSurvey();
-        }
-
-        return $this->incorrectBeforePerQuestion;
-    }
-
-    /**
-     * @return float
-     */
-    public function getIncorrectAfterPerQuestion() {
-        if (null == $this->incorrectAfterPerQuestion) {
-            $this->scoreSurvey();
-        }
-
-        return $this->incorrectAfterPerQuestion;
-    }
-
-    /**
+	/**
      * @return array
      */
     public function toArray()
@@ -208,16 +191,20 @@ class Survey
                 MultipleChoice::QUESTION_TYPE, TrueFalse::QUESTION_TYPE
             ))) {
                 $choices = array();
-                foreach ($question->getChoices() as $id => $choice) {
+	            /** @var MultipleChoice $question */
+	            foreach ($question->getChoices() as $id => $choice) {
                     $choiceArray = array(
                         'id' => $id, 'prompt' => $choice
                     );
+		            $responseArray = null;
 
                     if($question->getResponse($id)){
                         $response = $question->getResponse($id);
                         if($question->whenAsked()==0){
+	                        /** @var PairResponse $response */
                             $responseArray = array('type'=>'Pair', 'beforeValue'=>$response->getBeforeResponse(), 'afterValue'=>$response->getAfterResponse());
                         }else{
+	                        /** @var SingleResponse $response */
                             $responseArray = array('type'=>'Single', 'value'=>$response->getResponse());
                         }
                     }
@@ -226,11 +213,15 @@ class Survey
                 }
                 $questionArray['choices']= $choices;
             }else{
+	            $responseArray = null;
+	            /** @var ShortAnswer $question */
                 if($question->getResponse()){
                         $response = $question->getResponse();
                     if($question->whenAsked()==0){
+	                    /** @var PairResponse $response */
                         $responseArray = array('type'=>'Pair', 'beforeValue'=>utf8_encode($response->getBeforeResponse()), 'afterValue'=>utf8_encode($response->getAfterResponse()));
                     }else{
+	                    /** @var SingleResponse $response */
                         $responseArray = array('type'=>'Single', 'value'=>utf8_encode($response->getResponse()));
                     }
                 }
