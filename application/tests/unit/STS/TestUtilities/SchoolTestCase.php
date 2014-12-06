@@ -1,7 +1,6 @@
 <?php
 namespace STS\TestUtilities;
 use STS\Domain\School;
-use STS\TestUtilities\SchoolTestCase;
 use STS\TestUtilities\Location\AddressTestCase;
 use STS\TestUtilities\Location\RegionTestCase;
 use STS\TestUtilities\Location\AreaTestCase;
@@ -30,6 +29,9 @@ class SchoolTestCase extends \PHPUnit_Framework_TestCase
         return $schoolTestCase->getValidSchool();
     }
 
+	/**
+	 * @param School $school
+	 */
     protected function assertValidSchool($school)
     {
         $this->assertEquals($school->getId(), self::ID);
@@ -47,6 +49,10 @@ class SchoolTestCase extends \PHPUnit_Framework_TestCase
                 AddressTestCase::CITY, AddressTestCase::STATE, AddressTestCase::ZIP, AreaTestCase::ID, self::TYPE_KEY);
         return $dto;
     }
+
+	/**
+	 * @param SchoolDto $dto
+	 */
     protected function assertValidSchoolDto($dto)
     {
         $this->assertInstanceOf('STS\Core\School\SchoolDto', $dto);

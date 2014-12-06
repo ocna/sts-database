@@ -67,6 +67,9 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
         return $memberTestCase->getValidMember();
     }
 
+	/**
+	 * @param Member $member
+	 */
     protected function assertValidMember($member)
     {
         $this->assertInstanceOf('STS\Domain\Member', $member);
@@ -113,6 +116,10 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
         return $memberDto;
     }
 
+	/**
+	 * @param MemberDto $dto
+	 * @param array $skipCheck
+	 */
     protected function assertValidMemberDto($dto, $skipCheck = array())
     {
         $this->assertInstanceOf('STS\Core\Member\MemberDto', $dto);

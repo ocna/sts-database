@@ -1,9 +1,10 @@
 <?php
 namespace STS\Domain;
 
-use STS\Domain\EntityWithTypes;
 use STS\Domain\Member\Diagnosis;
 use STS\Domain\Member\PhoneNumber;
+use STS\Domain\Location\Address;
+use STS\Domain\Location\Area;
 
 class Member extends EntityWithTypes
 {
@@ -29,11 +30,16 @@ class Member extends EntityWithTypes
     private $coordinatesFor = array();
     private $activities = array();
     private $notes;
-    private $deceased = false;
+	/**
+	 * @var Address
+	 */
     private $address;
     private $associatedUserId = null;
     private $status;
     private $dateTrained = null;
+	/**
+	 * @var Diagnosis
+	 */
     private $diagnosis = null;
     private $phoneNumbers = array();
     private $canBeDeleted = true;
@@ -121,7 +127,8 @@ class Member extends EntityWithTypes
     {
         // prepare facilities array for storing
         $facilitatesFor = array();
-        foreach ($this->facilitatesFor as $area) {
+	    /** @var Area $area */
+	    foreach ($this->facilitatesFor as $area) {
             $facilitatesFor[] = array("_id" => new \MongoId($area->getId()));
         }
 
@@ -139,7 +146,8 @@ class Member extends EntityWithTypes
 
         // prepare phoneNumbers array for storing
         $phoneNumbers = array();
-        foreach ($this->phoneNumbers as $phoneNumber) {
+	    /** @var PhoneNumber $phoneNumber */
+	    foreach ($this->phoneNumbers as $phoneNumber) {
             $phoneNumbers[] = array("number"=> $phoneNumber->getNumber(), "type"=>$phoneNumber->getType());
         }
 
@@ -200,6 +208,11 @@ class Member extends EntityWithTypes
         return $statuses;
     }
 
+	/**
+	 * @param string $key
+	 *
+	 * @return mixed
+	 */
     public static function getAvailableStatus($key)
     {
         if (substr($key, 0, 7) != 'STATUS_') {
@@ -289,6 +302,11 @@ class Member extends EntityWithTypes
         return $this->address;
     }
 
+	/**
+	 * @param Address $address
+	 *
+	 * @return $this
+	 */
     public function setAddress($address)
     {
         $this->address = $address;
@@ -362,6 +380,11 @@ class Member extends EntityWithTypes
         return $this->presentsFor;
     }
 
+	/**
+	 * @param Area $area
+	 *
+	 * @return $this
+	 */
     public function canFacilitateForArea($area)
     {
         $this->facilitatesFor[] = $area;
@@ -395,7 +418,8 @@ class Member extends EntityWithTypes
     {
         $regions = array();
         $areas = $this->getAllAssociatedAreas();
-        foreach ($areas as $area) {
+	    /** @var Area $area */
+	    foreach ($areas as $area) {
             $region = $area->getRegion()->getName();
             if (!in_array($region, $regions)) {
                 $regions[] = $region;
