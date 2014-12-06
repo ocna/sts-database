@@ -6,7 +6,6 @@ use STS\Domain\School;
 use STS\Core\School\SchoolDtoAssembler;
 use STS\Core\School\SchoolDto;
 use \STS\Domain\School\Specification\MemberSchoolSpecification;
-use STS\Core\Api\SchoolFacade;
 use STS\Core\School\MongoSchoolRepository;
 use STS\Core\Location\MongoAreaRepository;
 
@@ -22,6 +21,10 @@ class DefaultSchoolFacade implements SchoolFacade
      */
     private $areaRepository;
 
+	/**
+	 * @param MongoSchoolRepository $schoolRepository
+	 * @param MongoAreaRepository $areaRepository
+	 */
     public function __construct($schoolRepository, $areaRepository)
     {
         $this->schoolRepository = $schoolRepository;

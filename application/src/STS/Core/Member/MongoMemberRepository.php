@@ -1,7 +1,5 @@
 <?php
 namespace STS\Core\Member;
-use STS\Domain\Location\Area;
-use STS\Domain\Location\Region;
 use STS\Domain\Location\Address;
 use STS\Domain\Member;
 use STS\Domain\Member\MemberRepository;
@@ -12,8 +10,14 @@ use STS\Domain\Member\PhoneNumber;
 
 class MongoMemberRepository implements MemberRepository
 {
+	/**
+	 * @var \MongoDb
+	 */
     private $mongoDb;
 
+	/**
+	 * @param \MongoDb $mongoDb
+	 */
     public function __construct($mongoDb)
     {
         $this->mongoDb = $mongoDb;
@@ -54,7 +58,9 @@ class MongoMemberRepository implements MemberRepository
                 'upsert' => 1, 'safe' => 1
             ));
         if (array_key_exists('upserted', $results)) {
-            $member->setId($results['upserted']->__toString());
+	        /** @var \MongoId $id */
+	        $id = $results['upserted'];
+            $member->setId($id->__toString());
         }
         return $member;
     }
@@ -74,7 +80,7 @@ class MongoMemberRepository implements MemberRepository
      * load
      *
      * Retrieve a record by id
-     * 
+     *
      * @param $id
      * @return Member
      * @throws \InvalidArgumentException
@@ -122,7 +128,9 @@ class MongoMemberRepository implements MemberRepository
     private function mapData($memberData)
     {
         $member = new Member();
-        $member->setId($memberData['_id']->__toString())
+	    /** @var \MongoId $id */
+	    $id = $memberData['_id'];
+        $member->setId($id->__toString())
                ->setLegacyId($memberData['legacyid'])
                ->setFirstName($memberData['fname'])
                ->setLastName($memberData['lname']);

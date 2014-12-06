@@ -3,8 +3,6 @@ namespace STS\Core\School;
 use STS\Domain\Location\Address;
 use STS\Domain\School;
 use STS\Domain\School\SchoolRepository;
-use STS\Domain\Location\Region;
-use STS\Domain\Location\Area;
 use STS\Core\Location\MongoAreaRepository;
 
 class MongoSchoolRepository implements SchoolRepository
@@ -15,6 +13,12 @@ class MongoSchoolRepository implements SchoolRepository
     {
         $this->mongoDb = $mongoDb;
     }
+
+	/**
+	 * @param $id
+	 *
+	 * @return School
+	 */
     public function load($id)
     {
         $schoolData = $this->mongoDb->school->findOne(array(
@@ -59,14 +63,24 @@ class MongoSchoolRepository implements SchoolRepository
                 'upsert' => 1, 'safe' => 1
             ));
         if (array_key_exists('upserted', $results)) {
-            $school->setId($results['upserted']->__toString());
+	        /** @var \MongoId $id */
+	        $id = $results['upserted'];
+            $school->setId($id->__toString());
         }
         return $school;
     }
+
+	/**
+	 * @param $schoolData
+	 *
+	 * @return School
+	 */
     private function mapData($schoolData)
     {
         $school = new School();
-        $school->setId($schoolData['_id']->__toString())
+	    /** @var \MongoId $id */
+	    $id = $schoolData['_id'];
+        $school->setId($id->__toString())
                ->setLegacyId($schoolData['legacyid'])
                ->setName($schoolData['name']);
         if (array_key_exists('dateCreated', $schoolData)) {

@@ -52,7 +52,9 @@ class MongoPresentationRepository implements PresentationRepository
             )
         );
         if (array_key_exists('upserted', $results)) {
-            $presentation->setId($results['upserted']->__toString());
+	        /** @var \MongoId $id */
+	        $id = $results['upserted'];
+            $presentation->setId($id->__toString());
         }
         return $presentation;
     }
@@ -80,11 +82,11 @@ class MongoPresentationRepository implements PresentationRepository
         return $presentation;
     }
 
-     /**
-      * find
-      *
-      * @param array $criteria
-      */
+	/**
+	 * @param array $criteria
+	 *
+	 * @return array
+	 */
     public function find($criteria = array())
     {
         $presentationData = $this->mongoDb->presentation->find($criteria)->sort(
@@ -102,15 +104,15 @@ class MongoPresentationRepository implements PresentationRepository
     }
 
     /**
-     * mapData
-     *
      * @param $data
      * @return Presentation
      */
     private function mapData($data)
     {
         $presentation = new Presentation();
-        $presentation->setId($data['_id']->__toString())
+	    /** @var \MongoId $id */
+	    $id = $data['_id'];
+        $presentation->setId($id->__toString())
                      ->setNumberOfParticipants($data['nparticipants'])
                      ->setDate(date('Y-M-d h:i:s', $data['date']->sec))
                      ->setNotes($data['notes'])
