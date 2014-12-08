@@ -140,6 +140,13 @@ class DefaultPresentationFacade implements PresentationFacade
     public function getPresentationById($id)
     {
         $presentation = $this->presentationRepository->load($id);
+
+	    // Ensure Survey has associated data
+	    if (! is_null($presentation->getSurvey())) {
+		    $survey = $this->surveyRepository->load($presentation->getSurvey()->getId());
+		    $presentation->setSurvey($survey);
+	    }
+
         return PresentationDtoAssembler::toDto($presentation);
     }
 
