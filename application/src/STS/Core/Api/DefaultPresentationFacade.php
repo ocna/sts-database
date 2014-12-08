@@ -1,7 +1,6 @@
 <?php
 namespace STS\Core\Api;
 
-use STS\Core\Presentation\PresentationDto;
 use STS\Domain\Survey\Template;
 use STS\Domain\Member;
 use STS\Domain\Survey;
@@ -561,12 +560,12 @@ class DefaultPresentationFacade implements PresentationFacade
             $memberRepository, $schoolRepository, $surveyRepository);
     }
 
-    /**
-     * updateEnteredBy
-     *
-     * @param $old
-     * @param $new
-     */
+	/**
+	 * @param $old
+	 * @param $new
+	 *
+	 * @return mixed|void
+	 */
     public function updateEnteredBy($old, $new)
     {
         $this->presentationRepository->updateEnteredBy($old, $new);

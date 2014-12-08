@@ -93,7 +93,7 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
             self::NOTES,
             23.5,
             34.09,
-            13.84
+            45.06
         );
     }
 
@@ -141,7 +141,7 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::NOTES, $dto->getNotes());
 	    $this->assertEquals(23.5, $dto->getCorrectBeforePercentage());
 	    $this->assertEquals(34.09, $dto->getCorrectAfterPercentage());
-	    $this->assertEquals(13.84, $dto->getEffectivenessPercentage());
+	    $this->assertEquals(45.06, $dto->getEffectivenessPercentage());
     }
 
     public function getPresentationDtoMemberArray()

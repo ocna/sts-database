@@ -110,7 +110,7 @@ class PresentationTest extends PresentationTestCase
 	public function validGetEffectivenessPercentage()
 	{
 		$presentation = $this->getValidObject();
-		$this->assertEquals(13.84, $presentation->getEffectivenessPercentage());
+		$this->assertEquals(45.06, $presentation->getEffectivenessPercentage());
 	}
 
 	/**

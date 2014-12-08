@@ -229,7 +229,7 @@ class Presentation extends EntityWithTypes
 			                     -
 			                     $this->getCorrectBeforePercentage()
 		                     )
-		                     / (100 - $this->getCorrectBeforePercentage())
+		                     / $this->getCorrectBeforePercentage()
 	                     ) * 100;
 	    if (0 > $effectiveness) {
 		    return 0;
