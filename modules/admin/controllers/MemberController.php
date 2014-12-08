@@ -301,10 +301,10 @@ class Admin_MemberController extends SecureBaseController
                         'action' => 'index'
                     ));
             } else {
-                throw new ApiException("An error occured while deleting member.", 1);
+                throw new ApiException("An error occurred while deleting member.", 1);
             }
         } catch (ApiException $e) {
-            $this->setFlashMessageAndRedirect('An error occured while deleting member: ' . $e->getMessage() , 'error', array(
+            $this->setFlashMessageAndRedirect('An error occurred while deleting member: ' . $e->getMessage() , 'error', array(
                         'module' => 'admin',
                         'controller' => 'member',
                         'action' => 'index'));
@@ -509,7 +509,7 @@ class Admin_MemberController extends SecureBaseController
             $postData = $request->getPost();
             if ($this->formIsValid($form, $postData)) {
                 try {
-                  
+
                     // if a member has been upgraded to a system user, check the email
                     // and password to ensure no duplication
                     $is_self = false;
@@ -1309,7 +1309,7 @@ class Admin_MemberController extends SecureBaseController
                 }
             }
         }
-        
+
         // total up each region row by member type
         foreach ($summary->regions as $region => $totals) {
             $summary->regions[$region]['facilitates'] = array_sum($summary->regions[$region]['facilitates']);

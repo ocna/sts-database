@@ -13,6 +13,12 @@ class MemberByMemberAreaSpecification
         }
         $this->member = $member;
     }
+
+	/**
+	 * @param Member $member
+	 *
+	 * @return bool
+	 */
     public function isSatisfiedBy($member)
     {
         foreach ($member->getAllAssociatedAreas() as $area) {

@@ -1,6 +1,7 @@
 <?php
 namespace STS\Web\Controller;
 use STS\Web\Security\AuthAware;
+use Zend_Auth;
 
 abstract class AbstractBaseController extends \Zend_Controller_Action implements AuthAware
 {

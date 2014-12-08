@@ -102,7 +102,7 @@ class Presentation_IndexController extends SecureBaseController
                         ));
                 } catch (ApiException $e) {
                     $this
-                        ->setFlashMessageAndUpdateLayout('An error occured while saving this information: '
+                        ->setFlashMessageAndUpdateLayout('An error occurred while saving this information: '
                                         . $e->getMessage(), 'error');
                 }
             } else {
@@ -170,7 +170,7 @@ class Presentation_IndexController extends SecureBaseController
                         ));
                 } catch (ApiException $e) {
                     $this
-                        ->setFlashMessageAndUpdateLayout('An error occured while saving this information: '
+                        ->setFlashMessageAndUpdateLayout('An error occurred while saving this information: '
                                         . $e->getMessage(), 'error');
                 }
             } else {
@@ -230,7 +230,7 @@ class Presentation_IndexController extends SecureBaseController
         }
         return $this->schoolFacade->getSchoolsForSpecification($schoolSpec);
     }
-    
+
     private function savePresentation($postData)
     {
         //Get User

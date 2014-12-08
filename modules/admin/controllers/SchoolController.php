@@ -155,7 +155,7 @@ class Admin_SchoolController extends SecureBaseController
                             'module' => 'admin', 'controller' => 'school', 'action' => 'index'
                         ));
                 } catch (ApiException $e) {
-                    $this->setFlashMessageAndUpdateLayout('An error occured while saving this information: ' . $e->getMessage(), 'error');
+                    $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage(), 'error');
                 }
             } else {
                 $this
@@ -199,7 +199,7 @@ class Admin_SchoolController extends SecureBaseController
                             'module' => 'admin', 'controller' => 'school', 'action' => 'view', 'params' => array('id'=>$updatedSchool->getId())
                         ));
                 } catch (ApiException $e) {
-                    $this->setFlashMessageAndUpdateLayout('An error occured while saving this information: ' . $e->getMessage(), 'error');
+                    $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage(), 'error');
                 }
             } else {
                 $this

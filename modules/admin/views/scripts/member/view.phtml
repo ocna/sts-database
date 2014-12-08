@@ -13,7 +13,7 @@
         content = $('.modal-body p').html();
         $('.confirm-message').html(content.replace(/~member~/, name));
         removeBtn.attr('href', href.replace(/\?id=.*/, '?id=' + id));
-    }).modal({ 
+    }).modal({
       backdrop: true,
       show: false
     });
@@ -28,8 +28,8 @@
   <dd><?php echo $this->member->getDateTrained() ? $this->member->getDateTrained() : '-'; ?></dd>
   <dt>Email:</dt>
   <dd><?php echo $this->member->getEmail() ? '<a href="mailto:'.$this->member->getEmail().'">'.$this->member->getEmail().'</a>' : '-'; ?></dd>
-  
-  <?php 
+
+  <?php
     $phoneNumbers = $this->member->getPhoneNumbers();
     if (! empty($phoneNumbers)):
       echo "<br>";
@@ -37,8 +37,8 @@
   ?>
   <dt><?php echo ucfirst($phoneNumber['type']); ?> <i class="icon-phone"></i></dt>
   <dd><?php echo preg_replace('/([0-9]{3})([0-9]{3})([0-9]{4})/', '$1-$2-$3', $phoneNumber['number']); ?></dd>
-  
-  <?php 
+
+  <?php
     endforeach;
     endif;
   ?>
@@ -84,7 +84,7 @@
     </dd>
 <?php endif;?>
 <?php if (!$this->member->getActivities() == array()): ?>
-    <dt>Activities:</dt>    
+    <dt>Activities:</dt>
     <dd>
     <?php foreach ($this->member->getActivities() as $activity): ?>
         <span class="label"><?= $activity ?></span>
@@ -141,7 +141,8 @@
       <h3>Delete Member</h3>
     </div>
     <div class="modal-body">
-      <p class="confirm-message">You are about to delete the member ~member~, this procedure is irreversible.</p>
+      <p class="confirm-message">You are about to delete the member ~member~.
+	      This procedure is irreversible.</p>
       <p>Are you sure you want to do this?</p>
     </div>
     <div class="modal-footer">

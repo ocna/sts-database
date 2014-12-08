@@ -9,7 +9,7 @@ class MongoUserRepository implements UserRepository
     private $mongoDb;
 
     /**
-     * @param $mongoDb
+     * @param \MongoDB $mongoDb
      */
     public function __construct($mongoDb)
     {
