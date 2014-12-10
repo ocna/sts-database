@@ -29,20 +29,19 @@ interface SurveyFacade
      */
     public function saveSurvey($userId, $templateId, $surveyData);
 
-	/**
-	 * @param $userId
-	 * @param $templateId
-	 * @param $surveyData
-	 * @param $surveyId
-	 *
-	 * @return mixed
-	 */
-	public function updateSurvey($userId, $templateId, $surveyData, $surveyId);
+    /**
+     * @param $userId
+     * @param $templateId
+     * @param $surveyData
+     * @param $surveyId
+     *
+     * @return mixed
+     */
+    public function updateSurvey($userId, $templateId, $surveyData, $surveyId);
 
     /**
-     * updateEnteredBy
-     *
-     * Changes the entered_by_user_id field from an old user id to a new one. Mainly used when a username is changed.
+     * Changes the entered_by_user_id field from an old user id to a new one.
+     * Mainly used when a username is changed.
      *
      * @param $old
      * @param $new

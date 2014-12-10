@@ -4,12 +4,11 @@ namespace STS\Core\Presentation;
 
 class PresentationDto
 {
-
     private $id;
     private $schoolId;
     private $schoolName;
     private $schoolAreaCity;
-	private $professionalGroupName;
+    private $professionalGroupName;
     private $numberOfParticipants;
     private $numberOfFormsReturnedPost;
     private $numberOfFormsReturnedPre;
@@ -18,9 +17,9 @@ class PresentationDto
     private $surveyId;
     private $membersArray;
     private $notes;
-	private $correctBeforePercentage;
-	private $correctAfterPercentage;
-	private $effectivenessPercentage;
+    private $correctBeforePercentage;
+    private $correctAfterPercentage;
+    private $effectivenessPercentage;
 
     /**
      * @param string $id
@@ -40,14 +39,28 @@ class PresentationDto
      * @param float $correctAfterPercentage
      * @param float $effectivenessPercentage
      */
-    public function __construct($id, $schoolName, $schoolAreaCity,
-	    $professional_group_name, $numberOfParticipants, $date, $type, $postForms, $preForms, $schoolId, $surveyId, $membersArray, $notes, $correctBeforePercentage,
-	    $correctAfterPercentage, $effectivenessPercentage)
-    {
+    public function __construct(
+        $id,
+        $schoolName,
+        $schoolAreaCity,
+        $professional_group_name,
+        $numberOfParticipants,
+        $date,
+        $type,
+        $postForms,
+        $preForms,
+        $schoolId,
+        $surveyId,
+        $membersArray,
+        $notes,
+        $correctBeforePercentage,
+        $correctAfterPercentage,
+        $effectivenessPercentage
+    ) {
         $this->id = $id;
         $this->schoolName = $schoolName;
         $this->schoolAreaCity = $schoolAreaCity;
-	    $this->professionalGroupName = $professional_group_name;
+        $this->professionalGroupName = $professional_group_name;
         $this->numberOfParticipants = $numberOfParticipants;
         $this->type = $type;
         $this->date = $date;
@@ -57,9 +70,9 @@ class PresentationDto
         $this->surveyId = $surveyId;
         $this->membersArray = $membersArray;
         $this->notes = $notes;
-	    $this->correctBeforePercentage = $correctBeforePercentage;
-	    $this->correctAfterPercentage = $correctAfterPercentage;
-	    $this->effectivenessPercentage = $effectivenessPercentage;
+        $this->correctBeforePercentage = $correctBeforePercentage;
+        $this->correctAfterPercentage = $correctAfterPercentage;
+        $this->effectivenessPercentage = $effectivenessPercentage;
     }
     public function getNotes()
     {
@@ -102,10 +115,10 @@ class PresentationDto
         return $this->schoolName;
     }
 
-	public function getProfessionalGroupName()
-	{
-		return $this->professionalGroupName;
-	}
+    public function getProfessionalGroupName()
+    {
+        return $this->professionalGroupName;
+    }
 
     public function getNumberOfFormsReturnedPost()
     {
@@ -123,16 +136,16 @@ class PresentationDto
     {
         return round(($this->numberOfFormsReturnedPost/$this->numberOfParticipants)*100);
     }
-	public function getCorrectBeforePercentage()
-	{
-		return $this->correctBeforePercentage;
-	}
-	public function getCorrectAfterPercentage()
-	{
-		return $this->correctAfterPercentage;
-	}
-	public function getEffectivenessPercentage()
-	{
-		return $this->effectivenessPercentage;
-	}
+    public function getCorrectBeforePercentage()
+    {
+        return $this->correctBeforePercentage;
+    }
+    public function getCorrectAfterPercentage()
+    {
+        return $this->correctAfterPercentage;
+    }
+    public function getEffectivenessPercentage()
+    {
+        return $this->effectivenessPercentage;
+    }
 }

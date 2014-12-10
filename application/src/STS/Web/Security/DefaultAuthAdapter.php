@@ -1,14 +1,17 @@
 <?php
 namespace STS\Web\Security;
+
 use STS\Core\Api\ApiException;
 use STS\Core\Api\DefaultAuthFacade;
-use STS\Core;
 use \Zend_Auth_Result;
 
 class DefaultAuthAdapter implements \Zend_Auth_Adapter_Interface
 {
     private $userName;
     private $password;
+    /**
+     * @var DefaultAuthFacade
+     */
     private $authFacade;
 
     public function __construct($userName, $password, $authFacade)

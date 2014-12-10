@@ -1,40 +1,42 @@
 <?php
-
 namespace STS\Core\Presentation;
+
 use STS\Domain\Presentation;
+use STS\Domain\Member;
 
 class PresentationDtoAssembler
 {
-	/**
-	 * @param Presentation $presentation
-	 *
-	 * @return PresentationDto
-	 */
+    /**
+     * @param Presentation $presentation
+     *
+     * @return PresentationDto
+     */
     public static function toDto($presentation)
     {
         $builder = new PresentationDtoBuilder();
         $builder->withId($presentation->getId())
-	        ->withSchoolName($presentation->getLocation()->getName())
-	        ->withSchoolAreaCity($presentation->getLocation()->getArea()->getCity())
-	        ->withNumberOfParticipants($presentation->getNumberOfParticipants())
-	        ->withDate($presentation->getDate())
-	        ->withType($presentation->getType())
-	        ->withNumberOfFormsReturnedPost($presentation->getNumberOfFormsReturnedPost())
-	        ->withNumberOfFormsReturnedPre($presentation->getNumberOfFormsReturnedPre());
+            ->withSchoolName($presentation->getLocation()->getName())
+            ->withSchoolAreaCity($presentation->getLocation()->getArea()->getCity())
+            ->withNumberOfParticipants($presentation->getNumberOfParticipants())
+            ->withDate($presentation->getDate())
+            ->withType($presentation->getType())
+            ->withNumberOfFormsReturnedPost($presentation->getNumberOfFormsReturnedPost())
+            ->withNumberOfFormsReturnedPre($presentation->getNumberOfFormsReturnedPre());
         if (! is_null($presentation->getSurvey())) {
             $builder->withSurveyId($presentation->getSurvey()->getId())
-	            ->withCorrectBeforePercentage($presentation->getCorrectBeforePercentage())
-	            ->withCorrectAfterPercentage($presentation->getCorrectAfterPercentage())
-	            ->withEffectivenessPercentage($presentation->getEffectivenessPercentage());
+                ->withCorrectBeforePercentage($presentation->getCorrectBeforePercentage())
+                ->withCorrectAfterPercentage($presentation->getCorrectAfterPercentage())
+                ->withEffectivenessPercentage($presentation->getEffectivenessPercentage());
         }
         if (! is_null($presentation->getLocation())) {
             $builder->withSchoolId($presentation->getLocation()->getId());
         }
-	    if (! is_null($presentation->getProfessionalGroup())) {
-		    $builder->withProfessionalGroupName($presentation->getProfessionalGroup()->getName());
-	    }
+        if (! is_null($presentation->getProfessionalGroup())) {
+            $builder->withProfessionalGroupName($presentation->getProfessionalGroup()->getName());
+        }
         $members = $presentation->getMembers();
         $membersArray = array();
+        /** @var Member $member */
         foreach ($members as $member) {
             $membersArray[$member->getId()] = array(
                 'fullname'=> $member->getFullName(),

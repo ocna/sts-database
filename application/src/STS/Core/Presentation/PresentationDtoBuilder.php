@@ -1,5 +1,4 @@
 <?php
-
 namespace STS\Core\Presentation;
 
 class PresentationDtoBuilder
@@ -7,7 +6,7 @@ class PresentationDtoBuilder
     private $id = null;
     private $schoolName = null;
     private $schoolAreaCity = null;
-	private $professionalGroupName = null;
+    private $professionalGroupName = null;
     private $numberOfParticipants = null;
     private $date = null;
     private $type = null;
@@ -17,9 +16,9 @@ class PresentationDtoBuilder
     private $surveyId = null;
     private $membersArray = array();
     private $notes = null;
-	private $correctBeforePercentage = null;
-	private $correctAfterPercentage = null;
-	private $effectivenessPercentage = null;
+    private $correctBeforePercentage = null;
+    private $correctAfterPercentage = null;
+    private $effectivenessPercentage = null;
 
     public function build()
     {
@@ -37,7 +36,7 @@ class PresentationDtoBuilder
             $this->surveyId,
             $this->membersArray,
             $this->notes,
-	        $this->correctBeforePercentage,
+            $this->correctBeforePercentage,
             $this->correctAfterPercentage,
             $this->effectivenessPercentage
         );
@@ -106,15 +105,15 @@ class PresentationDtoBuilder
         return $this;
     }
 
-	/**
-	 * @param string $name
-	 * @return $this
-	 */
-	public function withProfessionalGroupName($name)
-	{
-		$this->professionalGroupName = $name;
-		return $this;
-	}
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function withProfessionalGroupName($name)
+    {
+        $this->professionalGroupName = $name;
+        return $this;
+    }
 
      /**
       * @param string $schoolAreaCity
@@ -156,53 +155,53 @@ class PresentationDtoBuilder
         return $this;
     }
 
-	/**
-	 * @param int $formsPost
-	 * @return PresentationDtoBuilder
-	 */
+    /**
+     * @param int $formsPost
+     * @return PresentationDtoBuilder
+     */
     public function withNumberOfFormsReturnedPost($formsPost)
     {
         $this->numberOfFormsReturnedPost = $formsPost;
         return $this;
     }
 
-	/**
-	 * @param int $formsPre
-	 * @return PresentationDtoBuilder
-	 */
+    /**
+     * @param int $formsPre
+     * @return PresentationDtoBuilder
+     */
     public function withNumberOfFormsReturnedPre($formsPre)
     {
         $this->numberOfFormsReturnedPre = $formsPre;
         return $this;
     }
 
-	/**
-	 * @param float $percentage
-	 * @return PresentationDtoBuilder
-	 */
-	public function withCorrectBeforePercentage($percentage)
-	{
-		$this->correctBeforePercentage = $percentage;
-		return $this;
-	}
+    /**
+     * @param float $percentage
+     * @return PresentationDtoBuilder
+     */
+    public function withCorrectBeforePercentage($percentage)
+    {
+        $this->correctBeforePercentage = $percentage;
+        return $this;
+    }
 
-	/**
-	 * @param float $percentage
-	 * @return PresentationDtoBuilder
-	 */
-	public function withCorrectAfterPercentage($percentage)
-	{
-		$this->correctAfterPercentage = $percentage;
-		return $this;
-	}
+    /**
+     * @param float $percentage
+     * @return PresentationDtoBuilder
+     */
+    public function withCorrectAfterPercentage($percentage)
+    {
+        $this->correctAfterPercentage = $percentage;
+        return $this;
+    }
 
-	/**
-	 * @param float $percentage
-	 * @return $this
-	 */
-	public function withEffectivenessPercentage($percentage)
-	{
-		$this->effectivenessPercentage = $percentage;
-		return $this;
-	}
+    /**
+     * @param float $percentage
+     * @return $this
+     */
+    public function withEffectivenessPercentage($percentage)
+    {
+        $this->effectivenessPercentage = $percentage;
+        return $this;
+    }
 }

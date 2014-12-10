@@ -46,8 +46,8 @@ class AreaDto
         return $this->id;
     }
 
-    static public function assembleFromArea(Area $area) {
-
+    public static function assembleFromArea(Area $area)
+    {
         $region = $area->getRegion();
         $class = __CLASS__;
         $dto = new $class(

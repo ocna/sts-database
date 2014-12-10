@@ -1,5 +1,6 @@
 <?php
 namespace STS\Core\Survey;
+
 use STS\Domain\Survey\TemplateRepository;
 use STS\Domain\Survey\Template;
 use STS\Domain\Survey\Question\MultipleChoice;
@@ -8,7 +9,6 @@ use STS\Domain\Survey\Question\TrueFalse;
 
 class StaticTemplateRepository implements TemplateRepository
 {
-
     private $templateData = array(
             1 => array(
                     'type' => 'MultipleChoice', 'asked' => 0,
@@ -38,14 +38,16 @@ class StaticTemplateRepository implements TemplateRepository
             ),
             5 => array(
                     'type' => 'MultipleChoice', 'asked' => 0,
-                    'prompt' => 'Studies have shown that women diagnosed with ovarian cancer generally have a better likelihood of prolonged survival if treated by:',
+                    'prompt' => 'Studies have shown that women diagnosed with ovarian cancer
+                     generally have a better likelihood of prolonged survival if treated by:',
                     'choices' => array(
                         12 => 'A gynecologist', 13 => 'An oncologist', 14 => 'A gynecologic oncologist'
                     )
             ),
             6 => array(
                     'type' => 'ShortAnswer', 'asked' => 0,
-                    'prompt' => 'List three symptoms, which, if persistent, would lead you to consider ovarian cancer.'
+                    'prompt' => 'List three symptoms, which, if persistent,
+                     would lead you to consider ovarian cancer.'
             ),
             7 => array(
                     'type' => 'ShortAnswer', 'asked' => 2,
@@ -53,11 +55,13 @@ class StaticTemplateRepository implements TemplateRepository
             ),
             8 => array(
                     'type' => 'ShortAnswer', 'asked' => 2,
-                    'prompt' => 'Would you consider this form of experiential learning an effective method of learning more about ovarian cancer or another condition?'
+                    'prompt' => 'Would you consider this form of experiential learning an effective
+                     method of learning more about ovarian cancer or another condition?'
             ),
             9 => array(
                     'type' => 'ShortAnswer', 'asked' => 2,
-                    'prompt' => "How can the presentation be more effective in conveying survivors' experiences, the importance of the symptoms or difficulties in diagnosis?"
+                    'prompt' => "How can the presentation be more effective in conveying survivors'
+                     experiences, the importance of the symptoms or difficulties in diagnosis?"
             )
     );
     public function load($id)
@@ -83,7 +87,9 @@ class StaticTemplateRepository implements TemplateRepository
                     $question = new ShortAnswer();
                     break;
             }
-            $question->setId($questionId)->isAsked($questionData['asked'])->setPrompt($questionData['prompt']);
+            $question->setId($questionId)
+                ->isAsked($questionData['asked'])
+                ->setPrompt($questionData['prompt']);
             if (array_key_exists('choices', $questionData)) {
                 foreach ($questionData['choices'] as $choiceId => $choice) {
                     $question->addChoice($choiceId, $choice);

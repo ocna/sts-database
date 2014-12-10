@@ -1,5 +1,6 @@
 <?php
 namespace STS\Core\School;
+
 use STS\Domain\School;
 
 class SchoolDtoAssembler
@@ -40,8 +41,22 @@ class SchoolDtoAssembler
             $addressState = null;
             $addressZip = null;
         }
-        $schoolDto = new SchoolDto($id, $legacyId, $name, $type, $notes, $regionName, $areaName, $addressLineOne,
-                        $addressLineTwo, $addressCity, $addressState, $addressZip, $areaId, $typeKey);
+        $schoolDto = new SchoolDto(
+            $id,
+            $legacyId,
+            $name,
+            $type,
+            $notes,
+            $regionName,
+            $areaName,
+            $addressLineOne,
+            $addressLineTwo,
+            $addressCity,
+            $addressState,
+            $addressZip,
+            $areaId,
+            $typeKey
+        );
         return $schoolDto;
     }
 }

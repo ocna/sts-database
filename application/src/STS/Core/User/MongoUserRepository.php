@@ -1,5 +1,6 @@
 <?php
 namespace STS\Core\User;
+
 use STS\Domain\User;
 use STS\Domain\User\UserRepository;
 
@@ -16,7 +17,8 @@ class MongoUserRepository implements UserRepository
         $this->mongoDb = $mongoDb;
     }
 
-    protected function getCollection() {
+    protected function getCollection()
+    {
         return $this->mongoDb->selectCollection($this->collection);
     }
 
@@ -63,17 +65,16 @@ class MongoUserRepository implements UserRepository
      */
     public function save($user)
     {
-         if (!$user instanceof User) {
+        if (!$user instanceof User) {
             throw new \InvalidArgumentException('Instance of User expected.');
         }
         $user->markUpdated();
         $array = $user->toMongoArray();
-        $results = $this->getCollection()
-                ->update(
-                    array('_id' => $array['_id']),
-                    $array,
-                    array('upsert' => 1, 'safe' => 1)
-                );
+        $results = $this->getCollection()->update(
+            array('_id' => $array['_id']),
+            $array,
+            array('upsert' => 1, 'safe' => 1)
+        );
 
         if (array_key_exists('upserted', $results)) {
             $user->setId($results['upserted']->__toString());
@@ -88,12 +89,12 @@ class MongoUserRepository implements UserRepository
      * @param $id
      * @return bool
      */
-    public function delete($id) {
-        $results = $this->getCollection()
-                ->remove(
-                    array('_id' => $id),
-                    array('justOne' => true, 'safe' => true)
-                );
+    public function delete($id)
+    {
+        $results = $this->getCollection()->remove(
+            array('_id' => $id),
+            array('justOne' => true, 'safe' => true)
+        );
 
         if (1 == $results['ok']) {
             return true;
@@ -107,7 +108,8 @@ class MongoUserRepository implements UserRepository
      * @param $userData
      * @return User
      */
-    private function mapData($userData) {
+    private function mapData($userData)
+    {
         $user = new User();
         $user->setId($userData['_id'])
             ->setLegacyId($userData['legacyid'])

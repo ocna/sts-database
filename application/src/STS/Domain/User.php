@@ -1,6 +1,5 @@
 <?php
 namespace STS\Domain;
-use STS\Domain\Entity;
 
 class User extends Entity
 {

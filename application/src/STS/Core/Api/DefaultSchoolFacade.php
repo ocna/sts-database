@@ -21,10 +21,10 @@ class DefaultSchoolFacade implements SchoolFacade
      */
     private $areaRepository;
 
-	/**
-	 * @param MongoSchoolRepository $schoolRepository
-	 * @param MongoAreaRepository $areaRepository
-	 */
+    /**
+     * @param MongoSchoolRepository $schoolRepository
+     * @param MongoAreaRepository $areaRepository
+     */
     public function __construct($schoolRepository, $areaRepository)
     {
         $this->schoolRepository = $schoolRepository;
@@ -207,8 +207,17 @@ class DefaultSchoolFacade implements SchoolFacade
      * @param $zip
      * @return SchoolDto
      */
-    public function saveSchool($name, $areaId, $schoolType, $notes, $addressLineOne, $addressLineTwo, $city, $state, $zip)
-    {
+    public function saveSchool(
+        $name,
+        $areaId,
+        $schoolType,
+        $notes,
+        $addressLineOne,
+        $addressLineTwo,
+        $city,
+        $state,
+        $zip
+    ) {
         $address = new Address();
         $address->setLineOne($addressLineOne)
                 ->setLineTwo($addressLineTwo)
@@ -244,8 +253,18 @@ class DefaultSchoolFacade implements SchoolFacade
      * @param $zip
      * @return SchoolDto
      */
-    public function updateSchool($id, $name, $areaId, $schoolType, $notes, $addressLineOne, $addressLineTwo, $city, $state, $zip)
-    {
+    public function updateSchool(
+        $id,
+        $name,
+        $areaId,
+        $schoolType,
+        $notes,
+        $addressLineOne,
+        $addressLineTwo,
+        $city,
+        $state,
+        $zip
+    ) {
         $oldSchool = $this->schoolRepository->load($id);
         $address = new Address();
         $address->setLineOne($addressLineOne)
@@ -272,7 +291,10 @@ class DefaultSchoolFacade implements SchoolFacade
     {
         $mongoConfig = $config->modules->default->db->mongodb;
         $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
-        $mongo = new \MongoClient('mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/' . $mongoConfig->dbname);
+        $mongo = new \MongoClient(
+            'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/'
+            . $mongoConfig->dbname
+        );
         $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $schoolRepository = new MongoSchoolRepository($mongoDb);
         $areaRepository = new MongoAreaRepository($mongoDb);

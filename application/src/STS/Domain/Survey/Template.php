@@ -1,5 +1,6 @@
 <?php
 namespace STS\Domain\Survey;
+
 use STS\Domain\Survey;
 
 class Template

@@ -1,76 +1,71 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: sandysmith
- * Date: 12/5/14
- * Time: 9:31 PM
- */
-
 namespace STS\Domain;
+
 use STS\Domain\Location\Area;
 
-class ProfessionalGroup extends Entity {
-	/**
-	 * @var string
-	 */
-	private $name;
+class ProfessionalGroup extends Entity
+{
+    /**
+     * @var string
+     */
+    private $name;
 
-	/**
-	 * @var Area
-	 */
-	private $area;
+    /**
+     * @var Area
+     */
+    private $area;
 
-	/**
-	 * @param string $name
-	 *
-	 * @return $this
-	 */
-	public function setName($name)
-	{
-		$this->name = $name;
-		return $this;
-	}
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getName()
-	{
-		return $this->name;
-	}
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	/**
-	 * @param Area $area
-	 *
-	 * @return $this
-	 */
-	public function setArea($area)
-	{
-		$this->area = $area;
-		return $this;
-	}
+    /**
+     * @param Area $area
+     *
+     * @return $this
+     */
+    public function setArea($area)
+    {
+        $this->area = $area;
+        return $this;
+    }
 
-	/**
-	 * @return Area
-	 */
-	public function getArea()
-	{
-		return $this->area;
-	}
+    /**
+     * @return Area
+     */
+    public function getArea()
+    {
+        return $this->area;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getAreaName()
-	{
-		return $this->area->getName();
-	}
+    /**
+     * @return mixed
+     */
+    public function getAreaName()
+    {
+        return $this->area->getName();
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getRegionName()
-	{
-		return $this->area->getRegion()->getName();
-	}
+    /**
+     * @return mixed
+     */
+    public function getRegionName()
+    {
+        return $this->area->getRegion()->getName();
+    }
 }

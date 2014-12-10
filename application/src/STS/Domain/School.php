@@ -1,6 +1,8 @@
 <?php
 namespace STS\Domain;
-use STS\Domain\EntityWithTypes;
+
+use STS\Domain\Location\Address;
+use STS\Domain\Location\Area;
 
 class School extends EntityWithTypes
 {
@@ -8,14 +10,21 @@ class School extends EntityWithTypes
     const TYPE_HOSPITAL = 'Hospital';
     const TYPE_NP = 'NP';
     const TYPE_PA = 'PA';
-    const TYPE_NURSING = 'Nursing'; 
+    const TYPE_NURSING = 'Nursing';
     const TYPE_MEDICAL = 'Medical';
 
     private $legacyId;
     private $name;
+    /**
+     * @var Area
+     */
     private $area;
+    /**
+     * @var Address
+     */
     private $address;
     private $notes;
+
     public function toMongoArray()
     {
         $areaId = new \MongoId($this->area->getId());
@@ -39,10 +48,12 @@ class School extends EntityWithTypes
         );
         return $array;
     }
+
     public function getNotes()
     {
         return $this->notes;
     }
+
     public function setNotes($notes)
     {
         $this->notes = $notes;
@@ -56,6 +67,7 @@ class School extends EntityWithTypes
     {
         return $this->address;
     }
+
     public function setAddress($address)
     {
         $this->address = $address;
@@ -69,24 +81,29 @@ class School extends EntityWithTypes
     {
         return $this->area;
     }
+
     public function setArea($area)
     {
         $this->area = $area;
         return $this;
     }
+
     public function getLegacyId()
     {
         return $this->legacyId;
     }
+
     public function setLegacyId($legacyId)
     {
         $this->legacyId = $legacyId;
         return $this;
     }
+
     public function getName()
     {
         return $this->name;
     }
+
     public function setName($name)
     {
         $this->name = trim(preg_replace('/\s+/', ' ', $name));

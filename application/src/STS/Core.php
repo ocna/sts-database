@@ -17,7 +17,7 @@ class Core
 
     private $config;
 
-    static protected $_default;
+    static protected $default;
 
     public function __construct(\Zend_Config $config)
     {
@@ -50,12 +50,11 @@ class Core
             case 'MailerFacade':
                 $facade = DefaultMailerFacade::getDefaultInstance($this->config);
                 break;
-	        case 'ProfessionalGroupFacade':
-		        $facade = DefaultProfessionalGroupFacade::getDefaultInstance($this->config);
-		        break;
+            case 'ProfessionalGroupFacade':
+                $facade = DefaultProfessionalGroupFacade::getDefaultInstance($this->config);
+                break;
             default:
                 throw new \InvalidArgumentException("Class does not exist ($key)");
-                break;
         }
         return $facade;
     }
@@ -63,7 +62,8 @@ class Core
     /**
      * @return \Zend_Config
      */
-    public function getConfig() {
+    public function getConfig()
+    {
         return $this->config;
     }
 
@@ -74,12 +74,12 @@ class Core
      */
     public static function getDefaultInstance()
     {
-        if (!isset(self::$_default)) {
+        if (!isset(self::$default)) {
             $configPath = APPLICATION_PATH . self::CORE_CONFIG_PATH;
             $config = new \Zend_Config_Xml($configPath, 'all');
-            self::$_default = new Core($config);
+            self::$default = new Core($config);
         }
 
-        return self::$_default;
+        return self::$default;
     }
 }

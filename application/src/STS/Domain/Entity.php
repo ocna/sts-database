@@ -25,12 +25,15 @@ class Entity
     {
         return $this->createdOn;
     }
-    public function setCreatedOn($createdOn){
+
+    public function setCreatedOn($createdOn)
+    {
         $this->createdOn = $this->validateTime($createdOn);
         return $this;
     }
 
-    public function markCreated(){
+    public function markCreated()
+    {
         $this->setCreatedOn(time());
         $this->markUpdated();
     }
@@ -39,17 +42,21 @@ class Entity
     {
         return $this->updatedOn;
     }
-    public function setUpdatedOn($updatedOn){
+
+    public function setUpdatedOn($updatedOn)
+    {
         $this->updatedOn = $this->validateTime($updatedOn);
         return $this;
     }
 
-    public function markUpdated(){
+    public function markUpdated()
+    {
         $this->setUpdatedOn(time());
     }
 
-    private function validateTime($time){
-        if(is_null($time)){
+    private function validateTime($time)
+    {
+        if (is_null($time)) {
             return null;
         }
         if (! is_numeric($time)) {

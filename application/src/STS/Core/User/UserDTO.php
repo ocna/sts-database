@@ -13,8 +13,17 @@ class UserDTO
     private $salt;
     private $password;
 
-    public function __construct($id, $email, $firstName, $lastName, $role, $legacyId, $associatedMemberId, $pw, $salt)
-    {
+    public function __construct(
+        $id,
+        $email,
+        $firstName,
+        $lastName,
+        $role,
+        $legacyId,
+        $associatedMemberId,
+        $pw,
+        $salt
+    ) {
         $this->id = $id;
         $this->email = $email;
         $this->firstName = $firstName;
@@ -69,5 +78,4 @@ class UserDTO
     {
         return $this->salt;
     }
-
 }

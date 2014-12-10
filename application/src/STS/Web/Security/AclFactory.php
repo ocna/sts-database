@@ -17,7 +17,7 @@ class AclFactory
     const RESOURCE_SEARCH = 'search';
     const RESOURCE_REPORT = 'report';
     const RESOURCE_REGION = 'region';
-	const RESOURCE_PROFESSIONAL_GROUP = 'professional_group';
+    const RESOURCE_PROFESSIONAL_GROUP = 'professional_group';
 
     public static function buildAcl()
     {

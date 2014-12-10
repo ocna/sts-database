@@ -1,6 +1,5 @@
 <?php
 namespace STS\Core\User;
-use STS\Core\User\UserDTO;
 
 class UserDTOBuilder
 {
@@ -16,9 +15,9 @@ class UserDTOBuilder
     private $salt = null;
 
     /**
-     * sets up the id UserDTOBuilder property
+     * @param $id
      *
-     * @return $userDTOBuilder object
+     * @return $this
      */
     public function withId($id)
     {
@@ -27,9 +26,9 @@ class UserDTOBuilder
     }
 
     /**
-     * sets up the email UserDTOBuilder property
+     * @param $email
      *
-     * @return $userDTOBuilder object
+     * @return $this
      */
     public function withEmail($email)
     {
@@ -50,9 +49,9 @@ class UserDTOBuilder
     }
 
     /**
-     * sets up the role UserDTOBuilder property
+     * @param $role
      *
-     * @return $userDTOBuilder object
+     * @return $this
      */
     public function withRole($role)
     {
@@ -72,18 +71,20 @@ class UserDTOBuilder
         return $this;
     }
 
-    public function withPassword($pw) {
+    public function withPassword($pw)
+    {
         $this->password = $pw;
         return $this;
     }
 
-    public function withSalt($salt) {
+    public function withSalt($salt)
+    {
         $this->salt = $salt;
         return $this;
     }
+
     /**
-     *
-     * @return $userDTO object
+     * @return UserDTO
      */
     public function build()
     {

@@ -7,8 +7,8 @@ use STS\Domain\Location\Area;
 
 class MongoAreaRepository implements AreaRepository
 {
-
     private $mongoDb;
+
     public function __construct(\MongoDB $mongoDb)
     {
         $this->mongoDb = $mongoDb;
@@ -28,7 +28,7 @@ class MongoAreaRepository implements AreaRepository
         $area = new Area();
 
         if (!isset($areaData['legacyid'])) {
-            $areaData['legacyid'] = NULL;
+            $areaData['legacyid'] = null;
         }
 
         $area->setId($areaData['_id']->__toString())
@@ -46,7 +46,8 @@ class MongoAreaRepository implements AreaRepository
      * @param $id string
      * @return bool
      */
-    public function delete($id) {
+    public function delete($id)
+    {
         $results = $this->mongoDb->area->remove(
             array('_id' => new \MongoId($id)),
             array('justOne' => true, 'safe' => true)
@@ -64,7 +65,8 @@ class MongoAreaRepository implements AreaRepository
      * @param Area $area
      * @return Area
      */
-    public function save(Area $area) {
+    public function save(Area $area)
+    {
         // new or update?
         if (is_null($area->getId())) {
             $area->markCreated();

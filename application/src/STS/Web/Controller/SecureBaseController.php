@@ -1,12 +1,12 @@
 <?php
 namespace STS\Web\Controller;
+
 use STS\Web\Controller\AbstractBaseController;
 use STS\Web\Security\AclAware;
 use STS\Web\Security\AclFactory;
 
 class SecureBaseController extends AbstractBaseController implements AclAware
 {
-
     private $acl;
     public function init()
     {
@@ -51,7 +51,7 @@ class SecureBaseController extends AbstractBaseController implements AclAware
         $acl = $this->getAcl();
         $role = $this->getAuth()->getIdentity()->getRole();
         if ($acl->has($module)) {
-            if (!$acl->isAllowed($role, $module, 'view')) {                
+            if (!$acl->isAllowed($role, $module, 'view')) {
                 $this->_redirect('/error/index/access-denied');
             }
         }

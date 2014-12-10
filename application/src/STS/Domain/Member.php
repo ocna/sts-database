@@ -30,16 +30,16 @@ class Member extends EntityWithTypes
     private $coordinatesFor = array();
     private $activities = array();
     private $notes;
-	/**
-	 * @var Address
-	 */
+    /**
+     * @var Address
+     */
     private $address;
     private $associatedUserId = null;
     private $status;
     private $dateTrained = null;
-	/**
-	 * @var Diagnosis
-	 */
+    /**
+     * @var Diagnosis
+     */
     private $diagnosis = null;
     private $phoneNumbers = array();
     private $canBeDeleted = true;
@@ -127,8 +127,8 @@ class Member extends EntityWithTypes
     {
         // prepare facilities array for storing
         $facilitatesFor = array();
-	    /** @var Area $area */
-	    foreach ($this->facilitatesFor as $area) {
+        /** @var Area $area */
+        foreach ($this->facilitatesFor as $area) {
             $facilitatesFor[] = array("_id" => new \MongoId($area->getId()));
         }
 
@@ -146,8 +146,8 @@ class Member extends EntityWithTypes
 
         // prepare phoneNumbers array for storing
         $phoneNumbers = array();
-	    /** @var PhoneNumber $phoneNumber */
-	    foreach ($this->phoneNumbers as $phoneNumber) {
+        /** @var PhoneNumber $phoneNumber */
+        foreach ($this->phoneNumbers as $phoneNumber) {
             $phoneNumbers[] = array("number"=> $phoneNumber->getNumber(), "type"=>$phoneNumber->getType());
         }
 
@@ -208,11 +208,11 @@ class Member extends EntityWithTypes
         return $statuses;
     }
 
-	/**
-	 * @param string $key
-	 *
-	 * @return mixed
-	 */
+    /**
+     * @param string $key
+     *
+     * @return mixed
+     */
     public static function getAvailableStatus($key)
     {
         if (substr($key, 0, 7) != 'STATUS_') {
@@ -239,7 +239,8 @@ class Member extends EntityWithTypes
      *
      * @return array
      */
-    public function getActivities() {
+    public function getActivities()
+    {
         return $this->activities;
     }
 
@@ -277,7 +278,8 @@ class Member extends EntityWithTypes
      * @return $this
      * @throws \InvalidArgumentException
      */
-    public function setActivity($activity) {
+    public function setActivity($activity)
+    {
         if ($activity !== null && !in_array($activity, static::getAvailableActivities(), true)) {
             throw new \InvalidArgumentException('No such activity with given value:' . $activity);
         }
@@ -302,11 +304,11 @@ class Member extends EntityWithTypes
         return $this->address;
     }
 
-	/**
-	 * @param Address $address
-	 *
-	 * @return $this
-	 */
+    /**
+     * @param Address $address
+     *
+     * @return $this
+     */
     public function setAddress($address)
     {
         $this->address = $address;
@@ -380,11 +382,11 @@ class Member extends EntityWithTypes
         return $this->presentsFor;
     }
 
-	/**
-	 * @param Area $area
-	 *
-	 * @return $this
-	 */
+    /**
+     * @param Area $area
+     *
+     * @return $this
+     */
     public function canFacilitateForArea($area)
     {
         $this->facilitatesFor[] = $area;
@@ -410,7 +412,7 @@ class Member extends EntityWithTypes
     public function getAllAssociatedAreas()
     {
         $areas = array_merge($this->facilitatesFor, $this->presentsFor, $this->coordinatesFor);
-	    $areas = array_unique($areas, SORT_REGULAR);
+        $areas = array_unique($areas, SORT_REGULAR);
         return $areas;
     }
 
@@ -418,8 +420,8 @@ class Member extends EntityWithTypes
     {
         $regions = array();
         $areas = $this->getAllAssociatedAreas();
-	    /** @var Area $area */
-	    foreach ($areas as $area) {
+        /** @var Area $area */
+        foreach ($areas as $area) {
             $region = $area->getRegion()->getName();
             if (!in_array($region, $regions)) {
                 $regions[] = $region;

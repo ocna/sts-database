@@ -1,5 +1,6 @@
 <?php
 namespace STS\Core\Api;
+
 interface LocationFacade
 {
     public function getStates();

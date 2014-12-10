@@ -22,24 +22,48 @@ interface PresentationFacade
      * @param int $participants
      * @param int $forms
      * @param string $surveyId
+     * @param $preForms
      */
-    public function savePresentation($enteredByUserId, $schoolId, $professionalGroupId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId, $preForms);
+    public function savePresentation(
+        $enteredByUserId,
+        $schoolId,
+        $professionalGroupId,
+        $typeCode,
+        $date,
+        $notes,
+        $memberIds,
+        $participants,
+        $forms,
+        $surveyId,
+        $preForms
+    );
 
-	/**
-	 * @param $id
-	 * @param $schoolId
-	 * @param $professionalGroupId
-	 * @param $typeCode
-	 * @param $date
-	 * @param $notes
-	 * @param $memberIds
-	 * @param $participants
-	 * @param $postForms
-	 * @param $preForms
-	 *
-	 * @return mixed
-	 */
-    public function updatePresentation($id, $schoolId, $professionalGroupId, $typeCode, $date, $notes, $memberIds, $participants, $postForms, $preForms);
+    /**
+     * @param $id
+     * @param $schoolId
+     * @param $professionalGroupId
+     * @param $typeCode
+     * @param $date
+     * @param $notes
+     * @param $memberIds
+     * @param $participants
+     * @param $postForms
+     * @param $preForms
+     *
+     * @return mixed
+     */
+    public function updatePresentation(
+        $id,
+        $schoolId,
+        $professionalGroupId,
+        $typeCode,
+        $date,
+        $notes,
+        $memberIds,
+        $participants,
+        $postForms,
+        $preForms
+    );
 
     /**
      * getPresentationsForUserId
@@ -63,9 +87,8 @@ interface PresentationFacade
     public function getPresentationsSummary($criteria = array());
 
     /**
-     * updateEnteredBy
-     *
-     * Changes the entered_by_user_id field from an old user id to a new one. Mainly used when a username is changed.
+     * Changes the entered_by_user_id field from an old user id to a new one.
+     * Mainly used when a username is changed.
      *
      * @param $old
      * @param $new

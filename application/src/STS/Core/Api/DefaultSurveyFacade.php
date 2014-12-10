@@ -1,11 +1,11 @@
 <?php
 namespace STS\Core\Api;
+
 use STS\Domain\Survey\Response\SingleResponse;
 use STS\Domain\Survey\Response\PairResponse;
 use STS\Domain\Survey\Question\ShortAnswer;
 use STS\Core\Survey\StaticTemplateRepository;
 use STS\Core\Survey\MongoSurveyRepository;
-use STS\Core\Api\SurveyFacade;
 
 class DefaultSurveyFacade implements SurveyFacade
 {
@@ -13,10 +13,10 @@ class DefaultSurveyFacade implements SurveyFacade
     private $templateRepository;
     private $surveyRepository;
 
-	/**
-	 * @param StaticTemplateRepository $templateRepository
-	 * @param MongoSurveyRepository $surveyRepository
-	 */
+    /**
+     * @param StaticTemplateRepository $templateRepository
+     * @param MongoSurveyRepository $surveyRepository
+     */
     public function __construct($templateRepository, $surveyRepository)
     {
         $this->templateRepository = $templateRepository;
@@ -95,8 +95,9 @@ class DefaultSurveyFacade implements SurveyFacade
         $mongoConfig = $config->modules->default->db->mongodb;
         $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
         $mongo = new \MongoClient(
-                        'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/'
-                                        . $mongoConfig->dbname);
+            'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/'
+            . $mongoConfig->dbname
+        );
         $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $surveyRepository = new MongoSurveyRepository($mongoDb);
         return new DefaultSurveyFacade($templateRepository, $surveyRepository);

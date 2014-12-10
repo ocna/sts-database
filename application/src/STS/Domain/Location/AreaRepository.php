@@ -1,6 +1,5 @@
 <?php
 namespace STS\Domain\Location;
-use STS\Domain\Location\Area;
 
 interface AreaRepository
 {
