@@ -6,12 +6,11 @@ use STS\Domain\Location\Area;
 
 class School extends EntityWithTypes
 {
-    const TYPE_SCHOOL = 'School';
-    const TYPE_HOSPITAL = 'Hospital';
     const TYPE_NP = 'NP';
     const TYPE_PA = 'PA';
     const TYPE_NURSING = 'Nursing';
     const TYPE_MEDICAL = 'Medical';
+    const TYPE_OTHER = 'Other';
 
     private $legacyId;
     private $name;

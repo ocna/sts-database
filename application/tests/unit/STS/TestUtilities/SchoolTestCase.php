@@ -11,9 +11,9 @@ class SchoolTestCase extends \PHPUnit_Framework_TestCase
     const ID = '509c47941f804c464d01959d';
     const LEGACY_ID = 14;
     const NAME = 'Michigan State University School of Medicine';
-    const TYPE = 'School';
+    const TYPE = 'Other';
     const NOTES = 'This is an interesting note!';
-    const TYPE_KEY = 'TYPE_SCHOOL';
+    const TYPE_KEY = 'TYPE_OTHER';
     protected function getValidSchool()
     {
         $school = new School();

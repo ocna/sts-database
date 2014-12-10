@@ -44,15 +44,14 @@ class DefaultSchoolFacadeTest extends SchoolTestCase
         $types = $facade->getSchoolTypes();
         $this->assertEquals(
             array(
-                'TYPE_SCHOOL' => 'School',
-                'TYPE_HOSPITAL' => 'Hospital',
-                'TYPE_NP' => 'NP',
-                'TYPE_PA' => 'PA',
-                'TYPE_NURSING'=>'Nursing',
-                'TYPE_MEDICAL'=>'Medical'
-                ),
+                'TYPE_NP'       => 'NP',
+                'TYPE_PA'       => 'PA',
+                'TYPE_NURSING'  =>'Nursing',
+                'TYPE_MEDICAL'  =>'Medical',
+                'TYPE_OTHER'    => 'Other'
+            ),
             $types
-            );
+        );
     }
 
     private function getMockAreaRepository()
@@ -91,7 +90,7 @@ class DefaultSchoolFacadeTest extends SchoolTestCase
             $school->getId(),
             $school->getName(),
             $school->getArea()->getId(),
-            'TYPE_SCHOOL',
+            'TYPE_OTHER',
             $school->getNotes(),
             $school->getAddress()->getLineOne(),
             $school->getAddress()->getLineTwo(),
