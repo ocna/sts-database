@@ -35,24 +35,16 @@ class Admin_ProfessionalgroupController extends SecureBaseController {
 	{
 		parent::init();
 		$core = Core::getDefaultInstance();
+        $this->user = $this->getAuth()->getIdentity();
 		$this->professionalGroupFacade = $core->load('ProfessionalGroupFacade');
 		$this->locationFacade = $core->load('LocationFacade');
 		$this->session = new \Zend_Session_Namespace('admin');
-
-		/** @var STS\Core\User\UserDTO $user */
-		$user = $this->getAuth()->getIdentity();
-
-		// permissions
-		$this->view->can_view = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_ADMIN,
-			'view');
-		$this->view->can_edit = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_ADMIN, 'edit');
-		$this->view->can_delete = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_ADMIN, 'delete');
 	}
 
 	public function indexAction()
 	{
-		// filter by role
-		$user = $this->getAuth()->getIdentity();
+        // make sure user can edit professional groups
+        $this->setPermissions();
 
 		// setup filters
 		$form = $this->getFilterForm();
@@ -72,7 +64,6 @@ class Admin_ProfessionalgroupController extends SecureBaseController {
 		}
 
 		if (!empty($criteria)) {
-			// turn it into a specification?
 			$this->view->objects = $this->professionalGroupFacade->getProfessionalGroupsMatching($criteria);
 		} else {
 			$this->view->objects = $this->professionalGroupFacade->getAllProfessionalGroups();
@@ -293,4 +284,16 @@ class Admin_ProfessionalgroupController extends SecureBaseController {
 			$criteria[$key] = $params[$key];
 		}
 	}
+
+    private function setPermissions()
+    {
+        /** @var STS\Core\User\UserDTO $user */
+        $user = $this->getAuth()->getIdentity();
+
+        // permissions
+        $this->view->can_view = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_PROFESSIONAL_GROUP,
+            'view');
+        $this->view->can_edit = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_PROFESSIONAL_GROUP, 'edit');
+        $this->view->can_delete = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_PROFESSIONAL_GROUP, 'delete');
+    }
 }
