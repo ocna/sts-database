@@ -9,6 +9,7 @@ class PresentationDto
     private $schoolId;
     private $schoolName;
     private $schoolAreaCity;
+	private $professionalGroupName;
     private $numberOfParticipants;
     private $numberOfFormsReturnedPost;
     private $numberOfFormsReturnedPre;
@@ -22,12 +23,13 @@ class PresentationDto
 	private $effectivenessPercentage;
 
     /**
-      * @param string $id
-      * @param string $schoolName
-      * @param string $schoolAreaCity
-      * @param int $numberOfParticipants
-      * @param string $date
-      * @param string $type
+     * @param string $id
+     * @param string $schoolName
+     * @param string $schoolAreaCity
+     * @param string $professional_group_name
+     * @param int $numberOfParticipants
+     * @param string $date
+     * @param string $type
      * @param int $postForms
      * @param int $preForms
      * @param string $schoolId
@@ -37,13 +39,15 @@ class PresentationDto
      * @param float $correctBeforePercentage
      * @param float $correctAfterPercentage
      * @param float $effectivenessPercentage
-      */
-    public function __construct($id, $schoolName, $schoolAreaCity, $numberOfParticipants, $date, $type, $postForms, $preForms, $schoolId, $surveyId, $membersArray, $notes, $correctBeforePercentage,
+     */
+    public function __construct($id, $schoolName, $schoolAreaCity,
+	    $professional_group_name, $numberOfParticipants, $date, $type, $postForms, $preForms, $schoolId, $surveyId, $membersArray, $notes, $correctBeforePercentage,
 	    $correctAfterPercentage, $effectivenessPercentage)
     {
         $this->id = $id;
         $this->schoolName = $schoolName;
         $this->schoolAreaCity = $schoolAreaCity;
+	    $this->professionalGroupName = $professional_group_name;
         $this->numberOfParticipants = $numberOfParticipants;
         $this->type = $type;
         $this->date = $date;
@@ -97,6 +101,12 @@ class PresentationDto
     {
         return $this->schoolName;
     }
+
+	public function getProfessionalGroupName()
+	{
+		return $this->professionalGroupName;
+	}
+
     public function getNumberOfFormsReturnedPost()
     {
         return $this->numberOfFormsReturnedPost;

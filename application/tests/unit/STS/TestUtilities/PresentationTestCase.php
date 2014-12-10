@@ -17,10 +17,14 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
     const PARTICIPANTS = 22;
     const FORMS_POST = 22;
     const FORMS_PRE = 20;
+	const BEFORE_PERCENTAGE = 23.5;
+	const AFTER_PERCENTAGE = 34.09;
+	const EFFECTIVENESS = 45.06;
 
     protected function getValidObject()
     {
         $school = SchoolTestCase::createValidSchool();
+	    $professional_group = ProfessionalGroupTestCase::createValidProfessionalGroup();
         $members = array(
             MemberTestCase::createValidMember()
         );
@@ -34,6 +38,7 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $presentation->setEnteredByUserId(self::ENTERED_BY_USER_ID)
                      ->setId(self::ID)
                      ->setLocation($school)
+	                 ->setProfessionalGroup($professional_group)
                      ->setType(self::TYPE)
                      ->setDate(self::DATE)
                      ->setNotes(self::NOTES)
@@ -58,6 +63,7 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
 			'date'                  => $presentation->getDate(),
 			'nparticipants'         => $presentation->getNumberOfParticipants(),
 			'school_id'             => $presentation->getLocation()->getId(),
+			'professional_group_id' => $presentation->getProfessionalGroup()->getId(),
 			'survey_id'             => $presentation->getSurvey()->getId(),
 			'dateCreated'           => new \MongoDate($presentation->getCreatedOn()),
 			'dateUpdated'           => new \MongoDate($presentation->getUpdatedOn())
@@ -82,6 +88,7 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
             self::ID,
             SchoolTestCase::NAME,
             AreaTestCase::CITY,
+            ProfessionalGroupTestCase::NAME,
             self::PARTICIPANTS,
             self::DATE,
             self::TYPE,
@@ -91,9 +98,9 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
             SurveyTestCase::ID,
             $this->getPresentationDtoMemberArray(),
             self::NOTES,
-            23.5,
-            34.09,
-            45.06
+            self::BEFORE_PERCENTAGE,
+            self::AFTER_PERCENTAGE,
+            self::EFFECTIVENESS
         );
     }
 
@@ -112,6 +119,8 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::FORMS_PRE, $presentation->getNumberOfFormsReturnedPre());
         $this->assertInstanceOf('STS\Domain\School', $presentation->getLocation());
         $this->assertInstanceOf('STS\Domain\Survey', $presentation->getSurvey());
+	    $this->assertInstanceOf('STS\Domain\ProfessionalGroup',
+		    $presentation->getProfessionalGroup());
         $this->assertTrue(is_array($presentation->getMembers()));
         $this->assertEquals(array(MemberTestCase::createValidMember()), $presentation->getMembers());
         $members = $presentation->getMembers();
@@ -129,6 +138,7 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(SchoolTestCase::ID, $dto->getSchoolId());
         $this->assertEquals(SchoolTestCase::NAME, $dto->getSchoolName());
         $this->assertEquals(AreaTestCase::CITY, $dto->getSchoolAreaCity());
+	    $this->assertEquals(ProfessionalGroupTestCase::NAME, $dto->getProfessionalGroupName());
         $this->assertEquals(self::PARTICIPANTS, $dto->getNumberOfParticipants());
         $this->assertEquals(self::TYPE, $dto->getType());
         $this->assertEquals(self::DISPLAY_DATE, $dto->getDate());
@@ -139,9 +149,9 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(91, $dto->getPreFormsPercentage());
         $this->assertEquals(100, $dto->getPostFormsPercentage());
         $this->assertEquals(self::NOTES, $dto->getNotes());
-	    $this->assertEquals(23.5, $dto->getCorrectBeforePercentage());
-	    $this->assertEquals(34.09, $dto->getCorrectAfterPercentage());
-	    $this->assertEquals(45.06, $dto->getEffectivenessPercentage());
+	    $this->assertEquals(self::BEFORE_PERCENTAGE, $dto->getCorrectBeforePercentage());
+	    $this->assertEquals(self::AFTER_PERCENTAGE, $dto->getCorrectAfterPercentage());
+	    $this->assertEquals(self::EFFECTIVENESS, $dto->getEffectivenessPercentage());
     }
 
     public function getPresentationDtoMemberArray()

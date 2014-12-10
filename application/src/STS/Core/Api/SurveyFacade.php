@@ -29,6 +29,16 @@ interface SurveyFacade
      */
     public function saveSurvey($userId, $templateId, $surveyData);
 
+	/**
+	 * @param $userId
+	 * @param $templateId
+	 * @param $surveyData
+	 * @param $surveyId
+	 *
+	 * @return mixed
+	 */
+	public function updateSurvey($userId, $templateId, $surveyData, $surveyId);
+
     /**
      * updateEnteredBy
      *

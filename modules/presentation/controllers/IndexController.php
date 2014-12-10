@@ -1,23 +1,45 @@
 <?php
 use STS\Web\Security\AclFactory;
 use STS\Core\Api\ApiException;
-use STS\Domain\School\Specification\MemberSchoolSpecification;
 use STS\Domain\Presentation;
 use STS\Core;
 use STS\Web\Controller\SecureBaseController;
+use STS\Core\Api\ProfessionalGroupFacade;
+use STS\Core\Api\MemberFacade;
+use STS\Core\Api\SchoolFacade;
+use STS\Core\Api\SurveyFacade;
+use STS\Domain\School;
+use STS\Domain\ProfessionalGroup;
+use STS\Domain\User;
 
 class Presentation_IndexController extends SecureBaseController
 {
 
+	/**
+	 * @var User
+	 */
     private $user;
 
     /**
      * @var \STS\Core\Api\DefaultPresentationFacade
      */
     private $presentationFacade;
+	/**
+	 * @var SurveyFacade
+	 */
     private $surveyFacade;
+	/**
+	 * @var MemberFacade
+	 */
     private $memberFacade;
+	/**
+	 * @var SchoolFacade
+	 */
     private $schoolFacade;
+	/**
+	 * @var ProfessionalGroupFacade
+	 */
+	private $professionalGroupFacade;
 
     /**
      * @var \STS\Core\Api\AuthFacade
@@ -33,6 +55,7 @@ class Presentation_IndexController extends SecureBaseController
         $this->surveyFacade = $core->load('SurveyFacade');
         $this->memberFacade = $core->load('MemberFacade');
         $this->schoolFacade = $core->load('SchoolFacade');
+	    $this->professionalGroupFacade = $core->load('ProfessionalGroupFacade');
         $this->authFacade = $core->load('AuthFacade');
 
     }
@@ -208,17 +231,28 @@ class Presentation_IndexController extends SecureBaseController
     {
         $schools = $this->getSchoolsVisableToMember();
         $schoolsArray = array();
-        foreach ($schools as $school) {
+	    /** @var School $school */
+	    foreach ($schools as $school) {
             $schoolsArray[$school->getId()] = $school->getName();
         }
+
+	    $professional_group_array = array('' => '');
+	    $professional_groups = $this->professionalGroupFacade->getAllProfessionalGroups();
+	    /** @var ProfessionalGroup $professional_group */
+	    foreach ($professional_groups as $professional_group) {
+		    $professional_group_array[$professional_group->getId()] =
+			    $professional_group->getName();
+	    }
 
         $typesArray = array_merge(array(''), $this->presentationFacade->getPresentationTypes());
 
         $form = new \Presentation_Presentation(
-                        array(
-                                'schools' => $schoolsArray, 'presentationTypes' => $typesArray,
-                                'surveyTemplate' => $surveyOrTemplate
-                        ));
+            array(
+                'schools'               => $schoolsArray,
+                'professionalGroups'    => $professional_group_array,
+                'presentationTypes'     => $typesArray,
+                'surveyTemplate'        => $surveyOrTemplate
+            ));
         return $form;
     }
 
@@ -249,6 +283,7 @@ class Presentation_IndexController extends SecureBaseController
         $this->presentationFacade->savePresentation(
                 $userId,
                 $postData['location'],
+                $postData['professional_group'],
                 $postData['presentationType'],
                 $postData['dateOfPresentation'],
                 $postData['notes'],
@@ -279,6 +314,7 @@ class Presentation_IndexController extends SecureBaseController
         $this->presentationFacade->updatePresentation(
             $presentationId,
             $postData['location'],
+            $postData['professional_group'],
             $postData['presentationType'],
             $postData['dateOfPresentation'],
             $postData['notes'],

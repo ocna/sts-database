@@ -12,10 +12,9 @@ interface PresentationFacade
 {
 
     /**
-     *
-     *
      * @param string $enteredByUserId
      * @param string $schoolId
+     * @param string $professionalGroupId
      * @param string $typeCode
      * @param string $date
      * @param string $notes
@@ -24,9 +23,23 @@ interface PresentationFacade
      * @param int $forms
      * @param string $surveyId
      */
-    public function savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId, $preForms);
+    public function savePresentation($enteredByUserId, $schoolId, $professionalGroupId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId, $preForms);
 
-    public function updatePresentation($id, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $postForms, $preForms);
+	/**
+	 * @param $id
+	 * @param $schoolId
+	 * @param $professionalGroupId
+	 * @param $typeCode
+	 * @param $date
+	 * @param $notes
+	 * @param $memberIds
+	 * @param $participants
+	 * @param $postForms
+	 * @param $preForms
+	 *
+	 * @return mixed
+	 */
+    public function updatePresentation($id, $schoolId, $professionalGroupId, $typeCode, $date, $notes, $memberIds, $participants, $postForms, $preForms);
 
     /**
      * getPresentationsForUserId

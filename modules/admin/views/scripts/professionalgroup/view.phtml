@@ -1,0 +1,16 @@
+<dl class="dl-horizontal">
+  <dt>Region:</dt>
+  <dd><?php echo $this->professional_group->getRegionName() ? $this->professional_group->getRegionName(): '-'; ?></dd>
+  <dt>Area:</dt>
+  <dd><?php echo $this->professional_group->getAreaName() ? $this->professional_group->getAreaName(): '-'; ?></dd>
+</dl>
+<br>
+<div class="well">
+<div class="btn-toolbar">
+    <?php if ($this->can_edit): ?>
+    <div class="btn-group">
+        <a class="btn btn-primary" href="/admin/professionalgroup/edit?id=<?php echo $this->professional_group->getId() ?>"><i class="icon-edit"></i> Edit</a>
+    </div>
+    <?php endif; ?>
+    <a class="btn" href="/admin/professionalgroup">Go Back</a>
+</div></div>

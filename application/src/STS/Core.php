@@ -2,6 +2,7 @@
 namespace STS;
 
 use STS\Core\Api\DefaultAuthFacade;
+use STS\Core\Api\DefaultProfessionalGroupFacade;
 use STS\Core\Api\DefaultSchoolFacade;
 use STS\Core\Api\DefaultMemberFacade;
 use STS\Core\Api\DefaultSurveyFacade;
@@ -49,6 +50,9 @@ class Core
             case 'MailerFacade':
                 $facade = DefaultMailerFacade::getDefaultInstance($this->config);
                 break;
+	        case 'ProfessionalGroupFacade':
+		        $facade = DefaultProfessionalGroupFacade::getDefaultInstance($this->config);
+		        break;
             default:
                 throw new \InvalidArgumentException("Class does not exist ($key)");
                 break;

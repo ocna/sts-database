@@ -1,6 +1,7 @@
 <?php
 namespace STS\Core\Api;
 
+use STS\Core\ProfessionalGroup\MongoProfessionalGroupRepository;
 use STS\Domain\Survey\Template;
 use STS\Domain\Member;
 use STS\Domain\Survey;
@@ -27,6 +28,7 @@ class DefaultPresentationFacade implements PresentationFacade
     private $memberRepository;
     private $schoolRepository;
     private $surveyRepository;
+	private $professionalGroupRepository;
 
     /**
      * @param MongoPresentationRepository $presentationRepository
@@ -34,18 +36,21 @@ class DefaultPresentationFacade implements PresentationFacade
      * @param MongoMemberRepository $memberRepository
      * @param MongoSchoolRepository $schoolRepository
      * @param MongoSurveyRepository $surveyRepository
+     * @param MongoProfessionalGroupRepository $professionalGroupRepository
      */
     public function __construct(MongoPresentationRepository $presentationRepository,
                                 MongoUserRepository $userRepository,
                                 MongoMemberRepository $memberRepository,
-                                MongoSchoolRepository $schoolRepository, MongoSurveyRepository
-        $surveyRepository)
+                                MongoSchoolRepository $schoolRepository,
+	                            MongoSurveyRepository $surveyRepository,
+								MongoProfessionalGroupRepository $professionalGroupRepository)
     {
         $this->presentationRepository = $presentationRepository;
         $this->userRepository = $userRepository;
         $this->memberRepository = $memberRepository;
         $this->schoolRepository = $schoolRepository;
         $this->surveyRepository = $surveyRepository;
+	    $this->professionalGroupRepository = $professionalGroupRepository;
     }
 
     /**
@@ -53,6 +58,7 @@ class DefaultPresentationFacade implements PresentationFacade
      *
      * @param string $enteredByUserId
      * @param string $schoolId
+     * @param string $professionalGroupId
      * @param string $typeCode
      * @param string $date
      * @param string $notes
@@ -63,9 +69,10 @@ class DefaultPresentationFacade implements PresentationFacade
      * @param $preForms
      * @return \STS\Core\Presentation\PresentationDto
      */
-    public function savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId, $preForms)
+    public function savePresentation($enteredByUserId, $schoolId, $professionalGroupId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId, $preForms)
     {
         $school = $this->schoolRepository->load($schoolId);
+	    $professional_group = $this->professionalGroupRepository->load($professionalGroupId);
         $members = array();
         foreach ($memberIds as $ids) {
             $member = new Member();
@@ -79,7 +86,7 @@ class DefaultPresentationFacade implements PresentationFacade
         $presentation->setEnteredByUserId($enteredByUserId)->setLocation($school)
             ->setType(Presentation::getAvailableType($typeCode))->setDate($date)->setNotes($notes)
             ->setNumberOfParticipants($participants)->setNumberOfFormsReturnedPost($forms)->setSurvey($survey)
-            ->setNumberOfFormsReturnedPre($preForms)
+            ->setNumberOfFormsReturnedPre($preForms)->setProfessionalGroup($professional_group)
             ->setMembers($members);
         $updatedPresentation = $this->presentationRepository->save($presentation);
         return PresentationDtoAssembler::toDto($updatedPresentation);
@@ -90,6 +97,7 @@ class DefaultPresentationFacade implements PresentationFacade
      *
      * @param $id
      * @param $schoolId
+     * @param string $professionalGroupId
      * @param $typeCode
      * @param $date
      * @param $notes
@@ -99,10 +107,11 @@ class DefaultPresentationFacade implements PresentationFacade
      * @param $preForms
      * @return \STS\Core\Presentation\PresentationDto
      */
-    public function updatePresentation($id, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $postForms, $preForms)
+    public function updatePresentation($id, $schoolId, $professionalGroupId, $typeCode, $date, $notes, $memberIds, $participants, $postForms, $preForms)
     {
         $presentation = $this->presentationRepository->load($id);
         $school = $this->schoolRepository->load($schoolId);
+	    $professional_group = $this->professionalGroupRepository->load($professionalGroupId);
         $members = array();
         foreach ($memberIds as $ids) {
             $member = new Member();
@@ -110,6 +119,7 @@ class DefaultPresentationFacade implements PresentationFacade
             $members[] = $member;
         }
         $presentation->setLocation($school)
+	                 ->setProfessionalGroup($professional_group)
                      ->setType(Presentation::getAvailableType($typeCode))
                      ->setDate($date)
                      ->setNotes($notes)
@@ -563,8 +573,9 @@ class DefaultPresentationFacade implements PresentationFacade
         $memberRepository = new MongoMemberRepository($mongoDb);
         $schoolRepository = new MongoSchoolRepository($mongoDb);
         $surveyRepository = new MongoSurveyRepository($mongoDb);
+	    $professionalGroupRepository = new MongoProfessionalGroupRepository($mongoDb);
         return new DefaultPresentationFacade($presentationRepository, $userRepository,
-            $memberRepository, $schoolRepository, $surveyRepository);
+            $memberRepository, $schoolRepository, $surveyRepository, $professionalGroupRepository);
     }
 
 	/**

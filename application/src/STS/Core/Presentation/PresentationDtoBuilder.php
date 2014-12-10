@@ -7,6 +7,7 @@ class PresentationDtoBuilder
     private $id = null;
     private $schoolName = null;
     private $schoolAreaCity = null;
+	private $professionalGroupName = null;
     private $numberOfParticipants = null;
     private $date = null;
     private $type = null;
@@ -26,6 +27,7 @@ class PresentationDtoBuilder
             $this->id,
             $this->schoolName,
             $this->schoolAreaCity,
+            $this->professionalGroupName,
             $this->numberOfParticipants,
             $this->date,
             $this->type,
@@ -65,7 +67,7 @@ class PresentationDtoBuilder
     }
 
      /**
-      * @param string $id
+      * @param string $schoolId
       * @return PresentationDtoBuilder
       */
     public function withSchoolId($schoolId)
@@ -78,9 +80,9 @@ class PresentationDtoBuilder
       * @param string $id
       * @return PresentationDtoBuilder
       */
-    public function withSurveyId($surveyId)
+    public function withSurveyId($id)
     {
-        $this->surveyId = $surveyId;
+        $this->surveyId = $id;
         return $this;
     }
 
@@ -103,6 +105,16 @@ class PresentationDtoBuilder
         $this->schoolName = $schoolName;
         return $this;
     }
+
+	/**
+	 * @param string $name
+	 * @return $this
+	 */
+	public function withProfessionalGroupName($name)
+	{
+		$this->professionalGroupName = $name;
+		return $this;
+	}
 
      /**
       * @param string $schoolAreaCity

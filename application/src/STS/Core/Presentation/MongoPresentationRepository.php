@@ -1,6 +1,7 @@
 <?php
 namespace STS\Core\Presentation;
 
+use STS\Core\ProfessionalGroup\MongoProfessionalGroupRepository;
 use STS\Domain\Presentation;
 use STS\Domain\Survey;
 use STS\Domain\Presentation\PresentationRepository;
@@ -129,6 +130,14 @@ class MongoPresentationRepository implements PresentationRepository
             $presentation->setSurvey($survey);
         }
         $schoolRepository = new MongoSchoolRepository($this->mongoDb);
+	    if (array_key_exists('professional_group_id', $data))
+	    {
+		    $professional_group_repository = new MongoProfessionalGroupRepository($this->mongoDb);
+		    $professional_group = $professional_group_repository->load
+		    ($data['professional_group_id']);
+		    $presentation->setProfessionalGroup($professional_group);
+	    }
+
         $presentation->setLocation($schoolRepository->load($data['school_id']));
         $memberRepository = new MongoMemberRepository($this->mongoDb);
         $members = array();

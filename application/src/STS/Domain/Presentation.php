@@ -1,7 +1,7 @@
 <?php
 namespace STS\Domain;
-use STS\Domain\Entity;
 use STS\Domain\School\Specification\MemberSchoolSpecification;
+use STS\Domain\ProfessionalGroup;
 
 class Presentation extends EntityWithTypes
 {
@@ -25,6 +25,10 @@ class Presentation extends EntityWithTypes
      * @var School
      */
     private $location;
+	/**
+	 * @var ProfessionalGroup
+	 */
+	private $professionalGroup;
     private $members = array();
 
     /**
@@ -36,14 +40,19 @@ class Presentation extends EntityWithTypes
     public function toMongoArray()
     {
         $array = array(
-                'id' => $this->id, 'entered_by_user_id' => $this->enteredByUserId, 'type' => $this->type,
-                'notes' => utf8_encode($this->notes), 'nforms' => $this->numberOfFormsReturnedPost,
-                'nformspre'=>$this->numberOfFormsReturnedPre,
-                'date' => $this->date,
-                'nparticipants' => $this->numberOfParticipants, 'school_id' => $this->location->getId(),
-                'survey_id' => $this->survey->getId(),
-                'dateCreated' => new \MongoDate($this->getCreatedOn()),
-                'dateUpdated' => new \MongoDate($this->getUpdatedOn())
+                'id'                    => $this->id,
+                'entered_by_user_id'    => $this->enteredByUserId,
+                'type'                  => $this->type,
+                'notes'                 => utf8_encode($this->notes),
+                'nforms'                => $this->numberOfFormsReturnedPost,
+                'nformspre'             => $this->numberOfFormsReturnedPre,
+                'date'                  => $this->date,
+                'nparticipants'         => $this->numberOfParticipants,
+                'school_id'             => $this->location->getId(),
+	            'professional_group_id' => $this->professionalGroup->getId(),
+                'survey_id'             => $this->survey->getId(),
+                'dateCreated'           => new \MongoDate($this->getCreatedOn()),
+                'dateUpdated'           => new \MongoDate($this->getUpdatedOn())
         );
         $members = array();
         foreach ($this->members as $member) {
@@ -132,6 +141,25 @@ class Presentation extends EntityWithTypes
         $this->location = $location;
         return $this;
     }
+
+	/**
+	 * @return ProfessionalGroup
+	 */
+	public function getProfessionalGroup()
+	{
+		return $this->professionalGroup;
+	}
+
+	/**
+	 * @param ProfessionalGroup $professional_group
+	 *
+	 * @return $this
+	 */
+	public function setProfessionalGroup($professional_group)
+	{
+		$this->professionalGroup = $professional_group;
+		return $this;
+	}
 
     public function getMembers()
     {
