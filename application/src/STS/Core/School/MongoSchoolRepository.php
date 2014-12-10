@@ -116,7 +116,7 @@ class MongoSchoolRepository implements SchoolRepository
             try {
                 $school->setType($schoolData['type']);
             } catch (\InvalidArgumentException $e) {
-                $school->setType(School::TYPE_SCHOOL);
+                $school->setType(School::TYPE_OTHER);
             }
         }
         return $school;
