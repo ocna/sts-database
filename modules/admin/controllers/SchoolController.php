@@ -30,17 +30,11 @@ class Admin_SchoolController extends SecureBaseController
         $this->memberFacade = $core->load('MemberFacade');
         $this->session = new \Zend_Session_Namespace('admin');
 
-        /** @var STS\Core\User\UserDTO $user */
-        $user = $this->getAuth()->getIdentity();
-
-        // permissions
-        $this->view->can_view = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_SCHOOL, 'view');
-        $this->view->can_edit = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_SCHOOL, 'edit');
-        $this->view->can_delete = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_SCHOOL, 'delete');
     }
 
     public function indexAction()
     {
+        $this->setPermissions();
         // filter by role
         $user = $this->getAuth()->getIdentity();
 
@@ -308,5 +302,16 @@ class Admin_SchoolController extends SecureBaseController
             }
             $criteria[$key] = $params[$key];
         }
+    }
+
+    private function setPermissions()
+    {
+        /** @var STS\Core\User\UserDTO $user */
+        $user = $this->getAuth()->getIdentity();
+
+        // permissions
+        $this->view->can_view = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_SCHOOL, 'view');
+        $this->view->can_edit = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_SCHOOL, 'edit');
+        $this->view->can_delete = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_SCHOOL, 'delete');
     }
 }
