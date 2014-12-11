@@ -11,6 +11,7 @@ class MemberDtoBuilder
     private $notes = null;
     private $activities = null;
     private $status = null;
+    private $isVolunteer = null;
     private $addressLineOne = null;
     private $addressLineTwo = null;
     private $addressCity = null;
@@ -55,6 +56,12 @@ class MemberDtoBuilder
     public function withType($type)
     {
         $this->type = $type;
+        return $this;
+    }
+
+    public function withVolunteer($is_volunteer)
+    {
+        $this->isVolunteer = $is_volunteer;
         return $this;
     }
 
@@ -181,6 +188,7 @@ class MemberDtoBuilder
             $this->type,
             $this->notes,
             $this->status,
+            $this->isVolunteer,
             $this->activities,
             $this->addressLineOne,
             $this->addressLineTwo,

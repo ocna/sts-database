@@ -61,6 +61,10 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
             'description' => 'Note that unless a member is marked "Active" they may not be added as a system user.'
         ));
 
+        $this->addElement('checkbox', 'is_volunteer', array(
+            'label' => 'Volunteer Contact'
+        ));
+
         // activitites
         $this->addElement('multiCheckbox', 'memberActivity', array(
             'label' => 'Activities',
@@ -71,7 +75,7 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
 
         // date trained
         $this->addElement('text', 'dateTrained', array(
-            'label' => 'Date Trained', 
+            'label' => 'Date Trained',
             'dimension' => 2,
             'validators' => array(new Zend_Validate_Date(array('format' => 'MM/dd/yyyy'))),
             'append' => array(
@@ -157,7 +161,7 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
         // diagnosis
         // date diagnosed
         $this->addElement('text', 'diagnosisDate', array(
-            'label' => 'Original Diagnosis Date', 
+            'label' => 'Original Diagnosis Date',
             'dimension' => 2,
             'validators' => array(new Zend_Validate_Date(array('format' => 'MM/dd/yyyy'))),
             'append' => array(
@@ -295,9 +299,9 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
     }
 
     public function setRoles($roles) {
-        
+
         foreach ($roles as & $role) {
-            
+
             switch ($role) {
                 case 'admin':
                     $role = 'Site Administrator';

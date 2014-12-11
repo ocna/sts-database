@@ -91,6 +91,7 @@ class DefaultMemberFacade implements MemberFacade
                         'status' => array('$in'=>$in),
                 );
         }
+
         $members = $this->memberRepository->find($query);
 
         // filter by region
@@ -108,7 +109,31 @@ class DefaultMemberFacade implements MemberFacade
             $members = $this->filterMembersByArea($criteria['area_any'], $members);
         }
 
+        // filter by volunteer status
+        if (array_key_exists('is_volunteer', $criteria)) {
+            $members = $this->filterMembersByVolunteerStatus($criteria['is_volunteer'], $members);
+        }
+
         return $this->getArrayOfDtos($members);
+    }
+
+    /**
+     * @param bool $is_volunteer
+     * @param $members
+     *
+     * @return array
+     */
+    private function filterMembersByVolunteerStatus($is_volunteer, $members)
+    {
+        $filtered_members = array();
+        /** @var Member $member */
+        foreach ($members as $member) {
+            if ($member->isVolunteer() == $is_volunteer) {
+                $filtered_members[] = $member;
+            }
+        }
+
+        return $filtered_members;
     }
 
     private function filterMembersByRegions($regions, $members)
@@ -276,6 +301,7 @@ class DefaultMemberFacade implements MemberFacade
         $lastName,
         $type,
         $status,
+        $is_volunteer,
         $activities,
         $notes,
         $presentsFor,
@@ -299,6 +325,7 @@ class DefaultMemberFacade implements MemberFacade
             $lastName,
             $type,
             $status,
+            $is_volunteer,
             $activities,
             $notes,
             $presentsFor,
@@ -325,6 +352,7 @@ class DefaultMemberFacade implements MemberFacade
         $lastName,
         $type,
         $status,
+        $is_volunteer,
         $activities,
         $notes,
         $presentsFor,
@@ -348,6 +376,7 @@ class DefaultMemberFacade implements MemberFacade
             $lastName,
             $type,
             $status,
+            $is_volunteer,
             $activities,
             $notes,
             $presentsFor,
@@ -431,6 +460,7 @@ class DefaultMemberFacade implements MemberFacade
      * @param $lastName
      * @param $type
      * @param $status
+     * @param $is_volunteer
      * @param $activities
      * @param $notes
      * @param $presentsFor
@@ -453,6 +483,7 @@ class DefaultMemberFacade implements MemberFacade
         $lastName,
         $type,
         $status,
+        $is_volunteer,
         $activities,
         $notes,
         $presentsFor,
@@ -490,6 +521,7 @@ class DefaultMemberFacade implements MemberFacade
                 ->setLastName($lastName)
                 ->setType($type)
                 ->setStatus($status)
+                ->setVolunteer($is_volunteer)
                 ->setNotes($notes)
                 ->setAddress($address)
                 ->setAssociatedUserId($userId)

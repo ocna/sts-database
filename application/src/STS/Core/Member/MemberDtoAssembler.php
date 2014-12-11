@@ -18,6 +18,7 @@ class MemberDtoAssembler
                 ->withFirstName($member->getFirstName())
                 ->withLastName($member->getLastName())
                 ->withStatus($member->getStatus())
+                ->withVolunteer($member->isVolunteer())
                 ->withType($member->getType())
                 ->withNotes($member->getNotes())
                 ->withDateTrained($member->getDateTrained())

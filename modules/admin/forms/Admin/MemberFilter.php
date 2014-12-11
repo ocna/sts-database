@@ -31,6 +31,16 @@ class Admin_MemberFilter extends Twitter_Bootstrap_Form_Inline
             'MultiOptions' => $this->regions
         ));
 
+        $this->addElement('multiselect', 'is_volunteer', array(
+            'label' => 'Volunteer',
+            'dimension' => 2,
+            'MultiOptions' => array(
+                '' => '',
+                1   => 'Volunteer',
+                0   => 'Not a Volunteer'
+            )
+        ));
+
         $this->addElement('button', 'update', array(
             'label' => 'Update',
             'value' => '1',

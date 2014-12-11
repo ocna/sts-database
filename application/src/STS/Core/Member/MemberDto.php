@@ -23,6 +23,10 @@ class MemberDto
     private $coordinatesForAreas;
     private $coordinatesForRegions;
     private $status;
+    /**
+     * @var bool
+     */
+    private $isVolunteer;
     private $email;
     private $dateTrained;
     private $diagnosisDate;
@@ -38,6 +42,7 @@ class MemberDto
         $type,
         $notes,
         $status,
+        $is_volunteer,
         $activities,
         $addressLineOne,
         $addressLineTwo,
@@ -64,6 +69,7 @@ class MemberDto
         $this->type = $type;
         $this->notes = $notes;
         $this->status = $status;
+        $this->isVolunteer = $is_volunteer;
         $this->activities = $activities;
         $this->addressLineOne = $addressLineOne;
         $this->addressLineTwo = $addressLineTwo;
@@ -194,6 +200,14 @@ class MemberDto
     public function getStatus()
     {
         return $this->status;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isVolunteer()
+    {
+        return $this->isVolunteer;
     }
 
     public function canBeDeleted()

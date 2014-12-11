@@ -37,7 +37,8 @@
   </div>
 </div>
 <?php
-$columns = array('Role', 'Status' ,'Last Name, First Name', 'Email', 'City', 'State');
+$columns = array('Role', 'Status', 'Volunteer?' ,'Last Name,<br>First Name', 'Email', 'City',
+    'State');
 ?>
 <p>
     <?php if ($this->can_view_training): ?>
@@ -64,6 +65,9 @@ $columns = array('Role', 'Status' ,'Last Name, First Name', 'Email', 'City', 'St
             </td>
             <td <?php echo $member['deceased'] ? 'class="deceased"' : ""; ?>>
                 <?php echo $member['status']; ?>
+            </td>
+            <td>
+                <?php echo $member['is_volunteer'] ? 'Yes' : ''; ?>
             </td>
             <td <?php echo $member['deceased'] ? 'class="deceased"' : ""; ?>>
                 <?php echo $member['lastName'].', '. $member['firstName']; ?>

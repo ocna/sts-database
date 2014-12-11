@@ -26,6 +26,7 @@ interface MemberFacade
      * @param $lastName
      * @param $type
      * @param $status
+     * @param $is_volunteer
      * @param $activities
      * @param $notes
      * @param $presentsFor
@@ -48,6 +49,7 @@ interface MemberFacade
         $lastName,
         $type,
         $status,
+        $is_volunteer,
         $activities,
         $notes,
         $presentsFor,
@@ -71,6 +73,7 @@ interface MemberFacade
      * @param $lastName
      * @param $type
      * @param $status
+     * @param $is_volunteer
      * @param $activities
      * @param $notes
      * @param $presentsFor
@@ -94,6 +97,7 @@ interface MemberFacade
         $lastName,
         $type,
         $status,
+        $is_volunteer,
         $activities,
         $notes,
         $presentsFor,

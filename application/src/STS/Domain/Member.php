@@ -36,6 +36,10 @@ class Member extends EntityWithTypes
     private $address;
     private $associatedUserId = null;
     private $status;
+    /**
+     * @var bool
+     */
+    private $isVolunteer = false;
     private $dateTrained = null;
     /**
      * @var Diagnosis
@@ -156,17 +160,18 @@ class Member extends EntityWithTypes
 
         // build the array that will get saved in mongodb
         $array = array(
-            'id'       => $this->id,
-            'fname'    => utf8_encode($this->firstName),
-            'lname'    => utf8_encode($this->lastName),
-            'type'     => $this->type,
-            'notes'    => utf8_encode($this->notes),
-            'legacyid' => $this->legacyId,
-            'status'   => $this->status,
-            'activities' => $activities,
-            'fullname' => utf8_encode($this->getFullName()),
-            'user_id'  => $this->associatedUserId,
-            'address'  => array(
+            'id'            => $this->id,
+            'fname'         => utf8_encode($this->firstName),
+            'lname'         => utf8_encode($this->lastName),
+            'type'          => $this->type,
+            'is_volunteer'  => $this->isVolunteer,
+            'notes'         => utf8_encode($this->notes),
+            'legacyid'      => $this->legacyId,
+            'status'        => $this->status,
+            'activities'    => $activities,
+            'fullname'      => utf8_encode($this->getFullName()),
+            'user_id'       => $this->associatedUserId,
+            'address'       => array(
                 'line_one' => utf8_encode($this->address->getLineOne()),
                 'line_two' => utf8_encode($this->address->getLineTwo()),
                 'city' => utf8_encode($this->address->getCity()),
@@ -231,6 +236,27 @@ class Member extends EntityWithTypes
             throw new \InvalidArgumentException('No such status with given value.');
         }
         $this->status = $status;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isVolunteer()
+    {
+        return $this->isVolunteer;
+    }
+
+    /**
+     * @param bool $is_volunteer
+     *
+     * @return $this
+     */
+    public function setVolunteer($is_volunteer)
+    {
+        if ($is_volunteer) {
+            $this->isVolunteer = true;
+        }
         return $this;
     }
 

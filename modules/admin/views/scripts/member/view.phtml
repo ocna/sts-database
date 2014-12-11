@@ -24,6 +24,8 @@
   <dd><?php echo $this->member->getType() ? $this->member->getType() : '-'; ?></dd>
   <dt>Status:</dt>
   <dd><?php echo $this->member->getStatus() ? $this->member->getStatus() : '-'; ?></dd>
+    <dt>Volunteer?</dt>
+    <dd><?php echo $this->member->isVolunteer() ? 'Yes' : 'No'; ?></dd>
   <dt>Date Trained:</dt>
   <dd><?php echo $this->member->getDateTrained() ? $this->member->getDateTrained() : '-'; ?></dd>
   <dt>Email:</dt>

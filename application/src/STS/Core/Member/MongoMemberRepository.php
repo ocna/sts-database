@@ -166,6 +166,10 @@ class MongoMemberRepository implements MemberRepository
             $member->setStatus(Member::STATUS_ACTIVE);
         }
 
+        if (array_key_exists('is_volunteer', $memberData)) {
+            $member->setVolunteer($memberData['is_volunteer']);
+        }
+
         if (array_key_exists('address', $memberData)) {
             $address = new Address();
             $address->setLineOne($memberData['address']['line_one'])

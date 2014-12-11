@@ -7,6 +7,8 @@ use STS\Domain\Member;
 use STS\Domain\User;
 use STS\Core\Member\MemberDto;
 use STS\Core\User\UserDTO;
+use STS\Domain\Location\Area;
+use STS\Domain\Location\Region;
 
 /**
  * Class Admin_MemberController
@@ -104,6 +106,7 @@ class Admin_MemberController extends SecureBaseController
             $this->filterParams('role', $params, $criteria);
             $this->filterParams('status', $params, $criteria);
             $this->filterParams('region', $params, $criteria);
+            $this->filterParams('is_volunteer', $params, $criteria);
             $this->session->criteria = $criteria;
         }
 
@@ -145,6 +148,7 @@ class Admin_MemberController extends SecureBaseController
             'City',
             'State',
             'Status',
+            'Volunteer?',
             'Notes',
             'Can Be Deleted?',
             'Date Trained',
@@ -159,6 +163,9 @@ class Admin_MemberController extends SecureBaseController
             }
             if (1 == $member['deceased']) {
                 $member['deceased'] = 'Yes';
+            }
+            if (1 == $member['is_volunteer']) {
+                $member['is_volunteer'] = 'Yes';
             }
             $date = '';
             if ($member['dateTrained']) {
@@ -283,6 +290,7 @@ class Admin_MemberController extends SecureBaseController
     private function getRegionsArray()
     {
         $regionsArray = array('');
+        /** @var Region $region */
         foreach ($this->locationFacade->getAllRegions() as $region) {
             $regionsArray[$region->getName()] = $region->getName();
         }
@@ -480,6 +488,7 @@ class Admin_MemberController extends SecureBaseController
                 'systemUserEmail' => $dto->getEmail(),
                 'memberType' => $this->memberFacade->getMemberTypeKey($dto->getType()),
                 'memberStatus' => $this->memberFacade->getMemberStatusKey($dto->getStatus()),
+                'is_volunteer'  => $dto->isVolunteer(),
                 'memberActivity' => $dto->getActivities(),
                 'dateTrained' => $dto->getDateTrained(),
                 'notes' => $dto->getNotes(),
@@ -509,7 +518,6 @@ class Admin_MemberController extends SecureBaseController
             $postData = $request->getPost();
             if ($this->formIsValid($form, $postData)) {
                 try {
-
                     // if a member has been upgraded to a system user, check the email
                     // and password to ensure no duplication
                     $is_self = false;
@@ -681,11 +689,14 @@ class Admin_MemberController extends SecureBaseController
 
     /**
      * @param array $postData
-     * @param Core\Member\MemberDto $memberDto
+     * @param MemberDto $memberDto
      * @param $tempPassword
+     * @param bool $init_password
+     * @param null $salt
+     *
      * @return mixed
      */
-    private function updateExistingUser(array $postData, Core\Member\MemberDto $memberDto, $tempPassword, $init_password = TRUE, $salt = NULL)
+    private function updateExistingUser(array $postData, Core\Member\MemberDto $memberDto, $tempPassword, $init_password = true, $salt = null)
     {
         $firstName = $memberDto->getFirstName();
         $lastName = $memberDto->getLastName();
@@ -742,6 +753,7 @@ class Admin_MemberController extends SecureBaseController
             $data['lastName'],
             Member::getAvailableType($data['memberType']),
             Member::getAvailableStatus($data['memberStatus']),
+            $data['is_volunteer'],
             $activities,
             $data['notes'],
             $presentsFor,
@@ -813,6 +825,7 @@ class Admin_MemberController extends SecureBaseController
             $data['lastName'],
             Member::getAvailableType($data['memberType']),
             Member::getAvailableStatus($data['memberStatus']),
+            $data['is_volunteer'],
             $activities,
             $data['notes'],
             $presentsFor,
@@ -841,6 +854,7 @@ class Admin_MemberController extends SecureBaseController
         if (empty($members)){
             return $memberData;
         }
+        /** @var MemberDto $member */
         foreach ($members as $member) {
             $notes =$member->getNotes();
             $hasNotes = empty($notes) ? false : true;
@@ -852,6 +866,7 @@ class Admin_MemberController extends SecureBaseController
                 'city'          => $member->getAddressCity(),
                 'state'         => $member->getAddressState(),
                 'status'        => $member->getStatus(),
+                'is_volunteer'  => $member->isVolunteer(),
                 'hasNotes'      => $hasNotes,
                 'Notes'         => $member->getNotes(),
                 'canBeDeleted'  => $member->canBeDeleted(),
@@ -1094,7 +1109,7 @@ class Admin_MemberController extends SecureBaseController
      *
      * Changes a username and updates references to it.
      *
-     * @param $associatedUser
+     * @param $srcUser
      * @param $dto
      * @param $postData
      */
@@ -1154,6 +1169,11 @@ class Admin_MemberController extends SecureBaseController
         $this->view->summary = $summary;
     }
 
+    /**
+     * @param User $user
+     *
+     * @return array
+     */
     protected function getDefaultUserCriteria($user)
     {
         $criteria = array();
@@ -1164,7 +1184,7 @@ class Admin_MemberController extends SecureBaseController
             $criteria['region'] = $member->getCoordinatesForRegions();
             $options['allowed_regions']= $criteria['region'];
             $areas = $this->locationFacade->getAreasForRegions($criteria['region']);
-
+            /** @var Area $area */
             foreach ($areas as $area) {
                 $options['allowed_areas'][$area->getID()] = $area->getName();
             }
@@ -1182,6 +1202,7 @@ class Admin_MemberController extends SecureBaseController
         $summary->regions = array();
         $summary->areas = array();
         $summary->status = array();
+        /** @var MemberDto $member */
         foreach ($members as $member) {
             $summary->count++;
 
