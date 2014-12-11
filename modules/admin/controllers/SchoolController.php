@@ -3,18 +3,29 @@ use STS\Core;
 use STS\Web\Security\AclFactory;
 use STS\Web\Controller\SecureBaseController;
 use STS\Domain\User;
+use STS\Core\Api\ApiException;
+use STS\Core\Api\DefaultLocationFacade;
+use STS\Core\Api\DefaultMemberFacade;
+use STS\Core\Api\DefaultSchoolFacade;
+use STS\Core\School\SchoolDto;
+use STS\Core\Location\RegionDto;
 
 class Admin_SchoolController extends SecureBaseController
 {
     /**
-     * @var STS\Core\Api\DefaultSchoolFacade
+     * @var DefaultSchoolFacade
      */
     protected $schoolFacade;
 
     /**
-     * @var STS\Core\Api\DefaultLocationFacade
+     * @var DefaultLocationFacade
      */
     protected $locationFacade;
+
+    /**
+     * @var DefaultMemberFacade
+     */
+    protected $memberFacade;
 
     /**
      * @var \Zend_Session_Namespace
@@ -104,6 +115,7 @@ class Admin_SchoolController extends SecureBaseController
 
         $data = array();
 
+        /** @var SchoolDto $school */
         foreach ($schools as $school) {
             $data[] = array(
                 $school->getName(),
@@ -247,6 +259,7 @@ class Admin_SchoolController extends SecureBaseController
      *
      * Return the filter form for list of all schools
      *
+     * @param User $user
      * @return Admin_MemberFilter
      */
     private function getFilterForm($user)
@@ -274,6 +287,7 @@ class Admin_SchoolController extends SecureBaseController
     private function getRegionsArray()
     {
         $regionsArray = array('');
+        /** @var RegionDto $region */
         foreach ($this->locationFacade->getAllRegions() as $region) {
             $regionsArray[$region->getName()] = $region->getName();
         }
