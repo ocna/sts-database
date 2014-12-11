@@ -197,15 +197,33 @@ class DefaultPresentationFacade implements PresentationFacade
     public function getPresentationsForUserId($userId)
     {
         $user = $this->userRepository->load($userId);
-        $member = $this->memberRepository->load($user->getAssociatedMemberId());
+        $member        = $this->memberRepository->load($user->getAssociatedMemberId());
         $presentations = $this->presentationRepository->find();
-        $dtos = array();
+        $dtos          = array();
         foreach ($presentations as $presentation) {
             /** @var Presentation $presentation */
             if ($presentation->isAccessableByMemberUser($member, $user)) {
                 $dtos[] = PresentationDtoAssembler::toDTO($presentation);
             }
         }
+
+        return $dtos;
+    }
+
+    /**
+     * @param string $member_id
+     *
+     * @return array
+     */
+    public function getPresentationsForMemberId($member_id)
+    {
+        $presentations = $this->presentationRepository->find(array('members' => $member_id));
+        $dtos          = array();
+        foreach ($presentations as $presentation) {
+            /** @var Presentation $presentation */
+            $dtos[] = PresentationDtoAssembler::toDTO($presentation);
+        }
+
         return $dtos;
     }
 

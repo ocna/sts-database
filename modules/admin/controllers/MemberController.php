@@ -9,6 +9,7 @@ use STS\Core\Member\MemberDto;
 use STS\Core\User\UserDTO;
 use STS\Domain\Location\Area;
 use STS\Domain\Location\Region;
+use STS\Core\Api\DefaultPresentationFacade;
 
 /**
  * Class Admin_MemberController
@@ -39,6 +40,11 @@ class Admin_MemberController extends SecureBaseController
     protected $authFacade;
 
     /**
+     * @var DefaultPresentationFacade
+     */
+    protected $presentationFacade;
+
+    /**
      * @var STS\Core\Api\MailerFacade
      */
     protected $mailerFacade;
@@ -56,6 +62,7 @@ class Admin_MemberController extends SecureBaseController
         $this->userFacade = $core->load('UserFacade');
         $this->locationFacade = $core->load('LocationFacade');
         $this->authFacade = $core->load('AuthFacade');
+        $this->presentationFacade = $core->load('PresentationFacade');
         $this->mailerFacade = $core->load('MailerFacade');
         $this->session = new \Zend_Session_Namespace('admin');
     }
@@ -346,8 +353,13 @@ class Admin_MemberController extends SecureBaseController
         if ($member->isDeceased()) {
             $parameters['titleClass'] = 'muted';
         }
+
+        // TODO: move to Member class
+        $presentations = $this->presentationFacade->getPresentationsForMemberId($member->getId());
+
         $this->view->layout()->pageHeader = $this->view->partial('partials/page-header.phtml', $parameters);
         $this->view->member = $member;
+        $this->view->presentations = $presentations;
 
         /** @var STS\Core\User\UserDTO $user */
         $user = $this->getAuth()->getIdentity();

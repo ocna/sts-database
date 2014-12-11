@@ -31,6 +31,8 @@ class DefaultMemberFacade implements MemberFacade
      */
     private $userRepository;
 
+
+
     public function __construct(
         MongoMemberRepository $memberRepository,
         MongoAreaRepository $areaRepository,
