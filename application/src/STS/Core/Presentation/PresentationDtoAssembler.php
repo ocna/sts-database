@@ -23,6 +23,10 @@ class PresentationDtoAssembler
             ->withNumberOfFormsReturnedPost($presentation->getNumberOfFormsReturnedPost())
             ->withNumberOfFormsReturnedPre($presentation->getNumberOfFormsReturnedPre());
         if (! is_null($presentation->getSurvey())) {
+            $core = \STS\Core::getDefaultInstance();
+            $surveyFacade = $core->load('SurveyFacade');
+            $survey = $surveyFacade->getSurveyById($presentation->getSurvey()->getId());
+            $presentation->setSurvey($survey);
             $builder->withSurveyId($presentation->getSurvey()->getId())
                 ->withCorrectBeforePercentage($presentation->getCorrectBeforePercentage())
                 ->withCorrectAfterPercentage($presentation->getCorrectAfterPercentage())
