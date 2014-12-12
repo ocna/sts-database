@@ -213,6 +213,20 @@ ant -propertyfile stg.deploy.properties -f deploy.xml deploy -Dgit.branch=releas
 ant -propertyfile beta.deploy.properties -f deploy.xml deploy -Dgit.branch=release/1.0
 ```
 
+There is a wrapper shell script in `src/build-deploy/` to handle deployments to production/staging so you can do:
+
+The following to deploy from the `develop` branch to the staging site:
+
+~~~~
+./deploy.sh dev
+~~~~
+
+or the following to deploy from the `master` branch to the production site:
+
+~~~~
+./deploy.sh prod
+~~~~
+
 ###Environments
 There are two environments that you may deploy to:
 
