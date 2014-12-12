@@ -3,7 +3,6 @@ namespace STS\Domain\Location;
 
 class Address
 {
-
     private $lineOne;
     private $lineTwo;
     private $city;

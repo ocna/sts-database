@@ -17,7 +17,7 @@ class Core
 
     private $config;
 
-    static protected $default;
+    protected static $default;
 
     public function __construct(\Zend_Config $config)
     {

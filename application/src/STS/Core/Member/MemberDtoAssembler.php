@@ -39,7 +39,7 @@ class MemberDtoAssembler
                 ->withDateTrained($member->getDateTrained());
 
         if ($diagnosis = $member->getDiagnosis()) {
-                $builder->withDiagnosisDate($diagnosis->getDate())
+            $builder->withDiagnosisDate($diagnosis->getDate())
                         ->withDiagnosisStage($diagnosis->getStage());
         }
 

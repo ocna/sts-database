@@ -359,7 +359,7 @@ class DefaultPresentationFacade implements PresentationFacade
         }
 
         // sorting function
-        $compare = function($a, $b) {
+        $compare = function ($a, $b) {
             if ($a['presentations'] > $b['presentations']) {
                 return -1;
             } elseif ($a['presentations'] < $b['presentations']) {
@@ -403,7 +403,7 @@ class DefaultPresentationFacade implements PresentationFacade
         // look for matches
         $presentations = array_filter(
             $presentations,
-            function(Presentation $presentation) use ($regions) {
+            function (Presentation $presentation) use ($regions) {
                 $area = $presentation->getLocation()->getArea();
                 return in_array($area->getRegion()->getName(), $regions);
             }
@@ -435,7 +435,7 @@ class DefaultPresentationFacade implements PresentationFacade
         // look for matches
         $presentations = array_filter(
             $presentations,
-            function(Presentation $presentation) use ($states) {
+            function (Presentation $presentation) use ($states) {
                 $area = $presentation->getLocation()->getArea();
                 return in_array($area->getState(), $states);
             }
@@ -466,12 +466,12 @@ class DefaultPresentationFacade implements PresentationFacade
         // look for matches
         $presentations = array_filter(
             $presentations,
-            function(Presentation $presentation) use ($members) {
+            function (Presentation $presentation) use ($members) {
                 $participants = $presentation->getMembers();
 
                 // get only the ids
                 $ids = array_map(
-                    function(Member $item) {
+                    function (Member $item) {
                         return $item->getId();
                     },
                     $participants
@@ -506,7 +506,7 @@ class DefaultPresentationFacade implements PresentationFacade
 
         // switch the types to test into the labels
         $types = array_map(
-            function($key) {
+            function ($key) {
                 return School::getAvailableType($key);
             },
             $types
@@ -515,7 +515,7 @@ class DefaultPresentationFacade implements PresentationFacade
         // look for matches
         $presentations = array_filter(
             $presentations,
-            function(Presentation $presentation) use ($types) {
+            function (Presentation $presentation) use ($types) {
                 return in_array($presentation->getLocation()->getType(), $types);
             }
         );
@@ -544,7 +544,7 @@ class DefaultPresentationFacade implements PresentationFacade
         $facade = $this;
         $presentations = array_filter(
             $presentations,
-            function(Presentation $presentation) use ($types, $facade) {
+            function (Presentation $presentation) use ($types, $facade) {
                 $type = $facade->getTypeKey($presentation->getType());
                 return in_array($type, $types);
             }
@@ -575,7 +575,7 @@ class DefaultPresentationFacade implements PresentationFacade
         // look for matches
         $presentations = array_filter(
             $presentations,
-            function(Presentation $presentation) use ($schools) {
+            function (Presentation $presentation) use ($schools) {
                 return in_array($presentation->getLocation()->getId(), $schools);
             }
         );
@@ -598,7 +598,7 @@ class DefaultPresentationFacade implements PresentationFacade
         // look for matches
         $presentations = array_filter(
             $presentations,
-            function(Presentation $presentation) use ($areas) {
+            function (Presentation $presentation) use ($areas) {
                 return in_array($presentation->getLocation()->getArea()->getId(), $areas);
             }
         );

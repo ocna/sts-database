@@ -9,7 +9,6 @@ use STS\Core\Survey\MongoSurveyRepository;
 
 class DefaultSurveyFacade implements SurveyFacade
 {
-
     private $templateRepository;
     private $surveyRepository;
 

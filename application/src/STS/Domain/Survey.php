@@ -226,7 +226,7 @@ class Survey
                 $responseArray = null;
                 /** @var ShortAnswer $question */
                 if ($question->getResponse()) {
-                        $response = $question->getResponse();
+                    $response = $question->getResponse();
                     if ($question->whenAsked() == 0) {
                         /** @var PairResponse $response */
                         $responseArray = array(

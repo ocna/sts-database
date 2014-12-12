@@ -3,7 +3,6 @@ namespace STS\Domain;
 
 class Entity
 {
-
     protected $id = null;
     protected $createdOn = null;
     protected $updatedOn = null;

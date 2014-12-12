@@ -3,7 +3,6 @@ namespace STS\Core\User;
 
 class UserDTOBuilder
 {
-
     private $id = null;
     private $email = null;
     private $firstName = null;

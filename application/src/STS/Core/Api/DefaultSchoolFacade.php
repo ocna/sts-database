@@ -136,7 +136,7 @@ class DefaultSchoolFacade implements SchoolFacade
     public function filterSchoolsByRegions($regions, $schools)
     {
         if (!empty($regions)) {
-            $schools = array_filter($schools, function(SchoolDto $school) use ($regions) {
+            $schools = array_filter($schools, function (SchoolDto $school) use ($regions) {
                 return in_array($school->getRegionName(), $regions, true);
             });
         }
@@ -154,7 +154,7 @@ class DefaultSchoolFacade implements SchoolFacade
     public function filterSchoolsByTypes($types, $schools)
     {
         if (!empty($types)) {
-            $schools = array_filter($schools, function(SchoolDto $school) use ($types) {
+            $schools = array_filter($schools, function (SchoolDto $school) use ($types) {
                 return in_array($school->getTypeKey(), $types, true);
             });
         }
@@ -174,7 +174,7 @@ class DefaultSchoolFacade implements SchoolFacade
             if (!is_array($areas)) {
                 $areas = (array) $areas;
             }
-            $schools = array_filter($schools, function(SchoolDto $school) use ($areas) {
+            $schools = array_filter($schools, function (SchoolDto $school) use ($areas) {
                 return in_array($school->getAreaId(), $areas, true);
             });
         }

@@ -10,7 +10,6 @@ namespace STS\Core\Api;
 
 interface PresentationFacade
 {
-
     /**
      * @param string $enteredByUserId
      * @param string $schoolId

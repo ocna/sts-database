@@ -96,7 +96,7 @@ class DefaultProfessionalGroupFacade implements ProfessionalGroupFacade
         // look for matches
         $professional_groups = array_filter(
             $professional_groups,
-            function(ProfessionalGroup $presentation) use ($regions) {
+            function (ProfessionalGroup $presentation) use ($regions) {
                 $area = $presentation->getArea();
                 return in_array($area->getRegion()->getName(), $regions);
             }
@@ -128,7 +128,7 @@ class DefaultProfessionalGroupFacade implements ProfessionalGroupFacade
         // look for matches
         $professional_groups = array_filter(
             $professional_groups,
-            function(ProfessionalGroup $professional_group) use ($states) {
+            function (ProfessionalGroup $professional_group) use ($states) {
                 $area = $professional_group->getArea();
                 return in_array($area->getState(), $states);
             }
@@ -158,7 +158,7 @@ class DefaultProfessionalGroupFacade implements ProfessionalGroupFacade
         // look for matches
         $professional_groups = array_filter(
             $professional_groups,
-            function(ProfessionalGroup $professional_group) use ($areas) {
+            function (ProfessionalGroup $professional_group) use ($areas) {
                 return in_array($professional_group->getArea()->getId(), $areas);
             }
         );
