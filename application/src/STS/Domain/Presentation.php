@@ -251,7 +251,7 @@ class Presentation extends EntityWithTypes
             return 'N/A';
         }
 
-        if (! $this->numberOfFormsReturnedPre) {
+        if (! $this->numberOfFormsReturnedPre || ! $this->getCorrectBeforePercentage()) {
             return 100;
         }
         $effectiveness = (
