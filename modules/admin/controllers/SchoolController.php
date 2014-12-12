@@ -102,6 +102,7 @@ class Admin_SchoolController extends SecureBaseController
 
         $headers = array(
             'Name',
+            'Inactive?',
             'Type',
             'Notes',
             'Region',
@@ -119,6 +120,7 @@ class Admin_SchoolController extends SecureBaseController
         foreach ($schools as $school) {
             $data[] = array(
                 $school->getName(),
+                $school->isInactive() ? 'Inactive' : ' ',
                 $school->getType(),
                 $school->getNotes(),
                 $school->getRegionName(),
@@ -187,6 +189,7 @@ class Admin_SchoolController extends SecureBaseController
             'notes'=>$dto->getNotes(),
             'area'=>$dto->getAreaId(),
             'schoolType'=>$dto->getTypeKey(),
+            'isInactive'    => $dto->isInactive(),
             'addressLineOne'=>$dto->getAddressLineOne(),
             'addressLineTwo'=>$dto->getAddressLineTwo(),
             'city'=>$dto->getAddressCity(),
@@ -199,17 +202,42 @@ class Admin_SchoolController extends SecureBaseController
             $postData = $request->getPost();
             if ($form->isValid($postData)) {
                 try {
-                    $updatedSchool = $this->schoolFacade->updateSchool($id, $postData['name'], $postData['area'], $postData['schoolType'], $postData['notes'], $postData['addressLineOne'], $postData['addressLineTwo'], $postData['city'], $postData['state'], $postData['zip']);
+                    $updatedSchool = $this->schoolFacade->updateSchool(
+                        $id,
+                        $postData['name'],
+                        $postData['area'],
+                        $postData['schoolType'],
+                        $postData['isInactive'],
+                        $postData['notes'],
+                        $postData['addressLineOne'],
+                        $postData['addressLineTwo'],
+                        $postData['city'],
+                        $postData['state'],
+                        $postData['zip']
+                    );
                     $this
-                        ->setFlashMessageAndRedirect("The school: \"{$updatedSchool->getName()}\" has been updated!", 'success', array(
-                            'module' => 'admin', 'controller' => 'school', 'action' => 'view', 'params' => array('id'=>$updatedSchool->getId())
-                        ));
+                        ->setFlashMessageAndRedirect(
+                            "The school: \"{$updatedSchool->getName()}\" has been updated!",
+                            'success',
+                            array(
+                                'module' => 'admin',
+                                'controller' => 'school',
+                                'action' => 'view',
+                                'params' => array('id'=>$updatedSchool->getId())
+                            )
+                        );
                 } catch (ApiException $e) {
-                    $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage(), 'error');
+                    $this->setFlashMessageAndUpdateLayout(
+                        'An error occurred while saving this information: ' . $e->getMessage(),
+                        'error'
+                    );
                 }
             } else {
                 $this
-                    ->setFlashMessageAndUpdateLayout('It looks like you missed some information, please make the corrections below.', 'error');
+                    ->setFlashMessageAndUpdateLayout(
+                        'It looks like you missed some information, please make the corrections below.',
+                        'error'
+                    );
             }
         }
         $this->view->form = $form;
@@ -221,7 +249,18 @@ class Admin_SchoolController extends SecureBaseController
      */
     private function saveSchool($postData)
     {
-        $school = $this->schoolFacade->saveSchool($postData['name'], $postData['area'], $postData['schoolType'], $postData['notes'], $postData['addressLineOne'], $postData['addressLineTwo'], $postData['city'], $postData['state'], $postData['zip']);
+        $school = $this->schoolFacade->saveSchool(
+            $postData['name'],
+            $postData['area'],
+            $postData['schoolType'],
+            $postData['isInactive'],
+            $postData['notes'],
+            $postData['addressLineOne'],
+            $postData['addressLineTwo'],
+            $postData['city'],
+            $postData['state'],
+            $postData['zip']
+        );
         return $school;
     }
 

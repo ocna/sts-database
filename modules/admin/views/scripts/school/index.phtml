@@ -35,11 +35,16 @@ $columns = array(
     </tr>
     </thead>
     <tbody>
-    <?php foreach ($this->objects as $object): ?>
-    <tr>
+    <?php
+    /** @var STS\Core\School\SchoolDto $object */
+    foreach ($this->objects as $object): ?>
+    <tr<?= $object->isInactive() ? ' class="muted"' : '' ?>>
     <?php foreach ($columns as $get => $title):
         $method = 'get' . ucfirst($get);
         $val = $object->$method();
+        if ('Name' == $title && $object->isInactive()) {
+            $val .= " (inactive)";
+        }
     ?>
         <td class="<?= $get ?>"><?= $val ?></td>
 

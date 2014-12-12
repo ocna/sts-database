@@ -24,6 +24,11 @@ class School extends EntityWithTypes
     private $address;
     private $notes;
 
+    /**
+     * @var bool
+     */
+    private $isInactive = false;
+
     public function toMongoArray()
     {
         $areaId = new \MongoId($this->area->getId());
@@ -32,6 +37,7 @@ class School extends EntityWithTypes
             'name' => utf8_encode($this->name),
             'type' => $this->type, 'notes' => utf8_encode($this->notes),
             'legacyid' => $this->legacyId,
+            'is_inactive'   => $this->isInactive,
             'area_id' => array(
                 '_id' => $areaId
             ),
@@ -46,6 +52,26 @@ class School extends EntityWithTypes
             'dateUpdated' => new \MongoDate($this->getUpdatedOn())
         );
         return $array;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function isInactive()
+    {
+        return $this->isInactive;
+    }
+
+    /**
+     * @param bool $isInactive
+     * @return $this
+     */
+    public function setIsInactive($isInactive)
+    {
+        if ($isInactive) {
+            $this->isInactive = true;
+        }
+        return $this;
     }
 
     public function getNotes()

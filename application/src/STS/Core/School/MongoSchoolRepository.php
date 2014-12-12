@@ -119,6 +119,9 @@ class MongoSchoolRepository implements SchoolRepository
                 $school->setType(School::TYPE_OTHER);
             }
         }
+        if (array_key_exists('is_inactive', $schoolData)) {
+            $school->setIsInactive($schoolData['is_inactive']);
+        }
         return $school;
     }
 }

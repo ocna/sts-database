@@ -32,7 +32,7 @@ class SchoolTest extends SchoolTestCase
     /**
      * @test
      */
-    public function confirmSanitiezedName()
+    public function confirmSanitizedName()
     {
         $school = $this->getValidSchool();
 
@@ -41,7 +41,4 @@ class SchoolTest extends SchoolTestCase
 
         $this->assertEquals($good, $school->getName($school->setName($bad)));
     }
-
-
-
 }

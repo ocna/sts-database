@@ -31,6 +31,11 @@ class Admin_School extends Twitter_Bootstrap_Form_Horizontal
                         new \Zend_Validate_NotEmpty(\Zend_Validate_NotEmpty::ZERO)
                     )
             ));
+        //inactive
+        $this
+            ->addElement('checkbox', 'isInactive', array(
+                'label' => 'Inactive?',
+            ));
         //notes
         $this
             ->addElement('textarea', 'notes', array(

@@ -15,6 +15,7 @@ class SchoolDtoAssembler
         $name = $school->getName();
         $type = $school->getType();
         $typeKey = array_search($type, School::getAvailableTypes());
+        $is_inactive = $school->isInactive();
         $notes = $school->getNotes();
         if ($area = $school->getArea()) {
             if ($region = $area->getRegion()) {
@@ -46,6 +47,7 @@ class SchoolDtoAssembler
             $legacyId,
             $name,
             $type,
+            $is_inactive,
             $notes,
             $regionName,
             $areaName,

@@ -91,6 +91,7 @@ class DefaultSchoolFacadeTest extends SchoolTestCase
             $school->getName(),
             $school->getArea()->getId(),
             'TYPE_OTHER',
+            $school->isInactive(),
             $school->getNotes(),
             $school->getAddress()->getLineOne(),
             $school->getAddress()->getLineTwo(),

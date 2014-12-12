@@ -199,6 +199,7 @@ class DefaultSchoolFacade implements SchoolFacade
      * @param $name
      * @param $areaId
      * @param $schoolType
+     * @param bool $isInactive
      * @param $notes
      * @param $addressLineOne
      * @param $addressLineTwo
@@ -211,6 +212,7 @@ class DefaultSchoolFacade implements SchoolFacade
         $name,
         $areaId,
         $schoolType,
+        $isInactive,
         $notes,
         $addressLineOne,
         $addressLineTwo,
@@ -227,11 +229,11 @@ class DefaultSchoolFacade implements SchoolFacade
         $area = $this->areaRepository->load($areaId);
         $school = new School();
         $school->setName($name)
-               ->setNotes($notes)
-               ->setType(School::getAvailableType($schoolType))
-               ->setNotes($notes)
-               ->setAddress($address)
-               ->setArea($area);
+            ->setType(School::getAvailableType($schoolType))
+            ->setIsInactive($isInactive)
+            ->setNotes($notes)
+            ->setAddress($address)
+            ->setArea($area);
         $savedSchool = $this->schoolRepository->save($school);
         return SchoolDtoAssembler::toDTO($savedSchool);
     }
@@ -258,6 +260,7 @@ class DefaultSchoolFacade implements SchoolFacade
         $name,
         $areaId,
         $schoolType,
+        $isInactive,
         $notes,
         $addressLineOne,
         $addressLineTwo,
@@ -274,6 +277,7 @@ class DefaultSchoolFacade implements SchoolFacade
                 ->setZip($zip);
         $oldSchool->setName($name)
                   ->setType(School::getAvailableType($schoolType))
+                  ->setIsInactive($isInactive)
                   ->setNotes($notes)
                   ->setArea($this->areaRepository->load($areaId))
                   ->setAddress($address);

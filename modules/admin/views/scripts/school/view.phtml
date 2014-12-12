@@ -1,4 +1,8 @@
-<dl class="dl-horizontal">
+<dl class="dl-horizontal<?= $this->school->isInactive() ? ' muted': '' ?>">
+    <?php if ($this->school->isInactive()): ?>
+    <dt>Inactive</dt>
+    <dd>This school is inactive.</dd>
+    <?php endif; ?>
   <dt>Program Type:</dt>
   <dd><?php echo $this->school->getType() ? $this->school->getType() : '-'; ?></dd>
   <dt>Region:</dt>
