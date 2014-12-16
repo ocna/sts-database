@@ -25,11 +25,7 @@ class MemberDtoAssembler
                 ->withAssociatedUserId($member->getAssociatedUserId())
                 ->withCanBeDeleted($member->canBeDeleted());
         if ($address = $member->getAddress()) {
-            $builder->withAddressLineOne($address->getLineOne())
-                    ->withAddressLineTwo($address->getLineTwo())
-                    ->withAddressCity($address->getCity())
-                    ->withAddressState($address->getState())
-                    ->withAddressZip($address->getZip());
+            $builder->withAddress($address->getAddress());
         }
         $builder->withPresentsForAreas(self::getAreaNamesArray($member->getPresentsForAreas()))
                 ->withFacilitatesForAreas(self::getAreaNamesArray($member->getFacilitatesForAreas()))

@@ -26,11 +26,7 @@ class SchoolDtoAssemblerTest extends SchoolTestCase
             ->setCity(AreaTestCase::CITY)
             ->setRegion($region);
         $address = new Address();
-        $address->setLineOne(AddressTestCase::LINE_ONE)
-            ->setLineTwo(AddressTestCase::LINE_TWO)
-            ->setZip(AddressTestCase::ZIP)
-            ->setState(AddressTestCase::STATE)
-            ->setCity(AddressTestCase::CITY);
+        $address->setAddress(AddressTestCase::ADDRESS);
         $school = new School();
         $school->setId(SchoolTestCase::ID)
             ->setLegacyId(SchoolTestCase::LEGACY_ID)

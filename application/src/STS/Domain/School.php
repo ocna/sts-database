@@ -41,13 +41,7 @@ class School extends EntityWithTypes
             'area_id' => array(
                 '_id' => $areaId
             ),
-            'address' => array(
-                'line_one' => utf8_encode($this->address->getLineOne()),
-                'line_two' => utf8_encode($this->address->getLineTwo()),
-                'city' => utf8_encode($this->address->getCity()),
-                'state' => $this->address->getState(),
-                'zip' => $this->address->getZip()
-            ),
+            'address' => utf8_encode($this->address->getAddress()),
             'dateCreated' => new \MongoDate($this->getCreatedOn()),
             'dateUpdated' => new \MongoDate($this->getUpdatedOn())
         );

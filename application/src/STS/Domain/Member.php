@@ -171,13 +171,7 @@ class Member extends EntityWithTypes
             'activities'    => $activities,
             'fullname'      => utf8_encode($this->getFullName()),
             'user_id'       => $this->associatedUserId,
-            'address'       => array(
-                'line_one' => utf8_encode($this->address->getLineOne()),
-                'line_two' => utf8_encode($this->address->getLineTwo()),
-                'city' => utf8_encode($this->address->getCity()),
-                'state' => $this->address->getState(),
-                'zip' => $this->address->getZip()
-            ),
+            'address'       => utf8_encode($this->address->getAddress()),
             'facilitates_for' => $facilitatesFor,
             'presents_for'    => $presentsFor,
             'coordinates_for' => $coordinatesFor,

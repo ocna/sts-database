@@ -42,23 +42,7 @@ class SchoolDto
     /**
      * @var
      */
-    private $addressLineOne;
-    /**
-     * @var
-     */
-    private $addressLineTwo;
-    /**
-     * @var
-     */
-    private $addressCity;
-    /**
-     * @var
-     */
-    private $addressState;
-    /**
-     * @var
-     */
-    private $addressZip;
+    private $address;
     /**
      * @var
      */
@@ -77,11 +61,7 @@ class SchoolDto
      * @param string $notes
      * @param $regionName
      * @param $areaName
-     * @param $addressLineOne
-     * @param $addressLineTwo
-     * @param $addressCity
-     * @param $addressState
-     * @param $addressZip
+     * @param $address
      * @param $areaId
      * @param $typeKey
      */
@@ -94,11 +74,7 @@ class SchoolDto
         $notes,
         $regionName,
         $areaName,
-        $addressLineOne,
-        $addressLineTwo,
-        $addressCity,
-        $addressState,
-        $addressZip,
+        $address,
         $areaId,
         $typeKey
     ) {
@@ -110,11 +86,7 @@ class SchoolDto
         $this->notes = $notes;
         $this->regionName = $regionName;
         $this->areaName = $areaName;
-        $this->addressLineOne = $addressLineOne;
-        $this->addressLineTwo = $addressLineTwo;
-        $this->addressCity = $addressCity;
-        $this->addressState = $addressState;
-        $this->addressZip = $addressZip;
+        $this->address = $address;
         $this->areaId = $areaId;
         $this->typeKey = $typeKey;
     }
@@ -186,43 +158,10 @@ class SchoolDto
     /**
      * @return mixed
      */
-    public function getAddressLineOne()
+    public function getAddress()
     {
-        return $this->addressLineOne;
+        return $this->address;
     }
-
-    /**
-     * @return mixed
-     */
-    public function getAddressLineTwo()
-    {
-        return $this->addressLineTwo;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getAddressCity()
-    {
-        return $this->addressCity;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getAddressState()
-    {
-        return $this->addressState;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getAddressZip()
-    {
-        return $this->addressZip;
-    }
-
     /**
      * @return mixed
      */

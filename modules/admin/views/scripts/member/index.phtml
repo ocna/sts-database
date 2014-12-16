@@ -37,8 +37,7 @@
   </div>
 </div>
 <?php
-$columns = array('Role', 'Status', 'Volunteer?' ,'Last Name,<br>First Name', 'Email', 'City',
-    'State');
+$columns = array('Role', 'Status', 'Volunteer?' ,'Last Name,<br>First Name', 'Email', 'Areas');
 ?>
 <p>
     <?php if ($this->can_view_training): ?>
@@ -76,11 +75,7 @@ $columns = array('Role', 'Status', 'Volunteer?' ,'Last Name,<br>First Name', 'Em
                 <?php echo sprintf('<a href="mailto:%s">%s</a>', $member['email'], $member['email']) ?>
             </td>
             <td <?php echo $member['deceased'] ? 'class="deceased"' : ""; ?>>
-                <?php echo $member['city']; ?>
-            </td>
-            <td <?php echo $member['deceased'] ? 'class="deceased"' : ""; ?>>
-                <?php echo $member['state']; ?>
-            </td>
+                <?php echo implode(', ', $member['area']); ?>
             <td style="text-align:right;">
                 <div class="btn-group">
                 <?php if ($this->can_view): ?>
@@ -107,7 +102,8 @@ $columns = array('Role', 'Status', 'Volunteer?' ,'Last Name,<br>First Name', 'Em
       <h3>Delete Member</h3>
     </div>
     <div class="modal-body">
-      <p class="confirm-message">You are about to delete the member ~member~, this procedure is irreversible.</p>
+      <p class="confirm-message">You are about to delete the member ~member~. This procedure is
+          irreversible.</p>
       <p>Are you sure you want to do this?</p>
     </div>
     <div class="modal-footer">

@@ -29,18 +29,9 @@ class SchoolDtoAssembler
             $regionName = null;
             $areaName = null;
         }
-        if ($address = $school->getAddress()) {
-            $addressLineOne = $address->getLineOne();
-            $addressLineTwo = $address->getLineTwo();
-            $addressCity = $address->getCity();
-            $addressState = $address->getState();
-            $addressZip = $address->getZip();
-        } else {
-            $addressLineOne = null;
-            $addressLineTwo = null;
-            $addressCity = null;
-            $addressState = null;
-            $addressZip = null;
+        $address = null;
+        if ($school->getAddress()) {
+            $address = $school->getAddress()->getAddress();
         }
         $schoolDto = new SchoolDto(
             $id,
@@ -51,11 +42,7 @@ class SchoolDtoAssembler
             $notes,
             $regionName,
             $areaName,
-            $addressLineOne,
-            $addressLineTwo,
-            $addressCity,
-            $addressState,
-            $addressZip,
+            $address,
             $areaId,
             $typeKey
         );

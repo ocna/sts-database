@@ -2,8 +2,6 @@
 
 class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
 
-    const PHONE_REGEX = '/^\d{3}-\d{3}-\d{4}/';
-
     protected $memberTypes;
     protected $states;
     protected $roles;
@@ -95,27 +93,19 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
         // phone numbers
         $this->addElement('text', 'homePhone', array(
             'label' => 'Home Phone',
-            'dimension' => 2,
-            'validators' => array(new Zend_Validate_Regex(array('pattern' => self::PHONE_REGEX))
-                ),
-            'description' => 'Use the format ###-###-####',
-            'errorMessages' => array('Does not match format: ###-###-####')
+            'dimension' => 2
             )
         );
 
         $this->addElement('text', 'cellPhone', array(
             'label' => 'Cell Phone',
-            'dimension' => 2,
-            'validators' => array(new Zend_Validate_Regex(array('pattern' => self::PHONE_REGEX))),
-            'description' => 'Use the format xxx-xxx-xxxx'
+            'dimension' => 2
             )
         );
 
         $this->addElement('text', 'workPhone', array(
             'label' => 'Work Phone',
-            'dimension' => 2,
-            'validators' => array(new Zend_Validate_Regex(array('pattern' => self::PHONE_REGEX))),
-            'description' => 'Use the format xxx-xxx-xxxx'
+            'dimension' => 2
             )
         );
 
@@ -126,35 +116,15 @@ class Admin_Member extends Twitter_Bootstrap_Form_Horizontal {
         );
 
         //address
-        $this->addElement('text', 'addressLineOne', array(
-            'label' => 'Address 1',
+        $this->addElement('textarea', 'address', array(
+            'label' => 'Address',
             'dimension' => 4,
-            'required' => false
-        ));
-        $this->addElement('text', 'addressLineTwo', array(
-            'label' => 'Address 2',
-            'dimension' => 4,
-            'required' => false
-        ));
-        $this->addElement('text', 'city', array(
-            'label' => 'City',
-            'dimension' => 3,
-            'required' => false
-        ));
-        $this->addElement('select', 'state', array(
-            'label' => 'State',
-            'dimension' => 3,
-            'MultiOptions' => $this->states,
-            'required' => false,
-        ));
-        $this->addElement('text', 'zip', array(
-            'label' => 'Zip',
-            'dimension' => 1,
+            'rows'      => 5,
             'required' => false
         ));
         $this->addDisplayGroup(
-            array('addressLineOne', 'addressLineTwo', 'city', 'state', 'zip'),
-            'address',
+            array('address'),
+            'addressArea',
             array('legend' => 'Address')
         );
 

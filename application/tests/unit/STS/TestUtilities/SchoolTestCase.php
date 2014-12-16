@@ -66,11 +66,7 @@ class SchoolTestCase extends \PHPUnit_Framework_TestCase
             self::NOTES,
             RegionTestCase::NAME,
             AreaTestCase::NAME,
-            AddressTestCase::LINE_ONE,
-            AddressTestCase::LINE_TWO,
-            AddressTestCase::CITY,
-            AddressTestCase::STATE,
-            AddressTestCase::ZIP,
+            AddressTestCase::ADDRESS,
             AreaTestCase::ID,
             self::TYPE_KEY
         );
@@ -93,11 +89,7 @@ class SchoolTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(AreaTestCase::ID, $dto->getAreaId());
         $this->assertEquals(RegionTestCase::NAME, $dto->getRegionName());
         $this->assertEquals(AreaTestCase::NAME, $dto->getAreaName());
-        $this->assertEquals(AddressTestCase::LINE_ONE, $dto->getAddressLineOne());
-        $this->assertEquals(AddressTestCase::LINE_TWO, $dto->getAddressLineTwo());
-        $this->assertEquals(AddressTestCase::CITY, $dto->getAddressCity());
-        $this->assertEquals(AddressTestCase::STATE, $dto->getAddressState());
-        $this->assertEquals(AddressTestCase::ZIP, $dto->getAddressZip());
+        $this->assertEquals(AddressTestCase::ADDRESS, $dto->getAddress());
         $this->assertEquals(self::NOTES, $dto->getNotes());
     }
 }

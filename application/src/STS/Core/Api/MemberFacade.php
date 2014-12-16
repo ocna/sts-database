@@ -33,11 +33,7 @@ interface MemberFacade
      * @param $facilitatesFor
      * @param $coordinatesFor
      * @param $userId
-     * @param $addressLineOne
-     * @param $addressLineTwo
-     * @param $city
-     * @param $state
-     * @param $zip
+     * @param $address
      * @param $email
      * @param $dateTrained
      * @param $diagnosisInfo
@@ -56,11 +52,7 @@ interface MemberFacade
         $facilitatesFor,
         $coordinatesFor,
         $userId,
-        $addressLineOne,
-        $addressLineTwo,
-        $city,
-        $state,
-        $zip,
+        $address,
         $email,
         $dateTrained,
         $diagnosisInfo,
@@ -80,11 +72,7 @@ interface MemberFacade
      * @param $facilitatesFor
      * @param $coordinatesFor
      * @param $userId
-     * @param $addressLineOne
-     * @param $addressLineTwo
-     * @param $city
-     * @param $state
-     * @param $zip
+     * @param $address
      * @param $email
      * @param $dateTrained
      * @param $diagnosisInfo
@@ -104,11 +92,7 @@ interface MemberFacade
         $facilitatesFor,
         $coordinatesFor,
         $userId,
-        $addressLineOne,
-        $addressLineTwo,
-        $city,
-        $state,
-        $zip,
+        $address,
         $email,
         $dateTrained,
         $diagnosisInfo,

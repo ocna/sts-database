@@ -40,7 +40,6 @@ class Admin_SchoolController extends SecureBaseController
         $this->locationFacade = $core->load('LocationFacade');
         $this->memberFacade = $core->load('MemberFacade');
         $this->session = new \Zend_Session_Namespace('admin');
-
     }
 
     public function indexAction()
@@ -107,11 +106,7 @@ class Admin_SchoolController extends SecureBaseController
             'Notes',
             'Region',
             'Area',
-            'Address Line 1',
-            'Address Line 2',
-            'City',
-            'State',
-            'ZIP/PostalCode'
+            'Address'
         );
 
         $data = array();
@@ -125,11 +120,7 @@ class Admin_SchoolController extends SecureBaseController
                 $school->getNotes(),
                 $school->getRegionName(),
                 $school->getAreaName(),
-                $school->getAddressLineOne(),
-                $school->getAddressLineTwo(),
-                $school->getAddressCity(),
-                $school->getAddressState(),
-                $school->getAddressZip()
+                $school->getAddress()
             );
         }
 
@@ -190,11 +181,7 @@ class Admin_SchoolController extends SecureBaseController
             'area'=>$dto->getAreaId(),
             'schoolType'=>$dto->getTypeKey(),
             'isInactive'    => $dto->isInactive(),
-            'addressLineOne'=>$dto->getAddressLineOne(),
-            'addressLineTwo'=>$dto->getAddressLineTwo(),
-            'city'=>$dto->getAddressCity(),
-            'state'=>$dto->getAddressState(),
-            'zip'=>$dto->getAddressZip()
+            'address'=>$dto->getAddress()
             )
         );
         if ($this->getRequest()->isPost()) {
@@ -209,11 +196,7 @@ class Admin_SchoolController extends SecureBaseController
                         $postData['schoolType'],
                         $postData['isInactive'],
                         $postData['notes'],
-                        $postData['addressLineOne'],
-                        $postData['addressLineTwo'],
-                        $postData['city'],
-                        $postData['state'],
-                        $postData['zip']
+                        $postData['address']
                     );
                     $this
                         ->setFlashMessageAndRedirect(
@@ -255,11 +238,7 @@ class Admin_SchoolController extends SecureBaseController
             $postData['schoolType'],
             $postData['isInactive'],
             $postData['notes'],
-            $postData['addressLineOne'],
-            $postData['addressLineTwo'],
-            $postData['city'],
-            $postData['state'],
-            $postData['zip']
+            $postData['address']
         );
         return $school;
     }

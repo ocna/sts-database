@@ -201,11 +201,7 @@ class DefaultSchoolFacade implements SchoolFacade
      * @param $schoolType
      * @param bool $isInactive
      * @param $notes
-     * @param $addressLineOne
-     * @param $addressLineTwo
-     * @param $city
-     * @param $state
-     * @param $zip
+     * @param $address
      * @return SchoolDto
      */
     public function saveSchool(
@@ -214,18 +210,10 @@ class DefaultSchoolFacade implements SchoolFacade
         $schoolType,
         $isInactive,
         $notes,
-        $addressLineOne,
-        $addressLineTwo,
-        $city,
-        $state,
-        $zip
+        $address
     ) {
         $address = new Address();
-        $address->setLineOne($addressLineOne)
-                ->setLineTwo($addressLineTwo)
-                ->setCity($city)
-                ->setState($state)
-                ->setZip($zip);
+        $address->setAddress($address);
         $area = $this->areaRepository->load($areaId);
         $school = new School();
         $school->setName($name)
@@ -248,11 +236,7 @@ class DefaultSchoolFacade implements SchoolFacade
      * @param $areaId
      * @param $schoolType
      * @param $notes
-     * @param $addressLineOne
-     * @param $addressLineTwo
-     * @param $city
-     * @param $state
-     * @param $zip
+     * @param $address
      * @return SchoolDto
      */
     public function updateSchool(
@@ -262,19 +246,11 @@ class DefaultSchoolFacade implements SchoolFacade
         $schoolType,
         $isInactive,
         $notes,
-        $addressLineOne,
-        $addressLineTwo,
-        $city,
-        $state,
-        $zip
+        $address
     ) {
         $oldSchool = $this->schoolRepository->load($id);
         $address = new Address();
-        $address->setLineOne($addressLineOne)
-                ->setLineTwo($addressLineTwo)
-                ->setCity($city)
-                ->setState($state)
-                ->setZip($zip);
+        $address->setAddress($address);
         $oldSchool->setName($name)
                   ->setType(School::getAvailableType($schoolType))
                   ->setIsInactive($isInactive)

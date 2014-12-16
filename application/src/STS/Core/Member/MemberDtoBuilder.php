@@ -12,11 +12,7 @@ class MemberDtoBuilder
     private $activities = null;
     private $status = null;
     private $isVolunteer = null;
-    private $addressLineOne = null;
-    private $addressLineTwo = null;
-    private $addressCity = null;
-    private $addressState = null;
-    private $addressZip = null;
+    private $address = null;
     private $associatedUserId = null;
     private $presentsForAreas = null;
     private $facilitatesForAreas = null;
@@ -77,33 +73,9 @@ class MemberDtoBuilder
         return $this;
     }
 
-    public function withAddressLineOne($addressLineOne)
+    public function withAddress($address)
     {
-        $this->addressLineOne = $addressLineOne;
-        return $this;
-    }
-
-    public function withAddressLineTwo($addressLineTwo)
-    {
-        $this->addressLineTwo = $addressLineTwo;
-        return $this;
-    }
-
-    public function withAddressCity($addressCity)
-    {
-        $this->addressCity = $addressCity;
-        return $this;
-    }
-
-    public function withAddressState($addressState)
-    {
-        $this->addressState = $addressState;
-        return $this;
-    }
-
-    public function withAddressZip($addressZip)
-    {
-        $this->addressZip = $addressZip;
+        $this->address = $address;
         return $this;
     }
 
@@ -190,11 +162,7 @@ class MemberDtoBuilder
             $this->status,
             $this->isVolunteer,
             $this->activities,
-            $this->addressLineOne,
-            $this->addressLineTwo,
-            $this->addressCity,
-            $this->addressState,
-            $this->addressZip,
+            $this->address,
             $this->associatedUserId,
             $this->presentsForAreas,
             $this->facilitatesForAreas,

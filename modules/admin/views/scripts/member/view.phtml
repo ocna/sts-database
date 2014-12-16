@@ -54,9 +54,7 @@
   <br>
   <dt>Address:</dt>
   <dd><address>
-    <?php echo $this->member->getAddressLineOne() ? $this->member->getAddressLineOne() : '-' ?><br />
-    <?php echo $this->member->getAddressLineTwo() ? $this->member->getAddressLineTwo().'<br />' : '' ?>
-    <?php echo $this->member->getAddressCity() ? $this->member->getAddressCity().',':''?> <?php echo $this->member->getAddressState() ?> <?php echo $this->member->getAddressZip() ?><br />
+    <?php echo $this->member->getAddress() ? nl2br($this->member->getAddress()) : '-' ?>
   </address></dd>
 
 <?php if (!$this->member->getPresentsForAreas() == array()): ?>

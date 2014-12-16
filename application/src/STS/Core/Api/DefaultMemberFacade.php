@@ -310,11 +310,7 @@ class DefaultMemberFacade implements MemberFacade
         $facilitatesFor,
         $coordinatesFor,
         $userId,
-        $addressLineOne,
-        $addressLineTwo,
-        $city,
-        $state,
-        $zip,
+        $address,
         $email,
         $dateTrained,
         $diagnosisInfo,
@@ -334,11 +330,7 @@ class DefaultMemberFacade implements MemberFacade
             $facilitatesFor,
             $coordinatesFor,
             $userId,
-            $addressLineOne,
-            $addressLineTwo,
-            $city,
-            $state,
-            $zip,
+            $address,
             $email,
             $dateTrained,
             $diagnosisInfo,
@@ -361,11 +353,7 @@ class DefaultMemberFacade implements MemberFacade
         $facilitatesFor,
         $coordinatesFor,
         $userId,
-        $addressLineOne,
-        $addressLineTwo,
-        $city,
-        $state,
-        $zip,
+        $address,
         $email,
         $dateTrained,
         $diagnosisInfo,
@@ -385,11 +373,7 @@ class DefaultMemberFacade implements MemberFacade
             $facilitatesFor,
             $coordinatesFor,
             $userId,
-            $addressLineOne,
-            $addressLineTwo,
-            $city,
-            $state,
-            $zip,
+            $address,
             $email,
             $dateTrained,
             $diagnosisInfo,
@@ -469,11 +453,7 @@ class DefaultMemberFacade implements MemberFacade
      * @param $facilitatesFor
      * @param $coordinatesFor
      * @param $userId
-     * @param $addressLineOne
-     * @param $addressLineTwo
-     * @param $city
-     * @param $state
-     * @param $zip
+     * @param $address
      * @param $email
      * @param $dateTrained
      * @param $diagnosisInfo
@@ -492,11 +472,7 @@ class DefaultMemberFacade implements MemberFacade
         $facilitatesFor,
         $coordinatesFor,
         $userId,
-        $addressLineOne,
-        $addressLineTwo,
-        $city,
-        $state,
-        $zip,
+        $address,
         $email,
         $dateTrained,
         $diagnosisInfo,
@@ -512,11 +488,7 @@ class DefaultMemberFacade implements MemberFacade
 
         // prepare address model
         $address = new Address();
-        $address->setLineOne($addressLineOne)
-                ->setLineTwo($addressLineTwo)
-                ->setCity($city)
-                ->setState($state)
-                ->setZip($zip);
+        $address->setAddress($address);
 
         // hydrate member fields
         $member->setFirstName($firstName)

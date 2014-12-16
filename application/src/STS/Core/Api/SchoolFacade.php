@@ -17,11 +17,7 @@ interface SchoolFacade
         $schoolType,
         $isInactive,
         $notes,
-        $addressLineOne,
-        $addressLineTwo,
-        $city,
-        $state,
-        $zip
+        $address
     );
 
     public function updateSchool(
@@ -31,11 +27,7 @@ interface SchoolFacade
         $schoolType,
         $isInactive,
         $notes,
-        $addressLineOne,
-        $addressLineTwo,
-        $city,
-        $state,
-        $zip
+        $address
     );
 
     public function getSchoolById($id);

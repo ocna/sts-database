@@ -172,12 +172,16 @@ class MongoMemberRepository implements MemberRepository
 
         if (array_key_exists('address', $memberData)) {
             $address = new Address();
-            $address->setLineOne($memberData['address']['line_one'])
-                ->setLineTwo($memberData['address']['line_two'])
-                ->setCity($memberData['address']['city'])
-                ->setState($memberData['address']['state'])
-                ->setZip($memberData['address']['zip']);
-            $member->setAddress($address);
+            // Handle legacy US-specific addresses
+            if (is_array($memberData['address'])) {
+                $address->setLineOne($memberData['address']['line_one'])
+                        ->setLineTwo($memberData['address']['line_two'])
+                        ->setCity($memberData['address']['city'])
+                        ->setState($memberData['address']['state'])
+                        ->setZip($memberData['address']['zip']);
+                $memberData['address'] = $address->getAddress();
+            }
+            $member->setAddress($address->setAddress($memberData['address']));
         }
 
         if (array_key_exists('presents_for', $memberData)) {
