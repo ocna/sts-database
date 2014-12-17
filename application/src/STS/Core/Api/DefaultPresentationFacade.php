@@ -627,7 +627,7 @@ class DefaultPresentationFacade implements PresentationFacade
     {
         $mongoConfig = $config->modules->default->db->mongodb;
         $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
-        $mongo = new \MongoClient(
+        $mongo = new \Mongo(
             'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/'
             . $mongoConfig->dbname
         );

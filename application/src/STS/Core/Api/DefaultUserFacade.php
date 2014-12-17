@@ -210,7 +210,7 @@ class DefaultUserFacade implements UserFacade
 
         // connect to mongo
         // TODO look into adding error handling
-        $mongo = new \MongoClient($dsn);
+        $mongo = new \Mongo($dsn);
         $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $userRepository = new MongoUserRepository($mongoDb);
         return new DefaultUserFacade($userRepository);
