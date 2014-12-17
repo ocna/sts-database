@@ -111,6 +111,11 @@ class DefaultMemberFacade implements MemberFacade
             $members = $this->filterMembersByArea($criteria['area_any'], $members);
         }
 
+        // filter by presents in area
+        if (array_key_exists('presents_for', $criteria) && ! empty($criteria['presents_for'])) {
+            $members = $this->filterMembersByPresentsIn($criteria['presents_for'], $members);
+        }
+
         // filter by volunteer status
         if (array_key_exists('is_volunteer', $criteria)) {
             $members = $this->filterMembersByVolunteerStatus($criteria['is_volunteer'], $members);
@@ -175,6 +180,39 @@ class DefaultMemberFacade implements MemberFacade
             foreach ($members as $member) {
                 /** @var Member $member */
                 $assoc_areas = $member->getAllAssociatedAreas();
+                foreach ($assoc_areas as $test) {
+                    /** @var \STS\Domain\Location\Area $test */
+                    if (in_array($test->getId(), $areas)) {
+                        $filteredMembers[] = $member;
+                    }
+                }
+            }
+        } else {
+            $filteredMembers = $members;
+        }
+        return $filteredMembers;
+    }
+
+    /**
+     * filterMembersByArea
+     *
+     * Matches as long as they present in an area
+     *
+     * @param $areas
+     * @param $members
+     * @return array
+     */
+    private function filterMembersByPresentsIn($areas, $members)
+    {
+        if (!empty($areas)) {
+            $filteredMembers = array();
+            if (!is_array($areas)) {
+                $areas = (array) $areas;
+            }
+
+            foreach ($members as $member) {
+                /** @var Member $member */
+                $assoc_areas = $member->getPresentsForAreas();
                 foreach ($assoc_areas as $test) {
                     /** @var \STS\Domain\Location\Area $test */
                     if (in_array($test->getId(), $areas)) {

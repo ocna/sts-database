@@ -114,6 +114,7 @@ class Admin_MemberController extends SecureBaseController
             $this->filterParams('role', $params, $criteria);
             $this->filterParams('status', $params, $criteria);
             $this->filterParams('region', $params, $criteria);
+            $this->filterParams('presents_for', $params, $criteria);
             $this->filterParams('is_volunteer', $params, $criteria);
             $this->session->criteria = $criteria;
         }
@@ -282,10 +283,14 @@ class Admin_MemberController extends SecureBaseController
     private function getFilterForm($form_opts)
     {
         // override regions
+        $regions = $this->getRegionsArray();
         if (isset($form_opts['regions'])) {
             $regions = $form_opts['regions'];
-        } else {
-            $regions = $this->getRegionsArray();
+        }
+
+        $areas = $this->getAreasArray();
+        if (isset($form_opts['presents_for'])) {
+            $areas = $form_opts['presents_for'];
         }
 
         $form = new \Admin_MemberFilter(
@@ -296,16 +301,27 @@ class Admin_MemberController extends SecureBaseController
                     ),
                     AclFactory::getAvailableRoles()
                 ),
-                'regions'        => $regions,
-                'memberStatuses' => array_merge(array(''), $this->getMemberStatusesArray())
+                'regions'           => $regions,
+                'presentsFor'       => $areas,
+                'memberStatuses'    => array_merge(array(''), $this->getMemberStatusesArray())
             )
         );
         return $form;
     }
 
+    private function getAreasArray()
+    {
+        $areas_array = array('' => 'Presents in: (none)');
+        /** @var Area $area */
+        foreach ($this->locationFacade->getAllAreas() as $area) {
+            $areas_array[$area->getId()] = $area->getName();
+        }
+        return $areas_array;
+    }
+
     private function getRegionsArray()
     {
-        $regionsArray = array('');
+        $regionsArray = array('' => 'Regions: (none)');
         /** @var Region $region */
         foreach ($this->locationFacade->getAllRegions() as $region) {
             $regionsArray[$region->getName()] = $region->getName();
