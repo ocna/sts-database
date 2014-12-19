@@ -172,16 +172,8 @@ class DefaultProfessionalGroupFacade implements ProfessionalGroupFacade
      * @param $config
      * @return DefaultProfessionalGroupFacade
      */
-    public static function getDefaultInstance($config)
+    public static function getDefaultInstance($mongoDb)
     {
-        $mongoConfig = $config->modules->default->db->mongodb;
-        $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password .
-                                         '@' : '';
-        $mongo = new \Mongo(
-            'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/'
-            . $mongoConfig->dbname
-        );
-        $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $professional_group_repository = new MongoProfessionalGroupRepository($mongoDb);
         $area_repository = new MongoAreaRepository($mongoDb);
         return new DefaultProfessionalGroupFacade($professional_group_repository, $area_repository);

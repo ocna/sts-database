@@ -26,7 +26,8 @@ class CoreTest extends PHPUnit_Framework_TestCase
     private function getValidCoreWithMockedDeps()
     {
         $config = $this->getMockBuilder('Zend_Config')->disableOriginalConstructor()->getMock();
-        $core = new Core($config);
+        $factory = $this->getMockBuilder('STS\Core\MongoFactory')->getMock();
+        $core = new Core($config, $factory);
         return $core;
     }
 }

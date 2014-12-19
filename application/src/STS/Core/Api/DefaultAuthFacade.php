@@ -48,15 +48,8 @@ class DefaultAuthFacade implements AuthFacade
     {
         return sha1($user->getSalt() . $password);
     }
-    public static function getDefaultInstance($config)
+    public static function getDefaultInstance($mongoDb)
     {
-        $mongoConfig = $config->modules->default->db->mongodb;
-        $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
-        $mongo = new \Mongo(
-            'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/'
-            . $mongoConfig->dbname
-        );
-        $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $userRepository = new MongoUserRepository($mongoDb);
         return new DefaultAuthFacade($userRepository);
     }

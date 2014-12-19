@@ -437,19 +437,12 @@ class DefaultMemberFacade implements MemberFacade
     /**
      * getDefaultInstance
      *
-     * @acess public
-     * @param $config
+     * @access public
+     * @param $mongoDb
      * @return DefaultMemberFacade
      */
-    public static function getDefaultInstance($config)
+    public static function getDefaultInstance($mongoDb)
     {
-        $mongoConfig = $config->modules->default->db->mongodb;
-        $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
-        $mongo = new \Mongo(
-            'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/'
-            . $mongoConfig->dbname
-        );
-        $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $memberRepository = new MongoMemberRepository($mongoDb);
         $areaRepository = new MongoAreaRepository($mongoDb);
         $userRepository = new MongoUserRepository($mongoDb);

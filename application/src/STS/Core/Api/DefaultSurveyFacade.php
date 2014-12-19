@@ -82,22 +82,16 @@ class DefaultSurveyFacade implements SurveyFacade
      *
      * @param $old
      * @param $new
+     * @return void
      */
     public function updateEnteredBy($old, $new)
     {
         $this->surveyRepository->updateEnteredBy($old, $new);
     }
 
-    public static function getDefaultInstance($config)
+    public static function getDefaultInstance($mongoDb)
     {
         $templateRepository = new StaticTemplateRepository();
-        $mongoConfig = $config->modules->default->db->mongodb;
-        $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
-        $mongo = new \Mongo(
-            'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/'
-            . $mongoConfig->dbname
-        );
-        $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $surveyRepository = new MongoSurveyRepository($mongoDb);
         return new DefaultSurveyFacade($templateRepository, $surveyRepository);
     }

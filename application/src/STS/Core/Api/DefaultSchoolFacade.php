@@ -264,18 +264,11 @@ class DefaultSchoolFacade implements SchoolFacade
     /**
      * getDefaultInstance
      *
-     * @param $config
+     * @param $mongoDb
      * @return DefaultSchoolFacade
      */
-    public static function getDefaultInstance($config)
+    public static function getDefaultInstance($mongoDb)
     {
-        $mongoConfig = $config->modules->default->db->mongodb;
-        $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
-        $mongo = new \Mongo(
-            'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/'
-            . $mongoConfig->dbname
-        );
-        $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $schoolRepository = new MongoSchoolRepository($mongoDb);
         $areaRepository = new MongoAreaRepository($mongoDb);
         return new DefaultSchoolFacade($schoolRepository, $areaRepository);

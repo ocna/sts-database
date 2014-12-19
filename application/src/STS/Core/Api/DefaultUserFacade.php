@@ -195,23 +195,11 @@ class DefaultUserFacade implements UserFacade
     /**
      * getDefaultInstance
      *
-     * @param $config
+     * @param $mongoDb
      * @return DefaultUserFacade
      */
-    public static function getDefaultInstance($config)
+    public static function getDefaultInstance($mongoDb)
     {
-        // get configuration file settings
-        $mongoConfig = $config->modules->default->db->mongodb;
-
-        // build a DSN string
-        $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
-        $dsn = 'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/'
-               . $mongoConfig->dbname;
-
-        // connect to mongo
-        // TODO look into adding error handling
-        $mongo = new \Mongo($dsn);
-        $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $userRepository = new MongoUserRepository($mongoDb);
         return new DefaultUserFacade($userRepository);
     }

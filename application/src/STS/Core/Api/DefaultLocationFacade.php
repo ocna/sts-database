@@ -184,17 +184,8 @@ class DefaultLocationFacade implements LocationFacade
         }
     }
 
-    public static function getDefaultInstance($config)
+    public static function getDefaultInstance($mongoDb)
     {
-        // get the mongo instance
-        $mongoConfig = $config->modules->default->db->mongodb;
-        $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
-        $mongo = new \Mongo(
-            'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/'
-            . $mongoConfig->dbname
-        );
-        $mongoDb = $mongo->selectDB($mongoConfig->dbname);
-
         $areaRepository = new MongoAreaRepository($mongoDb);
         return new DefaultLocationFacade($mongoDb, $areaRepository);
     }

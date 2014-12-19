@@ -10,48 +10,54 @@ use STS\Core\Api\DefaultPresentationFacade;
 use STS\Core\Api\DefaultLocationFacade;
 use STS\Core\Api\DefaultUserFacade;
 use STS\Core\Api\DefaultMailerFacade;
+use STS\Core\DbFactory;
+use STS\Core\MongoFactory;
 
 class Core
 {
     const CORE_CONFIG_PATH = '/config/core.xml';
 
     private $config;
+    private $dbFactory;
 
     protected static $default;
 
-    public function __construct(\Zend_Config $config)
+    public function __construct(\Zend_Config $config, DbFactory $factory)
     {
         $this->config = $config;
+        $this->dbFactory = $factory;
     }
     public function load($key)
     {
+        $db = $this->dbFactory->getDb($this->config);
+
         switch ($key) {
             case 'AuthFacade':
-                $facade = DefaultAuthFacade::getDefaultInstance($this->config);
+                $facade = DefaultAuthFacade::getDefaultInstance($db);
                 break;
             case 'SchoolFacade':
-                $facade = DefaultSchoolFacade::getDefaultInstance($this->config);
+                $facade = DefaultSchoolFacade::getDefaultInstance($db);
                 break;
             case 'MemberFacade':
-                $facade = DefaultMemberFacade::getDefaultInstance($this->config);
+                $facade = DefaultMemberFacade::getDefaultInstance($db);
                 break;
             case 'SurveyFacade':
-                $facade = DefaultSurveyFacade::getDefaultInstance($this->config);
+                $facade = DefaultSurveyFacade::getDefaultInstance($db);
                 break;
             case 'PresentationFacade':
-                $facade = DefaultPresentationFacade::getDefaultInstance($this->config);
+                $facade = DefaultPresentationFacade::getDefaultInstance($db);
                 break;
             case 'LocationFacade':
-                $facade = DefaultLocationFacade::getDefaultInstance($this->config);
+                $facade = DefaultLocationFacade::getDefaultInstance($db);
                 break;
             case 'UserFacade':
-                $facade = DefaultUserFacade::getDefaultInstance($this->config);
+                $facade = DefaultUserFacade::getDefaultInstance($db);
                 break;
             case 'MailerFacade':
                 $facade = DefaultMailerFacade::getDefaultInstance($this->config);
                 break;
             case 'ProfessionalGroupFacade':
-                $facade = DefaultProfessionalGroupFacade::getDefaultInstance($this->config);
+                $facade = DefaultProfessionalGroupFacade::getDefaultInstance($db);
                 break;
             default:
                 throw new \InvalidArgumentException("Class does not exist ($key)");
@@ -77,7 +83,8 @@ class Core
         if (!isset(self::$default)) {
             $configPath = APPLICATION_PATH . self::CORE_CONFIG_PATH;
             $config = new \Zend_Config_Xml($configPath, 'all');
-            self::$default = new Core($config);
+            $factory = new MongoFactory();
+            self::$default = new Core($config, $factory);
         }
 
         return self::$default;
