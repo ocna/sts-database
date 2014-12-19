@@ -159,7 +159,8 @@ class Admin_MemberController extends SecureBaseController
             'Last Name',
             'Email',
             'Deceased?',
-            'Area',
+            'Areas',
+            'Address',
             'Status',
             'Volunteer?',
             'Notes',
@@ -187,6 +188,10 @@ class Admin_MemberController extends SecureBaseController
             $member['dateTrained'] = $date;
             unset($member['roleClass']);
             unset($member['hasNotes']);
+
+            if (is_array($member['area'])) {
+                $member['area'] = implode(', ', $member['area']);
+            }
 
             $csv[] = $member;
         }
@@ -936,6 +941,7 @@ class Admin_MemberController extends SecureBaseController
                     $member->getFacilitatesForAreas(),
                     $member->getCoordinatesForRegions()
                 ),
+                'address'      => $member->getAddress(),
                 'status'       => $member->getStatus(),
                 'is_volunteer' => $member->isVolunteer(),
                 'hasNotes'     => $hasNotes,
