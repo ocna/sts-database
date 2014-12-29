@@ -3,6 +3,7 @@ namespace STS\Domain;
 
 use STS\Domain\School\Specification\MemberSchoolSpecification;
 use STS\Domain\ProfessionalGroup;
+use STS\Domain\HasArea;
 
 class Presentation extends EntityWithTypes
 {
@@ -22,7 +23,7 @@ class Presentation extends EntityWithTypes
     private $numberOfFormsReturnedPost;
 
     /**
-     * @var School
+     * @var HasArea
      */
     private $location;
     /**
@@ -48,8 +49,8 @@ class Presentation extends EntityWithTypes
             'nformspre'             => $this->numberOfFormsReturnedPre,
             'date'                  => $this->date,
             'nparticipants'         => $this->numberOfParticipants,
-            'school_id'             => $this->location->getId(),
-            'professional_group_id' => $this->professionalGroup->getId(),
+            'location_id'           => $this->location->getId(),
+            'location_class'        => get_class($this->location),
             'survey_id'             => $this->survey->getId(),
             'dateCreated'           => new \MongoDate($this->getCreatedOn()),
             'dateUpdated'           => new \MongoDate($this->getUpdatedOn())
@@ -129,14 +130,18 @@ class Presentation extends EntityWithTypes
     }
 
     /**
-     * @return \STS\Domain\School
+     * @return \STS\Domain\School|ProfessionalGroup
      */
     public function getLocation()
     {
         return $this->location;
     }
 
-    public function setLocation(School $location)
+    /**
+     * @param School $location
+     * @return $this
+     */
+    public function setLocation($location)
     {
         $this->location = $location;
         return $this;

@@ -5,8 +5,7 @@ use STS\Domain\Survey\Response\SingleResponse;
 
 class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
 {
-    protected $schools;
-	protected $professionalGroups;
+    protected $locations;
     protected $presentationTypes;
     protected $surveyTemplate;
 
@@ -25,25 +24,11 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
             array(
                 'label' => 'Location',
                 'dimension' => 4,
-                'MultiOptions' => $this->schools,
+                'MultiOptions' => $this->locations,
                 'required' => true,
                 'validators' => array($notEmpty)
             )
         );
-
-	    // Professional Group
-	    $this->addElement(
-		    'select',
-		    'professional_group',
-		    array(
-			    'label' => 'Professional Group',
-			    'dimension' => 4,
-			    'MultiOptions' => $this->professionalGroups,
-			    'allowEmpty' => true,
-			    'required' => false,
-			    'validators' => array($notEmpty)
-		    )
-	    );
 
         // PresentationType
         $this->addElement(
@@ -247,15 +232,10 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
         }
     }
 
-    public function setSchools($schools)
+    public function setLocations($schools)
     {
-        $this->schools = $schools;
+        $this->locations = $schools;
     }
-
-	public function setProfessionalGroups($professional_groups)
-	{
-		$this->professionalGroups = $professional_groups;
-	}
 
     public function setPresentationTypes($presentationTypes)
     {

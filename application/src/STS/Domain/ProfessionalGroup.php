@@ -3,7 +3,7 @@ namespace STS\Domain;
 
 use STS\Domain\Location\Area;
 
-class ProfessionalGroup extends Entity
+class ProfessionalGroup extends Entity implements HasArea
 {
     /**
      * @var string

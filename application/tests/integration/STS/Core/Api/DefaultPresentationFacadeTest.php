@@ -48,6 +48,7 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
     public function savePresentation()
     {
         $schoolId='502314eec6464712c1e7060e';
+        $schoolClass = DefaultPresentationFacade::locationTypeSchool;
         $typeCode='TYPE_NP';
         $date='08/09/2012';
         $notes ='These are some notes!';
@@ -59,7 +60,8 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
         $surveyId = '5035af240172cda7d649d477';
 
         $facade = $this->loadFacadeInstance();
-        $presentationDto = $facade->savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId, $preForms);
+        $presentationDto = $facade->savePresentation($enteredByUserId, $schoolId, $schoolClass, $typeCode,
+            $date, $notes, $memberIds, $participants, $forms, $surveyId, $preForms);
         $this->assertNotNull($presentationDto->getId());
         $this->assertEquals($forms, $presentationDto->getNumberOfFormsReturnedPost());
         $this->assertEquals($preForms, $presentationDto->getNumberOfFormsReturnedPre());
@@ -78,14 +80,8 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
         $dto= $facade->getPresentationById(self::ID);
         //whens
         $facade->updatePresentation(
-            self::ID,
-            $dto->getSchoolId(),
-            'TYPE_MED',
-            $dto->getDate(),
-            $updatedNotes,
-            array_keys($dto->getMembersArray()),
-            $dto->getNumberOfParticipants(),
-            $updatedPostForms,
+            self::ID, $dto->getLocationId(), $dto->getLocationClass(), 'TYPE_MED', $dto->getDate(), $updatedNotes,
+            array_keys($dto->getMembersArray()), $dto->getNumberOfParticipants(), $updatedPostForms,
             $dto->getNumberOfFormsReturnedPre()
         );
         $school = SchoolTestCase::createValidSchool();
@@ -96,15 +92,9 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
         $this->assertEquals($updatedPostForms, $updatedPresentationDto->getNumberOfFormsReturnedPost());
         //reset
         $facade->updatePresentation(
-            self::ID,
-            $dto->getSchoolId(),
-            'TYPE_MED',
-            $dto->getDate(),
-            $dto->getNotes(),
-            array_keys($dto->getMembersArray()),
-            $dto->getNumberOfParticipants(),
-            $dto->getNumberOfFormsReturnedPost(),
-            $dto->getNumberOfFormsReturnedPre()
+            self::ID, $dto->getLocationId(), $dto->getLocationClass(), 'TYPE_MED', $dto->getDate(), $dto->getNotes(),
+            array_keys($dto->getMembersArray()), $dto->getNumberOfParticipants(),
+            $dto->getNumberOfFormsReturnedPost(), $dto->getNumberOfFormsReturnedPre()
         );
         $updatedPresentationDto = $facade->getPresentationById(self::ID);
         $this->assertValidPresentationDto($updatedPresentationDto);

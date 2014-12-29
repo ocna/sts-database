@@ -137,6 +137,14 @@ class PresentationTest extends PresentationTestCase
 		$this->assertEquals(100, $presentation->getEffectivenessPercentage());
 	}
 
+	public function getsCorrectClassWhenProfessionalGroupIsLocation()
+	{
+		$presentation = $this->getValidObject();
+		$professional_group = ProfessionalGroupTestCase::createValidProfessionalGroup();
+		$presentation->setLocation($professional_group);
+		$this->assertInstanceOf('STS\Domain\ProfessionalGroup', $presentation->getLocation());
+	}
+
 	/**
 	 * @test
 	 */

@@ -1,6 +1,7 @@
 <?php
 namespace STS\TestUtilities;
 
+use STS\Core\Api\DefaultPresentationFacade;
 use STS\Domain\Presentation;
 use STS\Core\Presentation\PresentationDto;
 use STS\TestUtilities\Location\AreaTestCase;
@@ -38,7 +39,6 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $presentation->setEnteredByUserId(self::ENTERED_BY_USER_ID)
                      ->setId(self::ID)
                      ->setLocation($school)
-	                 ->setProfessionalGroup($professional_group)
                      ->setType(self::TYPE)
                      ->setDate(self::DATE)
                      ->setNotes(self::NOTES)
@@ -62,8 +62,8 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
 			'nformspre'             => $presentation->getNumberOfFormsReturnedPre(),
 			'date'                  => $presentation->getDate(),
 			'nparticipants'         => $presentation->getNumberOfParticipants(),
-			'school_id'             => $presentation->getLocation()->getId(),
-			'professional_group_id' => $presentation->getProfessionalGroup()->getId(),
+			'location_id'           => $presentation->getLocation()->getId(),
+            'location_class'        => get_class($presentation->getLocation()),
 			'survey_id'             => $presentation->getSurvey()->getId(),
 			'dateCreated'           => new \MongoDate($presentation->getCreatedOn()),
 			'dateUpdated'           => new \MongoDate($presentation->getUpdatedOn())
@@ -85,22 +85,11 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
     protected function getValidPresentationDto()
     {
         return new PresentationDto(
-            self::ID,
-            SchoolTestCase::NAME,
-            AreaTestCase::CITY,
-            ProfessionalGroupTestCase::NAME,
-            self::PARTICIPANTS,
-            self::DATE,
-            self::TYPE,
-            self::FORMS_POST,
-            self::FORMS_PRE,
-            SchoolTestCase::ID,
-            SurveyTestCase::ID,
-            $this->getPresentationDtoMemberArray(),
-            self::NOTES,
-            self::BEFORE_PERCENTAGE,
-            self::AFTER_PERCENTAGE,
-            self::EFFECTIVENESS
+            self::ID, SchoolTestCase::NAME, AreaTestCase::CITY,
+            DefaultPresentationFacade::locationTypeSchool, self::PARTICIPANTS, self::DATE,
+            self::TYPE, self::FORMS_POST, self::FORMS_PRE, SchoolTestCase::ID, SurveyTestCase::ID,
+            $this->getPresentationDtoMemberArray(), self::NOTES, self::BEFORE_PERCENTAGE,
+            self::AFTER_PERCENTAGE, self::EFFECTIVENESS
         );
     }
 
@@ -119,8 +108,6 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::FORMS_PRE, $presentation->getNumberOfFormsReturnedPre());
         $this->assertInstanceOf('STS\Domain\School', $presentation->getLocation());
         $this->assertInstanceOf('STS\Domain\Survey', $presentation->getSurvey());
-	    $this->assertInstanceOf('STS\Domain\ProfessionalGroup',
-		    $presentation->getProfessionalGroup());
         $this->assertTrue(is_array($presentation->getMembers()));
         $this->assertEquals(array(MemberTestCase::createValidMember()), $presentation->getMembers());
         $members = $presentation->getMembers();
@@ -135,10 +122,9 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('STS\Core\Presentation\PresentationDto', $dto);
         $this->assertTrue(is_string($dto->getId()));
         $this->assertEquals(self::ID, $dto->getId());
-        $this->assertEquals(SchoolTestCase::ID, $dto->getSchoolId());
-        $this->assertEquals(SchoolTestCase::NAME, $dto->getSchoolName());
-        $this->assertEquals(AreaTestCase::CITY, $dto->getSchoolAreaCity());
-	    $this->assertEquals(ProfessionalGroupTestCase::NAME, $dto->getProfessionalGroupName());
+        $this->assertEquals(SchoolTestCase::ID, $dto->getLocationId());
+        $this->assertEquals(SchoolTestCase::NAME, $dto->getLocationName());
+        $this->assertEquals(AreaTestCase::CITY, $dto->getLocationAreaCity());
         $this->assertEquals(self::PARTICIPANTS, $dto->getNumberOfParticipants());
         $this->assertEquals(self::TYPE, $dto->getType());
         $this->assertEquals(self::DISPLAY_DATE, $dto->getDate());

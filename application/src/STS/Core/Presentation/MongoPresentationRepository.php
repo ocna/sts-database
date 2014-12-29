@@ -1,8 +1,10 @@
 <?php
 namespace STS\Core\Presentation;
 
+use STS\Core\Api\DefaultPresentationFacade;
 use STS\Core\ProfessionalGroup\MongoProfessionalGroupRepository;
 use STS\Domain\Presentation;
+use STS\Domain\ProfessionalGroup;
 use STS\Domain\Survey;
 use STS\Domain\Presentation\PresentationRepository;
 use STS\Core\Member\MongoMemberRepository;
@@ -129,15 +131,22 @@ class MongoPresentationRepository implements PresentationRepository
             $survey->setId($data['survey_id']);
             $presentation->setSurvey($survey);
         }
-        $schoolRepository = new MongoSchoolRepository($this->mongoDb);
-        if (array_key_exists('professional_group_id', $data)) {
-            $professional_group_repository = new MongoProfessionalGroupRepository($this->mongoDb);
-            $professional_group = $professional_group_repository
-                ->load($data['professional_group_id']);
-            $presentation->setProfessionalGroup($professional_group);
+
+        // Handle legacy data when location could only be school
+        if (! isset($data['location_class'])) {
+            $data['location_id'] = $data['school_id'];
+            $data['location_class'] = DefaultPresentationFacade::locationTypeSchool;
         }
 
-        $presentation->setLocation($schoolRepository->load($data['school_id']));
+        if (DefaultPresentationFacade::locationTypeSchool == $data['location_class']) {
+            $schoolRepository = new MongoSchoolRepository($this->mongoDb);
+            $location = $schoolRepository->load($data['location_id']);
+        } else {
+            $professionalGroupRepository = new MongoProfessionalGroupRepository($this->mongoDb);
+            $location = $professionalGroupRepository->load($data['location_id']);
+        }
+
+        $presentation->setLocation($location);
         $memberRepository = new MongoMemberRepository($this->mongoDb);
         $members = array();
         foreach ($data['members'] as $memberId) {

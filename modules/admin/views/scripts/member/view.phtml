@@ -99,7 +99,7 @@
         foreach ($this->presentations as $presentation): ?>
         <a href="/presentation/index/view?id=<?= $presentation->getId() ?>">
             <span class="label label-info"><?= $presentation->getDate() ?>
-                <?= $presentation->getSchoolName() ?></span>
+                <?= $presentation->getLocationName() ?></span>
         </a>
         <?php endforeach; ?>
     </dd>

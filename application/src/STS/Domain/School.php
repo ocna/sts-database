@@ -4,7 +4,7 @@ namespace STS\Domain;
 use STS\Domain\Location\Address;
 use STS\Domain\Location\Area;
 
-class School extends EntityWithTypes
+class School extends EntityWithTypes implements HasArea
 {
     const TYPE_NP = 'NP';
     const TYPE_PA = 'PA';

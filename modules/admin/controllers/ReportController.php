@@ -221,7 +221,7 @@ class Admin_ReportController extends SecureBaseController
 	        $dto = PresentationDtoAssembler::toDTO($presentation);
             $presentation_data[] = array(
                 $dto->getDate(),
-                $dto->getSchoolName(),
+                $dto->getLocationName(),
                 number_format($dto->getCorrectBeforePercentage(), 2),
                 number_format($dto->getCorrectAfterPercentage(), 2),
                 number_format($dto->getEffectivenessPercentage(), 2)
@@ -241,7 +241,7 @@ class Admin_ReportController extends SecureBaseController
             '# forms post',
         );
 
-        if (in_array('schoolName', $vars)) {
+        if (in_array('locationName', $vars)) {
             $header[] = 'school';
         }
 
@@ -297,7 +297,7 @@ class Admin_ReportController extends SecureBaseController
 
             $school = $presentation->getLocation();
 
-            if (in_array('schoolName', $vars)) {
+            if (in_array('locationName', $vars)) {
                 $row[] = $school->getName();
             }
 

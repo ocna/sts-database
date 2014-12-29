@@ -15,8 +15,9 @@ class PresentationDtoAssembler
     {
         $builder = new PresentationDtoBuilder();
         $builder->withId($presentation->getId())
-            ->withSchoolName($presentation->getLocation()->getName())
-            ->withSchoolAreaCity($presentation->getLocation()->getArea()->getCity())
+            ->withLocationName($presentation->getLocation()->getName())
+            ->withLocationAreaCity($presentation->getLocation()->getArea()->getCity())
+            ->withLocationClass(get_class($presentation->getLocation()))
             ->withNumberOfParticipants($presentation->getNumberOfParticipants())
             ->withDate($presentation->getDate())
             ->withType($presentation->getType())
@@ -30,9 +31,6 @@ class PresentationDtoAssembler
         }
         if (! is_null($presentation->getLocation())) {
             $builder->withSchoolId($presentation->getLocation()->getId());
-        }
-        if (! is_null($presentation->getProfessionalGroup())) {
-            $builder->withProfessionalGroupName($presentation->getProfessionalGroup()->getName());
         }
         $members = $presentation->getMembers();
         $membersArray = array();

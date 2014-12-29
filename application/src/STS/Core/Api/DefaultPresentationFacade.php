@@ -16,6 +16,8 @@ use STS\Core\Survey\MongoSurveyRepository;
 
 class DefaultPresentationFacade implements PresentationFacade
 {
+    const locationTypeSchool = 'STS\Domain\School';
+    const locationTypeProfessionalGroup = 'STS\Domain\ProfessionalGroup';
     /**
      * @var \STS\Core\Presentation\MongoPresentationRepository
      */
@@ -58,8 +60,8 @@ class DefaultPresentationFacade implements PresentationFacade
      * savePresentation
      *
      * @param string $enteredByUserId
-     * @param string $schoolId
-     * @param string $professionalGroupId
+     * @param string $locationId
+     * @param $locationClass
      * @param string $typeCode
      * @param string $date
      * @param string $notes
@@ -72,8 +74,8 @@ class DefaultPresentationFacade implements PresentationFacade
      */
     public function savePresentation(
         $enteredByUserId,
-        $schoolId,
-        $professionalGroupId,
+        $locationId,
+        $locationClass,
         $typeCode,
         $date,
         $notes,
@@ -83,8 +85,12 @@ class DefaultPresentationFacade implements PresentationFacade
         $surveyId,
         $preForms
     ) {
-        $school = $this->schoolRepository->load($schoolId);
-        $professional_group = $this->professionalGroupRepository->load($professionalGroupId);
+        if (DefaultPresentationFacade::locationTypeSchool == $locationClass) {
+            $location = $this->schoolRepository->load($locationId);
+        } else {
+            $location = $this->professionalGroupRepository->load($locationId);
+        }
+
         $members = array();
         foreach ($memberIds as $ids) {
             $member = new Member();
@@ -96,7 +102,7 @@ class DefaultPresentationFacade implements PresentationFacade
         $survey->setId($surveyId);
         $presentation = new Presentation();
         $presentation->setEnteredByUserId($enteredByUserId)
-            ->setLocation($school)
+            ->setLocation($location)
             ->setType(Presentation::getAvailableType($typeCode))
             ->setDate($date)
             ->setNotes($notes)
@@ -104,7 +110,6 @@ class DefaultPresentationFacade implements PresentationFacade
             ->setNumberOfFormsReturnedPost($forms)
             ->setSurvey($survey)
             ->setNumberOfFormsReturnedPre($preForms)
-            ->setProfessionalGroup($professional_group)
             ->setMembers($members);
         $updatedPresentation = $this->presentationRepository->save($presentation);
         return PresentationDtoAssembler::toDto($updatedPresentation);
@@ -114,8 +119,8 @@ class DefaultPresentationFacade implements PresentationFacade
      * updatePresentation
      *
      * @param $id
-     * @param $schoolId
-     * @param string $professionalGroupId
+     * @param $locationId
+     * @param $locationClass
      * @param $typeCode
      * @param $date
      * @param $notes
@@ -127,8 +132,8 @@ class DefaultPresentationFacade implements PresentationFacade
      */
     public function updatePresentation(
         $id,
-        $schoolId,
-        $professionalGroupId,
+        $locationId,
+        $locationClass,
         $typeCode,
         $date,
         $notes,
@@ -138,16 +143,20 @@ class DefaultPresentationFacade implements PresentationFacade
         $preForms
     ) {
         $presentation = $this->presentationRepository->load($id);
-        $school = $this->schoolRepository->load($schoolId);
-        $professional_group = $this->professionalGroupRepository->load($professionalGroupId);
+
+        if (DefaultPresentationFacade::locationTypeSchool == $locationClass) {
+            $location = $this->schoolRepository->load($locationId);
+        } else {
+            $location = $this->professionalGroupRepository->load($locationId);
+        }
+
         $members = array();
         foreach ($memberIds as $ids) {
             $member = new Member();
             $member->setId($ids);
             $members[] = $member;
         }
-        $presentation->setLocation($school)
-                     ->setProfessionalGroup($professional_group)
+        $presentation->setLocation($location)
                      ->setType(Presentation::getAvailableType($typeCode))
                      ->setDate($date)
                      ->setNotes($notes)

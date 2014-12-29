@@ -46,7 +46,7 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
         $updatedPresentationDto = $facade->updatePresentation(
             $presentation->getId(),
             $presentation->getLocation()->getId(),
-            $presentation->getProfessionalGroup()->getId(),
+            get_class($presentation->getLocation()),
             'TYPE_MED',
             $presentation->getDate(),
             $presentation->getNotes(),

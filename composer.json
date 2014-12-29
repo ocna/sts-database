@@ -1,5 +1,8 @@
 {
-   "require":{
+    "require-dev": {
+        "phpmd/phpmd" : "@stable"
+    },
+    "require":{
       "mandrill/mandrill":"*",
       "breerly/zf1":"1.11.*",
       "phpunit/phpunit":"*",
