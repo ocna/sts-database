@@ -11,7 +11,7 @@ Class['::apt::update'] -> Package <|
 and title != 'software-properties-common'
 |>
 
-    
+
 class { 'puphpet::dotfiles': }
 
 class mongodb {
@@ -42,7 +42,7 @@ apache::vhost { 'dev.sts.ovariancancer.org':
   server_name   => 'dev.sts.ovariancancer.org',
   serveraliases => [
 ],
-  docroot       => '/var/www/sts-database/src/public',
+  docroot       => '/var/www/sts-database/public',
   port          => '80',
   env_variables => [
     'APPLICATION_ENV development'

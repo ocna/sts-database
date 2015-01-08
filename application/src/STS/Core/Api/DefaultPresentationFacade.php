@@ -1,7 +1,7 @@
 <?php
 namespace STS\Core\Api;
 
-use STS\Core\Presentation\PresentationDto;
+use STS\Core\ProfessionalGroup\MongoProfessionalGroupRepository;
 use STS\Domain\Survey\Template;
 use STS\Domain\Member;
 use STS\Domain\Survey;
@@ -16,6 +16,8 @@ use STS\Core\Survey\MongoSurveyRepository;
 
 class DefaultPresentationFacade implements PresentationFacade
 {
+    const locationTypeSchool = 'STS\Domain\School';
+    const locationTypeProfessionalGroup = 'STS\Domain\ProfessionalGroup';
     /**
      * @var \STS\Core\Presentation\MongoPresentationRepository
      */
@@ -28,6 +30,7 @@ class DefaultPresentationFacade implements PresentationFacade
     private $memberRepository;
     private $schoolRepository;
     private $surveyRepository;
+    private $professionalGroupRepository;
 
     /**
      * @param MongoPresentationRepository $presentationRepository
@@ -35,25 +38,30 @@ class DefaultPresentationFacade implements PresentationFacade
      * @param MongoMemberRepository $memberRepository
      * @param MongoSchoolRepository $schoolRepository
      * @param MongoSurveyRepository $surveyRepository
+     * @param MongoProfessionalGroupRepository $professionalGroupRepository
      */
-    public function __construct(MongoPresentationRepository $presentationRepository,
-                                MongoUserRepository $userRepository,
-                                MongoMemberRepository $memberRepository,
-                                MongoSchoolRepository $schoolRepository, MongoSurveyRepository
-        $surveyRepository)
-    {
+    public function __construct(
+        MongoPresentationRepository $presentationRepository,
+        MongoUserRepository $userRepository,
+        MongoMemberRepository $memberRepository,
+        MongoSchoolRepository $schoolRepository,
+        MongoSurveyRepository $surveyRepository,
+        MongoProfessionalGroupRepository $professionalGroupRepository
+    ) {
         $this->presentationRepository = $presentationRepository;
         $this->userRepository = $userRepository;
         $this->memberRepository = $memberRepository;
         $this->schoolRepository = $schoolRepository;
         $this->surveyRepository = $surveyRepository;
+        $this->professionalGroupRepository = $professionalGroupRepository;
     }
 
     /**
      * savePresentation
      *
      * @param string $enteredByUserId
-     * @param string $schoolId
+     * @param string $locationId
+     * @param $locationClass
      * @param string $typeCode
      * @param string $date
      * @param string $notes
@@ -64,9 +72,25 @@ class DefaultPresentationFacade implements PresentationFacade
      * @param $preForms
      * @return \STS\Core\Presentation\PresentationDto
      */
-    public function savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId, $preForms)
-    {
-        $school = $this->schoolRepository->load($schoolId);
+    public function savePresentation(
+        $enteredByUserId,
+        $locationId,
+        $locationClass,
+        $typeCode,
+        $date,
+        $notes,
+        $memberIds,
+        $participants,
+        $forms,
+        $surveyId,
+        $preForms
+    ) {
+        if (DefaultPresentationFacade::locationTypeSchool == $locationClass) {
+            $location = $this->schoolRepository->load($locationId);
+        } else {
+            $location = $this->professionalGroupRepository->load($locationId);
+        }
+
         $members = array();
         foreach ($memberIds as $ids) {
             $member = new Member();
@@ -77,9 +101,14 @@ class DefaultPresentationFacade implements PresentationFacade
         $survey = $template->createSurveyInstance();
         $survey->setId($surveyId);
         $presentation = new Presentation();
-        $presentation->setEnteredByUserId($enteredByUserId)->setLocation($school)
-            ->setType(Presentation::getAvailableType($typeCode))->setDate($date)->setNotes($notes)
-            ->setNumberOfParticipants($participants)->setNumberOfFormsReturnedPost($forms)->setSurvey($survey)
+        $presentation->setEnteredByUserId($enteredByUserId)
+            ->setLocation($location)
+            ->setType(Presentation::getAvailableType($typeCode))
+            ->setDate($date)
+            ->setNotes($notes)
+            ->setNumberOfParticipants($participants)
+            ->setNumberOfFormsReturnedPost($forms)
+            ->setSurvey($survey)
             ->setNumberOfFormsReturnedPre($preForms)
             ->setMembers($members);
         $updatedPresentation = $this->presentationRepository->save($presentation);
@@ -90,7 +119,8 @@ class DefaultPresentationFacade implements PresentationFacade
      * updatePresentation
      *
      * @param $id
-     * @param $schoolId
+     * @param $locationId
+     * @param $locationClass
      * @param $typeCode
      * @param $date
      * @param $notes
@@ -100,17 +130,33 @@ class DefaultPresentationFacade implements PresentationFacade
      * @param $preForms
      * @return \STS\Core\Presentation\PresentationDto
      */
-    public function updatePresentation($id, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $postForms, $preForms)
-    {
+    public function updatePresentation(
+        $id,
+        $locationId,
+        $locationClass,
+        $typeCode,
+        $date,
+        $notes,
+        $memberIds,
+        $participants,
+        $postForms,
+        $preForms
+    ) {
         $presentation = $this->presentationRepository->load($id);
-        $school = $this->schoolRepository->load($schoolId);
+
+        if (DefaultPresentationFacade::locationTypeSchool == $locationClass) {
+            $location = $this->schoolRepository->load($locationId);
+        } else {
+            $location = $this->professionalGroupRepository->load($locationId);
+        }
+
         $members = array();
         foreach ($memberIds as $ids) {
             $member = new Member();
             $member->setId($ids);
             $members[] = $member;
         }
-        $presentation->setLocation($school)
+        $presentation->setLocation($location)
                      ->setType(Presentation::getAvailableType($typeCode))
                      ->setDate($date)
                      ->setNotes($notes)
@@ -141,6 +187,13 @@ class DefaultPresentationFacade implements PresentationFacade
     public function getPresentationById($id)
     {
         $presentation = $this->presentationRepository->load($id);
+
+        // Ensure Survey has associated data
+        if (! is_null($presentation->getSurvey())) {
+            $survey = $this->surveyRepository->load($presentation->getSurvey()->getId());
+            $presentation->setSurvey($survey);
+        }
+
         return PresentationDtoAssembler::toDto($presentation);
     }
 
@@ -153,15 +206,33 @@ class DefaultPresentationFacade implements PresentationFacade
     public function getPresentationsForUserId($userId)
     {
         $user = $this->userRepository->load($userId);
-        $member = $this->memberRepository->load($user->getAssociatedMemberId());
+        $member        = $this->memberRepository->load($user->getAssociatedMemberId());
         $presentations = $this->presentationRepository->find();
-        $dtos = array();
+        $dtos          = array();
         foreach ($presentations as $presentation) {
             /** @var Presentation $presentation */
             if ($presentation->isAccessableByMemberUser($member, $user)) {
                 $dtos[] = PresentationDtoAssembler::toDTO($presentation);
             }
         }
+
+        return $dtos;
+    }
+
+    /**
+     * @param string $member_id
+     *
+     * @return array
+     */
+    public function getPresentationsForMemberId($member_id)
+    {
+        $presentations = $this->presentationRepository->find(array('members' => $member_id));
+        $dtos          = array();
+        foreach ($presentations as $presentation) {
+            /** @var Presentation $presentation */
+            $dtos[] = PresentationDtoAssembler::toDTO($presentation);
+        }
+
         return $dtos;
     }
 
@@ -170,7 +241,8 @@ class DefaultPresentationFacade implements PresentationFacade
      * @return array
      * @throws ApiException
      */
-    public function getPresentationsMatching($criteria = array()) {
+    public function getPresentationsMatching($criteria = array())
+    {
         if (empty($criteria['startDate']) || empty($criteria['endDate'])) {
             throw new ApiException(
                 'Start and End date for presentations reporting required.'
@@ -215,8 +287,10 @@ class DefaultPresentationFacade implements PresentationFacade
 
         // filter by presentation type
         if (isset($criteria['presentationTypes']) && !empty($criteria['presentationTypes'])) {
-            $presentations = $this->filterByPresentationTypes($presentations,
-                $criteria['presentationTypes']);
+            $presentations = $this->filterByPresentationTypes(
+                $presentations,
+                $criteria['presentationTypes']
+            );
         }
 
         // filter by school type
@@ -294,7 +368,7 @@ class DefaultPresentationFacade implements PresentationFacade
         }
 
         // sorting function
-        $compare = function($a, $b) {
+        $compare = function ($a, $b) {
             if ($a['presentations'] > $b['presentations']) {
                 return -1;
             } elseif ($a['presentations'] < $b['presentations']) {
@@ -336,11 +410,13 @@ class DefaultPresentationFacade implements PresentationFacade
         }
 
         // look for matches
-        $presentations = array_filter($presentations, function(Presentation $presentation) use
-        ($regions) {
-            $area = $presentation->getLocation()->getArea();
-            return in_array($area->getRegion()->getName(), $regions);
-        });
+        $presentations = array_filter(
+            $presentations,
+            function (Presentation $presentation) use ($regions) {
+                $area = $presentation->getLocation()->getArea();
+                return in_array($area->getRegion()->getName(), $regions);
+            }
+        );
 
         return $presentations;
     }
@@ -366,11 +442,13 @@ class DefaultPresentationFacade implements PresentationFacade
         }
 
         // look for matches
-        $presentations = array_filter($presentations, function(Presentation $presentation) use
-        ($states) {
-            $area = $presentation->getLocation()->getArea();
-            return in_array($area->getState(), $states);
-        });
+        $presentations = array_filter(
+            $presentations,
+            function (Presentation $presentation) use ($states) {
+                $area = $presentation->getLocation()->getArea();
+                return in_array($area->getState(), $states);
+            }
+        );
 
         return $presentations;
     }
@@ -397,15 +475,16 @@ class DefaultPresentationFacade implements PresentationFacade
         // look for matches
         $presentations = array_filter(
             $presentations,
-            function(Presentation $presentation) use ($members) {
+            function (Presentation $presentation) use ($members) {
                 $participants = $presentation->getMembers();
 
                 // get only the ids
                 $ids = array_map(
-                    function(Member $item) {
+                    function (Member $item) {
                         return $item->getId();
                     },
-                    $participants);
+                    $participants
+                );
 
                 $matches = array_intersect($ids, $members);
                 return count($matches);
@@ -436,17 +515,19 @@ class DefaultPresentationFacade implements PresentationFacade
 
         // switch the types to test into the labels
         $types = array_map(
-            function($key) {
+            function ($key) {
                 return School::getAvailableType($key);
             },
             $types
         );
 
         // look for matches
-        $presentations = array_filter($presentations, function(Presentation $presentation) use
-        ($types) {
-            return in_array($presentation->getLocation()->getType(), $types);
-        });
+        $presentations = array_filter(
+            $presentations,
+            function (Presentation $presentation) use ($types) {
+                return in_array($presentation->getLocation()->getType(), $types);
+            }
+        );
 
         return $presentations;
     }
@@ -470,12 +551,13 @@ class DefaultPresentationFacade implements PresentationFacade
 
         // look for matches
         $facade = $this;
-        $presentations = array_filter($presentations, function(Presentation
-                                                               $presentation)
-        use ($types, $facade) {
-            $type = $facade->getTypeKey($presentation->getType());
-            return in_array($type, $types);
-        });
+        $presentations = array_filter(
+            $presentations,
+            function (Presentation $presentation) use ($types, $facade) {
+                $type = $facade->getTypeKey($presentation->getType());
+                return in_array($type, $types);
+            }
+        );
 
         return $presentations;
     }
@@ -500,10 +582,12 @@ class DefaultPresentationFacade implements PresentationFacade
         }
 
         // look for matches
-        $presentations = array_filter($presentations, function(Presentation $presentation) use
-        ($schools) {
-            return in_array($presentation->getLocation()->getId(), $schools);
-        });
+        $presentations = array_filter(
+            $presentations,
+            function (Presentation $presentation) use ($schools) {
+                return in_array($presentation->getLocation()->getId(), $schools);
+            }
+        );
 
         return $presentations;
     }
@@ -521,10 +605,12 @@ class DefaultPresentationFacade implements PresentationFacade
         }
 
         // look for matches
-        $presentations = array_filter($presentations, function(Presentation $presentation) use
-        ($areas) {
-            return in_array($presentation->getLocation()->getArea()->getId(), $areas);
-        });
+        $presentations = array_filter(
+            $presentations,
+            function (Presentation $presentation) use ($areas) {
+                return in_array($presentation->getLocation()->getArea()->getId(), $areas);
+            }
+        );
 
         return $presentations;
     }
@@ -543,29 +629,32 @@ class DefaultPresentationFacade implements PresentationFacade
     /**
      * getDefaultInstance
      *
-     * @param $config
+     * @param $mongoDb
      * @return DefaultPresentationFacade
      */
-    public static function getDefaultInstance($config)
+    public static function getDefaultInstance($mongoDb)
     {
-        $mongoConfig = $config->modules->default->db->mongodb;
-        $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
-        $mongo = new \Mongo('mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/' . $mongoConfig->dbname);
-        $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $presentationRepository = new MongoPresentationRepository($mongoDb);
         $userRepository = new MongoUserRepository($mongoDb);
         $memberRepository = new MongoMemberRepository($mongoDb);
         $schoolRepository = new MongoSchoolRepository($mongoDb);
         $surveyRepository = new MongoSurveyRepository($mongoDb);
-        return new DefaultPresentationFacade($presentationRepository, $userRepository,
-            $memberRepository, $schoolRepository, $surveyRepository);
+        $professionalGroupRepository = new MongoProfessionalGroupRepository($mongoDb);
+        return new DefaultPresentationFacade(
+            $presentationRepository,
+            $userRepository,
+            $memberRepository,
+            $schoolRepository,
+            $surveyRepository,
+            $professionalGroupRepository
+        );
     }
 
     /**
-     * updateEnteredBy
-     *
      * @param $old
      * @param $new
+     *
+     * @return mixed|void
      */
     public function updateEnteredBy($old, $new)
     {

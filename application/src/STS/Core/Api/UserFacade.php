@@ -1,5 +1,6 @@
 <?php
 namespace STS\Core\Api;
+
 interface UserFacade
 {
     /**
@@ -33,11 +34,30 @@ interface UserFacade
      * @param $role
      * @param $associatedMemberId
      * @param bool $init_password
+     * @param string $salt
      * @return mixed
      */
-    public function createUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId, $init_password = false, $salt = null);
+    public function createUser(
+        $username,
+        $firstName,
+        $lastName,
+        $email,
+        $password,
+        $role,
+        $associatedMemberId,
+        $init_password = false,
+        $salt = null
+    );
 
-    public function updateUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId);
+    public function updateUser(
+        $username,
+        $firstName,
+        $lastName,
+        $email,
+        $password,
+        $role,
+        $associatedMemberId
+    );
 
     public function deleteUser($id);
 }

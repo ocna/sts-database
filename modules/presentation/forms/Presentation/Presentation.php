@@ -5,7 +5,7 @@ use STS\Domain\Survey\Response\SingleResponse;
 
 class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
 {
-    protected $schools;
+    protected $locations;
     protected $presentationTypes;
     protected $surveyTemplate;
 
@@ -24,7 +24,7 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
             array(
                 'label' => 'Location',
                 'dimension' => 4,
-                'MultiOptions' => $this->schools,
+                'MultiOptions' => $this->locations,
                 'required' => true,
                 'validators' => array($notEmpty)
             )
@@ -232,9 +232,9 @@ class Presentation_Presentation extends Twitter_Bootstrap_Form_Horizontal
         }
     }
 
-    public function setSchools($schools)
+    public function setLocations($schools)
     {
-        $this->schools = $schools;
+        $this->locations = $schools;
     }
 
     public function setPresentationTypes($presentationTypes)

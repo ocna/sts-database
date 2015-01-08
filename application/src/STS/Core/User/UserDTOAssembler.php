@@ -1,8 +1,7 @@
 <?php
 namespace STS\Core\User;
+
 use STS\Domain\User;
-use STS\Core\User\UserDTO;
-use STS\Core\User\UserDTOBuilder;
 
 class UserDTOAssembler
 {
@@ -10,7 +9,9 @@ class UserDTOAssembler
     {
         // TODO use a typehint
         if (!($user instanceof User)) {
-            throw new \InvalidArgumentException('Instance of \STS\Domain\User\User not provided. Other value is given.');
+            throw new \InvalidArgumentException(
+                'Instance of \STS\Domain\User\User not provided. Other value is given.'
+            );
         }
 
         $userDTOBuilder = new UserDTOBuilder();

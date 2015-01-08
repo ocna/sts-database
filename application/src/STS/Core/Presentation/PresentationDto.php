@@ -4,11 +4,11 @@ namespace STS\Core\Presentation;
 
 class PresentationDto
 {
-
     private $id;
-    private $schoolId;
-    private $schoolName;
-    private $schoolAreaCity;
+    private $locationId;
+    private $locationName;
+    private $locationAreaCity;
+    private $locationClass;
     private $numberOfParticipants;
     private $numberOfFormsReturnedPost;
     private $numberOfFormsReturnedPre;
@@ -17,29 +17,63 @@ class PresentationDto
     private $surveyId;
     private $membersArray;
     private $notes;
+    private $correctBeforePercentage;
+    private $correctAfterPercentage;
+    private $effectivenessPercentage;
 
     /**
-      * @param string $id
-      * @param string $schoolName
-      * @param string $schoolAreaCity
-      * @param int $numberOfParticipants
-      * @param string $date
-      * @param string $type
-      */
-    public function __construct($id, $schoolName, $schoolAreaCity, $numberOfParticipants, $date, $type, $postForms, $preForms, $schoolId, $surveyId, $membersArray, $notes)
-    {
+     * @param string $id
+     * @param string $locationName
+     * @param string $locationAreaCity
+     * @param $locationClass
+     * @param int $numberOfParticipants
+     * @param string $date
+     * @param string $type
+     * @param int $postForms
+     * @param int $preForms
+     * @param string $schoolId
+     * @param string $surveyId
+     * @param array $membersArray
+     * @param string $notes
+     * @param float $correctBeforePercentage
+     * @param float $correctAfterPercentage
+     * @param float $effectivenessPercentage
+     */
+    public function __construct(
+        $id,
+        $locationName,
+        $locationAreaCity,
+        $locationClass,
+        $numberOfParticipants,
+        $date,
+        $type,
+        $postForms,
+        $preForms,
+        $schoolId,
+        $surveyId,
+        $membersArray,
+        $notes,
+        $correctBeforePercentage,
+        $correctAfterPercentage,
+        $effectivenessPercentage
+    ) {
         $this->id = $id;
-        $this->schoolName = $schoolName;
-        $this->schoolAreaCity = $schoolAreaCity;
+        $this->locationName = $locationName;
+        $this->locationAreaCity = $locationAreaCity;
+        $this->locationClass = $locationClass;
         $this->numberOfParticipants = $numberOfParticipants;
         $this->type = $type;
         $this->date = $date;
         $this->numberOfFormsReturnedPost = $postForms;
         $this->numberOfFormsReturnedPre = $preForms;
-        $this->schoolId = $schoolId;
+        $this->locationId = $schoolId;
         $this->surveyId = $surveyId;
         $this->membersArray = $membersArray;
         $this->notes = $notes;
+        $this->correctBeforePercentage = $correctBeforePercentage;
+        $this->correctAfterPercentage = $correctAfterPercentage;
+        $this->effectivenessPercentage = $effectivenessPercentage;
+        $this->locationClass = $locationClass;
     }
     public function getNotes()
     {
@@ -53,9 +87,9 @@ class PresentationDto
     {
         return $this->membersArray;
     }
-    public function getSchoolId()
+    public function getLocationId()
     {
-        return $this->schoolId;
+        return $this->locationId;
     }
     public function getId()
     {
@@ -73,13 +107,21 @@ class PresentationDto
     {
         return $this->numberOfParticipants;
     }
-    public function getSchoolAreaCity()
+    public function getLocationAreaCity()
     {
-        return $this->schoolAreaCity;
+        return $this->locationAreaCity;
     }
-    public function getSchoolName()
+    public function getLocationName()
     {
-        return $this->schoolName;
+        return $this->locationName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocationClass()
+    {
+        return $this->locationClass;
     }
     public function getNumberOfFormsReturnedPost()
     {
@@ -96,5 +138,17 @@ class PresentationDto
     public function getPostFormsPercentage()
     {
         return round(($this->numberOfFormsReturnedPost/$this->numberOfParticipants)*100);
+    }
+    public function getCorrectBeforePercentage()
+    {
+        return $this->correctBeforePercentage;
+    }
+    public function getCorrectAfterPercentage()
+    {
+        return $this->correctAfterPercentage;
+    }
+    public function getEffectivenessPercentage()
+    {
+        return $this->effectivenessPercentage;
     }
 }

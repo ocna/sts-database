@@ -1,4 +1,7 @@
-<?php if (empty($this->objects)): ?>
+<?php
+use STS\Core\Presentation\PresentationDto;
+
+if (empty($this->objects)): ?>
 <div class="alert alert-info">
     <h3><span><i class="icon-info-sign"></i></span>No presentations yet.</h3>
     <p>You have not entered any presentations yet.</p>
@@ -7,8 +10,8 @@
 <?php else:
 $columns = array(
     'date' => 'Date',
-    'schoolName' => 'School',
-    'schoolAreaCity' => 'City',
+    'locationName' => 'School',
+    'locationAreaCity' => 'City',
     'numberOfParticipants' => 'Participants',
     'type' => 'Type'
 );
@@ -24,7 +27,9 @@ $columns = array(
     </thead>
     <tbody>
 
-    <?php foreach ($this->objects as $object): ?>
+    <?php
+    /** @var PresentationDto $object */
+    foreach ($this->objects as $object): ?>
         <tr>
         <?php foreach ($columns as $get=>$title):
             $method = 'get' . ucfirst($get); ?>
@@ -41,7 +46,7 @@ $columns = array(
                     <?php if (true == $this->can_edit): ?>
                         <a class="btn btn-mini btn-danger"
                            href="#" data-delete="<?php echo $object->getId() ?>"
-                            data-name="<?php echo $object->getSchoolName() ?>">
+                            data-name="<?php echo $object->getLocationName() ?>">
                             <i class="icon-trash"></i>
                         </a>
                     <?php endif; ?>

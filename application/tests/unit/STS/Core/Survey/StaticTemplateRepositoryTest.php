@@ -52,28 +52,32 @@ class StaticTemplateRepositoryTest extends PHPUnit_Framework_TestCase
                         )
                 ),
                 5 => array(
-                        'type' => 'MultipleChoice', 'asked' => 0,
-                        'prompt' => 'Studies have shown that women diagnosed with ovarian cancer generally have a better likelihood of prolonged survival if treated by:',
-                        'choices' => array(
-                                12 => 'A gynecologist', 13 => 'An oncologist',
-                                14 => 'A gynecologic oncologist'
-                        )
+                    'type' => 'MultipleChoice', 'asked' => 0,
+                    'prompt' => 'Studies have shown that women diagnosed with ovarian cancer
+                     generally have a better likelihood of prolonged survival if treated by:',
+                    'choices' => array(
+                            12 => 'A gynecologist', 13 => 'An oncologist',
+                            14 => 'A gynecologic oncologist'
+                    )
                 ),
                 6 => array(
                         'type' => 'ShortAnswer', 'asked' => 0,
-                        'prompt' => 'List three symptoms, which, if persistent, would lead you to consider ovarian cancer.'
+                        'prompt' => 'List three symptoms, which, if persistent,
+                     would lead you to consider ovarian cancer.'
                 ),
                 7 => array(
                         'type' => 'ShortAnswer', 'asked' => 2,
                         'prompt' => 'How has the presentation changed the way you think about ovarian cancer?'
                 ),
                 8 => array(
-                        'type' => 'ShortAnswer', 'asked' => 2,
-                        'prompt' => 'Would you consider this form of experiential learning an effective method of learning more about ovarian cancer or another condition?'
+                    'type' => 'ShortAnswer', 'asked' => 2,
+                    'prompt' => 'Would you consider this form of experiential learning an effective
+                     method of learning more about ovarian cancer or another condition?'
                 ),
                 9 => array(
-                        'type' => 'ShortAnswer', 'asked' => 2,
-                        'prompt' => 'How can the presentation be more effective in conveying survivors\' experiences, the importance of the symptoms or difficulties in diagnosis?'
+                    'type' => 'ShortAnswer', 'asked' => 2,
+                    'prompt' => 'How can the presentation be more effective in conveying survivors\'
+                     experiences, the importance of the symptoms or difficulties in diagnosis?'
                 )
         );
         foreach ($templateData as $index => $questionData) {

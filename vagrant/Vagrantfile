@@ -11,8 +11,8 @@ Vagrant.configure("2") do |config|
     v.customize ["modifyvm", :id, "--name", "ocnadev"]
   end
 
-  
-  config.vm.synced_folder "/home/vhosts-me/sts-database", "/var/www/sts-database", id: "vagrant-root"
+
+  config.vm.synced_folder "..", "/var/www/sts-database", id: "vagrant-root"
   config.vm.provision :shell, :inline =>
     "if [[ ! -f /apt-get-run ]]; then sudo apt-get update && sudo touch /apt-get-run; fi"
 

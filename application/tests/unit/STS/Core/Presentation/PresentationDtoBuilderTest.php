@@ -17,8 +17,8 @@ class PresentationDtoBuilderTest extends PresentationTestCase
         $this->assertNull($dto->getId());
         $this->assertNull($dto->getDate());
         $this->assertNull($dto->getNumberOfParticipants());
-        $this->assertNull($dto->getSchoolAreaCity());
-        $this->assertNull($dto->getSchoolName());
+        $this->assertNull($dto->getLocationAreaCity());
+        $this->assertNull($dto->getLocationName());
         $this->assertNull($dto->getType());
         $this->assertNull($dto->getId());
         $this->assertNull($dto->getId());
@@ -27,9 +27,12 @@ class PresentationDtoBuilderTest extends PresentationTestCase
         $this->assertNull($dto->getNumberOfFormsReturnedPost());
         $this->assertNull($dto->getId());
         $this->assertNull($dto->getSurveyId());
-        $this->assertNull($dto->getSchoolId());
+        $this->assertNull($dto->getLocationId());
         $this->assertEmpty($dto->getMembersArray());
         $this->assertNull($dto->getNotes());
+	    $this->assertNull($dto->getCorrectBeforePercentage());
+	    $this->assertNull($dto->getCorrectAfterPercentage());
+	    $this->assertNull($dto->getEffectivenessPercentage());
     }
 
     /**
@@ -40,17 +43,20 @@ class PresentationDtoBuilderTest extends PresentationTestCase
         $validDto = $this->getValidPresentationDto();
         $builder = new PresentationDtoBuilder();
         $builder->withId($validDto->getId())
-                ->withSchoolName($validDto->getSchoolName())
-                ->withSchoolAreaCity($validDto->getSchoolAreaCity())
+                ->withLocationName($validDto->getLocationName())
+                ->withLocationAreaCity($validDto->getLocationAreaCity())
                 ->withNumberOfParticipants($validDto->getNumberOfParticipants())
                 ->withType($validDto->getType())
                 ->withDate($validDto->getDate())
                 ->withNumberOfFormsReturnedPost($validDto->getNumberOfFormsReturnedPost())
                 ->withNumberOfFormsReturnedPre($validDto->getNumberOfFormsReturnedPre())
                 ->withSurveyId($validDto->getSurveyId())
-                ->withSchoolId($validDto->getSchoolId())
+                ->withSchoolId($validDto->getLocationId())
                 ->withMembersArray($validDto->getMembersArray())
-                ->withNotes($validDto->getNotes());
+                ->withNotes($validDto->getNotes())
+	            ->withCorrectBeforePercentage($validDto->getCorrectBeforePercentage())
+	            ->withCorrectAfterPercentage($validDto->getCorrectAfterPercentage())
+	            ->withEffectivenessPercentage($validDto->getEffectivenessPercentage());
         $dto = $builder->build();
         $this->assertValidPresentationDto($dto);
     }

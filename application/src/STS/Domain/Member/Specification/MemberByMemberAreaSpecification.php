@@ -1,11 +1,12 @@
 <?php
 namespace STS\Domain\Member\Specification;
+
 use STS\Domain\Member;
 
 class MemberByMemberAreaSpecification
 {
-
     private $member;
+
     public function __construct($member)
     {
         if (!$member instanceof Member) {
@@ -13,6 +14,12 @@ class MemberByMemberAreaSpecification
         }
         $this->member = $member;
     }
+
+    /**
+     * @param Member $member
+     *
+     * @return bool
+     */
     public function isSatisfiedBy($member)
     {
         foreach ($member->getAllAssociatedAreas() as $area) {

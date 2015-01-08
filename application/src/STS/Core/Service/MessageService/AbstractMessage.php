@@ -5,8 +5,8 @@
  * @package Core
  * @subpackage Service
  */
-
 namespace STS\Core\Service\MessageService;
+
 class AbstractMessage
 {
     private $subject;
@@ -43,5 +43,4 @@ class AbstractMessage
     {
         return $this->body;
     }
-
 }

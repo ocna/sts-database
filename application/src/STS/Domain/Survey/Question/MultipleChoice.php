@@ -1,5 +1,6 @@
 <?php
 namespace STS\Domain\Survey\Question;
+
 use STS\Domain\Survey\Response\PairResponse;
 use STS\Domain\Survey\AbstractResponse;
 use STS\Domain\Survey\Question;
@@ -10,11 +11,13 @@ class MultipleChoice extends Question
 
     protected $choices;
     protected $responses = array();
+
     public function addChoice($choiceId, $choicePrompt)
     {
         $this->choices[$choiceId] = $choicePrompt;
         return $this;
     }
+
     public function getChoice($choiceId)
     {
         if ($this->choiceExists($choiceId)) {
@@ -23,10 +26,12 @@ class MultipleChoice extends Question
             return null;
         }
     }
+
     public function getChoices()
     {
         return $this->choices;
     }
+
     public function addResponse($choiceId, AbstractResponse $response)
     {
         if ($this->asked != self::BOTH && $response instanceof PairResponse) {
@@ -41,6 +46,7 @@ class MultipleChoice extends Question
             throw new \InvalidArgumentException('Choice does not exist.');
         }
     }
+
     public function getResponse($choiceId)
     {
         if ($this->responseExists($choiceId)) {
@@ -49,10 +55,12 @@ class MultipleChoice extends Question
             return null;
         }
     }
+
     private function responseExists($choiceId)
     {
         return array_key_exists($choiceId, $this->responses);
     }
+
     private function choiceExists($choiceId)
     {
         return array_key_exists($choiceId, $this->choices);

@@ -1,5 +1,6 @@
 <?php
 namespace STS\Core\School;
+
 use STS\Domain\School;
 
 class SchoolDtoAssembler
@@ -14,6 +15,7 @@ class SchoolDtoAssembler
         $name = $school->getName();
         $type = $school->getType();
         $typeKey = array_search($type, School::getAvailableTypes());
+        $is_inactive = $school->isInactive();
         $notes = $school->getNotes();
         if ($area = $school->getArea()) {
             if ($region = $area->getRegion()) {
@@ -27,21 +29,23 @@ class SchoolDtoAssembler
             $regionName = null;
             $areaName = null;
         }
-        if ($address = $school->getAddress()) {
-            $addressLineOne = $address->getLineOne();
-            $addressLineTwo = $address->getLineTwo();
-            $addressCity = $address->getCity();
-            $addressState = $address->getState();
-            $addressZip = $address->getZip();
-        } else {
-            $addressLineOne = null;
-            $addressLineTwo = null;
-            $addressCity = null;
-            $addressState = null;
-            $addressZip = null;
+        $address = null;
+        if ($school->getAddress()) {
+            $address = $school->getAddress()->getAddress();
         }
-        $schoolDto = new SchoolDto($id, $legacyId, $name, $type, $notes, $regionName, $areaName, $addressLineOne,
-                        $addressLineTwo, $addressCity, $addressState, $addressZip, $areaId, $typeKey);
+        $schoolDto = new SchoolDto(
+            $id,
+            $legacyId,
+            $name,
+            $type,
+            $is_inactive,
+            $notes,
+            $regionName,
+            $areaName,
+            $address,
+            $areaId,
+            $typeKey
+        );
         return $schoolDto;
     }
 }

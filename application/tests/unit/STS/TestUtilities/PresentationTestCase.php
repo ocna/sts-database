@@ -1,6 +1,7 @@
 <?php
 namespace STS\TestUtilities;
 
+use STS\Core\Api\DefaultPresentationFacade;
 use STS\Domain\Presentation;
 use STS\Core\Presentation\PresentationDto;
 use STS\TestUtilities\Location\AreaTestCase;
@@ -14,17 +15,26 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
     const DATE = '2012-05-10 11:55:23';
     const DISPLAY_DATE = '05/10/2012';
     const NOTES = 'The presentation went quite well I must say.';
-    const PARTICIPANTS = 104;
-    const FORMS_POST = 76;
-    const FORMS_PRE = 98;
+    const PARTICIPANTS = 22;
+    const FORMS_POST = 22;
+    const FORMS_PRE = 20;
+	const BEFORE_PERCENTAGE = 23.5;
+	const AFTER_PERCENTAGE = 34.09;
+	const EFFECTIVENESS = 45.06;
 
     protected function getValidObject()
     {
         $school = SchoolTestCase::createValidSchool();
+	    $professional_group = ProfessionalGroupTestCase::createValidProfessionalGroup();
         $members = array(
             MemberTestCase::createValidMember()
         );
-        $survey = \Mockery::mock('STS\Domain\Survey', array('getId'=>SurveyTestCase::ID));
+        $survey = \Mockery::mock('STS\Domain\Survey', array(
+		        'getId'                         => SurveyTestCase::ID,
+		        'getNumCorrectBeforeResponses'  => SurveyTestCase::NUM_CORRECT_BEFORE,
+		        'getNumCorrectAfterResponses'   => SurveyTestCase::NUM_CORRECT_AFTER
+	        )
+        );
         $presentation = new Presentation();
         $presentation->setEnteredByUserId(self::ENTERED_BY_USER_ID)
                      ->setId(self::ID)
@@ -40,6 +50,32 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         return $presentation;
     }
 
+	protected function getValidMongoArray()
+	{
+		$presentation = $this->getValidObject();
+		$array = array(
+			'id'                    => $presentation->getId(),
+			'entered_by_user_id'    => $presentation->getEnteredByUserId(),
+			'type'                  => $presentation->getType(),
+			'notes'                 => utf8_encode($presentation->getNotes()),
+			'nforms'                => $presentation->getNumberOfFormsReturnedPost(),
+			'nformspre'             => $presentation->getNumberOfFormsReturnedPre(),
+			'date'                  => $presentation->getDate(),
+			'nparticipants'         => $presentation->getNumberOfParticipants(),
+			'location_id'           => $presentation->getLocation()->getId(),
+            'location_class'        => get_class($presentation->getLocation()),
+			'survey_id'             => $presentation->getSurvey()->getId(),
+			'dateCreated'           => new \MongoDate($presentation->getCreatedOn()),
+			'dateUpdated'           => new \MongoDate($presentation->getUpdatedOn())
+		);
+		$members = array();
+		foreach ($presentation->getMembers() as $member) {
+			$members[] = $member->getId();
+		}
+		$array['members'] = $members;
+		return $array;
+	}
+
     public static function createValidObject()
     {
         $presentationTestCase = new PresentationTestCase();
@@ -49,20 +85,17 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
     protected function getValidPresentationDto()
     {
         return new PresentationDto(
-            self::ID,
-            SchoolTestCase::NAME,
-            AreaTestCase::CITY,
-            self::PARTICIPANTS,
-            self::DATE,
-            self::TYPE,
-            self::FORMS_POST,
-            self::FORMS_PRE,
-            SchoolTestCase::ID,
-            SurveyTestCase::ID,
-            $this->getPresentationDtoMemberArray(),
-            self::NOTES
+            self::ID, SchoolTestCase::NAME, AreaTestCase::CITY,
+            DefaultPresentationFacade::locationTypeSchool, self::PARTICIPANTS, self::DATE,
+            self::TYPE, self::FORMS_POST, self::FORMS_PRE, SchoolTestCase::ID, SurveyTestCase::ID,
+            $this->getPresentationDtoMemberArray(), self::NOTES, self::BEFORE_PERCENTAGE,
+            self::AFTER_PERCENTAGE, self::EFFECTIVENESS
         );
     }
+
+	/**
+	 * @param Presentation $presentation
+	 */
     protected function assertValidObject($presentation)
     {
         $this->assertEquals(self::ID, $presentation->getId());
@@ -81,14 +114,17 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('STS\Domain\Member', array_pop($members));
     }
 
+	/**
+	 * @param PresentationDto $dto
+	 */
     protected function assertValidPresentationDto($dto)
     {
         $this->assertInstanceOf('STS\Core\Presentation\PresentationDto', $dto);
         $this->assertTrue(is_string($dto->getId()));
         $this->assertEquals(self::ID, $dto->getId());
-        $this->assertEquals(SchoolTestCase::ID, $dto->getSchoolId());
-        $this->assertEquals(SchoolTestCase::NAME, $dto->getSchoolName());
-        $this->assertEquals(AreaTestCase::CITY, $dto->getSchoolAreaCity());
+        $this->assertEquals(SchoolTestCase::ID, $dto->getLocationId());
+        $this->assertEquals(SchoolTestCase::NAME, $dto->getLocationName());
+        $this->assertEquals(AreaTestCase::CITY, $dto->getLocationAreaCity());
         $this->assertEquals(self::PARTICIPANTS, $dto->getNumberOfParticipants());
         $this->assertEquals(self::TYPE, $dto->getType());
         $this->assertEquals(self::DISPLAY_DATE, $dto->getDate());
@@ -96,9 +132,12 @@ class PresentationTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::FORMS_PRE, $dto->getNumberOfFormsReturnedPre());
         $this->assertEquals($this->getPresentationDtoMemberArray(), $dto->getMembersArray());
         $this->assertEquals(SurveyTestCase::ID, $dto->getSurveyId());
-        $this->assertEquals(94, $dto->getPreFormsPercentage());
-        $this->assertEquals(73, $dto->getPostFormsPercentage());
+        $this->assertEquals(91, $dto->getPreFormsPercentage());
+        $this->assertEquals(100, $dto->getPostFormsPercentage());
         $this->assertEquals(self::NOTES, $dto->getNotes());
+	    $this->assertEquals(self::BEFORE_PERCENTAGE, $dto->getCorrectBeforePercentage());
+	    $this->assertEquals(self::AFTER_PERCENTAGE, $dto->getCorrectAfterPercentage());
+	    $this->assertEquals(self::EFFECTIVENESS, $dto->getEffectivenessPercentage());
     }
 
     public function getPresentationDtoMemberArray()

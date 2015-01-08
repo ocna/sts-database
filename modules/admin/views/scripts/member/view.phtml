@@ -13,7 +13,7 @@
         content = $('.modal-body p').html();
         $('.confirm-message').html(content.replace(/~member~/, name));
         removeBtn.attr('href', href.replace(/\?id=.*/, '?id=' + id));
-    }).modal({ 
+    }).modal({
       backdrop: true,
       show: false
     });
@@ -24,12 +24,14 @@
   <dd><?php echo $this->member->getType() ? $this->member->getType() : '-'; ?></dd>
   <dt>Status:</dt>
   <dd><?php echo $this->member->getStatus() ? $this->member->getStatus() : '-'; ?></dd>
+    <dt>Volunteer?</dt>
+    <dd><?php echo $this->member->isVolunteer() ? 'Yes' : 'No'; ?></dd>
   <dt>Date Trained:</dt>
   <dd><?php echo $this->member->getDateTrained() ? $this->member->getDateTrained() : '-'; ?></dd>
   <dt>Email:</dt>
   <dd><?php echo $this->member->getEmail() ? '<a href="mailto:'.$this->member->getEmail().'">'.$this->member->getEmail().'</a>' : '-'; ?></dd>
-  
-  <?php 
+
+  <?php
     $phoneNumbers = $this->member->getPhoneNumbers();
     if (! empty($phoneNumbers)):
       echo "<br>";
@@ -37,8 +39,8 @@
   ?>
   <dt><?php echo ucfirst($phoneNumber['type']); ?> <i class="icon-phone"></i></dt>
   <dd><?php echo preg_replace('/([0-9]{3})([0-9]{3})([0-9]{4})/', '$1-$2-$3', $phoneNumber['number']); ?></dd>
-  
-  <?php 
+
+  <?php
     endforeach;
     endif;
   ?>
@@ -52,9 +54,7 @@
   <br>
   <dt>Address:</dt>
   <dd><address>
-    <?php echo $this->member->getAddressLineOne() ? $this->member->getAddressLineOne() : '-' ?><br />
-    <?php echo $this->member->getAddressLineTwo() ? $this->member->getAddressLineTwo().'<br />' : '' ?>
-    <?php echo $this->member->getAddressCity() ? $this->member->getAddressCity().',':''?> <?php echo $this->member->getAddressState() ?> <?php echo $this->member->getAddressZip() ?><br />
+    <?php echo $this->member->getAddress() ? nl2br($this->member->getAddress()) : '-' ?>
   </address></dd>
 
 <?php if (!$this->member->getPresentsForAreas() == array()): ?>
@@ -84,13 +84,26 @@
     </dd>
 <?php endif;?>
 <?php if (!$this->member->getActivities() == array()): ?>
-    <dt>Activities:</dt>    
+    <dt>Activities:</dt>
     <dd>
     <?php foreach ($this->member->getActivities() as $activity): ?>
         <span class="label"><?= $activity ?></span>
     <?php endforeach; ?>
     </dd>
 <?php endif; ?>
+    <?php if ($this->presentations): ?>
+    <dt>Presentations:</dt>
+    <dd>
+        <?php
+        /** @var STS\Core\Presentation\PresentationDto $presentation */
+        foreach ($this->presentations as $presentation): ?>
+        <a href="/presentation/index/view?id=<?= $presentation->getId() ?>">
+            <span class="label label-info"><?= $presentation->getDate() ?>
+                <?= $presentation->getLocationName() ?></span>
+        </a>
+        <?php endforeach; ?>
+    </dd>
+    <?php endif; ?>
 </dl>
 <br>
 
@@ -141,7 +154,8 @@
       <h3>Delete Member</h3>
     </div>
     <div class="modal-body">
-      <p class="confirm-message">You are about to delete the member ~member~, this procedure is irreversible.</p>
+      <p class="confirm-message">You are about to delete the member ~member~.
+	      This procedure is irreversible.</p>
       <p>Are you sure you want to do this?</p>
     </div>
     <div class="modal-footer">

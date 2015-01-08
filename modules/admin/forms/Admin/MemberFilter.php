@@ -4,6 +4,7 @@ class Admin_MemberFilter extends Twitter_Bootstrap_Form_Inline
 {
     protected $roles;
     protected $regions;
+    protected $presentsFor;
     protected $memberStatuses;
     public function init()
     {
@@ -29,6 +30,23 @@ class Admin_MemberFilter extends Twitter_Bootstrap_Form_Inline
             'label' => 'Region',
             'dimension' => 2,
             'MultiOptions' => $this->regions
+        ));
+
+       // area
+        $this->addElement('multiselect', 'presents_for', array(
+            'label' => 'Area',
+            'dimension' => 2,
+            'multiOptions' => $this->presentsFor
+        ));
+
+        $this->addElement('multiselect', 'is_volunteer', array(
+            'label' => 'Volunteer',
+            'dimension' => 2,
+            'MultiOptions' => array(
+                '' => '',
+                1   => 'Volunteer',
+                0   => 'Not a Volunteer'
+            )
         ));
 
         $this->addElement('button', 'update', array(
@@ -67,6 +85,12 @@ class Admin_MemberFilter extends Twitter_Bootstrap_Form_Inline
     {
         $this->regions = $regions;
     }
+
+    public function setPresentsFor($presentsFor)
+    {
+        $this->presentsFor = $presentsFor;
+    }
+
     public function setMemberStatuses($memberStatuses)
     {
         $this->memberStatuses = $memberStatuses;

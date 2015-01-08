@@ -2,6 +2,8 @@
 namespace STS\Core\Member;
 
 use STS\Domain\Member;
+use STS\Domain\Location\Area;
+use STS\Domain\Member\PhoneNumber;
 
 class MemberDtoAssembler
 {
@@ -16,17 +18,14 @@ class MemberDtoAssembler
                 ->withFirstName($member->getFirstName())
                 ->withLastName($member->getLastName())
                 ->withStatus($member->getStatus())
+                ->withVolunteer($member->isVolunteer())
                 ->withType($member->getType())
                 ->withNotes($member->getNotes())
                 ->withDateTrained($member->getDateTrained())
                 ->withAssociatedUserId($member->getAssociatedUserId())
                 ->withCanBeDeleted($member->canBeDeleted());
         if ($address = $member->getAddress()) {
-            $builder->withAddressLineOne($address->getLineOne())
-                    ->withAddressLineTwo($address->getLineTwo())
-                    ->withAddressCity($address->getCity())
-                    ->withAddressState($address->getState())
-                    ->withAddressZip($address->getZip());
+            $builder->withAddress($address->getAddress());
         }
         $builder->withPresentsForAreas(self::getAreaNamesArray($member->getPresentsForAreas()))
                 ->withFacilitatesForAreas(self::getAreaNamesArray($member->getFacilitatesForAreas()))
@@ -36,7 +35,7 @@ class MemberDtoAssembler
                 ->withDateTrained($member->getDateTrained());
 
         if ($diagnosis = $member->getDiagnosis()) {
-                $builder->withDiagnosisDate($diagnosis->getDate())
+            $builder->withDiagnosisDate($diagnosis->getDate())
                         ->withDiagnosisStage($diagnosis->getStage());
         }
 
@@ -53,8 +52,12 @@ class MemberDtoAssembler
     private static function getPhoneNumbersArray($phoneNumbers)
     {
         $phoneNumbersArray = array();
+        /** @var PhoneNumber $phoneNumber */
         foreach ($phoneNumbers as $phoneNumber) {
-            $phoneNumbersArray[$phoneNumber->getType()] = array('number'=>$phoneNumber->getNumber(), 'type'=>$phoneNumber->getType());
+            $phoneNumbersArray[$phoneNumber->getType()] = array(
+                'number'    => $phoneNumber->getNumber(),
+                'type'      => $phoneNumber->getType()
+            );
         }
         return $phoneNumbersArray;
     }
@@ -62,6 +65,7 @@ class MemberDtoAssembler
     private static function getAreaNamesArray($areas)
     {
         $areaArray = array();
+        /** @var Area $area */
         foreach ($areas as $area) {
             $areaArray[$area->getId()] = $area->getName();
         }
@@ -71,6 +75,7 @@ class MemberDtoAssembler
     private static function getRegionNamesForAreas($areas)
     {
         $regionArray = array();
+        /** @var Area $area */
         foreach ($areas as $area) {
             if ($region = $area->getRegion()) {
                 if (!in_array($region->getName(), $regionArray)) {

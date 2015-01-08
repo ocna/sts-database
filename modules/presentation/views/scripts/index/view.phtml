@@ -1,26 +1,36 @@
+<?php
+use STS\Core\Presentation\PresentationDto;
+use STS\Core\Api\DefaultPresentationFacade;
 
+/** @var $presentation PresentationDto */
+$presentation = $this->presentation;
+?>
 <h3>Details</h3>
 <dl class="dl-horizontal">
-  <dt>Presentation Type:</dt>
-  <dd><?php echo $this->presentation->getType() ? $this->presentation->getType() : '-'; ?></dd>
+    <dt>Presentation Type:</dt>
+    <dd><?php echo $presentation->getType() ? $presentation->getType() : '-'; ?></dd>
 
-  <dt>School:</dt>
-  <dd>
+    <dt>Location:</dt>
+    <dd>
     <?php
-    if($this->presentation->getSchoolId()){
-      echo '<a href="/admin/school/view?id='. $this->presentation->getSchoolId() .'">'. $this->presentation->getSchoolName(). '</a>';
-    } else{
-      echo '-';
-    }
+    if ($presentation->getLocationClass() == DefaultPresentationFacade::locationTypeSchool):
+    ?>
+        <a href="/admin/school/view?id=<?= $presentation->getLocationId() ?>">
+           <?= $presentation->getLocationName() ?></a>
+    <?php
+    else:
+    ?>
+        <?php echo $presentation->getLocationName(); ?>
+    <?php
+    endif;
     ?>
     </dd>
-
-  <dt>Notes:</dt>
-  <dd><?php echo $this->presentation->getNotes() ? $this->presentation->getNotes() : '-'; ?></dd>
-  <dt>Members Attending:</dt>
-  <?php if($this->presentation->getMembersArray()!=array() ):?>
+    <dt>Notes:</dt>
+    <dd><?php echo $presentation->getNotes() ? $presentation->getNotes() : '-'; ?></dd>
+    <dt>Members Attending:</dt>
+    <?php if ($presentation->getMembersArray()!=array() ): ?>
     <dd>
-    <?php foreach($this->presentation->getMembersArray() as $id =>$member):
+    <?php foreach($presentation->getMembersArray() as $id =>$member):
 
         switch ($member['status']) {
             case 'Deceased':
@@ -50,21 +60,21 @@
 <h3>Quick Stats</h3>
 <div class="row">
   <div class="span7">
-    <h4><i class="icon-group"></i> Participants: <?php echo $this->presentation->getNumberOfParticipants() ? $this->presentation->getNumberOfParticipants() : '-'; ?></h4>
+    <h4><i class="icon-group"></i> Participants: <?php echo $presentation->getNumberOfParticipants() ? $presentation->getNumberOfParticipants() : '-'; ?></h4>
   </div>
 
 <div class="span7">
-  <h4><i class="icon-signin"></i> Pre Forms Returned: <?php echo $this->presentation->getNumberOfFormsReturnedPre() ? $this->presentation->getNumberOfFormsReturnedPre() : '-'; ?></h4>
+  <h4><i class="icon-signin"></i> Pre Forms Returned: <?php echo $presentation->getNumberOfFormsReturnedPre() ? $presentation->getNumberOfFormsReturnedPre() : '-'; ?></h4>
   <div class="progress">
-    <?php echo (! $this->presentation->getNumberOfFormsReturnedPre()) ? '&nbsp;&nbsp;Data Unavailable!' : ''; ?>
-    <div class="bar" style="width: <?php echo $this->presentation->getPreFormsPercentage() ; ?>%;"></div>
+    <?php echo (! $presentation->getNumberOfFormsReturnedPre()) ? '&nbsp;&nbsp;Data Unavailable!' : ''; ?>
+    <div class="bar" style="width: <?php echo $presentation->getPreFormsPercentage() ; ?>%;"></div>
   </div>
 </div>
 
 <div class="span7">
-  <h4><i class="icon-signout"></i> Post Forms Returned: <?php echo $this->presentation->getNumberOfFormsReturnedPost() ? $this->presentation->getNumberOfFormsReturnedPost() : '-'; ?></h4>
+  <h4><i class="icon-signout"></i> Post Forms Returned: <?php echo $presentation->getNumberOfFormsReturnedPost() ? $presentation->getNumberOfFormsReturnedPost() : '-'; ?></h4>
   <div class="progress">
-    <div class="bar" style="width: <?php echo $this->presentation->getPostFormsPercentage() ; ?>%;"></div>
+    <div class="bar" style="width: <?php echo $presentation->getPostFormsPercentage() ; ?>%;"></div>
   </div>
 </div>
 </div>
@@ -105,7 +115,7 @@
             $prompt = $questionNumber . ". " . $question->getPrompt();
             echo "<p><strong>$prompt</strong></p>";
             echo "<table class=\"table table-hover table-bordered\">";
-            
+
             if ($question->getType() == 'MultipleChoice' ||$question->getType() == 'TrueFalse') {
               echo "<thead><tr>";
                 $whenAsked = $question->whenAsked();
@@ -167,13 +177,13 @@
           }
             $questionNumber++;
             echo"</tbody></table>";
-          } 
+          }
 ?>
 <?php endif; ?>
 
 <div class="well">
 <div class="btn-toolbar">
-  <a class="btn btn-primary" href="/presentation/index/edit?id=<?php echo $this->presentation->getId() ?>"><i class="icon-edit"></i> Edit</a>
+  <a class="btn btn-primary" href="/presentation/index/edit?id=<?php echo $presentation->getId() ?>"><i class="icon-edit"></i> Edit</a>
   <a class="btn" href="/presentation">Go Back</a>
 </div></div>
 

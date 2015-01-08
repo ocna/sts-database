@@ -5,12 +5,17 @@ use STS\Core\Location\AreaDto;
 use STS\Core\Location\RegionDto;
 use STS\Domain\Location\Area;
 use STS\Core\Location\MongoAreaRepository;
+use STS\Domain\Location\AreaRepository;
 
 class DefaultLocationFacade implements LocationFacade
 {
     private $mongoDb;
     protected $areaRepository;
 
+    /**
+     * @param \MongoDB $mongoDb
+     * @param AreaRepository $areaRepository
+     */
     public function __construct($mongoDb, $areaRepository)
     {
         $this->mongoDb = $mongoDb;
@@ -43,6 +48,7 @@ class DefaultLocationFacade implements LocationFacade
     {
         $areas = $this->getAreasForRegions($regions);
         $states = array();
+        /** @var AreaDTO $area */
         foreach ($areas as $area) {
             $states[$area->getState()] = $area->getState();
         }
@@ -78,14 +84,20 @@ class DefaultLocationFacade implements LocationFacade
 
         $returnData = array();
         foreach ($areas as $area) {
-            if (!array_key_exists('legacyid', $area)){
+            if (!array_key_exists('legacyid', $area)) {
                 $lid = null;
             } else {
                 $lid = $area['legacyid'];
             }
 
-            $returnData[] = new AreaDto($area['_id']->__toString(), $area['name'], $lid, $area['city'],
-                            $area['state'], $area['region']['name']);
+            $returnData[] = new AreaDto(
+                $area['_id']->__toString(),
+                $area['name'],
+                $lid,
+                $area['city'],
+                $area['state'],
+                $area['region']['name']
+            );
         }
         return $returnData;
     }
@@ -100,7 +112,6 @@ class DefaultLocationFacade implements LocationFacade
             ));
         $returnData = array();
         foreach ($areas as $area) {
-
             if (!isset($area['legacyid'])) {
                 $area['legacyid'] = null;
             }
@@ -125,7 +136,7 @@ class DefaultLocationFacade implements LocationFacade
         $returnData = array();
 
         foreach ($areas as $area) {
-            if(!array_key_exists('legacyid', $area)){
+            if (!array_key_exists('legacyid', $area)) {
                 $lid = null;
             } else {
                 $lid = $area['legacyid'];
@@ -173,16 +184,8 @@ class DefaultLocationFacade implements LocationFacade
         }
     }
 
-    public static function getDefaultInstance($config)
+    public static function getDefaultInstance($mongoDb)
     {
-        // get the mongo instance
-        $mongoConfig = $config->modules->default->db->mongodb;
-        $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
-        $mongo = new \Mongo(
-                        'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/'
-                                        . $mongoConfig->dbname);
-        $mongoDb = $mongo->selectDB($mongoConfig->dbname);
-
         $areaRepository = new MongoAreaRepository($mongoDb);
         return new DefaultLocationFacade($mongoDb, $areaRepository);
     }
@@ -247,7 +250,6 @@ class DefaultLocationFacade implements LocationFacade
     public function renameRegion($old_name, $new_name)
     {
         if ($areas = $this->mongoDb->area->find(array('region.name' => $old_name))) {
-
             // prepare a regionDTO and keep legacyId
             $old_dto = $this->getRegion($old_name);
             $new_dto = new RegionDto($old_dto->getLegacyId(), $new_name);
@@ -259,7 +261,8 @@ class DefaultLocationFacade implements LocationFacade
                     $area['name'],
                     $area['city'],
                     $area['state'],
-                    $new_dto);
+                    $new_dto
+                );
             }
 
             return $new_dto;

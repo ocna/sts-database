@@ -38,7 +38,7 @@ class Admin_AreaController extends SecureBaseController
                         'success',
                         array('module' => 'admin', 'controller' => 'region', 'action' => 'index'));
                 } catch (ApiException $e) {
-                    $this->setFlashMessageAndUpdateLayout('An error occured while saving this information: ' . $e->getMessage(), 'error');
+                    $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage(), 'error');
                 }
             } else {
                 $this->setFlashMessageAndUpdateLayout('It looks like you missed some information, please make the corrections below.', 'error');
@@ -92,7 +92,7 @@ class Admin_AreaController extends SecureBaseController
                         )
                     );
                 } catch (ApiException $e) {
-                    $this->setFlashMessageAndUpdateLayout('An error occured while saving this information: ' . $e->getMessage(), 'error');
+                    $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage(), 'error');
                 }
             } else {
                 $this->setFlashMessageAndUpdateLayout('It looks like you missed some information, please make the corrections below.', 'error');
@@ -142,11 +142,11 @@ class Admin_AreaController extends SecureBaseController
                         'action' => 'index'
                     ));
                 } else {
-                    throw new ApiException("An error occured while deleting area.", 1);
+                    throw new ApiException("An error occurred while deleting area.", 1);
                 }
             }
         } catch (ApiException $e) {
-            $this->setFlashMessageAndRedirect('An error occured while deleting area: ' . $e->getMessage() , 'error', array(
+            $this->setFlashMessageAndRedirect('An error occurred while deleting area: ' . $e->getMessage() , 'error', array(
                         'module' => 'admin',
                         'controller' => 'member',
                         'action' => 'index'));
@@ -187,7 +187,7 @@ class Admin_AreaController extends SecureBaseController
         $area = $this->locationFacade->saveArea($data['name'], $data['city'], $data['state'], $region);
         return $area;
     }
-    
+
     protected function updateArea($id, $data)
     {
         if (!empty($data['region'])) {

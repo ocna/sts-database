@@ -1,6 +1,8 @@
 <?php
 namespace STS\Web\Controller;
+
 use STS\Web\Security\AuthAware;
+use Zend_Auth;
 
 abstract class AbstractBaseController extends \Zend_Controller_Action implements AuthAware
 {
@@ -16,13 +18,17 @@ abstract class AbstractBaseController extends \Zend_Controller_Action implements
         $this->flashMessenger = $this->_helper->getHelper('FlashMessenger');
         parent::init();
         $container = null;
-//         $this->view->navigation()->getContainer()->findOneByLabel('Home');
         $this->setAuth(\Zend_Auth::getInstance());
-        $this->view->layout()->menu = $this->view
-            ->partial('partials/main-menu.phtml', array(
-                    'nav' => $this->view->navigation($container)->menu()->setPartial('partials/menu.phtml'),
-                    'authenticated' => $this->getAuth()->hasIdentity(), 'userName' => $this->getFormatedName()
-            ));
+        $this->view->layout()->menu = $this->view->partial(
+            'partials/main-menu.phtml',
+            array(
+                'nav'           => $this->view->navigation($container)
+                    ->menu()
+                    ->setPartial('partials/menu.phtml'),
+                'authenticated' => $this->getAuth()->hasIdentity(),
+                'userName'      => $this->getFormatedName()
+            )
+        );
     }
 
     /**
@@ -48,7 +54,7 @@ abstract class AbstractBaseController extends \Zend_Controller_Action implements
     {
         if ($this->getAuth()->hasIdentity()) {
             return ucfirst($this->getAuth()->getIdentity()->getFirstName()) . ' '
-                            . ucfirst($this->getAuth()->getIdentity()->getLastName());
+               . ucfirst($this->getAuth()->getIdentity()->getLastName());
         }
     }
 
@@ -82,9 +88,12 @@ abstract class AbstractBaseController extends \Zend_Controller_Action implements
                 throw new \InvalidArgumentException('Unknown message type.');
         }
         $decoratedFlashMessage = $this->view
-            ->partial($this->flashMessengerPartialLayout, array(
-                'flashMessage' => $message, 'flashClass' => $flashClass, 'flashTitle' => $title
-            ));
+            ->partial(
+                $this->flashMessengerPartialLayout,
+                array(
+                    'flashMessage' => $message, 'flashClass' => $flashClass, 'flashTitle' => $title
+                )
+            );
         $this->_helper->flashMessenger->addMessage($decoratedFlashMessage);
         return $decoratedFlashMessage;
     }
@@ -98,7 +107,7 @@ abstract class AbstractBaseController extends \Zend_Controller_Action implements
      */
     protected function setFlashMessageAndRedirect($message, $messageType, $redirectToLocation)
     {
-        $decoratedMessage = $this->buildAndSetFlashMessage($message, $messageType);
+        $this->buildAndSetFlashMessage($message, $messageType);
         if (is_string($redirectToLocation)) {
             return $this->_redirector->gotoUrl($redirectToLocation);
         } elseif (is_array($redirectToLocation) and isset($redirectToLocation['action'])) {
@@ -142,14 +151,13 @@ abstract class AbstractBaseController extends \Zend_Controller_Action implements
         $this->_helper->viewRenderer->setNoRender();
 
         $this->getResponse()
-            ->setHeader('Content-Description','File Transfer', true)
-            ->setHeader('Content-Type','text/csv', true)
-            ->setHeader('Content-Disposition','attachment; filename=' . $file_name,
-                true)
-            ->setHeader('Content-Transfer-Encoding','binary', true)
-            ->setHeader('Expires','0', true)
-            ->setHeader('Cache-Control','must-revalidate, post-check=0, pre-check=0', true)
-            ->setHeader('Pragma','public', true);
+            ->setHeader('Content-Description', 'File Transfer', true)
+            ->setHeader('Content-Type', 'text/csv', true)
+            ->setHeader('Content-Disposition', 'attachment; filename=' . $file_name, true)
+            ->setHeader('Content-Transfer-Encoding', 'binary', true)
+            ->setHeader('Expires', '0', true)
+            ->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0', true)
+            ->setHeader('Pragma', 'public', true);
 
         $output = fopen('php://output', 'w');
         ob_start();

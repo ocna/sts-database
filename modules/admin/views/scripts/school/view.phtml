@@ -1,4 +1,8 @@
-<dl class="dl-horizontal">
+<dl class="dl-horizontal<?= $this->school->isInactive() ? ' muted': '' ?>">
+    <?php if ($this->school->isInactive()): ?>
+    <dt>Inactive</dt>
+    <dd>This school is inactive.</dd>
+    <?php endif; ?>
   <dt>Program Type:</dt>
   <dd><?php echo $this->school->getType() ? $this->school->getType() : '-'; ?></dd>
   <dt>Region:</dt>
@@ -11,9 +15,7 @@
   </dd>
   <dt>Address:</dt>
   <dd><address>
-  <?php echo $this->school->getAddressLineOne() ? $this->school->getAddressLineOne() : '-' ?><br>
-    <?php echo $this->school->getAddressLineTwo() ? $this->school->getAddressLineTwo().'<br>' : '' ?>
-  <?php echo $this->school->getAddressCity() ? $this->school->getAddressCity().',':''?> <?php echo $this->school->getAddressState() ?> <?php echo $this->school->getAddressZip() ?><br>
+  <?php echo $this->school->getAddress() ? nl2br($this->school->getAddress()): '-' ?>
 </address></dd>
 </dl>
 <br>

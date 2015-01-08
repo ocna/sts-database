@@ -1,9 +1,10 @@
 <?php
 namespace STS\Domain;
 
-use STS\Domain\EntityWithTypes;
 use STS\Domain\Member\Diagnosis;
 use STS\Domain\Member\PhoneNumber;
+use STS\Domain\Location\Address;
+use STS\Domain\Location\Area;
 
 class Member extends EntityWithTypes
 {
@@ -29,11 +30,20 @@ class Member extends EntityWithTypes
     private $coordinatesFor = array();
     private $activities = array();
     private $notes;
-    private $deceased = false;
+    /**
+     * @var Address
+     */
     private $address;
     private $associatedUserId = null;
     private $status;
+    /**
+     * @var bool
+     */
+    private $isVolunteer = false;
     private $dateTrained = null;
+    /**
+     * @var Diagnosis
+     */
     private $diagnosis = null;
     private $phoneNumbers = array();
     private $canBeDeleted = true;
@@ -121,6 +131,7 @@ class Member extends EntityWithTypes
     {
         // prepare facilities array for storing
         $facilitatesFor = array();
+        /** @var Area $area */
         foreach ($this->facilitatesFor as $area) {
             $facilitatesFor[] = array("_id" => new \MongoId($area->getId()));
         }
@@ -139,6 +150,7 @@ class Member extends EntityWithTypes
 
         // prepare phoneNumbers array for storing
         $phoneNumbers = array();
+        /** @var PhoneNumber $phoneNumber */
         foreach ($this->phoneNumbers as $phoneNumber) {
             $phoneNumbers[] = array("number"=> $phoneNumber->getNumber(), "type"=>$phoneNumber->getType());
         }
@@ -148,23 +160,18 @@ class Member extends EntityWithTypes
 
         // build the array that will get saved in mongodb
         $array = array(
-            'id'       => $this->id,
-            'fname'    => utf8_encode($this->firstName),
-            'lname'    => utf8_encode($this->lastName),
-            'type'     => $this->type,
-            'notes'    => utf8_encode($this->notes),
-            'legacyid' => $this->legacyId,
-            'status'   => $this->status,
-            'activities' => $activities,
-            'fullname' => utf8_encode($this->getFullName()),
-            'user_id'  => $this->associatedUserId,
-            'address'  => array(
-                'line_one' => utf8_encode($this->address->getLineOne()),
-                'line_two' => utf8_encode($this->address->getLineTwo()),
-                'city' => utf8_encode($this->address->getCity()),
-                'state' => $this->address->getState(),
-                'zip' => $this->address->getZip()
-            ),
+            'id'            => $this->id,
+            'fname'         => utf8_encode($this->firstName),
+            'lname'         => utf8_encode($this->lastName),
+            'type'          => $this->type,
+            'is_volunteer'  => $this->isVolunteer,
+            'notes'         => utf8_encode($this->notes),
+            'legacyid'      => $this->legacyId,
+            'status'        => $this->status,
+            'activities'    => $activities,
+            'fullname'      => utf8_encode($this->getFullName()),
+            'user_id'       => $this->associatedUserId,
+            'address'       => utf8_encode($this->address->getAddress()),
             'facilitates_for' => $facilitatesFor,
             'presents_for'    => $presentsFor,
             'coordinates_for' => $coordinatesFor,
@@ -200,6 +207,11 @@ class Member extends EntityWithTypes
         return $statuses;
     }
 
+    /**
+     * @param string $key
+     *
+     * @return mixed
+     */
     public static function getAvailableStatus($key)
     {
         if (substr($key, 0, 7) != 'STATUS_') {
@@ -222,11 +234,33 @@ class Member extends EntityWithTypes
     }
 
     /**
+     * @return bool
+     */
+    public function isVolunteer()
+    {
+        return $this->isVolunteer;
+    }
+
+    /**
+     * @param bool $is_volunteer
+     *
+     * @return $this
+     */
+    public function setVolunteer($is_volunteer)
+    {
+        if ($is_volunteer) {
+            $this->isVolunteer = true;
+        }
+        return $this;
+    }
+
+    /**
      * getActivities
      *
      * @return array
      */
-    public function getActivities() {
+    public function getActivities()
+    {
         return $this->activities;
     }
 
@@ -264,7 +298,8 @@ class Member extends EntityWithTypes
      * @return $this
      * @throws \InvalidArgumentException
      */
-    public function setActivity($activity) {
+    public function setActivity($activity)
+    {
         if ($activity !== null && !in_array($activity, static::getAvailableActivities(), true)) {
             throw new \InvalidArgumentException('No such activity with given value:' . $activity);
         }
@@ -289,6 +324,11 @@ class Member extends EntityWithTypes
         return $this->address;
     }
 
+    /**
+     * @param Address $address
+     *
+     * @return $this
+     */
     public function setAddress($address)
     {
         $this->address = $address;
@@ -362,6 +402,11 @@ class Member extends EntityWithTypes
         return $this->presentsFor;
     }
 
+    /**
+     * @param Area $area
+     *
+     * @return $this
+     */
     public function canFacilitateForArea($area)
     {
         $this->facilitatesFor[] = $area;
@@ -386,10 +431,8 @@ class Member extends EntityWithTypes
 
     public function getAllAssociatedAreas()
     {
-        $areas = array();
-        $this->addUniqueElements($areas, $this->presentsFor);
-        $this->addUniqueElements($areas, $this->facilitatesFor);
-        $this->addUniqueElements($areas, $this->coordinatesFor);
+        $areas = array_merge($this->facilitatesFor, $this->presentsFor, $this->coordinatesFor);
+        $areas = array_unique($areas, SORT_REGULAR);
         return $areas;
     }
 
@@ -397,6 +440,7 @@ class Member extends EntityWithTypes
     {
         $regions = array();
         $areas = $this->getAllAssociatedAreas();
+        /** @var Area $area */
         foreach ($areas as $area) {
             $region = $area->getRegion()->getName();
             if (!in_array($region, $regions)) {
@@ -422,15 +466,6 @@ class Member extends EntityWithTypes
     {
         $this->canBeDeleted = $canIt;
         return $this;
-    }
-
-    private function addUniqueElements(&$array, $elements)
-    {
-        foreach ($elements as $element) {
-            if (!in_array($element, $array)) {
-                $array[] = $element;
-            }
-        }
     }
 
     public function getFullName()

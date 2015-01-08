@@ -12,7 +12,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $view->setBasePath(APPLICATION_PATH . "/../design/");
         return $view;
     }
-    
+
     protected function _initConfig()
     {
         $config = new Zend_Config($this->getOptions(), true);
@@ -36,14 +36,18 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         foreach ($directoryContents as $potentialDirectory) {
             $moduleNamespace = $filter->filter($potentialDirectory);
             $registerNamespace = false;
-            if (is_dir($modulePath . DIRECTORY_SEPARATOR . $potentialDirectory . DIRECTORY_SEPARATOR . "models"
-                            . DIRECTORY_SEPARATOR . $moduleNamespace)) {
+            if (is_dir(
+                $modulePath . DIRECTORY_SEPARATOR . $potentialDirectory . DIRECTORY_SEPARATOR
+                . "models" . DIRECTORY_SEPARATOR . $moduleNamespace
+            )) {
                 $registerNamespace = true;
                 $moduleIncludePath[] = $modulePath . DIRECTORY_SEPARATOR . $potentialDirectory . DIRECTORY_SEPARATOR
                                 . "models";
             }
-            if (is_dir($modulePath . DIRECTORY_SEPARATOR . $potentialDirectory . DIRECTORY_SEPARATOR . "forms"
-                            . DIRECTORY_SEPARATOR . $moduleNamespace)) {
+            if (is_dir(
+                $modulePath . DIRECTORY_SEPARATOR . $potentialDirectory . DIRECTORY_SEPARATOR . "forms"
+                . DIRECTORY_SEPARATOR . $moduleNamespace
+            )) {
                 $registerNamespace = true;
                 $moduleIncludePath[] = $modulePath . DIRECTORY_SEPARATOR . $potentialDirectory . DIRECTORY_SEPARATOR
                                 . "forms";

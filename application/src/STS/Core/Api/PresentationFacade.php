@@ -10,12 +10,10 @@ namespace STS\Core\Api;
 
 interface PresentationFacade
 {
-
     /**
-     *
-     *
      * @param string $enteredByUserId
-     * @param string $schoolId
+     * @param $locationId
+     * @param $locationClass
      * @param string $typeCode
      * @param string $date
      * @param string $notes
@@ -23,10 +21,50 @@ interface PresentationFacade
      * @param int $participants
      * @param int $forms
      * @param string $surveyId
+     * @param $preForms
+     * @return
+     * @internal param string $schoolId
      */
-    public function savePresentation($enteredByUserId, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $forms, $surveyId, $preForms);
+    public function savePresentation(
+        $enteredByUserId,
+        $locationId,
+        $locationClass,
+        $typeCode,
+        $date,
+        $notes,
+        $memberIds,
+        $participants,
+        $forms,
+        $surveyId,
+        $preForms
+    );
 
-    public function updatePresentation($id, $schoolId, $typeCode, $date, $notes, $memberIds, $participants, $postForms, $preForms);
+    /**
+     * @param $id
+     * @param $locationId
+     * @param $locationClass
+     * @param $typeCode
+     * @param $date
+     * @param $notes
+     * @param $memberIds
+     * @param $participants
+     * @param $postForms
+     * @param $preForms
+     * @return mixed
+     * @internal param $schoolId
+     */
+    public function updatePresentation(
+        $id,
+        $locationId,
+        $locationClass,
+        $typeCode,
+        $date,
+        $notes,
+        $memberIds,
+        $participants,
+        $postForms,
+        $preForms
+    );
 
     /**
      * getPresentationsForUserId
@@ -50,9 +88,8 @@ interface PresentationFacade
     public function getPresentationsSummary($criteria = array());
 
     /**
-     * updateEnteredBy
-     *
-     * Changes the entered_by_user_id field from an old user id to a new one. Mainly used when a username is changed.
+     * Changes the entered_by_user_id field from an old user id to a new one.
+     * Mainly used when a username is changed.
      *
      * @param $old
      * @param $new

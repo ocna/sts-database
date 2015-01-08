@@ -20,19 +20,19 @@ class SchoolTest extends SchoolTestCase
         $this
             ->assertEquals(
                 array(
-                'TYPE_SCHOOL' => 'School',
-                'TYPE_HOSPITAL' => 'Hospital',
-                'TYPE_NP' => 'NP',
-                'TYPE_PA' => 'PA',
-                'TYPE_NURSING'=>'Nursing',
-                'TYPE_MEDICAL'=>'Medical'
-            ), School::getAvailableTypes());
+                    'TYPE_NP'       => 'NP',
+                    'TYPE_PA'       => 'PA',
+                    'TYPE_NURSING'  =>'Nursing',
+                    'TYPE_MEDICAL'  =>'Medical',
+                    'TYPE_OTHER'    => 'Other'
+                ),
+                School::getAvailableTypes());
     }
 
     /**
      * @test
      */
-    public function confirmSanitiezedName()
+    public function confirmSanitizedName()
     {
         $school = $this->getValidSchool();
 
@@ -41,7 +41,4 @@ class SchoolTest extends SchoolTestCase
 
         $this->assertEquals($good, $school->getName($school->setName($bad)));
     }
-
-
-
 }

@@ -31,10 +31,13 @@ class DefaultMemberFacade implements MemberFacade
      */
     private $userRepository;
 
-    public function __construct(MongoMemberRepository $memberRepository,
-                                MongoAreaRepository $areaRepository,
-                                MongoUserRepository $userRepository)
-    {
+
+
+    public function __construct(
+        MongoMemberRepository $memberRepository,
+        MongoAreaRepository $areaRepository,
+        MongoUserRepository $userRepository
+    ) {
         $this->memberRepository = $memberRepository;
         $this->areaRepository = $areaRepository;
         $this->userRepository = $userRepository;
@@ -90,6 +93,7 @@ class DefaultMemberFacade implements MemberFacade
                         'status' => array('$in'=>$in),
                 );
         }
+
         $members = $this->memberRepository->find($query);
 
         // filter by region
@@ -107,7 +111,36 @@ class DefaultMemberFacade implements MemberFacade
             $members = $this->filterMembersByArea($criteria['area_any'], $members);
         }
 
+        // filter by presents in area
+        if (array_key_exists('presents_for', $criteria) && ! empty($criteria['presents_for'])) {
+            $members = $this->filterMembersByPresentsIn($criteria['presents_for'], $members);
+        }
+
+        // filter by volunteer status
+        if (array_key_exists('is_volunteer', $criteria)) {
+            $members = $this->filterMembersByVolunteerStatus($criteria['is_volunteer'], $members);
+        }
+
         return $this->getArrayOfDtos($members);
+    }
+
+    /**
+     * @param bool $is_volunteer
+     * @param $members
+     *
+     * @return array
+     */
+    private function filterMembersByVolunteerStatus($is_volunteer, $members)
+    {
+        $filtered_members = array();
+        /** @var Member $member */
+        foreach ($members as $member) {
+            if ($member->isVolunteer() == $is_volunteer) {
+                $filtered_members[] = $member;
+            }
+        }
+
+        return $filtered_members;
     }
 
     private function filterMembersByRegions($regions, $members)
@@ -160,23 +193,62 @@ class DefaultMemberFacade implements MemberFacade
         return $filteredMembers;
     }
 
+    /**
+     * filterMembersByArea
+     *
+     * Matches as long as they present in an area
+     *
+     * @param $areas
+     * @param $members
+     * @return array
+     */
+    private function filterMembersByPresentsIn($areas, $members)
+    {
+        if (!empty($areas)) {
+            $filteredMembers = array();
+            if (!is_array($areas)) {
+                $areas = (array) $areas;
+            }
+
+            foreach ($members as $member) {
+                /** @var Member $member */
+                $assoc_areas = $member->getPresentsForAreas();
+                foreach ($assoc_areas as $test) {
+                    /** @var \STS\Domain\Location\Area $test */
+                    if (in_array($test->getId(), $areas)) {
+                        $filteredMembers[] = $member;
+                    }
+                }
+            }
+        } else {
+            $filteredMembers = $members;
+        }
+        return $filteredMembers;
+    }
+
     private function filterMembersByLinkedUserRoles($roles, $members)
     {
         // to implement get role for linked user, filter as needed
         $filteredMembers = array();
-        foreach ($members as $member){
+        foreach ($members as $member) {
             /** @var Member $member */
             if (in_array('ROLE_MEMBER', $roles) && is_null($member->getAssociatedUserId())) {
                 $filteredMembers[] = $member;
             }
 
-            if (! is_null($member->getAssociatedUserId()) && (in_array('ROLE_ADMIN', $roles)||in_array('ROLE_COORDINATOR', $roles)||in_array('ROLE_FACILITATOR', $roles))) {
+            if (! is_null($member->getAssociatedUserId())
+                && (in_array('ROLE_ADMIN', $roles)
+                || in_array('ROLE_COORDINATOR', $roles)
+                || in_array('ROLE_FACILITATOR', $roles))
+            ) {
                 try {
                     $user = $this->userRepository->load($member->getAssociatedUserId());
                 } catch (\InvalidArgumentException $e) {
                     continue;
                 }
-                if (in_array('ROLE_ADMIN', $roles) && $user->getAvailableRole('ROLE_ADMIN') == $user->getRole()) {
+                if (in_array('ROLE_ADMIN', $roles)
+                    && $user->getAvailableRole('ROLE_ADMIN') == $user->getRole()
+                ) {
                     $filteredMembers[] = $member;
                 }
                 if (in_array('ROLE_COORDINATOR', $roles) && $user->isRole('ROLE_COORDINATOR')) {
@@ -210,7 +282,8 @@ class DefaultMemberFacade implements MemberFacade
         return Member::getAvailableStatuses();
     }
 
-    public function getMemberActivities() {
+    public function getMemberActivities()
+    {
         return Member::getAvailableActivities();
     }
 
@@ -263,30 +336,100 @@ class DefaultMemberFacade implements MemberFacade
         return new MemberSchoolSpecification($member);
     }
 
-    public function saveMember($firstName, $lastName, $type, $status, $activities, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers)
-    {
+    public function saveMember(
+        $firstName,
+        $lastName,
+        $type,
+        $status,
+        $is_volunteer,
+        $activities,
+        $notes,
+        $presentsFor,
+        $facilitatesFor,
+        $coordinatesFor,
+        $userId,
+        $address,
+        $email,
+        $dateTrained,
+        $diagnosisInfo,
+        $phoneNumbers
+    ) {
         $member = new Member();
-        $this->setMemberProperties($member, $firstName, $lastName, $type, $status, $activities, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers);
+        $this->setMemberProperties(
+            $member,
+            $firstName,
+            $lastName,
+            $type,
+            $status,
+            $is_volunteer,
+            $activities,
+            $notes,
+            $presentsFor,
+            $facilitatesFor,
+            $coordinatesFor,
+            $userId,
+            $address,
+            $email,
+            $dateTrained,
+            $diagnosisInfo,
+            $phoneNumbers
+        );
         $updatedMember = $this->memberRepository->save($member);
         return MemberDtoAssembler::toDTO($updatedMember);
     }
 
-    public function updateMember($id, $firstName, $lastName, $type, $status, $activities, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers)
-    {
+    public function updateMember(
+        $id,
+        $firstName,
+        $lastName,
+        $type,
+        $status,
+        $is_volunteer,
+        $activities,
+        $notes,
+        $presentsFor,
+        $facilitatesFor,
+        $coordinatesFor,
+        $userId,
+        $address,
+        $email,
+        $dateTrained,
+        $diagnosisInfo,
+        $phoneNumbers
+    ) {
         $member = $this->memberRepository->load($id);
-        $this->setMemberProperties($member, $firstName, $lastName, $type, $status, $activities, $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId, $addressLineOne, $addressLineTwo, $city, $state, $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers);
+        $this->setMemberProperties(
+            $member,
+            $firstName,
+            $lastName,
+            $type,
+            $status,
+            $is_volunteer,
+            $activities,
+            $notes,
+            $presentsFor,
+            $facilitatesFor,
+            $coordinatesFor,
+            $userId,
+            $address,
+            $email,
+            $dateTrained,
+            $diagnosisInfo,
+            $phoneNumbers
+        );
         $updatedMember = $this->memberRepository->save($member);
         return MemberDtoAssembler::toDTO($updatedMember);
     }
 
-    public function deleteMember($id){
+    public function deleteMember($id)
+    {
         try {
             $member = $this->memberRepository->load($id);
-            if(! $member->canBeDeleted()){
+            if (! $member->canBeDeleted()) {
                 throw new ApiException('Unable to delete member.');
             }
             return $this->memberRepository->delete($id);
-        } catch(\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException $e) {
             throw new ApiException('Error deleting member.', $e->getCode(), $e);
         }
     }
@@ -294,16 +437,12 @@ class DefaultMemberFacade implements MemberFacade
     /**
      * getDefaultInstance
      *
-     * @acess public
-     * @param $config
+     * @access public
+     * @param $mongoDb
      * @return DefaultMemberFacade
      */
-    public static function getDefaultInstance($config)
+    public static function getDefaultInstance($mongoDb)
     {
-        $mongoConfig = $config->modules->default->db->mongodb;
-        $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
-        $mongo = new \Mongo('mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/' . $mongoConfig->dbname);
-        $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $memberRepository = new MongoMemberRepository($mongoDb);
         $areaRepository = new MongoAreaRepository($mongoDb);
         $userRepository = new MongoUserRepository($mongoDb);
@@ -324,7 +463,7 @@ class DefaultMemberFacade implements MemberFacade
     private function getAreasForIds($ids)
     {
         $areas = array();
-        foreach ($ids as $id){
+        foreach ($ids as $id) {
             $areas[] = $this->areaRepository->load($id);
         }
         return $areas;
@@ -338,28 +477,38 @@ class DefaultMemberFacade implements MemberFacade
      * @param $lastName
      * @param $type
      * @param $status
+     * @param $is_volunteer
      * @param $activities
      * @param $notes
      * @param $presentsFor
      * @param $facilitatesFor
      * @param $coordinatesFor
      * @param $userId
-     * @param $addressLineOne
-     * @param $addressLineTwo
-     * @param $city
-     * @param $state
-     * @param $zip
+     * @param $address
      * @param $email
      * @param $dateTrained
      * @param $diagnosisInfo
      * @param $phoneNumbers
      */
-    private function setMemberProperties(Member &$member, $firstName, $lastName, $type, $status,
-                                         $activities,
-                                          $notes, $presentsFor, $facilitatesFor, $coordinatesFor, $userId,
-                                          $addressLineOne, $addressLineTwo, $city, $state, $zip, $email,
-                                          $dateTrained, $diagnosisInfo, $phoneNumbers)
-    {
+    private function setMemberProperties(
+        Member &$member,
+        $firstName,
+        $lastName,
+        $type,
+        $status,
+        $is_volunteer,
+        $activities,
+        $notes,
+        $presentsFor,
+        $facilitatesFor,
+        $coordinatesFor,
+        $userId,
+        $address,
+        $email,
+        $dateTrained,
+        $diagnosisInfo,
+        $phoneNumbers
+    ) {
         /// prepeare diagnosis
         if (!in_array($diagnosisInfo['stage'], Diagnosis::getAvailableStages())) {
             $stage = null;
@@ -370,17 +519,14 @@ class DefaultMemberFacade implements MemberFacade
 
         // prepare address model
         $address = new Address();
-        $address->setLineOne($addressLineOne)
-                ->setLineTwo($addressLineTwo)
-                ->setCity($city)
-                ->setState($state)
-                ->setZip($zip);
+        $address->setAddress($address);
 
         // hydrate member fields
         $member->setFirstName($firstName)
                 ->setLastName($lastName)
                 ->setType($type)
                 ->setStatus($status)
+                ->setVolunteer($is_volunteer)
                 ->setNotes($notes)
                 ->setAddress($address)
                 ->setAssociatedUserId($userId)
@@ -418,7 +564,7 @@ class DefaultMemberFacade implements MemberFacade
         // set member phone number after fixing format
         foreach ($phoneNumbers as $type => $number) {
             $number = preg_replace('/[-]/', '', $number);
-            if(preg_match('/\d{10}/', $number)){
+            if (preg_match('/\d{10}/', $number)) {
                 $member->addPhoneNumber(new PhoneNumber($number, $type));
             }
         }

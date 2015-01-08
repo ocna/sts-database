@@ -37,6 +37,59 @@ class MemberTest extends MemberTestCase
             Member::getAvailableStatuses()
         );
     }
+
+	/**
+	 * @test
+	 * @expectedException \InvalidArgumentException
+	 * @expectedExceptionMessage Type key must begin with "STATUS_".
+	 */
+	public function validGetAvailableStatusInvalidFormatException()
+	{
+		Member::getAvailableStatus('DECEASED');
+	}
+
+	/**
+	 * @test
+	 * @expectedException \InvalidArgumentException
+	 * @expectedExceptionMessage No such status with given key.
+	 */
+	public function validGetAvailableStatusInvalidKeyException()
+	{
+		Member::getAvailableStatus('STATUS_BOGUS');
+	}
+
+	/**
+	 * @test
+	 */
+	public function validGetAvailableStatus()
+	{
+		$this->assertEquals(self::STATUS, Member::getAvailableStatus('STATUS_DECEASED'));
+	}
+
+	/**
+	 * @test
+	 * @expectedException \InvalidArgumentException
+	 * @expectedExceptionMessage No such status with given value.
+	 */
+	public function validSetStatusException()
+	{
+		$member = $this->getValidMember();
+		$member->setStatus('');
+	}
+
+	/**
+	 * @test
+	 */
+	public function validSetStatus()
+	{
+		$member = $this->getValidMember();
+		$member->setStatus(Member::STATUS_ACTIVE);
+		$this->assertFalse($member->isDeceased());
+		$this->assertEquals(Member::STATUS_ACTIVE, $member->getStatus());
+		$member->hasPassedAway();
+		$this->assertEquals(self::STATUS, $member->getStatus());
+	}
+
     /**
      * @test
      */
@@ -147,5 +200,5 @@ class MemberTest extends MemberTestCase
         $member->setAssociatedUserId(self::ASSOCIATED_USER_ID);
         $this->assertFalse($member->canBeDeleted(), 'returns true after associating a user');
     }
-    
+
 }

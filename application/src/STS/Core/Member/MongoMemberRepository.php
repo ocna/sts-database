@@ -1,7 +1,6 @@
 <?php
 namespace STS\Core\Member;
-use STS\Domain\Location\Area;
-use STS\Domain\Location\Region;
+
 use STS\Domain\Location\Address;
 use STS\Domain\Member;
 use STS\Domain\Member\MemberRepository;
@@ -12,8 +11,14 @@ use STS\Domain\Member\PhoneNumber;
 
 class MongoMemberRepository implements MemberRepository
 {
+    /**
+     * @var \MongoDb
+     */
     private $mongoDb;
 
+    /**
+     * @param \MongoDb $mongoDb
+     */
     public function __construct($mongoDb)
     {
         $this->mongoDb = $mongoDb;
@@ -21,9 +26,9 @@ class MongoMemberRepository implements MemberRepository
 
     public function find($query = array())
     {
-        $memberData = $this->mongoDb->selectCollection('member')->find($query)->sort(array(
-                'lname' => 1
-            ));
+        $memberData = $this->mongoDb->selectCollection('member')->find($query)->sort(
+            array('lname' => 1)
+        );
         return $this->mapMultiple($memberData);
     }
 
@@ -39,22 +44,23 @@ class MongoMemberRepository implements MemberRepository
             throw new \InvalidArgumentException('Instance of Member expected.');
         }
 
-        if(is_null($member->getId())){
+        if (is_null($member->getId())) {
             $member->markCreated();
-        }else{
+        } else {
             $member->markUpdated();
         }
         $array = $member->toMongoArray();
 
         $id = array_shift($array);
-        $results = $this->mongoDb->selectCollection('member')
-            ->update(array(
-                '_id' => new \MongoId($id)
-            ), $array, array(
-                'upsert' => 1, 'safe' => 1
-            ));
+        $results = $this->mongoDb->selectCollection('member')->update(
+            array('_id' => new \MongoId($id)),
+            $array,
+            array('upsert' => 1, 'safe' => 1)
+        );
         if (array_key_exists('upserted', $results)) {
-            $member->setId($results['upserted']->__toString());
+            /** @var \MongoId $id */
+            $id = $results['upserted'];
+            $member->setId($id->__toString());
         }
         return $member;
     }
@@ -74,7 +80,7 @@ class MongoMemberRepository implements MemberRepository
      * load
      *
      * Retrieve a record by id
-     * 
+     *
      * @param $id
      * @return Member
      * @throws \InvalidArgumentException
@@ -98,9 +104,11 @@ class MongoMemberRepository implements MemberRepository
         $results = $this->mongoDb->selectCollection('member')->remove(array(
                 '_id' => $mongoId
             ), array('justOne'=>true, 'safe'=>true));
-        if($results['ok']==1){
-        return true;
+
+        if ($results['ok']==1) {
+            return true;
         }
+
         return false;
     }
 
@@ -122,7 +130,9 @@ class MongoMemberRepository implements MemberRepository
     private function mapData($memberData)
     {
         $member = new Member();
-        $member->setId($memberData['_id']->__toString())
+        /** @var \MongoId $id */
+        $id = $memberData['_id'];
+        $member->setId($id->__toString())
                ->setLegacyId($memberData['legacyid'])
                ->setFirstName($memberData['fname'])
                ->setLastName($memberData['lname']);
@@ -156,12 +166,22 @@ class MongoMemberRepository implements MemberRepository
             $member->setStatus(Member::STATUS_ACTIVE);
         }
 
+        if (array_key_exists('is_volunteer', $memberData)) {
+            $member->setVolunteer($memberData['is_volunteer']);
+        }
+
         if (array_key_exists('address', $memberData)) {
             $address = new Address();
-            $address->setLineOne($memberData['address']['line_one'])->setLineTwo($memberData['address']['line_two'])
-                ->setCity($memberData['address']['city'])->setState($memberData['address']['state'])
-                ->setZip($memberData['address']['zip']);
-            $member->setAddress($address);
+            // Handle legacy US-specific addresses
+            if (is_array($memberData['address'])) {
+                $address->setLineOne($memberData['address']['line_one'])
+                        ->setLineTwo($memberData['address']['line_two'])
+                        ->setCity($memberData['address']['city'])
+                        ->setState($memberData['address']['state'])
+                        ->setZip($memberData['address']['zip']);
+                $memberData['address'] = $address->getAddress();
+            }
+            $member->setAddress($address->setAddress($memberData['address']));
         }
 
         if (array_key_exists('presents_for', $memberData)) {
@@ -200,7 +220,8 @@ class MongoMemberRepository implements MemberRepository
 
         if (array_key_exists('diagnosis', $memberData)) {
             $diagnosis = $memberData['diagnosis'];
-            $diagnosisDate = array_key_exists('date', $diagnosis) && ! is_null($diagnosis['date']) ? date('Y-M-d h:i:s', $diagnosis['date']->sec) : null;
+            $diagnosisDate = array_key_exists('date', $diagnosis) && ! is_null($diagnosis['date'])
+                ? date('Y-M-d h:i:s', $diagnosis['date']->sec) : null;
             $diagnosisStage = array_key_exists('stage', $diagnosis) ? $diagnosis['stage'] : null;
             $member->setDiagnosis(
                 new Diagnosis($diagnosisDate, $diagnosisStage)
@@ -236,8 +257,11 @@ class MongoMemberRepository implements MemberRepository
      * @param $id
      * @return bool
      */
-    private function canMemberBeDeleted($id) {
-        $count = $this->mongoDb->selectCollection('presentation')->find(array('members'=>$id))->count();
+    private function canMemberBeDeleted($id)
+    {
+        $count = $this->mongoDb->selectCollection('presentation')
+            ->find(array('members'=>$id))
+            ->count();
         if ($count != 0) {
             return false;
         } else {

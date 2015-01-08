@@ -19,17 +19,27 @@ class SchoolDtoAssemblerTest extends SchoolTestCase
         $region = new Region();
         $region->setName(RegionTestCase::NAME)->setLegacyId(RegionTestCase::LEGACY_ID);
         $area = new Area();
-        $area->setName(AreaTestCase::NAME)->setLegacyId(AreaTestCase::LEGACY_ID)->setId(AreaTestCase::ID)
-            ->setState(AreaTestCase::STATE)->setCity(AreaTestCase::CITY)->setRegion($region);
+        $area->setName(AreaTestCase::NAME)
+            ->setLegacyId(AreaTestCase::LEGACY_ID)
+            ->setId(AreaTestCase::ID)
+            ->setState(AreaTestCase::STATE)
+            ->setCity(AreaTestCase::CITY)
+            ->setRegion($region);
         $address = new Address();
-        $address->setLineOne(AddressTestCase::LINE_ONE)->setLineTwo(AddressTestCase::LINE_TWO)
-            ->setZip(AddressTestCase::ZIP)->setState(AddressTestCase::STATE)->setCity(AddressTestCase::CITY);
+        $address->setAddress(AddressTestCase::ADDRESS);
         $school = new School();
-        $school->setId(SchoolTestCase::ID)->setLegacyId(SchoolTestCase::LEGACY_ID)->setName(SchoolTestCase::NAME)
-            ->setType(SchoolTestCase::TYPE)->setNotes(SchoolTestCase::NOTES)->setArea($area)->setAddress($address);
+        $school->setId(SchoolTestCase::ID)
+            ->setLegacyId(SchoolTestCase::LEGACY_ID)
+            ->setName(SchoolTestCase::NAME)
+            ->setType(SchoolTestCase::TYPE)
+            ->setIsInactive(SchoolTestCase::INACTIVE)
+            ->setNotes(SchoolTestCase::NOTES)
+            ->setArea($area)
+            ->setAddress($address);
         $schoolDTO = SchoolDtoAssembler::toDTO($school);
         $this->assertValidSchoolDto($schoolDTO);
     }
+
     /**
      * @test
      * @expectedException \InvalidArgumentException
@@ -38,6 +48,6 @@ class SchoolDtoAssemblerTest extends SchoolTestCase
      */
     public function throwExceptionIfSchoolDomainObjectIsNotPassed()
     {
-        $schoolDTO = SchoolDtoAssembler::toDTO(null);
+        SchoolDtoAssembler::toDTO(null);
     }
 }

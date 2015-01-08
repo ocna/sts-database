@@ -3,7 +3,6 @@ namespace STS\Core\Location;
 
 class RegionDto
 {
-
     private $legacyId;
     private $name;
     public function __construct($legacyId, $name)

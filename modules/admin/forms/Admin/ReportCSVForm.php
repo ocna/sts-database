@@ -2,7 +2,7 @@
 class Admin_ReportCSVForm extends Twitter_Bootstrap_Form_Vertical
 {
     protected $variables = array(
-        'schoolName' => 'School Name',
+        'locationName' => 'School Name',
         'schoolType' => 'School Type',
         'schoolAddress' => 'School Address',
         'schoolNotes' => 'School Notes',

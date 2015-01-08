@@ -1,5 +1,6 @@
 <?php
 namespace STS\Core\Api;
+
 interface SchoolFacade
 {
     /**
@@ -10,9 +11,24 @@ interface SchoolFacade
 
     public function getSchoolTypes();
 
-    public function saveSchool($name, $areaId, $schoolType, $notes, $addressLineOne, $addressLineTwo, $city, $state, $zip);
+    public function saveSchool(
+        $name,
+        $areaId,
+        $schoolType,
+        $isInactive,
+        $notes,
+        $address
+    );
 
-    public function updateSchool($id, $name, $areaId, $schoolType, $notes, $addressLineOne, $addressLineTwo, $city, $state, $zip);
+    public function updateSchool(
+        $id,
+        $name,
+        $areaId,
+        $schoolType,
+        $isInactive,
+        $notes,
+        $address
+    );
 
     public function getSchoolById($id);
 }

@@ -17,6 +17,7 @@ class AclFactory
     const RESOURCE_SEARCH = 'search';
     const RESOURCE_REPORT = 'report';
     const RESOURCE_REGION = 'region';
+    const RESOURCE_PROFESSIONAL_GROUP = 'professional_group';
 
     public static function buildAcl()
     {
@@ -34,7 +35,7 @@ class AclFactory
         $acl->addResource(self::RESOURCE_MEMBER, self::RESOURCE_ADMIN);
         $acl->addResource(self::RESOURCE_USER, self::RESOURCE_ADMIN);
         $acl->addResource(self::RESOURCE_SCHOOL, self::RESOURCE_ADMIN);
-//        $acl->addResource(self::RESOURCE_REPORT, self::RESOURCE_ADMIN);
+        $acl->addResource(self::RESOURCE_PROFESSIONAL_GROUP, self::RESOURCE_ADMIN);
         $acl->addResource(self::RESOURCE_REPORT);
         $acl->addResource(self::RESOURCE_REGION, self::RESOURCE_ADMIN);
 

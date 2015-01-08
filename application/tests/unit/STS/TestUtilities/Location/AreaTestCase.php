@@ -23,6 +23,10 @@ class AreaTestCase extends \PHPUnit_Framework_TestCase
         $areaTestCase = new AreaTestCase();
         return $areaTestCase->getValidArea();
     }
+
+	/**
+	 * @param Area $area
+	 */
     protected function assertValidArea($area)
     {
         $this->assertInstanceOf('STS\Domain\Location\Area', $area);

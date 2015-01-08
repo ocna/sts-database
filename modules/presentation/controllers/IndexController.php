@@ -1,23 +1,46 @@
 <?php
 use STS\Web\Security\AclFactory;
 use STS\Core\Api\ApiException;
-use STS\Domain\School\Specification\MemberSchoolSpecification;
 use STS\Domain\Presentation;
 use STS\Core;
 use STS\Web\Controller\SecureBaseController;
+use STS\Core\Api\ProfessionalGroupFacade;
+use STS\Core\Api\MemberFacade;
+use STS\Core\Api\SchoolFacade;
+use STS\Core\Api\SurveyFacade;
+use STS\Domain\School;
+use STS\Domain\ProfessionalGroup;
+use STS\Domain\User;
+use STS\Core\Api\DefaultPresentationFacade;
 
 class Presentation_IndexController extends SecureBaseController
 {
 
+	/**
+	 * @var User
+	 */
     private $user;
 
     /**
      * @var \STS\Core\Api\DefaultPresentationFacade
      */
     private $presentationFacade;
+	/**
+	 * @var SurveyFacade
+	 */
     private $surveyFacade;
+	/**
+	 * @var MemberFacade
+	 */
     private $memberFacade;
+	/**
+	 * @var SchoolFacade
+	 */
     private $schoolFacade;
+	/**
+	 * @var ProfessionalGroupFacade
+	 */
+	private $professionalGroupFacade;
 
     /**
      * @var \STS\Core\Api\AuthFacade
@@ -33,6 +56,7 @@ class Presentation_IndexController extends SecureBaseController
         $this->surveyFacade = $core->load('SurveyFacade');
         $this->memberFacade = $core->load('MemberFacade');
         $this->schoolFacade = $core->load('SchoolFacade');
+	    $this->professionalGroupFacade = $core->load('ProfessionalGroupFacade');
         $this->authFacade = $core->load('AuthFacade');
 
     }
@@ -63,7 +87,7 @@ class Presentation_IndexController extends SecureBaseController
         $dto = $this->presentationFacade->getPresentationById($id);
         $this->view->layout()->pageHeader = $this->view
             ->partial('partials/page-header.phtml', array(
-                'title' => $dto->getSchoolName(). ' - '. $dto->getDate()
+                'title' => $dto->getLocationName(). ' - '. $dto->getDate()
             ));
         $this->view->presentation = $dto;
         try {
@@ -102,7 +126,7 @@ class Presentation_IndexController extends SecureBaseController
                         ));
                 } catch (ApiException $e) {
                     $this
-                        ->setFlashMessageAndUpdateLayout('An error occured while saving this information: '
+                        ->setFlashMessageAndUpdateLayout('An error occurred while saving this information: '
                                         . $e->getMessage(), 'error');
                 }
             } else {
@@ -120,7 +144,7 @@ class Presentation_IndexController extends SecureBaseController
         $surveyId = $dto->getSurveyId();
         $this->view->layout()->pageHeader = $this->view
             ->partial('partials/page-header.phtml', array(
-                'title' => 'Edit: '.$dto->getSchoolName(). ' - '. $dto->getDate()
+                'title' => 'Edit: '.$dto->getLocationName(). ' - '. $dto->getDate()
             ));
         try {
             $survey = $this->surveyFacade->getSurveyById($surveyId);
@@ -132,7 +156,7 @@ class Presentation_IndexController extends SecureBaseController
         //populate form from existing values
         $form->populate(
             array(
-                'location' => $dto->getSchoolId(),
+                'location' => $dto->getLocationId() . '__' . $dto->getLocationClass(),
                 'presentationType' => $this->presentationFacade->getTypeKey($dto->getType()),
                 'dateOfPresentation' => $dto->getDate(),
                 'notes' => $dto->getNotes(),
@@ -170,7 +194,7 @@ class Presentation_IndexController extends SecureBaseController
                         ));
                 } catch (ApiException $e) {
                     $this
-                        ->setFlashMessageAndUpdateLayout('An error occured while saving this information: '
+                        ->setFlashMessageAndUpdateLayout('An error occurred while saving this information: '
                                         . $e->getMessage(), 'error');
                 }
             } else {
@@ -206,23 +230,37 @@ class Presentation_IndexController extends SecureBaseController
 
     private function getForm($surveyOrTemplate)
     {
-        $schools = $this->getSchoolsVisableToMember();
+        $schools = $this->getSchoolsVisibleToMember();
         $schoolsArray = array();
-        foreach ($schools as $school) {
-            $schoolsArray[$school->getId()] = $school->getName();
+	    /** @var School $school */
+	    foreach ($schools as $school) {
+            $schoolsArray[$school->getId() . '__' . DefaultPresentationFacade::locationTypeSchool] =
+                $school->getName();
         }
+
+        $professional_group_array = array();
+	    $professional_groups = $this->professionalGroupFacade->getAllProfessionalGroups();
+	    /** @var ProfessionalGroup $professional_group */
+	    foreach ($professional_groups as $professional_group) {
+		    $professional_group_array[$professional_group->getId() . '__' . get_class($professional_group)] =
+			    $professional_group->getName();
+	    }
+
+        $locations = array_merge($schoolsArray, $professional_group_array);
+        asort($locations);
 
         $typesArray = array_merge(array(''), $this->presentationFacade->getPresentationTypes());
 
         $form = new \Presentation_Presentation(
-                        array(
-                                'schools' => $schoolsArray, 'presentationTypes' => $typesArray,
-                                'surveyTemplate' => $surveyOrTemplate
-                        ));
+            array(
+                'locations'             => $locations,
+                'presentationTypes'     => $typesArray,
+                'surveyTemplate'        => $surveyOrTemplate
+            ));
         return $form;
     }
 
-    private function getSchoolsVisableToMember()
+    private function getSchoolsVisibleToMember()
     {
         $schoolSpec = null;
         if ($this->user->getAssociatedMemberId() && $this->user->getRole() != 'admin') {
@@ -230,7 +268,7 @@ class Presentation_IndexController extends SecureBaseController
         }
         return $this->schoolFacade->getSchoolsForSpecification($schoolSpec);
     }
-    
+
     private function savePresentation($postData)
     {
         //Get User
@@ -246,17 +284,12 @@ class Presentation_IndexController extends SecureBaseController
         $surveyId = $this->surveyFacade->saveSurvey($userId, $templateId, $surveyData);
         //Then Save Presentation
         $members = array_keys($postData['membersAttended']);
+        list($location_id, $location_class) = explode('__', $postData['location']);
         $this->presentationFacade->savePresentation(
-                $userId,
-                $postData['location'],
-                $postData['presentationType'],
-                $postData['dateOfPresentation'],
-                $postData['notes'],
-                $members,
-                $postData['participants'],
-                $postData['formsReturnedPost'],
-                $surveyId,
-                $postData['formsReturnedPre']
+            $userId, $location_id, $location_class,
+            $postData['presentationType'], $postData['dateOfPresentation'], $postData['notes'],
+            $members, $postData['participants'], $postData['formsReturnedPost'], $surveyId,
+            $postData['formsReturnedPre']
             );
         return true;
     }
@@ -273,18 +306,14 @@ class Presentation_IndexController extends SecureBaseController
                 $surveyData[$key] = $value;
             }
         }
-        $surveyId = $this->surveyFacade->updateSurvey($userId, $templateId, $surveyData, $surveyId);
+        $this->surveyFacade->updateSurvey($userId, $templateId, $surveyData, $surveyId);
         //Then Save Presentation
         $members = array_keys($postData['membersAttended']);
+        list($location_id, $location_class) = explode('__', $postData['location']);
         $this->presentationFacade->updatePresentation(
-            $presentationId,
-            $postData['location'],
-            $postData['presentationType'],
-            $postData['dateOfPresentation'],
-            $postData['notes'],
-            $members,
-            $postData['participants'],
-            $postData['formsReturnedPost'],
+            $presentationId, $location_id, $location_class,
+            $postData['presentationType'], $postData['dateOfPresentation'], $postData['notes'],
+            $members, $postData['participants'], $postData['formsReturnedPost'],
             $postData['formsReturnedPre']
             );
         return true;

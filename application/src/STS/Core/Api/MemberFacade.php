@@ -1,5 +1,6 @@
 <?php
 namespace STS\Core\Api;
+
 interface MemberFacade
 {
     /**
@@ -25,27 +26,38 @@ interface MemberFacade
      * @param $lastName
      * @param $type
      * @param $status
+     * @param $is_volunteer
      * @param $activities
      * @param $notes
      * @param $presentsFor
      * @param $facilitatesFor
      * @param $coordinatesFor
      * @param $userId
-     * @param $addressLineOne
-     * @param $addressLineTwo
-     * @param $city
-     * @param $state
-     * @param $zip
+     * @param $address
      * @param $email
      * @param $dateTrained
      * @param $diagnosisInfo
      * @param $phoneNumbers
      * @return mixed
      */
-    public function saveMember($firstName, $lastName, $type, $status, $activities, $notes,
-        $presentsFor, $facilitatesFor, $coordinatesFor, $userId, 
-        $addressLineOne, $addressLineTwo, $city, $state,
-                    $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers);
+    public function saveMember(
+        $firstName,
+        $lastName,
+        $type,
+        $status,
+        $is_volunteer,
+        $activities,
+        $notes,
+        $presentsFor,
+        $facilitatesFor,
+        $coordinatesFor,
+        $userId,
+        $address,
+        $email,
+        $dateTrained,
+        $diagnosisInfo,
+        $phoneNumbers
+    );
 
     /**
      * @param $id
@@ -53,27 +65,39 @@ interface MemberFacade
      * @param $lastName
      * @param $type
      * @param $status
+     * @param $is_volunteer
      * @param $activities
      * @param $notes
      * @param $presentsFor
      * @param $facilitatesFor
      * @param $coordinatesFor
      * @param $userId
-     * @param $addressLineOne
-     * @param $addressLineTwo
-     * @param $city
-     * @param $state
-     * @param $zip
+     * @param $address
      * @param $email
      * @param $dateTrained
      * @param $diagnosisInfo
      * @param $phoneNumbers
      * @return \Sts\Core\Member\MemberDto
      */
-    public function updateMember($id, $firstName, $lastName, $type, $status, $activities, $notes,
-        $presentsFor, $facilitatesFor, $coordinatesFor, $userId, 
-        $addressLineOne, $addressLineTwo, $city, $state,
-                    $zip, $email, $dateTrained, $diagnosisInfo, $phoneNumbers);
+    public function updateMember(
+        $id,
+        $firstName,
+        $lastName,
+        $type,
+        $status,
+        $is_volunteer,
+        $activities,
+        $notes,
+        $presentsFor,
+        $facilitatesFor,
+        $coordinatesFor,
+        $userId,
+        $address,
+        $email,
+        $dateTrained,
+        $diagnosisInfo,
+        $phoneNumbers
+    );
 
     /**
      * deleteMember

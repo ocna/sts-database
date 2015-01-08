@@ -12,17 +12,17 @@ class MemberDto
     private $type;
     private $activities;
     private $notes;
-    private $addressLineOne;
-    private $addressLineTwo;
-    private $addressCity;
-    private $addressState;
-    private $addressZip;
+    private $address;
     private $associatedUserId;
     private $presentsForAreas;
     private $facilitatesForAreas;
     private $coordinatesForAreas;
     private $coordinatesForRegions;
     private $status;
+    /**
+     * @var bool
+     */
+    private $isVolunteer;
     private $email;
     private $dateTrained;
     private $diagnosisDate;
@@ -38,12 +38,9 @@ class MemberDto
         $type,
         $notes,
         $status,
+        $is_volunteer,
         $activities,
-        $addressLineOne,
-        $addressLineTwo,
-        $addressCity,
-        $addressState,
-        $addressZip,
+        $address,
         $associatedUserId,
         $presentsForAreas,
         $facilitatesForAreas,
@@ -64,12 +61,9 @@ class MemberDto
         $this->type = $type;
         $this->notes = $notes;
         $this->status = $status;
+        $this->isVolunteer = $is_volunteer;
         $this->activities = $activities;
-        $this->addressLineOne = $addressLineOne;
-        $this->addressLineTwo = $addressLineTwo;
-        $this->addressCity = $addressCity;
-        $this->addressState = $addressState;
-        $this->addressZip = $addressZip;
+        $this->address = $address;
         $this->associatedUserId = $associatedUserId;
         $this->presentsForAreas = $presentsForAreas;
         $this->facilitatesForAreas = $facilitatesForAreas;
@@ -161,29 +155,9 @@ class MemberDto
         return $this->type;
     }
 
-    public function getAddressLineOne()
+    public function getAddress()
     {
-        return $this->addressLineOne;
-    }
-
-    public function getAddressLineTwo()
-    {
-        return $this->addressLineTwo;
-    }
-
-    public function getAddressCity()
-    {
-        return $this->addressCity;
-    }
-
-    public function getAddressState()
-    {
-        return $this->addressState;
-    }
-
-    public function getAddressZip()
-    {
-        return $this->addressZip;
+        return $this->address;
     }
 
     public function isDeceased()
@@ -194,6 +168,14 @@ class MemberDto
     public function getStatus()
     {
         return $this->status;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isVolunteer()
+    {
+        return $this->isVolunteer;
     }
 
     public function canBeDeleted()

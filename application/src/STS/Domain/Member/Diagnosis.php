@@ -27,7 +27,8 @@ class Diagnosis
         return $this->date;
     }
 
-    public function getMongoDate(){
+    public function getMongoDate()
+    {
         return $this->date ? new \MongoDate(strtotime($this->date)) : null;
     }
 
@@ -49,6 +50,7 @@ class Diagnosis
             'IV'=>'IV'
         );
     }
+
     public static function getAvailableStage($key)
     {
         if (!array_key_exists($key, static::getAvailableStages())) {
@@ -56,8 +58,8 @@ class Diagnosis
         }
         $stages = static::getAvailableStages();
         return $stages[$key];
-        return $reflected->getConstant($key);
     }
+
     public function setStage($stage)
     {
         if ($stage !== null && !in_array($stage, static::getAvailableStages(), true)) {
@@ -66,6 +68,7 @@ class Diagnosis
         $this->stage = $stage;
         return $this;
     }
+
     public function getStage()
     {
         return $this->stage;

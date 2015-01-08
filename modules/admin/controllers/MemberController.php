@@ -7,11 +7,14 @@ use STS\Domain\Member;
 use STS\Domain\User;
 use STS\Core\Member\MemberDto;
 use STS\Core\User\UserDTO;
+use STS\Domain\Location\Area;
+use STS\Domain\Location\Region;
+use STS\Core\Api\DefaultPresentationFacade;
 
 /**
  * Class Admin_MemberController
  *
- * @property STS\Core\Api\MemberFacade $memberFacade
+ * @property STS\Core\Api\DefaultMemberFacade $memberFacade
  * @property STS\Core\Api\UserFacade $userFacade
  * @property STS\Core\Api\LocationFacade $locationFacade
  * @property STS\Core\Api\AuthFacade $authFacade
@@ -37,6 +40,11 @@ class Admin_MemberController extends SecureBaseController
     protected $authFacade;
 
     /**
+     * @var DefaultPresentationFacade
+     */
+    protected $presentationFacade;
+
+    /**
      * @var STS\Core\Api\MailerFacade
      */
     protected $mailerFacade;
@@ -49,21 +57,22 @@ class Admin_MemberController extends SecureBaseController
     public function init()
     {
         parent::init();
-        $core = Core::getDefaultInstance();
-        $this->memberFacade = $core->load('MemberFacade');
-        $this->userFacade = $core->load('UserFacade');
-        $this->locationFacade = $core->load('LocationFacade');
-        $this->authFacade = $core->load('AuthFacade');
-        $this->mailerFacade = $core->load('MailerFacade');
-        $this->session = new \Zend_Session_Namespace('admin');
+        $core                     = Core::getDefaultInstance();
+        $this->memberFacade       = $core->load('MemberFacade');
+        $this->userFacade         = $core->load('UserFacade');
+        $this->locationFacade     = $core->load('LocationFacade');
+        $this->authFacade         = $core->load('AuthFacade');
+        $this->presentationFacade = $core->load('PresentationFacade');
+        $this->mailerFacade       = $core->load('MailerFacade');
+        $this->session            = new \Zend_Session_Namespace('admin');
     }
 
     public function indexAction()
     {
         // setup filters
-        $criteria = array();
+        $criteria  = array();
         $form_opts = array();
-        $params = $this->getRequest()->getParams();
+        $params    = $this->getRequest()->getParams();
 
         $this->session->criteria = $criteria;
 
@@ -73,10 +82,10 @@ class Admin_MemberController extends SecureBaseController
         $page['title'] = 'Members';
         if (User::ROLE_COORDINATOR == $user->getRole()) {
             // limit filter options to regions they coordinate for
-            $member = $this->memberFacade->getMemberById($user->getAssociatedMemberId());
-            $regions = $member->getCoordinatesForRegions();
+            $member               = $this->memberFacade->getMemberById($user->getAssociatedMemberId());
+            $regions              = $member->getCoordinatesForRegions();
             $form_opts['regions'] = array_merge(array('0' => ''), $regions);
-            if (!empty($params['region'])) {
+            if (! empty($params['region'])) {
                 // ensure they only request items from their regions in filter
                 $params['region'] = array_intersect($params['region'], array_values($regions));
             } else {
@@ -86,12 +95,13 @@ class Admin_MemberController extends SecureBaseController
                 $this->session->criteria = $criteria;
             }
         } else {
-            $page['add'] = 'Add New Member';
+            $page['add']      = 'Add New Member';
             $page['addRoute'] = '/admin/member/new';
         }
 
         // set page header
-        $this->view->layout()->pageHeader = $this->view->partial('partials/page-header.phtml', $page);
+        $this->view->layout()->pageHeader = $this->view->partial('partials/page-header.phtml',
+            $page);
 
         // get our form
         $form = $this->getFilterForm($form_opts);
@@ -104,28 +114,35 @@ class Admin_MemberController extends SecureBaseController
             $this->filterParams('role', $params, $criteria);
             $this->filterParams('status', $params, $criteria);
             $this->filterParams('region', $params, $criteria);
+            $this->filterParams('presents_for', $params, $criteria);
+            $this->filterParams('is_volunteer', $params, $criteria);
             $this->session->criteria = $criteria;
         }
 
         // load all the members to display
         // TODO add pagination?
-        $members = $this->memberFacade->getMembersMatching($criteria);
+        $members    = $this->memberFacade->getMembersMatching($criteria);
         $memberDtos = $this->getMembersArray($members);
-        if(empty($memberDtos) && array_key_exists('update', $params)){
-            $this->setFlashMessageAndRedirect('No members matched your selected filter criteria!','warning', array(
-                        'module' => 'admin',
-                        'controller' => 'member',
-                        'action' => 'index'
-                    ));
+        if (empty($memberDtos) && array_key_exists('update', $params)) {
+            $this->setFlashMessageAndRedirect('No members matched your selected filter criteria!',
+            'warning', array(
+                'module'     => 'admin',
+                'controller' => 'member',
+                'action'     => 'index'
+            ));
         }
 
         // pass permissions to view
-        $this->view->can_view = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'view');
-        $this->view->can_edit = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'edit');
-        $this->view->can_delete = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'delete');
-        $this->view->can_view_training = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'trainingReport');
-        $this->view->members = $memberDtos;
-        $this->view->form = $form;
+        $this->view->can_view          = $this->getAcl()->isAllowed($user->getRole(),
+            AclFactory::RESOURCE_MEMBER, 'view');
+        $this->view->can_edit          = $this->getAcl()->isAllowed($user->getRole(),
+            AclFactory::RESOURCE_MEMBER, 'edit');
+        $this->view->can_delete        = $this->getAcl()->isAllowed($user->getRole(),
+            AclFactory::RESOURCE_MEMBER, 'delete');
+        $this->view->can_view_training = $this->getAcl()->isAllowed($user->getRole(),
+            AclFactory::RESOURCE_MEMBER, 'trainingReport');
+        $this->view->members           = $memberDtos;
+        $this->view->form              = $form;
     }
 
     /**
@@ -133,8 +150,8 @@ class Admin_MemberController extends SecureBaseController
      */
     public function excelAction()
     {
-        $criteria = $this->session->criteria;
-        $members = $this->memberFacade->getMembersMatching($criteria);
+        $criteria     = $this->session->criteria;
+        $members      = $this->memberFacade->getMembersMatching($criteria);
         $member_array = $this->getMembersArray($members);
 
         $headers = array(
@@ -142,9 +159,10 @@ class Admin_MemberController extends SecureBaseController
             'Last Name',
             'Email',
             'Deceased?',
-            'City',
-            'State',
+            'Areas',
+            'Address',
             'Status',
+            'Volunteer?',
             'Notes',
             'Can Be Deleted?',
             'Date Trained',
@@ -160,6 +178,9 @@ class Admin_MemberController extends SecureBaseController
             if (1 == $member['deceased']) {
                 $member['deceased'] = 'Yes';
             }
+            if (1 == $member['is_volunteer']) {
+                $member['is_volunteer'] = 'Yes';
+            }
             $date = '';
             if ($member['dateTrained']) {
                 $date = $member['dateTrained']->format("m/d/Y");
@@ -167,6 +188,10 @@ class Admin_MemberController extends SecureBaseController
             $member['dateTrained'] = $date;
             unset($member['roleClass']);
             unset($member['hasNotes']);
+
+            if (is_array($member['area'])) {
+                $member['area'] = implode(', ', $member['area']);
+            }
 
             $csv[] = $member;
         }
@@ -189,14 +214,15 @@ class Admin_MemberController extends SecureBaseController
         // TODO add pagination?
         $criteria = array();
 
-        $members = $this->memberFacade->getMembersMatching($criteria);
+        $members    = $this->memberFacade->getMembersMatching($criteria);
         $memberDtos = $this->getMembersArray($members);
-        if(empty($memberDtos) && array_key_exists('update', $params)){
-            $this->setFlashMessageAndRedirect('No members matched your selected filter criteria!','warning', array(
-                        'module' => 'admin',
-                        'controller' => 'member',
-                        'action' => 'index'
-                    ));
+        if (empty($memberDtos) && array_key_exists('update', $params)) {
+            $this->setFlashMessageAndRedirect('No members matched your selected filter criteria!',
+            'warning', array(
+                'module'     => 'admin',
+                'controller' => 'member',
+                'action'     => 'index'
+            ));
         }
         $this->view->members = $memberDtos;
     }
@@ -209,18 +235,19 @@ class Admin_MemberController extends SecureBaseController
         // load all the members to display
         $criteria = array();
 
-        $members = $this->memberFacade->getMembersMatching($criteria);
+        $members    = $this->memberFacade->getMembersMatching($criteria);
         $memberDtos = $this->getMembersArray($members);
-        if(empty($memberDtos) && array_key_exists('update', $params)){
-            $this->setFlashMessageAndRedirect('No members matched your selected filter criteria!','warning', array(
-                        'module' => 'admin',
-                        'controller' => 'member',
-                        'action' => 'index'
-                    ));
+        if (empty($memberDtos) && array_key_exists('update', $params)) {
+            $this->setFlashMessageAndRedirect('No members matched your selected filter criteria!',
+            'warning', array(
+                'module'     => 'admin',
+                'controller' => 'member',
+                'action'     => 'index'
+            ));
         }
 
         $headers = array('role', 'status', 'name', 'email', 'date trained');
-        $csv = array();
+        $csv     = array();
         foreach ($memberDtos as $member) {
             $csv[] = array(
                 $member['role'],
@@ -243,7 +270,7 @@ class Admin_MemberController extends SecureBaseController
     {
         if (array_key_exists($key, $params)) {
             $chaff = array_search('0', $params[$key]);
-            if($chaff !== false){
+            if ($chaff !== false) {
                 unset($params[$key][$chaff]);
             }
             $criteria[$key] = $params[$key];
@@ -261,28 +288,46 @@ class Admin_MemberController extends SecureBaseController
     private function getFilterForm($form_opts)
     {
         // override regions
+        $regions = $this->getRegionsArray();
         if (isset($form_opts['regions'])) {
             $regions = $form_opts['regions'];
-        } else {
-            $regions = $this->getRegionsArray();
+        }
+
+        $areas = $this->getAreasArray();
+        if (isset($form_opts['presents_for'])) {
+            $areas = $form_opts['presents_for'];
         }
 
         $form = new \Admin_MemberFilter(
             array(
-                'roles' => array_merge(array(
-                    0 => '', 'ROLE_MEMBER' => 'Member'),
+                'roles'          => array_merge(array(
+                        0             => '',
+                        'ROLE_MEMBER' => 'Member'
+                    ),
                     AclFactory::getAvailableRoles()
                 ),
-                'regions' => $regions,
-                'memberStatuses' => array_merge(array(''), $this->getMemberStatusesArray())
+                'regions'           => $regions,
+                'presentsFor'       => $areas,
+                'memberStatuses'    => array_merge(array(''), $this->getMemberStatusesArray())
             )
         );
         return $form;
     }
 
+    private function getAreasArray()
+    {
+        $areas_array = array('' => 'Presents in: (none)');
+        /** @var Area $area */
+        foreach ($this->locationFacade->getAllAreas() as $area) {
+            $areas_array[$area->getId()] = $area->getName();
+        }
+        return $areas_array;
+    }
+
     private function getRegionsArray()
     {
-        $regionsArray = array('');
+        $regionsArray = array('' => 'Regions: (none)');
+        /** @var Region $region */
         foreach ($this->locationFacade->getAllRegions() as $region) {
             $regionsArray[$region->getName()] = $region->getName();
         }
@@ -292,32 +337,35 @@ class Admin_MemberController extends SecureBaseController
     public function deleteAction()
     {
         $id = $this->getRequest()->getParam('id');
-        try{
+        try {
             $results = $this->memberFacade->deleteMember($id);
             if ($results === true) {
-                $this->setFlashMessageAndRedirect('The member has been removed from the system!', 'success', array(
-                        'module' => 'admin',
-                        'controller' => 'member',
-                        'action' => 'index'
-                    ));
+                $this->setFlashMessageAndRedirect('The member has been removed from the system!',
+                'success', array(
+                    'module'     => 'admin',
+                    'controller' => 'member',
+                    'action'     => 'index'
+                ));
             } else {
-                throw new ApiException("An error occured while deleting member.", 1);
+                throw new ApiException("An error occurred while deleting member.", 1);
             }
         } catch (ApiException $e) {
-            $this->setFlashMessageAndRedirect('An error occured while deleting member: ' . $e->getMessage() , 'error', array(
-                        'module' => 'admin',
-                        'controller' => 'member',
-                        'action' => 'index'));
+            $this->setFlashMessageAndRedirect('An error occurred while deleting member: ' . $e->getMessage(),
+            'error', array(
+                'module'     => 'admin',
+                'controller' => 'member',
+                'action'     => 'index'
+            ));
         }
     }
 
     public function viewAction()
     {
-        $id = $this->getRequest()->getParam('id');
+        $id     = $this->getRequest()->getParam('id');
         $member = $this->memberFacade->getMemberById($id);
         if ($user = $this->userFacade->findUserById($member->getAssociatedUserId())) {
             $this->view->user = $user;
-            $role = $user->getRole();
+            $role             = $user->getRole();
         } else {
             $role = 'member';
         }
@@ -329,7 +377,7 @@ class Admin_MemberController extends SecureBaseController
             $lableClass = $this->getRoleClassForRole($role);
         }
         $parameters = array(
-            'title' => $member->getFirstName() . ' ' . $member->getLastName() ,
+            'title' => $member->getFirstName() . ' ' . $member->getLastName(),
             'label' => array(
                 'title' => $labelTitle,
                 'class' => $lableClass
@@ -338,16 +386,25 @@ class Admin_MemberController extends SecureBaseController
         if ($member->isDeceased()) {
             $parameters['titleClass'] = 'muted';
         }
-        $this->view->layout()->pageHeader = $this->view->partial('partials/page-header.phtml', $parameters);
-        $this->view->member = $member;
+
+        // TODO: move to Member class
+        $presentations = $this->presentationFacade->getPresentationsForMemberId($member->getId());
+
+        $this->view->layout()->pageHeader = $this->view->partial('partials/page-header.phtml',
+            $parameters);
+        $this->view->member               = $member;
+        $this->view->presentations        = $presentations;
 
         /** @var STS\Core\User\UserDTO $user */
         $user = $this->getAuth()->getIdentity();
 
         // pass permissions to view
-        $this->view->can_view = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'view');
-        $this->view->can_edit = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'edit');
-        $this->view->can_delete = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_MEMBER, 'delete');
+        $this->view->can_view   = $this->getAcl()->isAllowed($user->getRole(),
+            AclFactory::RESOURCE_MEMBER, 'view');
+        $this->view->can_edit   = $this->getAcl()->isAllowed($user->getRole(),
+            AclFactory::RESOURCE_MEMBER, 'edit');
+        $this->view->can_delete = $this->getAcl()->isAllowed($user->getRole(),
+            AclFactory::RESOURCE_MEMBER, 'delete');
     }
 
     /**
@@ -360,8 +417,8 @@ class Admin_MemberController extends SecureBaseController
     public function newAction()
     {
         $this->view->form = $this->getForm();
-        $request = $this->getRequest();
-        $form = $this->getForm();
+        $request          = $this->getRequest();
+        $form             = $this->getForm();
         $form->setAction('/admin/member/new');
 
         // handle POST input
@@ -379,32 +436,37 @@ class Admin_MemberController extends SecureBaseController
                     }
                     //save new member
                     try {
-                        $newMemberDto = $this->saveNewMember($postData);
+                        $newMemberDto   = $this->saveNewMember($postData);
                         $successMessage = "The new member \"{$postData['firstName']} {$postData['lastName']}\" has been successfully saved.";
                         if ($postData['role'] != '0') {
                             //save new system user
-                            $tempPassword = $postData['tempPassword'];
-                            $systemUserDto = $this->saveNewUser($postData, $newMemberDto, $tempPassword);
+                            $tempPassword  = $postData['tempPassword'];
+                            $systemUserDto = $this->saveNewUser($postData, $newMemberDto,
+                                $tempPassword);
                             //send credentials via email
                             $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
-                            $this->mailerFacade->sendNewAccountNotification($name, $systemUserDto->getId(), $systemUserDto->getEmail(), $tempPassword);
+                            $this->mailerFacade->sendNewAccountNotification($name,
+                                $systemUserDto->getId(), $systemUserDto->getEmail(), $tempPassword);
                             //update success message
                             $successMessage .= " The new user with username: \"{$systemUserDto->getId()}\" and password: \"$tempPassword\" may now access the system. This information has been emailed to them.";
                         }
 
                         $this->setFlashMessageAndRedirect($successMessage, 'success', array(
-                            'module' => 'admin',
+                            'module'     => 'admin',
                             'controller' => 'member',
-                            'action' => 'index'
+                            'action'     => 'index'
                         ));
-                    } catch(\Exception $e) {
-                        $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage() , 'error');
+                    } catch (\Exception $e) {
+                        $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage(),
+                            'error');
                     }
-                } catch(ApiException $e) {
-                    $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage() , 'error');
+                } catch (ApiException $e) {
+                    $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage(),
+                        'error');
                 }
             } else {
-                $this->setFlashMessageAndUpdateLayout('It looks like you missed some information, please make the corrections below.', 'error');
+                $this->setFlashMessageAndUpdateLayout('It looks like you missed some information, please make the corrections below.',
+                    'error');
             }
         }
         $this->view->form = $form;
@@ -417,7 +479,7 @@ class Admin_MemberController extends SecureBaseController
      **/
     public function editAction()
     {
-        $id = $this->getRequest()->getParam('id');
+        $id   = $this->getRequest()->getParam('id');
         $form = $this->getForm();
 
         // for checking edit permissions
@@ -427,11 +489,11 @@ class Admin_MemberController extends SecureBaseController
         $dto = $this->memberFacade->getMemberById($id);
 
         // make sure form posts back to self
-        $form->setAction('/admin/member/edit?' .http_build_query(array('id' => $id)));
-        $this->view->member = $dto;
+        $form->setAction('/admin/member/edit?' . http_build_query(array('id' => $id)));
+        $this->view->member               = $dto;
         $this->view->layout()->pageHeader = $this->view->partial(
             'partials/page-header.phtml', array(
-                'title' => 'Edit: ' .$dto->getFirstName() . ' ' . $dto->getLastName()
+                'title' => 'Edit: ' . $dto->getFirstName() . ' ' . $dto->getLastName()
             )
         );
 
@@ -443,16 +505,16 @@ class Admin_MemberController extends SecureBaseController
         $associatedUser = $this->userFacade->getUserByMemberId($dto->getId());
 
         // the user name will always be set
-        $username = null;
+        $username       = null;
         $hiddenUsername = null;
 
-        if (!is_null($associatedUser)) {
-            $username = $associatedUser->getId();
+        if (! is_null($associatedUser)) {
+            $username       = $associatedUser->getId();
             $hiddenUsername = $username;
 
             // make sure user can change username
             $role = $this->getAuth()->getIdentity()->getRole();
-            if (!$acl->isAllowed($role, AclFactory::RESOURCE_USER, 'change username')) {
+            if (! $acl->isAllowed($role, AclFactory::RESOURCE_USER, 'change username')) {
                 $form->getElement('systemUsername')->setAttrib('disabled', 'disabled');
             }
 
@@ -465,7 +527,7 @@ class Admin_MemberController extends SecureBaseController
 
         // if the id is null, the member is just a member, so don't show user details
         // TODO this test for if someone is "just a member" should be in the memberFacade or model
-        if (is_null($associatedUserId) || empty($associatedUserId) || is_null($associatedUser)){
+        if (is_null($associatedUserId) || empty($associatedUserId) || is_null($associatedUser)) {
             $role = '0';
         } else {
             //else set the role
@@ -475,53 +537,52 @@ class Admin_MemberController extends SecureBaseController
         // populate the form data
         $form->populate(
             array(
-                'firstName' => $dto->getFirstName(),
-                'lastName' => $dto->getLastName(),
-                'systemUserEmail' => $dto->getEmail(),
-                'memberType' => $this->memberFacade->getMemberTypeKey($dto->getType()),
-                'memberStatus' => $this->memberFacade->getMemberStatusKey($dto->getStatus()),
-                'memberActivity' => $dto->getActivities(),
-                'dateTrained' => $dto->getDateTrained(),
-                'notes' => $dto->getNotes(),
-                'workPhone' => $this->getPhoneNumberFromDto('work', $dto->getPhoneNumbers()),
-                'homePhone' => $this->getPhoneNumberFromDto('home', $dto->getPhoneNumbers()),
-                'cellPhone' => $this->getPhoneNumberFromDto('cell', $dto->getPhoneNumbers()),
-                'addressLineOne' => $dto->getAddressLineOne(),
-                'addressLineTwo' => $dto->getAddressLineTwo(),
-                'city' => $dto->getAddressCity(),
-                'state'=> $dto->getAddressState(),
-                'zip' => $dto->getAddressZip(),
-                'diagnosisDate' => $dto->getDiagnosisDate(),
-                'diagnosisStage' => $dto->getDiagnosisStage(),
-                'role' => $role,
-                'systemUsername' => $username,
+                'firstName'            => $dto->getFirstName(),
+                'lastName'             => $dto->getLastName(),
+                'systemUserEmail'      => $dto->getEmail(),
+                'memberType'           => $this->memberFacade->getMemberTypeKey($dto->getType()),
+                'memberStatus'         => $this->memberFacade->getMemberStatusKey($dto->getStatus()),
+                'is_volunteer'         => $dto->isVolunteer(),
+                'memberActivity'       => $dto->getActivities(),
+                'dateTrained'          => $dto->getDateTrained(),
+                'notes'                => $dto->getNotes(),
+                'workPhone'            => $this->getPhoneNumberFromDto('work',
+                    $dto->getPhoneNumbers()),
+                'homePhone'            => $this->getPhoneNumberFromDto('home',
+                    $dto->getPhoneNumbers()),
+                'cellPhone'            => $this->getPhoneNumberFromDto('cell',
+                    $dto->getPhoneNumbers()),
+                'address'       => $dto->getAddress(),
+                'diagnosisDate'        => $dto->getDiagnosisDate(),
+                'diagnosisStage'       => $dto->getDiagnosisStage(),
+                'role'                 => $role,
+                'systemUsername'       => $username,
                 'hiddenSystemUsername' => $hiddenUsername
             )
         );
 
-        $this->view->storedPresentsFor = $dto->getPresentsForAreas();
+        $this->view->storedPresentsFor    = $dto->getPresentsForAreas();
         $this->view->storedCoordinatesFor = $dto->getCoordinatesForRegions();
         $this->view->storedFacilitatesFor = $dto->getFacilitatesForAreas();
 
         // process any updates if we get any
         if ($this->getRequest()->isPost()) {
-            $request = $this->getRequest();
+            $request  = $this->getRequest();
             $postData = $request->getPost();
             if ($this->formIsValid($form, $postData)) {
                 try {
-                  
                     // if a member has been upgraded to a system user, check the email
                     // and password to ensure no duplication
                     $is_self = false;
-                    if (!empty($postData['systemUsername']) && $postData['role'] != '0') {
+                    if (! empty($postData['systemUsername']) && $postData['role'] != '0') {
 
                         // test if the username is used by another record
                         $dupe = $this->userFacade->findUserById($postData['systemUsername']);
-                        if (!empty($dupe)) {
+                        if (! empty($dupe)) {
                             $is_self = ($dupe->getAssociatedMemberId() == $associatedUser->getAssociatedMemberId());
                         }
 
-                        if (!empty($dupe) && !$is_self && $dupe->getAssociatedMemberId()) {
+                        if (! empty($dupe) && ! $is_self && $dupe->getAssociatedMemberId()) {
                             $msg = sprintf(
                                 "A system user with the username: %s already exists. System users must have a unique email and username.",
                                 $postData['systemUsername']
@@ -532,50 +593,56 @@ class Admin_MemberController extends SecureBaseController
 
                         // test if the email is used by another record
                         $dupe = $this->userFacade->findUserByEmail($postData['systemUserEmail']);
-                        if (!empty($dupe)) {
+                        if (! empty($dupe)) {
                             $is_self = ($dupe->getAssociatedMemberId() == $associatedUser->getAssociatedMemberId());
                         }
 
-                        if (!empty($dupe) && !$is_self) {
+                        if (! empty($dupe) && ! $is_self) {
                             throw new ApiException("A system user with the email address: \"{$postData['systemUserEmail']}\" already exists. System users must have a unique email and username.");
                         }
                     }
 
                     // check if we are changing an existing user's name
-                    if ($postData['role'] != '0' && !empty($postData['hiddenSystemUsername'])
+                    if ($postData['role'] != '0' && ! empty($postData['hiddenSystemUsername'])
                         && $postData['hiddenSystemUsername'] != $postData['systemUsername']
                     ) {
                         $this->changeUsername($associatedUser, $dto, $postData);
 
                         // handle other form updates
                         $postData['hiddenSystemUsername'] = $postData['systemUsername'];
-                        $updatedMemberDto = $this->updateMember($id, $postData);
+                        $updatedMemberDto                 = $this->updateMember($id, $postData);
                     } else {
                         // if a member has be downgraded from a system user to a member
                         // its ok as that is handled by the saving
                         $updatedMemberDto = $this->updateMember($id, $postData);
-                        $successMessage = "The member \"{$postData['firstName']} {$postData['lastName']}\" has been successfully updated.";
+                        $successMessage   = "The member \"{$postData['firstName']} {$postData['lastName']}\" has been successfully updated.";
 
                         // if a system user is changed roles
                         // then confirm that and set the username to the hidden value
                         if ($postData['role'] != '0') {
-                            if (!$is_self && ! empty($postData['systemUsername'])) {
+                            if (! $is_self && ! empty($postData['systemUsername'])) {
                                 // the user is new, we must add them
-                                $tempPassword = $postData['tempPassword'];
-                                $systemUserDto = $this->saveNewUser($postData, $updatedMemberDto, $tempPassword);
+                                $tempPassword  = $postData['tempPassword'];
+                                $systemUserDto = $this->saveNewUser($postData, $updatedMemberDto,
+                                    $tempPassword);
                                 // send credentials via email
                                 $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
-                                $this->mailerFacade->sendNewAccountNotification($name, $systemUserDto->getId(), $systemUserDto->getEmail(), $tempPassword);
+                                $this->mailerFacade->sendNewAccountNotification($name,
+                                    $systemUserDto->getId(), $systemUserDto->getEmail(),
+                                    $tempPassword);
                                 $successMessage .= " The new user with username: \"{$systemUserDto->getId()}\" and password: \"$tempPassword\" may now access the system. This information has been emailed to them.";
-                            } else if (!empty($postData['tempPassword'])) {
+                            } else if (! empty($postData['tempPassword'])) {
                                 // the user has changed, we must modify
                                 $postData['systemUsername'] = $postData['hiddenSystemUsername'];
-                                $tempPassword = $postData['tempPassword'];
-                                $systemUserDto = $this->updateExistingUser($postData, $updatedMemberDto, $tempPassword);
+                                $tempPassword               = $postData['tempPassword'];
+                                $systemUserDto              = $this->updateExistingUser($postData,
+                                    $updatedMemberDto, $tempPassword);
 
                                 // send credentials via email
                                 $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
-                                $this->mailerFacade->sendNewAccountNotification($name, $systemUserDto->getId(), $systemUserDto->getEmail(), $tempPassword);
+                                $this->mailerFacade->sendNewAccountNotification($name,
+                                    $systemUserDto->getId(), $systemUserDto->getEmail(),
+                                    $tempPassword);
                                 $successMessage .= " The user with username: \"{$systemUserDto->getId()}\" has been updated! Updated information has been emailed to them.";
                             } else {
                                 // simply update the user account, login and/or password haven't changed
@@ -583,7 +650,7 @@ class Admin_MemberController extends SecureBaseController
                                     $postData,
                                     $updatedMemberDto,
                                     $associatedUser->getPassword(),
-                                    FALSE, // don't change the password
+                                    false, // don't change the password
                                     $associatedUser->getSalt()
                                 );
                                 $successMessage .= " The user with username: \"{$systemUserDto->getId()}\" has been updated!";
@@ -592,16 +659,18 @@ class Admin_MemberController extends SecureBaseController
                     }
 
                     $this->setFlashMessageAndRedirect($successMessage, 'success', array(
-                        'module' => 'admin',
+                        'module'     => 'admin',
                         'controller' => 'member',
-                        'action' => 'view',
-                        'params' => array('id' => $updatedMemberDto->getId())
+                        'action'     => 'view',
+                        'params'     => array('id' => $updatedMemberDto->getId())
                     ));
-                } catch(ApiException $e) {
-                    $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage() , 'error');
+                } catch (ApiException $e) {
+                    $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage(),
+                        'error');
                 }
             } else {
-                $this->setFlashMessageAndUpdateLayout('It looks like you missed some information, please make the corrections below.', 'error');
+                $this->setFlashMessageAndUpdateLayout('It looks like you missed some information, please make the corrections below.',
+                    'error');
             }
         }
         $this->view->form = $form;
@@ -616,7 +685,7 @@ class Admin_MemberController extends SecureBaseController
         if (is_null($dto)) {
             return '0';
         } else {
-           return $this->userFacade->getUserRoleKey($dto->getRole());
+            return $this->userFacade->getUserRoleKey($dto->getRole());
         }
     }
 
@@ -629,7 +698,7 @@ class Admin_MemberController extends SecureBaseController
         if (is_null($dto)) {
             return null;
         } else {
-           return $dto->getId();
+            return $dto->getId();
         }
     }
 
@@ -642,7 +711,8 @@ class Admin_MemberController extends SecureBaseController
     {
         if (! is_null($numbers) && array_key_exists($type, $numbers)) {
             $number = $numbers[$type]['number'];
-            return sprintf('%s-%s-%s', substr($number, 0,3), substr($number, 3, -4), substr($number, -4));
+            return sprintf('%s-%s-%s', substr($number, 0, 3), substr($number, 3, - 4),
+                substr($number, - 4));
         } else {
             return null;
         }
@@ -654,9 +724,9 @@ class Admin_MemberController extends SecureBaseController
      */
     private function sendNotificationOfNewAccount(UserDTO $systemUserDto, $tempPassword)
     {
-        $name = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
+        $name     = $systemUserDto->getFirstName() . ' ' . $systemUserDto->getLastName();
         $username = $systemUserDto->getId();
-        $email = $systemUserDto->getEmail();
+        $email    = $systemUserDto->getEmail();
         $this->mailerFacade->sendNewAccountNotification($name, $username, $email, $tempPassword);
     }
 
@@ -666,35 +736,48 @@ class Admin_MemberController extends SecureBaseController
      * @param $tempPassword
      * @return mixed
      */
-    private function saveNewUser(array $postData, Core\Member\MemberDto $newMemberDto, $tempPassword)
-    {
-        $firstName = $newMemberDto->getFirstName();
-        $lastName = $newMemberDto->getLastName();
-        $email = $postData['systemUserEmail'];
-        $username = $postData['systemUsername'];
-        $password = $tempPassword;
-        $role = AclFactory::getAvailableRole($postData['role']);
+    private function saveNewUser(
+        array $postData,
+        Core\Member\MemberDto $newMemberDto,
+        $tempPassword
+    ) {
+        $firstName          = $newMemberDto->getFirstName();
+        $lastName           = $newMemberDto->getLastName();
+        $email              = $postData['systemUserEmail'];
+        $username           = $postData['systemUsername'];
+        $password           = $tempPassword;
+        $role               = AclFactory::getAvailableRole($postData['role']);
         $associatedMemberId = $newMemberDto->getId();
 
-        return $this->userFacade->createUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId);
+        return $this->userFacade->createUser($username, $firstName, $lastName, $email, $password,
+            $role, $associatedMemberId);
     }
 
     /**
      * @param array $postData
-     * @param Core\Member\MemberDto $memberDto
+     * @param MemberDto $memberDto
      * @param $tempPassword
+     * @param bool $init_password
+     * @param null $salt
+     *
      * @return mixed
      */
-    private function updateExistingUser(array $postData, Core\Member\MemberDto $memberDto, $tempPassword, $init_password = TRUE, $salt = NULL)
-    {
-        $firstName = $memberDto->getFirstName();
-        $lastName = $memberDto->getLastName();
-        $email = $postData['systemUserEmail'];
-        $username = $postData['systemUsername'];
-        $password = $tempPassword;
-        $role = AclFactory::getAvailableRole($postData['role']);
+    private function updateExistingUser(
+        array $postData,
+        Core\Member\MemberDto $memberDto,
+        $tempPassword,
+        $init_password = true,
+        $salt = null
+    ) {
+        $firstName          = $memberDto->getFirstName();
+        $lastName           = $memberDto->getLastName();
+        $email              = $postData['systemUserEmail'];
+        $username           = $postData['systemUsername'];
+        $password           = $tempPassword;
+        $role               = AclFactory::getAvailableRole($postData['role']);
         $associatedMemberId = $memberDto->getId();
-        return $this->userFacade->updateUser($username, $firstName, $lastName, $email, $password, $role, $associatedMemberId, $init_password, $salt);
+        return $this->userFacade->updateUser($username, $firstName, $lastName, $email, $password,
+            $role, $associatedMemberId, $init_password, $salt);
     }
 
     /**
@@ -705,31 +788,31 @@ class Admin_MemberController extends SecureBaseController
     {
         if ($data['memberStatus'] == 'STATUS_ACTIVE') {
             if ($data['role'] == 'ROLE_ADMIN') {
-                $userId = $data['systemUsername'];
-                $presentsFor = array();
+                $userId         = $data['systemUsername'];
+                $presentsFor    = array();
                 $facilitatesFor = array();
                 $coordinatesFor = array();
             } elseif ($data['role'] == 'ROLE_FACILITATOR') {
-                $userId = $data['systemUsername'];
-                $presentsFor = array();
+                $userId         = $data['systemUsername'];
+                $presentsFor    = array();
                 $facilitatesFor = array_keys($data['facilitatesFor']);
                 $coordinatesFor = array();
             } elseif ($data['role'] == 'ROLE_COORDINATOR') {
-                $userId = $data['systemUsername'];
-                $presentsFor = array();
+                $userId         = $data['systemUsername'];
+                $presentsFor    = array();
                 $facilitatesFor = array();
                 $coordinatesFor = $this->getAreasForRegionsArray(array_keys($data['coordinatesFor']));
             } else {
-                $presentsFor = array_keys($data['presentsFor']);
+                $presentsFor    = array_keys($data['presentsFor']);
                 $facilitatesFor = array();
                 $coordinatesFor = array();
-                $userId = null;
+                $userId         = null;
             }
         } else {
-            $presentsFor = array();
+            $presentsFor    = array();
             $facilitatesFor = array();
             $coordinatesFor = array();
-            $userId = null;
+            $userId         = null;
         }
 
         $activities = array();
@@ -742,21 +825,22 @@ class Admin_MemberController extends SecureBaseController
             $data['lastName'],
             Member::getAvailableType($data['memberType']),
             Member::getAvailableStatus($data['memberStatus']),
+            $data['is_volunteer'],
             $activities,
             $data['notes'],
             $presentsFor,
             $facilitatesFor,
             $coordinatesFor,
             $userId,
-            $data['addressLineOne'],
-            $data['addressLineTwo'],
-            $data['city'],
-            $data['state'],
-            $data['zip'],
+            $data['address'],
             $data['systemUserEmail'],
             $data['dateTrained'],
-            array('date'=>$data['diagnosisDate'], 'stage'=>$data['diagnosisStage']),
-            array('work' => $data['workPhone'], 'cell'=> $data['cellPhone'], 'home'=>$data['homePhone'])
+            array('date' => $data['diagnosisDate'], 'stage' => $data['diagnosisStage']),
+            array(
+                'work' => $data['workPhone'],
+                'cell' => $data['cellPhone'],
+                'home' => $data['homePhone']
+            )
         );
     }
 
@@ -776,31 +860,31 @@ class Admin_MemberController extends SecureBaseController
 
         if ($data['memberStatus'] == 'STATUS_ACTIVE') {
             if ($data['role'] == 'ROLE_ADMIN') {
-                $userId = $data['systemUsername'];
-                $presentsFor = array();
+                $userId         = $data['systemUsername'];
+                $presentsFor    = array();
                 $facilitatesFor = array();
                 $coordinatesFor = array();
             } elseif ($data['role'] == 'ROLE_FACILITATOR') {
-                $userId = $data['systemUsername'];
-                $presentsFor = array();
+                $userId         = $data['systemUsername'];
+                $presentsFor    = array();
                 $facilitatesFor = array_keys($data['facilitatesFor']);
                 $coordinatesFor = array();
             } elseif ($data['role'] == 'ROLE_COORDINATOR') {
-                $userId = $data['systemUsername'];
-                $presentsFor = array();
+                $userId         = $data['systemUsername'];
+                $presentsFor    = array();
                 $facilitatesFor = array();
                 $coordinatesFor = $this->getAreasForRegionsArray(array_keys($data['coordinatesFor']));
             } else {
-                $presentsFor = array_keys($data['presentsFor']);
+                $presentsFor    = array_keys($data['presentsFor']);
                 $facilitatesFor = array();
                 $coordinatesFor = array();
-                $userId = null;
+                $userId         = null;
             }
         } else {
-            $presentsFor = array();
+            $presentsFor    = array();
             $facilitatesFor = array();
             $coordinatesFor = array();
-            $userId = null;
+            $userId         = null;
         }
 
         $activities = array();
@@ -813,21 +897,22 @@ class Admin_MemberController extends SecureBaseController
             $data['lastName'],
             Member::getAvailableType($data['memberType']),
             Member::getAvailableStatus($data['memberStatus']),
+            $data['is_volunteer'],
             $activities,
             $data['notes'],
             $presentsFor,
             $facilitatesFor,
             $coordinatesFor,
             $userId,
-            $data['addressLineOne'],
-            $data['addressLineTwo'],
-            $data['city'],
-            $data['state'],
-            $data['zip'],
+            $data['address'],
             $data['systemUserEmail'],
             $data['dateTrained'],
-            array('date'=>$data['diagnosisDate'], 'stage'=>$data['diagnosisStage']),
-            array('work' => $data['workPhone'], 'cell'=> $data['cellPhone'], 'home'=>$data['homePhone'])
+            array('date' => $data['diagnosisDate'], 'stage' => $data['diagnosisStage']),
+            array(
+                'work' => $data['workPhone'],
+                'cell' => $data['cellPhone'],
+                'home' => $data['homePhone']
+            )
         );
     }
 
@@ -838,24 +923,31 @@ class Admin_MemberController extends SecureBaseController
     private function getMembersArray($members)
     {
         $memberData = array();
-        if (empty($members)){
+        if (empty($members)) {
             return $memberData;
         }
+        /** @var MemberDto $member */
         foreach ($members as $member) {
-            $notes =$member->getNotes();
+            $notes    = $member->getNotes();
             $hasNotes = empty($notes) ? false : true;
-            $data = array(
-                'firstName'     => $member->getFirstName(),
-                'lastName'      => $member->getLastName(),
-                'email'         => $member->getEmail(),
-                'deceased'      => $member->isDeceased(),
-                'city'          => $member->getAddressCity(),
-                'state'         => $member->getAddressState(),
-                'status'        => $member->getStatus(),
-                'hasNotes'      => $hasNotes,
-                'Notes'         => $member->getNotes(),
-                'canBeDeleted'  => $member->canBeDeleted(),
-                'dateTrained'   => false,
+            $data     = array(
+                'firstName'    => $member->getFirstName(),
+                'lastName'     => $member->getLastName(),
+                'email'        => $member->getEmail(),
+                'deceased'     => $member->isDeceased(),
+                'area'         => array_merge(
+                    $member->getPresentsForAreas(),
+                    $member->getCoordinatesForAreas(),
+                    $member->getFacilitatesForAreas(),
+                    $member->getCoordinatesForRegions()
+                ),
+                'address'      => $member->getAddress(),
+                'status'       => $member->getStatus(),
+                'is_volunteer' => $member->isVolunteer(),
+                'hasNotes'     => $hasNotes,
+                'Notes'        => $member->getNotes(),
+                'canBeDeleted' => $member->canBeDeleted(),
+                'dateTrained'  => false,
             );
 
             if ($member->getDateTrained()) {
@@ -870,13 +962,13 @@ class Admin_MemberController extends SecureBaseController
                 $role = 'member';
             }
             if ($member->isDeceased()) {
-                $data['role'] = 'Deceased';
+                $data['role']      = 'Deceased';
                 $data['roleClass'] = 'label-inverse';
             } else {
-                $data['role'] = $this->getRoleTitleForRole($role);
+                $data['role']      = $this->getRoleTitleForRole($role);
                 $data['roleClass'] = $this->getRoleClassForRole($role);
             }
-            $memberData[$member->getId() ] = $data;
+            $memberData[$member->getId()] = $data;
         }
 
         return $memberData;
@@ -941,23 +1033,24 @@ class Admin_MemberController extends SecureBaseController
         $diagnosisStagesArray = array_merge(array(''), $this->memberFacade->getDiagnosisStages());
 
         // get states select options
-        $statesArray = array_merge(array('-- Select One --') , $this->locationFacade->getStates());
+        $statesArray = array_merge(array('-- Select One --'), $this->locationFacade->getStates());
 
         // get member types select options
-        $memberTypesArray = array_merge(array('-- Select One --') , $this->memberFacade->getMemberTypes());
+        $memberTypesArray = array_merge(array('-- Select One --'),
+            $this->memberFacade->getMemberTypes());
 
         // get member activities checkbox options
-        $vals = array_values($this->memberFacade->getMemberActivities());
+        $vals                  = array_values($this->memberFacade->getMemberActivities());
         $memberActivitiesArray = array_combine($vals, $vals);
 
         // build the zend form
         $form = new \Admin_Member(array(
-            'states' => $statesArray,
-            'roles' => $this->getRolesArray(),
-            'memberTypes' => $memberTypesArray,
-            'memberStatuses' => $this->getMemberStatusesArray(),
+            'states'           => $statesArray,
+            'roles'            => $this->getRolesArray(),
+            'memberTypes'      => $memberTypesArray,
+            'memberStatuses'   => $this->getMemberStatusesArray(),
             'memberActivities' => $memberActivitiesArray,
-            'diagnosisStages' => $diagnosisStagesArray,
+            'diagnosisStages'  => $diagnosisStagesArray,
             'phoneNumberTypes' => $this->memberFacade->getPhoneNumberTypes()
         ));
 
@@ -1003,7 +1096,7 @@ class Admin_MemberController extends SecureBaseController
      */
     private function formIsValid(Admin_Member &$form, $postData)
     {
-        $validations = array();
+        $validations   = array();
         $validations[] = $form->getElement('firstName')->isValid($postData['firstName']);
         $validations[] = $form->getElement('lastName')->isValid($postData['lastName']);
         $validations[] = $form->getElement('systemUserEmail')->isValid($postData['systemUserEmail']);
@@ -1016,11 +1109,7 @@ class Admin_MemberController extends SecureBaseController
         $validations[] = $form->getElement('cellPhone')->isValid($postData['cellPhone']);
         $validations[] = $form->getElement('homePhone')->isValid($postData['homePhone']);
 
-        $validations[] = $form->getElement('addressLineOne')->isValid($postData['addressLineOne']);
-        $validations[] = $form->getElement('addressLineTwo')->isValid($postData['addressLineTwo']);
-        $validations[] = $form->getElement('city')->isValid($postData['city']);
-        $validations[] = $form->getElement('state')->isValid($postData['state']);
-        $validations[] = $form->getElement('zip')->isValid($postData['zip']);
+        $validations[] = $form->getElement('address')->isValid($postData['address']);
 
         $validations[] = $form->getElement('diagnosisDate')->isValid($postData['diagnosisDate']);
         $validations[] = $form->getElement('diagnosisStage')->isValid($postData['diagnosisStage']);
@@ -1029,15 +1118,14 @@ class Admin_MemberController extends SecureBaseController
             //if member has been marked active, validate any relevant system user information
             if ($postData['role'] != '0') {
                 //if role is not member, validate that a username and email has been entered and that they are unique
-                if(array_key_exists('systemUsername', $postData)){
+                if (array_key_exists('systemUsername', $postData)) {
                     $validations[] = $form->getElement('systemUsername')->isValid($postData['systemUsername']);
                 } else {
                     $validations[] = $form->getElement('systemUsername')->isValid($postData['hiddenSystemUsername']);
-
                 }
                 $validations[] = $form->getElement('tempPassword')->isValid($postData['tempPassword']);
                 $validations[] = $form->getElement('tempPasswordConfirm')->isValid($postData['tempPasswordConfirm']);
-                if($postData['tempPassword']!=$postData['tempPasswordConfirm']){
+                if ($postData['tempPassword'] != $postData['tempPasswordConfirm']) {
                     $form->getElement('tempPasswordConfirm')->addErrors(array(
                         'The two passwords do not match!'
                     ))->markAsError();
@@ -1045,44 +1133,50 @@ class Admin_MemberController extends SecureBaseController
                 }
             } else {
                 //else validate presents for
-                if (!array_key_exists('presentsFor', $postData) || !is_array($postData['presentsFor'])) {
+                if (! array_key_exists('presentsFor',
+                        $postData) || ! is_array($postData['presentsFor'])
+                ) {
                     $form->getElement('presentsFor[]')->addErrors(array(
                         'Please enter at least one area.'
                     ))->markAsError();
                     $validations[] = false;
                 } else {
                     $this->view->storedPresentsFor = $postData['presentsFor'];
-                    $validations[] = true;
+                    $validations[]                 = true;
                 }
             }
 
             if ($postData['role'] == 'ROLE_COORDINATOR') {
                 //if role is coordinator, validate regions
-                if (!array_key_exists('coordinatesFor', $postData) || !is_array($postData['coordinatesFor'])) {
+                if (! array_key_exists('coordinatesFor',
+                        $postData) || ! is_array($postData['coordinatesFor'])
+                ) {
                     $form->getElement('coordinatesFor[]')->addErrors(array(
                         'Please enter at least one region.'
                     ))->markAsError();
                     $validations[] = false;
                 } else {
                     $this->view->storedCoordinatesFor = $postData['coordinatesFor'];
-                    $validations[] = true;
+                    $validations[]                    = true;
                 }
             }
             if ($postData['role'] == 'ROLE_FACILITATOR') {
                 //if role is facilitator, validate areas
-                if (!array_key_exists('facilitatesFor', $postData) || !is_array($postData['facilitatesFor'])) {
+                if (! array_key_exists('facilitatesFor',
+                        $postData) || ! is_array($postData['facilitatesFor'])
+                ) {
                     $form->getElement('facilitatesFor[]')->addErrors(array(
                         'Please enter at least one area.'
                     ))->markAsError();
                     $validations[] = false;
                 } else {
                     $this->view->storedFacilitatesFor = $postData['facilitatesFor'];
-                    $validations[] = true;
+                    $validations[]                    = true;
                 }
             }
         }
 
-        if (!in_array(false, $validations)){
+        if (! in_array(false, $validations)) {
             return true;
         } else {
             return false;
@@ -1094,21 +1188,22 @@ class Admin_MemberController extends SecureBaseController
      *
      * Changes a username and updates references to it.
      *
-     * @param $associatedUser
+     * @param $srcUser
      * @param $dto
      * @param $postData
      */
-    private function changeUsername(UserDTO $srcUser, $dto, $postData) {
+    private function changeUsername(UserDTO $srcUser, $dto, $postData)
+    {
         // create user w/new username from old user
         // use data coming from the form in case its been edited
-        if (!empty($postData['tempPassword'])) {
-            $password = $postData['tempPassword'];
-            $salt = NULL;
-            $init_password = TRUE;
+        if (! empty($postData['tempPassword'])) {
+            $password      = $postData['tempPassword'];
+            $salt          = null;
+            $init_password = true;
         } else {
-            $password = $srcUser->getPassword();
-            $salt = $srcUser->getSalt();
-            $init_password = FALSE;
+            $password      = $srcUser->getPassword();
+            $salt          = $srcUser->getSalt();
+            $init_password = false;
         }
 
         $user = $this->userFacade->createUser(
@@ -1126,7 +1221,7 @@ class Admin_MemberController extends SecureBaseController
         $old_user_id = $srcUser->getId();
 
         // change all references in presentation collection (entered_by_user_id)
-        $core = Core::getDefaultInstance();
+        $core               = Core::getDefaultInstance();
         $presentationFacade = $core->load('PresentationFacade');
         $presentationFacade->updateEnteredBy($old_user_id, $user->getId());
 
@@ -1150,21 +1245,26 @@ class Admin_MemberController extends SecureBaseController
         /** @var STS\Core\User\UserDTO $user */
         $user = $this->getAuth()->getIdentity();
         list($criteria, $options) = $this->getDefaultUserCriteria($user);
-        $summary = $this->getMemberSummary($criteria, $options);
+        $summary             = $this->getMemberSummary($criteria, $options);
         $this->view->summary = $summary;
     }
 
+    /**
+     * @param User $user
+     *
+     * @return array
+     */
     protected function getDefaultUserCriteria($user)
     {
         $criteria = array();
-        $options = array();
+        $options  = array();
         if (User::ROLE_COORDINATOR == $user->getRole()) {
             // limit filter options to regions they coordinate for
-            $member = $this->memberFacade->getMemberById($user->getAssociatedMemberId());
-            $criteria['region'] = $member->getCoordinatesForRegions();
-            $options['allowed_regions']= $criteria['region'];
-            $areas = $this->locationFacade->getAreasForRegions($criteria['region']);
-
+            $member                     = $this->memberFacade->getMemberById($user->getAssociatedMemberId());
+            $criteria['region']         = $member->getCoordinatesForRegions();
+            $options['allowed_regions'] = $criteria['region'];
+            $areas                      = $this->locationFacade->getAreasForRegions($criteria['region']);
+            /** @var Area $area */
             foreach ($areas as $area) {
                 $options['allowed_areas'][$area->getID()] = $area->getName();
             }
@@ -1177,19 +1277,20 @@ class Admin_MemberController extends SecureBaseController
     {
         $members = $this->memberFacade->getMembersMatching($criteria);
 
-        $summary = new StdClass;
-        $summary->count = 0;
+        $summary          = new StdClass;
+        $summary->count   = 0;
         $summary->regions = array();
-        $summary->areas = array();
-        $summary->status = array();
+        $summary->areas   = array();
+        $summary->status  = array();
+        /** @var MemberDto $member */
         foreach ($members as $member) {
-            $summary->count++;
+            $summary->count ++;
 
             // by status
-            if (!isset($summary->status[$member->getStatus()])) {
+            if (! isset($summary->status[$member->getStatus()])) {
                 $summary->status[$member->getStatus()] = 0;
             }
-            $summary->status[$member->getStatus()]++;
+            $summary->status[$member->getStatus()] ++;
 
             if (Member::STATUS_ACTIVE != $member->getStatus()) {
                 continue;
@@ -1200,15 +1301,15 @@ class Admin_MemberController extends SecureBaseController
                 foreach ($coord as $region) {
                     if ($region) {
                         // check if allowed
-                        if (!empty($options['allowed_regions']) && !isset($options['allowed_regions'][$region])) {
+                        if (! empty($options['allowed_regions']) && ! isset($options['allowed_regions'][$region])) {
                             continue;
                         }
 
-                        if (!isset($summary->regions[$region]['coordinates'])) {
+                        if (! isset($summary->regions[$region]['coordinates'])) {
                             $summary->regions[$region]['coordinates'] = 0;
                         }
 
-                        $summary->regions[$region]['coordinates']++;
+                        $summary->regions[$region]['coordinates'] ++;
                         $summary->regions[$region]['raw'][$member->getID()] = 1;
 
                         // track unique for totals
@@ -1221,15 +1322,15 @@ class Admin_MemberController extends SecureBaseController
             if ($areas = $member->getCoordinatesForAreas()) {
                 foreach ($areas as $id => $area) {
                     // check if allowed
-                    if (!empty($options['allowed_areas']) && !isset($options['allowed_areas'][$id])) {
+                    if (! empty($options['allowed_areas']) && ! isset($options['allowed_areas'][$id])) {
                         continue;
                     }
 
-                    if (!isset($summary->areas[$area]['coordinates'])) {
+                    if (! isset($summary->areas[$area]['coordinates'])) {
                         $summary->areas[$area]['coordinates'] = 0;
                     }
 
-                    $summary->areas[$area]['coordinates']++;
+                    $summary->areas[$area]['coordinates'] ++;
                     $summary->areas[$area]['raw'][$member->getID()] = 1;
 
                     // track unique for totals
@@ -1242,16 +1343,16 @@ class Admin_MemberController extends SecureBaseController
                 foreach ($areas as $id => $area) {
 
                     // check if allowed
-                    if (!empty($options['allowed_areas']) && !isset($options['allowed_areas'][$id])) {
+                    if (! empty($options['allowed_areas']) && ! isset($options['allowed_areas'][$id])) {
                         continue;
                     }
 
-                    if (!isset($summary->areas[$area]['facilitates'])) {
+                    if (! isset($summary->areas[$area]['facilitates'])) {
                         $summary->areas[$area]['facilitates'] = 0;
                     }
 
                     // increment area facilitator count
-                    $summary->areas[$area]['facilitates']++;
+                    $summary->areas[$area]['facilitates'] ++;
                     $summary->areas[$area]['raw'][$member->getID()] = 1;
 
                     // add to list of region facilitators (track uniques to prevent double counting)
@@ -1279,15 +1380,15 @@ class Admin_MemberController extends SecureBaseController
                 foreach ($areas as $id => $area) {
 
                     // check if allowed
-                    if (!empty($options['allowed_areas']) && !isset($options['allowed_areas'][$id])) {
+                    if (! empty($options['allowed_areas']) && ! isset($options['allowed_areas'][$id])) {
                         continue;
                     }
 
-                    if (!isset($summary->areas[$area]['presents'])) {
+                    if (! isset($summary->areas[$area]['presents'])) {
                         $summary->areas[$area]['presents'] = 0;
                     }
 
-                    $summary->areas[$area]['presents']++;
+                    $summary->areas[$area]['presents'] ++;
                     $summary->areas[$area]['raw'][$member->getID()] = 1;
 
                     // add to list of region facilitators (track uniques to prevent double counting)
@@ -1309,20 +1410,20 @@ class Admin_MemberController extends SecureBaseController
                 }
             }
         }
-        
+
         // total up each region row by member type
         foreach ($summary->regions as $region => $totals) {
             $summary->regions[$region]['facilitates'] = array_sum($summary->regions[$region]['facilitates']);
-            $summary->regions[$region]['presents'] = array_sum($summary->regions[$region]['presents']);
-            $summary->regions[$region]['raw'] = array_sum($summary->regions[$region]['raw']);
+            $summary->regions[$region]['presents']    = array_sum($summary->regions[$region]['presents']);
+            $summary->regions[$region]['raw']         = array_sum($summary->regions[$region]['raw']);
         }
 
         // add summary totals to region columns
         ksort($summary->regions);
-        $summary->regions['Total']['presents'] = array_sum($summary->region_total['presents']);
+        $summary->regions['Total']['presents']    = array_sum($summary->region_total['presents']);
         $summary->regions['Total']['facilitates'] = array_sum($summary->region_total['facilitates']);
         $summary->regions['Total']['coordinates'] = array_sum($summary->region_total['coordinates']);
-        $summary->regions['Total']['raw'] = '-';
+        $summary->regions['Total']['raw']         = '-';
 
         // total up each area by member type
         foreach ($summary->areas as $area => $totals) {
@@ -1330,10 +1431,10 @@ class Admin_MemberController extends SecureBaseController
         }
 
         ksort($summary->areas);
-        $summary->areas['Total']['presents'] = array_sum($summary->area_total['presents']);
+        $summary->areas['Total']['presents']    = array_sum($summary->area_total['presents']);
         $summary->areas['Total']['facilitates'] = array_sum($summary->area_total['facilitates']);
         $summary->areas['Total']['coordinates'] = array_sum($summary->area_total['coordinates']);
-        $summary->areas['Total']['raw'] = '-';
+        $summary->areas['Total']['raw']         = '-';
 
         ksort($summary->status);
 
@@ -1343,12 +1444,12 @@ class Admin_MemberController extends SecureBaseController
     public function excelBystatusAction()
     {
         /** @var STS\Core\User\UserDTO $user */
-        $user = $this->getAuth()->getIdentity();
+        $user     = $this->getAuth()->getIdentity();
         $criteria = $this->getDefaultUserCriteria($user);
-        $summary = $this->getMemberSummary($criteria);
+        $summary  = $this->getMemberSummary($criteria);
 
         $header = array('status', 'count');
-        $csv = array();
+        $csv    = array();
         foreach ($summary->status as $status => $count) {
             $csv[] = array($status, $count);
         }
@@ -1359,15 +1460,21 @@ class Admin_MemberController extends SecureBaseController
     public function excelByregionAction()
     {
         /** @var STS\Core\User\UserDTO $user */
-        $user = $this->getAuth()->getIdentity();
+        $user     = $this->getAuth()->getIdentity();
         $criteria = $this->getDefaultUserCriteria($user);
-        $summary = $this->getMemberSummary($criteria);
+        $summary  = $this->getMemberSummary($criteria);
 
         $header = array('region', 'presenter', 'facilitator', 'coordinator', 'unique');
-        $csv = array();
+        $csv    = array();
         foreach ($summary->regions as $region => $values) {
-            $csv[] = array($region, $values['presents'], $values['facilitates']
-                            , $values['coordinates'], $values['raw']);
+            $csv[] = array(
+                $region,
+                $values['presents'],
+                $values['facilitates']
+                ,
+                $values['coordinates'],
+                $values['raw']
+            );
         }
 
         $this->outputCSV('MemberByRegion-' . date('Y-m-d') . '.csv', $csv, $header);
@@ -1377,16 +1484,22 @@ class Admin_MemberController extends SecureBaseController
     public function excelByareaAction()
     {
         /** @var STS\Core\User\UserDTO $user */
-        $user = $this->getAuth()->getIdentity();
+        $user     = $this->getAuth()->getIdentity();
         $criteria = $this->getDefaultUserCriteria($user);
-        $summary = $this->getMemberSummary($criteria);
+        $summary  = $this->getMemberSummary($criteria);
 
         $header = array('area', 'presenters', 'facilitators', 'coordinators', 'unique');
-        $csv = array();
+        $csv    = array();
 
         foreach ($summary->areas as $area => $values) {
-            $csv[] = array($area, $values['presents'], $values['facilitates']
-                    , $values['coordinates'], $values['raw']);
+            $csv[] = array(
+                $area,
+                $values['presents'],
+                $values['facilitates']
+                ,
+                $values['coordinates'],
+                $values['raw']
+            );
         }
 
         $this->outputCSV('MemberByArea-' . date('Y-m-d') . '.csv', $csv, $header);
@@ -1395,7 +1508,7 @@ class Admin_MemberController extends SecureBaseController
     public function coordinatorsAction()
     {
         $criteria = array();
-        $members = $this->memberFacade->getMembersMatching($criteria);
+        $members  = $this->memberFacade->getMembersMatching($criteria);
 
         // set title
         $this->view->layout()->pageHeader = $this->view->partial(
@@ -1405,7 +1518,7 @@ class Admin_MemberController extends SecureBaseController
         );
 
         // get only coordinators
-        $members = array_filter($members, function($member) {
+        $members = array_filter($members, function ($member) {
 
             /** @var \STS\Core\Member\MemberDto $member */
             if ($member->getCoordinatesForRegions()) {

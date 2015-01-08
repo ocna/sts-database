@@ -1,7 +1,10 @@
 <?php
 namespace STS\Core\Presentation;
 
+use STS\Core\Api\DefaultPresentationFacade;
+use STS\Core\ProfessionalGroup\MongoProfessionalGroupRepository;
 use STS\Domain\Presentation;
+use STS\Domain\ProfessionalGroup;
 use STS\Domain\Survey;
 use STS\Domain\Presentation\PresentationRepository;
 use STS\Core\Member\MongoMemberRepository;
@@ -52,7 +55,9 @@ class MongoPresentationRepository implements PresentationRepository
             )
         );
         if (array_key_exists('upserted', $results)) {
-            $presentation->setId($results['upserted']->__toString());
+            /** @var \MongoId $id */
+            $id = $results['upserted'];
+            $presentation->setId($id->__toString());
         }
         return $presentation;
     }
@@ -80,11 +85,11 @@ class MongoPresentationRepository implements PresentationRepository
         return $presentation;
     }
 
-     /**
-      * find
-      *
-      * @param array $criteria
-      */
+    /**
+     * @param array $criteria
+     *
+     * @return array
+     */
     public function find($criteria = array())
     {
         $presentationData = $this->mongoDb->presentation->find($criteria)->sort(
@@ -102,15 +107,15 @@ class MongoPresentationRepository implements PresentationRepository
     }
 
     /**
-     * mapData
-     *
      * @param $data
      * @return Presentation
      */
     private function mapData($data)
     {
         $presentation = new Presentation();
-        $presentation->setId($data['_id']->__toString())
+        /** @var \MongoId $id */
+        $id = $data['_id'];
+        $presentation->setId($id->__toString())
                      ->setNumberOfParticipants($data['nparticipants'])
                      ->setDate(date('Y-M-d h:i:s', $data['date']->sec))
                      ->setNotes($data['notes'])
@@ -126,8 +131,22 @@ class MongoPresentationRepository implements PresentationRepository
             $survey->setId($data['survey_id']);
             $presentation->setSurvey($survey);
         }
-        $schoolRepository = new MongoSchoolRepository($this->mongoDb);
-        $presentation->setLocation($schoolRepository->load($data['school_id']));
+
+        // Handle legacy data when location could only be school
+        if (! isset($data['location_class'])) {
+            $data['location_id'] = $data['school_id'];
+            $data['location_class'] = DefaultPresentationFacade::locationTypeSchool;
+        }
+
+        if (DefaultPresentationFacade::locationTypeSchool == $data['location_class']) {
+            $schoolRepository = new MongoSchoolRepository($this->mongoDb);
+            $location = $schoolRepository->load($data['location_id']);
+        } else {
+            $professionalGroupRepository = new MongoProfessionalGroupRepository($this->mongoDb);
+            $location = $professionalGroupRepository->load($data['location_id']);
+        }
+
+        $presentation->setLocation($location);
         $memberRepository = new MongoMemberRepository($this->mongoDb);
         $members = array();
         foreach ($data['members'] as $memberId) {

@@ -3,7 +3,6 @@ namespace STS\Domain\Location;
 
 class Region
 {
-
     private $name;
     private $legacyId;
     public function getName()

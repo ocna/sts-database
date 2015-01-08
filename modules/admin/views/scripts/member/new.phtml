@@ -44,7 +44,7 @@ $(document).ready(function() {
     })
 
     showRightFormPartsForRole($('#role').val())
-    
+
     $('#role').change(function(e){
         showRightFormPartsForRole(this.value)
     })
@@ -91,19 +91,19 @@ $(document).ready(function() {
             $('#fieldset-systemUser').hide();
         }
     }
-    
+
     function userDetails(flip){
         if(flip == 'on'){
-            $('#systemUsernameControlGroup').show();
-            $('#tempPasswordControlGroup').show();
-            $('#tempPasswordConfirmControlGroup').show();
+            $('#systemUsername').parent().parent().show();
+            $('#tempPassword').parent().parent().show();
+            $('#tempPasswordConfirm').parent().parent().show();
         }else if (flip == 'off'){
-            $('#systemUsernameControlGroup').hide();
-            $('#tempPasswordControlGroup').hide();
-            $('#tempPasswordConfirmControlGroup').hide();
+            $('#systemUsername').parent().parent().hide();
+            $('#tempPassword').parent().parent().hide();
+            $('#tempPasswordConfirm').parent().parent().hide();
         }
     }
-    
+
     function presenters(flip){
         if(flip == 'on'){
             $('#presentsForControlGroup').show();

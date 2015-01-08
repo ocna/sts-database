@@ -47,7 +47,7 @@ class MandrillEmailMessageServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @expectedException STS\Core\Service\MessageService\MessageServiceException
-     * @expectedExceptionMessage Error occured while sending message: Invalid API key
+     * @expectedExceptionMessage Error occurred while sending message: Invalid API key
      * @expectedExceptionCode -1
      */
     public function itShouldThrowExceptionOnSendFailure()

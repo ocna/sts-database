@@ -1,92 +1,178 @@
 <?php
 namespace STS\Core\School;
 
+/**
+ * Class SchoolDto
+ * @package STS\Core\School
+ */
 class SchoolDto
 {
-
+    /**
+     * @var
+     */
     private $id;
+    /**
+     * @var
+     */
     private $legacyId;
+    /**
+     * @var
+     */
     private $name;
+    /**
+     * @var
+     */
     private $type;
+    /**
+     * @var bool
+     */
+    private $isInactive;
+    /**
+     * @var
+     */
     private $notes;
+    /**
+     * @var
+     */
     private $regionName;
+    /**
+     * @var
+     */
     private $areaName;
-    private $addressLineOne;
-    private $addressLineTwo;
-    private $addressCity;
-    private $addressState;
-    private $addressZip;
+    /**
+     * @var
+     */
+    private $address;
+    /**
+     * @var
+     */
     private $areaId;
+    /**
+     * @var
+     */
     private $typeKey;
-    public function __construct($id, $legacyId, $name, $type, $notes, $regionName, $areaName, $addressLineOne, $addressLineTwo, $addressCity, $addressState, $addressZip, $areaId, $typeKey)
-    {
+
+    /**
+     * @param string $id
+     * @param $legacyId
+     * @param $name
+     * @param $type
+     * @param bool $is_inactive
+     * @param string $notes
+     * @param $regionName
+     * @param $areaName
+     * @param $address
+     * @param $areaId
+     * @param $typeKey
+     */
+    public function __construct(
+        $id,
+        $legacyId,
+        $name,
+        $type,
+        $is_inactive,
+        $notes,
+        $regionName,
+        $areaName,
+        $address,
+        $areaId,
+        $typeKey
+    ) {
         $this->id = $id;
         $this->name = $name;
         $this->legacyId = $legacyId;
         $this->type = $type;
+        $this->isInactive = $is_inactive;
         $this->notes = $notes;
         $this->regionName = $regionName;
         $this->areaName = $areaName;
-        $this->addressLineOne = $addressLineOne;
-        $this->addressLineTwo = $addressLineTwo;
-        $this->addressCity = $addressCity;
-        $this->addressState = $addressState;
-        $this->addressZip = $addressZip;
+        $this->address = $address;
         $this->areaId = $areaId;
         $this->typeKey = $typeKey;
     }
+
+    /**
+     * @return mixed
+     */
     public function getName()
     {
         return $this->name;
     }
+
+    /**
+     * @return mixed
+     */
     public function getlegacyId()
     {
         return $this->legacyId;
     }
+
+    /**
+     * @return mixed
+     */
     public function getId()
     {
         return $this->id;
     }
+
+    /**
+     * @return mixed
+     */
     public function getType()
     {
         return $this->type;
     }
+
+    /**
+     * @return boolean
+     */
+    public function isInactive()
+    {
+        return $this->isInactive;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getNotes()
     {
         return $this->notes;
     }
+
+    /**
+     * @return mixed
+     */
     public function getAreaName()
     {
         return $this->areaName;
     }
+
+    /**
+     * @return mixed
+     */
     public function getRegionName()
     {
         return $this->regionName;
     }
-    public function getAddressLineOne()
+
+    /**
+     * @return mixed
+     */
+    public function getAddress()
     {
-        return $this->addressLineOne;
+        return $this->address;
     }
-    public function getAddressLineTwo()
-    {
-        return $this->addressLineTwo;
-    }
-    public function getAddressCity()
-    {
-        return $this->addressCity;
-    }
-    public function getAddressState()
-    {
-        return $this->addressState;
-    }
-    public function getAddressZip()
-    {
-        return $this->addressZip;
-    }
+    /**
+     * @return mixed
+     */
     public function getTypeKey()
     {
         return $this->typeKey;
     }
+
+    /**
+     * @return mixed
+     */
     public function getAreaId()
     {
         return $this->areaId;

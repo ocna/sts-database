@@ -11,12 +11,21 @@ use STS\Domain\Survey\Response\SingleResponse;
 
 class MongoSurveyRepository implements SurveyRepository
 {
-
     private $mongoDb;
+
+    /**
+     * @param \MongoDb $mongoDb
+     */
     public function __construct($mongoDb)
     {
         $this->mongoDb = $mongoDb;
     }
+
+    /**
+     * @param Survey $survey
+     *
+     * @return Survey
+     */
     public function save($survey)
     {
         if (!$survey instanceof Survey) {
@@ -112,10 +121,10 @@ class MongoSurveyRepository implements SurveyRepository
     }
 
     /**
-     * updateEnteredBy
-     *
      * @param $old
      * @param $new
+     *
+     * @return bool
      */
     public function updateEnteredBy($old, $new)
     {

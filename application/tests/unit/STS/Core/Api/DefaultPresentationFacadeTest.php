@@ -2,12 +2,15 @@
 namespace STS\Core\Api;
 
 use STS\TestUtilities\PresentationTestCase;
+use STS\TestUtilities\ProfessionalGroupTestCase;
+use STS\TestUtilities\SurveyTestCase;
 use STS\TestUtilities\UserTestCase;
 use STS\TestUtilities\MemberTestCase;
 use STS\TestUtilities\SchoolTestCase;
 use STS\Domain\Location\Area;
 use STS\Domain\Member;
 use STS\Domain\School;
+use STS\Core\Presentation\PresentationDto;
 
 class DefaultPresentationFacadeTest extends PresentationTestCase
 {
@@ -33,11 +36,17 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
         $userRepository = \Mockery::mock('STS\Core\User\MongoUserRepository', array('load'=>UserTestCase::createValidUser()));
         $memberRepository = \Mockery::mock('STS\Core\Member\MongoMemberRepository', array('load'=>MemberTestCase::createValidMember()));
         $schoolRepository = \Mockery::mock('STS\Core\School\MongoSchoolRepository', array('load'=>SchoolTestCase::createValidSchool()));
-        $facade = new DefaultPresentationFacade($presentationRepository, $userRepository, $memberRepository, $schoolRepository);
+	    $surveyRepository = \Mockery::mock('STS\Core\Survey\MongoSurveyRepository',
+		    array('load'=>SurveyTestCase::createValidSurvey()));
+	    $professionalGroupRepository = \Mockery::mock
+	    ('STS\Core\ProfessionalGroup\MongoProfessionalGroupRepository', array('load' => ProfessionalGroupTestCase::createValidProfessionalGroup()));
+        $facade = new DefaultPresentationFacade($presentationRepository, $userRepository,
+	        $memberRepository, $schoolRepository, $surveyRepository, $professionalGroupRepository);
         //whens
         $updatedPresentationDto = $facade->updatePresentation(
             $presentation->getId(),
             $presentation->getLocation()->getId(),
+            get_class($presentation->getLocation()),
             'TYPE_MED',
             $presentation->getDate(),
             $presentation->getNotes(),
@@ -62,7 +71,12 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
         $userRepository = \Mockery::mock('STS\Core\User\MongoUserRepository', array('load'=>UserTestCase::createValidUser()));
         $memberRepository = \Mockery::mock('STS\Core\Member\MongoMemberRepository', array('load'=>MemberTestCase::createValidMember()));
         $schoolRepository = \Mockery::mock('STS\Core\School\MongoSchoolRepository', array('load'=>SchoolTestCase::createValidSchool()));
-        $facade = new DefaultPresentationFacade($presentationRepository, $userRepository, $memberRepository, $schoolRepository);
+	    $surveyRepository = \Mockery::mock('STS\Core\Survey\MongoSurveyRepository',
+		    array('load'=>SurveyTestCase::createValidSurvey()));
+	    $professionalGroupRepository = \Mockery::mock
+	    ('STS\Core\ProfessionalGroup\MongoProfessionalGroupRepository', array('load' => ProfessionalGroupTestCase::createValidProfessionalGroup()));
+	    $facade = new DefaultPresentationFacade($presentationRepository, $userRepository,
+		    $memberRepository, $schoolRepository, $surveyRepository, $professionalGroupRepository);
         $dto = $facade->getPresentationById(self::ID);
         $this->assertValidPresentationDto($dto);
     }
@@ -96,7 +110,12 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
         $userRepository = \Mockery::mock('STS\Core\User\MongoUserRepository', array('load'=>$correctUser));
         $memberRepository = \Mockery::mock('STS\Core\Member\MongoMemberRepository', array('load'=>MemberTestCase::createValidMember()));
         $schoolRepository = \Mockery::mock('STS\Core\School\MongoSchoolRepository', array('load'=>SchoolTestCase::createValidSchool()));
-        $facade = new DefaultPresentationFacade($presentationRepository, $userRepository, $memberRepository, $schoolRepository);
+	    $surveyRepository = \Mockery::mock('STS\Core\Survey\MongoSurveyRepository',
+		    array('load'=>SurveyTestCase::createValidSurvey()));
+	    $professionalGroupRepository = \Mockery::mock
+	    ('STS\Core\ProfessionalGroup\MongoProfessionalGroupRepository', array('load' => ProfessionalGroupTestCase::createValidProfessionalGroup()));
+	    $facade = new DefaultPresentationFacade($presentationRepository, $userRepository,
+		    $memberRepository, $schoolRepository, $surveyRepository, $professionalGroupRepository);
         //whens
         $presentations = $facade->getPresentationsForUserId(self::BASIC_USER_ID);
         //thens
@@ -134,13 +153,18 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
 
         $memberRepository = \Mockery::mock('STS\Core\Member\MongoMemberRepository', array('load'=>$correctMember));
         $schoolRepository = \Mockery::mock('STS\Core\School\MongoSchoolRepository', array('load'=>SchoolTestCase::createValidSchool()));
-
-        $facade = new DefaultPresentationFacade($presentationRepository, $userRepository, $memberRepository, $schoolRepository);
+	    $surveyRepository = \Mockery::mock('STS\Core\Survey\MongoSurveyRepository',
+		    array('load'=>SurveyTestCase::createValidSurvey()));
+	    $professionalGroupRepository = \Mockery::mock
+	    ('STS\Core\ProfessionalGroup\MongoProfessionalGroupRepository', array('load' => ProfessionalGroupTestCase::createValidProfessionalGroup()));
+	    $facade = new DefaultPresentationFacade($presentationRepository, $userRepository,
+		    $memberRepository, $schoolRepository, $surveyRepository, $professionalGroupRepository);
         //whens
         $presentations = $facade->getPresentationsForUserId(self::COORDINATOR_USER_ID);
         //thens
         $this->assertTrue(is_array($presentations));
         $this->assertCount(1, $presentations);
+	    /** @var PresentationDto $presentation */
         $presentation = $presentations[0];
         $this->assertInstanceOf('STS\Core\Presentation\PresentationDto', $presentation);
         $this->assertEquals(10, $presentation->getNumberOfParticipants());
@@ -153,7 +177,12 @@ class DefaultPresentationFacadeTest extends PresentationTestCase
         $userRepository = \Mockery::mock('STS\Core\User\MongoUserRepository', array('load'=>UserTestCase::createValidUser()));
         $memberRepository = \Mockery::mock('STS\Core\Member\MongoMemberRepository', array('load'=>MemberTestCase::createValidMember()));
         $schoolRepository = \Mockery::mock('STS\Core\School\MongoSchoolRepository', array('load'=>SchoolTestCase::createValidSchool()));
-        $facade = new DefaultPresentationFacade($presentationRepository, $userRepository, $memberRepository, $schoolRepository);
+	    $surveyRepository = \Mockery::mock('STS\Core\Survey\MongoSurveyRepository',
+		    array('load'=>SurveyTestCase::createValidSurvey()));
+	    $professionalGroupRepository = \Mockery::mock
+	    ('STS\Core\ProfessionalGroup\MongoProfessionalGroupRepository', array('load' => ProfessionalGroupTestCase::createValidProfessionalGroup()));
+	    $facade = new DefaultPresentationFacade($presentationRepository, $userRepository,
+		    $memberRepository, $schoolRepository, $surveyRepository, $professionalGroupRepository);
         return $facade;
     }
 }

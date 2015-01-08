@@ -185,13 +185,10 @@ class Admin_ReportController extends SecureBaseController
 
                 /** @var STS\Domain\Presentation $presentation */
                 foreach ($presentations as $presentation) {
-                    $dto = PresentationDtoAssembler::toDTO($presentation);
                     $presentation->setSurvey($this->surveyFacade->getSurveyById
                         ($presentation->getSurvey()->getId()));
-                    $presentation_data[] = array(
-                        'dto'       => $dto,
-                        'entity'    => $presentation
-                    );
+	                $dto = PresentationDtoAssembler::toDTO($presentation);
+                    $presentation_data[] = array('dto' => $dto);
                 }
             }
 
@@ -213,21 +210,21 @@ class Admin_ReportController extends SecureBaseController
         $headers = array(
             'Date',
             'School',
-            '% Correct Before',
-            '% Correct After',
-            '% Knowledge Increase'
+            'Knowledge Level (pre)',
+            'Knowledge Level (post)',
+            'Effectiveness'
         );
         /** @var STS\Domain\Presentation $presentation */
         foreach ($presentations as $presentation) {
-            $dto = PresentationDtoAssembler::toDTO($presentation);
             $presentation->setSurvey($this->surveyFacade->getSurveyById
                 ($presentation->getSurvey()->getId()));
+	        $dto = PresentationDtoAssembler::toDTO($presentation);
             $presentation_data[] = array(
                 $dto->getDate(),
-                $dto->getSchoolName(),
-                number_format($presentation->getCorrectBeforePercentage(), 2),
-                number_format($presentation->getCorrectAfterPercentage(), 2),
-                number_format($presentation->getKnowledgeIncreasePercentage(), 2)
+                $dto->getLocationName(),
+                number_format($dto->getCorrectBeforePercentage(), 2),
+                number_format($dto->getCorrectAfterPercentage(), 2),
+                number_format($dto->getEffectivenessPercentage(), 2)
             );
         }
 
@@ -244,7 +241,7 @@ class Admin_ReportController extends SecureBaseController
             '# forms post',
         );
 
-        if (in_array('schoolName', $vars)) {
+        if (in_array('locationName', $vars)) {
             $header[] = 'school';
         }
 
@@ -300,7 +297,7 @@ class Admin_ReportController extends SecureBaseController
 
             $school = $presentation->getLocation();
 
-            if (in_array('schoolName', $vars)) {
+            if (in_array('locationName', $vars)) {
                 $row[] = $school->getName();
             }
 
@@ -422,7 +419,7 @@ class Admin_ReportController extends SecureBaseController
         $membersArray = array();
         foreach ($this->memberFacade->getAllMembers() as $member) {
             /** @var STS\Core\Member\MemberDto $member */
-            
+
             if ($states != null) {
                 if (!in_array($member->getAddressState(), $states)) {
                     continue;

@@ -6,7 +6,6 @@ use STS\Domain\School;
 use STS\Core\School\SchoolDtoAssembler;
 use STS\Core\School\SchoolDto;
 use \STS\Domain\School\Specification\MemberSchoolSpecification;
-use STS\Core\Api\SchoolFacade;
 use STS\Core\School\MongoSchoolRepository;
 use STS\Core\Location\MongoAreaRepository;
 
@@ -22,6 +21,10 @@ class DefaultSchoolFacade implements SchoolFacade
      */
     private $areaRepository;
 
+    /**
+     * @param MongoSchoolRepository $schoolRepository
+     * @param MongoAreaRepository $areaRepository
+     */
     public function __construct($schoolRepository, $areaRepository)
     {
         $this->schoolRepository = $schoolRepository;
@@ -133,7 +136,7 @@ class DefaultSchoolFacade implements SchoolFacade
     public function filterSchoolsByRegions($regions, $schools)
     {
         if (!empty($regions)) {
-            $schools = array_filter($schools, function(SchoolDto $school) use ($regions) {
+            $schools = array_filter($schools, function (SchoolDto $school) use ($regions) {
                 return in_array($school->getRegionName(), $regions, true);
             });
         }
@@ -151,7 +154,7 @@ class DefaultSchoolFacade implements SchoolFacade
     public function filterSchoolsByTypes($types, $schools)
     {
         if (!empty($types)) {
-            $schools = array_filter($schools, function(SchoolDto $school) use ($types) {
+            $schools = array_filter($schools, function (SchoolDto $school) use ($types) {
                 return in_array($school->getTypeKey(), $types, true);
             });
         }
@@ -171,7 +174,7 @@ class DefaultSchoolFacade implements SchoolFacade
             if (!is_array($areas)) {
                 $areas = (array) $areas;
             }
-            $schools = array_filter($schools, function(SchoolDto $school) use ($areas) {
+            $schools = array_filter($schools, function (SchoolDto $school) use ($areas) {
                 return in_array($school->getAreaId(), $areas, true);
             });
         }
@@ -196,30 +199,29 @@ class DefaultSchoolFacade implements SchoolFacade
      * @param $name
      * @param $areaId
      * @param $schoolType
+     * @param bool $isInactive
      * @param $notes
-     * @param $addressLineOne
-     * @param $addressLineTwo
-     * @param $city
-     * @param $state
-     * @param $zip
+     * @param $address
      * @return SchoolDto
      */
-    public function saveSchool($name, $areaId, $schoolType, $notes, $addressLineOne, $addressLineTwo, $city, $state, $zip)
-    {
+    public function saveSchool(
+        $name,
+        $areaId,
+        $schoolType,
+        $isInactive,
+        $notes,
+        $address
+    ) {
         $address = new Address();
-        $address->setLineOne($addressLineOne)
-                ->setLineTwo($addressLineTwo)
-                ->setCity($city)
-                ->setState($state)
-                ->setZip($zip);
+        $address->setAddress($address);
         $area = $this->areaRepository->load($areaId);
         $school = new School();
         $school->setName($name)
-               ->setNotes($notes)
-               ->setType(School::getAvailableType($schoolType))
-               ->setNotes($notes)
-               ->setAddress($address)
-               ->setArea($area);
+            ->setType(School::getAvailableType($schoolType))
+            ->setIsInactive($isInactive)
+            ->setNotes($notes)
+            ->setAddress($address)
+            ->setArea($area);
         $savedSchool = $this->schoolRepository->save($school);
         return SchoolDtoAssembler::toDTO($savedSchool);
     }
@@ -234,24 +236,24 @@ class DefaultSchoolFacade implements SchoolFacade
      * @param $areaId
      * @param $schoolType
      * @param $notes
-     * @param $addressLineOne
-     * @param $addressLineTwo
-     * @param $city
-     * @param $state
-     * @param $zip
+     * @param $address
      * @return SchoolDto
      */
-    public function updateSchool($id, $name, $areaId, $schoolType, $notes, $addressLineOne, $addressLineTwo, $city, $state, $zip)
-    {
+    public function updateSchool(
+        $id,
+        $name,
+        $areaId,
+        $schoolType,
+        $isInactive,
+        $notes,
+        $address
+    ) {
         $oldSchool = $this->schoolRepository->load($id);
         $address = new Address();
-        $address->setLineOne($addressLineOne)
-                ->setLineTwo($addressLineTwo)
-                ->setCity($city)
-                ->setState($state)
-                ->setZip($zip);
+        $address->setAddress($address);
         $oldSchool->setName($name)
                   ->setType(School::getAvailableType($schoolType))
+                  ->setIsInactive($isInactive)
                   ->setNotes($notes)
                   ->setArea($this->areaRepository->load($areaId))
                   ->setAddress($address);
@@ -262,15 +264,11 @@ class DefaultSchoolFacade implements SchoolFacade
     /**
      * getDefaultInstance
      *
-     * @param $config
+     * @param $mongoDb
      * @return DefaultSchoolFacade
      */
-    public static function getDefaultInstance($config)
+    public static function getDefaultInstance($mongoDb)
     {
-        $mongoConfig = $config->modules->default->db->mongodb;
-        $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
-        $mongo = new \Mongo('mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/' . $mongoConfig->dbname);
-        $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $schoolRepository = new MongoSchoolRepository($mongoDb);
         $areaRepository = new MongoAreaRepository($mongoDb);
         return new DefaultSchoolFacade($schoolRepository, $areaRepository);

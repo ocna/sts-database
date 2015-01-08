@@ -3,18 +3,24 @@
  *
  * @category    STS
  * @package     Core
- * @subpackage	Api
+ * @subpackage    Api
  */
 namespace STS\Core\Api;
+
 use STS\Core\User\MongoUserRepository;
 use STS\Core\User\UserDTOAssembler;
 use STS\Domain\User;
-use STS\Core\Api\DefaultAuthFacade;
 
 class DefaultAuthFacade implements AuthFacade
 {
-
+    /**
+     * @var MongoUserRepository
+     */
     private $userRepository;
+
+    /**
+     * @param MongoUserRepository $userRepository
+     */
     public function __construct($userRepository)
     {
         $this->userRepository = $userRepository;
@@ -31,18 +37,19 @@ class DefaultAuthFacade implements AuthFacade
         }
         return UserDTOAssembler::toDTO($user);
     }
+
+    /**
+     * @param User $user
+     * @param $password
+     *
+     * @return string
+     */
     private function hashPassword($user, $password)
     {
         return sha1($user->getSalt() . $password);
     }
-    public static function getDefaultInstance($config)
+    public static function getDefaultInstance($mongoDb)
     {
-        $mongoConfig = $config->modules->default->db->mongodb;
-        $auth = $mongoConfig->username ? $mongoConfig->username . ':' . $mongoConfig->password . '@' : '';
-        $mongo = new \Mongo(
-                        'mongodb://' . $auth . $mongoConfig->host . ':' . $mongoConfig->port . '/'
-                                        . $mongoConfig->dbname);
-        $mongoDb = $mongo->selectDB($mongoConfig->dbname);
         $userRepository = new MongoUserRepository($mongoDb);
         return new DefaultAuthFacade($userRepository);
     }

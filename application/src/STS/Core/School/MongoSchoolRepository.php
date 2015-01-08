@@ -1,36 +1,42 @@
 <?php
 namespace STS\Core\School;
+
 use STS\Domain\Location\Address;
 use STS\Domain\School;
 use STS\Domain\School\SchoolRepository;
-use STS\Domain\Location\Region;
-use STS\Domain\Location\Area;
 use STS\Core\Location\MongoAreaRepository;
 
 class MongoSchoolRepository implements SchoolRepository
 {
-
     private $mongoDb;
+
     public function __construct($mongoDb)
     {
         $this->mongoDb = $mongoDb;
     }
+
+    /**
+     * @param $id
+     *
+     * @return School
+     */
     public function load($id)
     {
-        $schoolData = $this->mongoDb->school->findOne(array(
-                '_id' => new \MongoId($id)
-            ));
+        $schoolData = $this->mongoDb->school->findOne(
+            array('_id' => new \MongoId($id))
+        );
         if ($schoolData == null) {
             throw new \InvalidArgumentException("School not found with given id: $id");
         }
         $school = $this->mapData($schoolData);
         return $school;
     }
+
     public function find()
     {
-        $schools = $this->mongoDb->school->find()->sort(array(
-                'name' => 1
-            ));
+        $schools = $this->mongoDb->school->find()->sort(
+            array('name' => 1)
+        );
         $returnData = array();
         foreach ($schools as $schoolData) {
             $returnData[strtolower($schoolData['name'])] = $this->mapData($schoolData);
@@ -38,6 +44,7 @@ class MongoSchoolRepository implements SchoolRepository
         ksort($returnData);
         return $returnData;
     }
+
     public function save($school)
     {
         if (!$school instanceof School) {
@@ -53,20 +60,30 @@ class MongoSchoolRepository implements SchoolRepository
         $array = $school->toMongoArray();
         $id = array_shift($array);
         $results = $this->mongoDb->school
-            ->update(array(
-                '_id' => new \MongoId($id)
-            ), $array, array(
-                'upsert' => 1, 'safe' => 1
-            ));
+            ->update(
+                array('_id' => new \MongoId($id)),
+                $array,
+                array('upsert' => 1, 'safe' => 1)
+            );
         if (array_key_exists('upserted', $results)) {
-            $school->setId($results['upserted']->__toString());
+            /** @var \MongoId $id */
+            $id = $results['upserted'];
+            $school->setId($id->__toString());
         }
         return $school;
     }
+
+    /**
+     * @param $schoolData
+     *
+     * @return School
+     */
     private function mapData($schoolData)
     {
         $school = new School();
-        $school->setId($schoolData['_id']->__toString())
+        /** @var \MongoId $id */
+        $id = $schoolData['_id'];
+        $school->setId($id->__toString())
                ->setLegacyId($schoolData['legacyid'])
                ->setName($schoolData['name']);
         if (array_key_exists('dateCreated', $schoolData)) {
@@ -81,15 +98,20 @@ class MongoSchoolRepository implements SchoolRepository
         }
         if (array_key_exists('address', $schoolData)) {
             $address = new Address();
-            if (array_key_exists('line_two', $schoolData['address'])){
-                $address->setLineTwo($schoolData['address']['line_two']);
+            // Handle legacy US-specific addresses
+            if (is_array($schoolData['address'])) {
+                if (array_key_exists('line_two', $schoolData['address'])) {
+                    $address->setLineTwo($schoolData['address']['line_two']);
+                }
+                if (array_key_exists('zip', $schoolData['address'])) {
+                    $address->setZip($schoolData['address']['zip']);
+                }
+                $address->setLineOne($schoolData['address']['line_one'])
+                        ->setCity($schoolData['address']['city'])
+                        ->setState($schoolData['address']['state']);
+                $schoolData['address'] = $address->getAddress();
             }
-            if (array_key_exists('zip', $schoolData['address'])){
-                $address->setZip($schoolData['address']['zip']);
-            }
-            $address->setLineOne($schoolData['address']['line_one'])
-                    ->setCity($schoolData['address']['city'])
-                    ->setState($schoolData['address']['state']);
+            $address->setAddress($schoolData['address']);
             $school->setAddress($address);
         }
         if (array_key_exists('notes', $schoolData)) {
@@ -98,9 +120,12 @@ class MongoSchoolRepository implements SchoolRepository
         if (array_key_exists('type', $schoolData)) {
             try {
                 $school->setType($schoolData['type']);
-            }catch(\InvalidArgumentException $e){
-                $school->setType(School::TYPE_SCHOOL);
+            } catch (\InvalidArgumentException $e) {
+                $school->setType(School::TYPE_OTHER);
             }
+        }
+        if (array_key_exists('is_inactive', $schoolData)) {
+            $school->setIsInactive($schoolData['is_inactive']);
         }
         return $school;
     }

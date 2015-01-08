@@ -4,9 +4,7 @@ $columns = array(
     'name' => 'Name',
     'type' => 'Type',
     'regionName' => 'Region',
-    'areaName' => 'Area',
-    'addressCity' => 'City',
-    'addressState' => 'State'
+    'areaName' => 'Area'
 );
 ?>
 <div class="accordion" id="accordion2">
@@ -35,11 +33,16 @@ $columns = array(
     </tr>
     </thead>
     <tbody>
-    <?php foreach ($this->objects as $object): ?>
-    <tr>
+    <?php
+    /** @var STS\Core\School\SchoolDto $object */
+    foreach ($this->objects as $object): ?>
+    <tr<?= $object->isInactive() ? ' class="muted"' : '' ?>>
     <?php foreach ($columns as $get => $title):
         $method = 'get' . ucfirst($get);
         $val = $object->$method();
+        if ('Name' == $title && $object->isInactive()) {
+            $val .= " (inactive)";
+        }
     ?>
         <td class="<?= $get ?>"><?= $val ?></td>
 

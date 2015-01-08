@@ -3,12 +3,12 @@
  *
  * @category    STS
  * @package     Core
- * @subpackage	Api
+ * @subpackage    Api
  */
 namespace STS\Core\Api;
+
 interface AuthFacade
 {
-
     /**
      * Given an email and password, returns the authenticated userDto or throws
      * an exception

@@ -1,11 +1,12 @@
 <?php
 namespace STS\Domain;
-use STS\Domain\Entity;
+
 use STS\Domain\School\Specification\MemberSchoolSpecification;
+use STS\Domain\ProfessionalGroup;
+use STS\Domain\HasArea;
 
 class Presentation extends EntityWithTypes
 {
-
     const TYPE_MED = 'MED';
     const TYPE_PA = 'PA';
     const TYPE_NP = 'NP';
@@ -22,9 +23,13 @@ class Presentation extends EntityWithTypes
     private $numberOfFormsReturnedPost;
 
     /**
-     * @var School
+     * @var HasArea
      */
     private $location;
+    /**
+     * @var ProfessionalGroup
+     */
+    private $professionalGroup;
     private $members = array();
 
     /**
@@ -36,14 +41,19 @@ class Presentation extends EntityWithTypes
     public function toMongoArray()
     {
         $array = array(
-                'id' => $this->id, 'entered_by_user_id' => $this->enteredByUserId, 'type' => $this->type,
-                'notes' => utf8_encode($this->notes), 'nforms' => $this->numberOfFormsReturnedPost,
-                'nformspre'=>$this->numberOfFormsReturnedPre,
-                'date' => $this->date,
-                'nparticipants' => $this->numberOfParticipants, 'school_id' => $this->location->getId(),
-                'survey_id' => $this->survey->getId(),
-                'dateCreated' => new \MongoDate($this->getCreatedOn()),
-                'dateUpdated' => new \MongoDate($this->getUpdatedOn())
+            'id'                    => $this->id,
+            'entered_by_user_id'    => $this->enteredByUserId,
+            'type'                  => $this->type,
+            'notes'                 => utf8_encode($this->notes),
+            'nforms'                => $this->numberOfFormsReturnedPost,
+            'nformspre'             => $this->numberOfFormsReturnedPre,
+            'date'                  => $this->date,
+            'nparticipants'         => $this->numberOfParticipants,
+            'location_id'           => $this->location->getId(),
+            'location_class'        => get_class($this->location),
+            'survey_id'             => $this->survey->getId(),
+            'dateCreated'           => new \MongoDate($this->getCreatedOn()),
+            'dateUpdated'           => new \MongoDate($this->getUpdatedOn())
         );
         $members = array();
         foreach ($this->members as $member) {
@@ -120,16 +130,39 @@ class Presentation extends EntityWithTypes
     }
 
     /**
-     * @return \STS\Domain\School
+     * @return \STS\Domain\School|ProfessionalGroup
      */
     public function getLocation()
     {
         return $this->location;
     }
 
-    public function setLocation(School $location)
+    /**
+     * @param School $location
+     * @return $this
+     */
+    public function setLocation($location)
     {
         $this->location = $location;
+        return $this;
+    }
+
+    /**
+     * @return ProfessionalGroup
+     */
+    public function getProfessionalGroup()
+    {
+        return $this->professionalGroup;
+    }
+
+    /**
+     * @param ProfessionalGroup $professional_group
+     *
+     * @return $this
+     */
+    public function setProfessionalGroup($professional_group)
+    {
+        $this->professionalGroup = $professional_group;
         return $this;
     }
 
@@ -162,7 +195,13 @@ class Presentation extends EntityWithTypes
         return $this;
     }
 
-    public function isAccessableByMemberUser($member, User $user)
+    /**
+     * @param $member
+     * @param User $user
+     *
+     * @return bool
+     */
+    public function isAccessableByMemberUser($member, $user)
     {
         if ($user->getRole() == 'admin') {
             return true;
@@ -177,47 +216,60 @@ class Presentation extends EntityWithTypes
     }
 
     /**
-     * @return float
+     * @return float|string
      */
-    public function getCorrectBeforePercentage() {
+    public function getCorrectBeforePercentage()
+    {
         if (! $this->numberOfFormsReturnedPre) {
-            return 0;
+            return 'N/A';
         }
-        return ($this->survey->getCorrectBeforePerQuestion() /
-            $this->numberOfFormsReturnedPre) * 100;
+
+        $num_possible_correct = Survey::NUM_CORRECT_ANSWERS *
+                                $this->numberOfFormsReturnedPre;
+        $correct_before_percentage = ($this->survey->getNumCorrectBeforeResponses() /
+                                      $num_possible_correct) * 100;
+        return round($correct_before_percentage, 2);
     }
 
     /**
      * @return float
      */
-    public function getCorrectAfterPercentage() {
+    public function getCorrectAfterPercentage()
+    {
         if (! $this->numberOfFormsReturnedPost) {
-            return 0;
+            return 'N/A';
         }
-        return ($this->survey->getCorrectAfterPerQuestion() /
-            $this->numberOfFormsReturnedPost) * 100;
+
+        $num_possible_correct = Survey::NUM_CORRECT_ANSWERS *
+                                $this->numberOfFormsReturnedPost;
+        $correct_after_percentage = ($this->survey->getNumCorrectAfterResponses() /
+                                     $num_possible_correct) * 100;
+        return round($correct_after_percentage, 2);
     }
 
     /**
      * @return float
      */
-    public function getKnowledgeIncreasePercentage() {
-        if (! $this->numberOfParticipants || ! $this->numberOfFormsReturnedPre) {
-            return 0;
+    public function getEffectivenessPercentage()
+    {
+        if (! $this->numberOfParticipants || ! $this->numberOfFormsReturnedPost) {
+            return 'N/A';
         }
-        return (($this->getCorrectAfterPercentage() / $this->getCorrectBeforePercentage()) - 1) *
-        100;
-    }
 
-    /**
-     * @return float
-     */
-    public function getEffectivenessPercentage() {
-        if (! $this->numberOfParticipants || ! $this->getNumberOfFormsReturnedPre()) {
+        if (! $this->numberOfFormsReturnedPre || ! $this->getCorrectBeforePercentage()) {
+            return 100;
+        }
+        $effectiveness = (
+                             (
+                                 $this->getCorrectAfterPercentage()
+                                 -
+                                 $this->getCorrectBeforePercentage()
+                             )
+                             / $this->getCorrectBeforePercentage()
+                         ) * 100;
+        if (0 > $effectiveness) {
             return 0;
         }
-        return (($this->getCorrectAfterPercentage() -
-                $this->getCorrectBeforePercentage()) / (100
-         - $this->getCorrectBeforePercentage())) * 100;
+        return round($effectiveness, 2);
     }
 }

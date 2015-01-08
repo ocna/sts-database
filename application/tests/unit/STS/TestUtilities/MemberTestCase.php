@@ -24,16 +24,13 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
     const DATE_TRAINED = '2012-08-09 04:00:00';
     const DISPLAY_DATE_TRAINED = '08/09/2012';
     const CAN_BE_DELETED = false;
+    const VOLUNTEER = true;
 
     protected function getValidMember()
     {
         $member = new Member();
         $address = new Address();
-        $address->setLineOne(AddressTestCase::LINE_ONE)
-                ->setLineTwo(AddressTestCase::LINE_TWO)
-                ->setZip(AddressTestCase::ZIP)
-                ->setState(AddressTestCase::STATE)
-                ->setCity(AddressTestCase::CITY);
+        $address->setAddress(AddressTestCase::ADDRESS);
         $diagnosis = new Diagnosis(self::DATE_TRAINED, 'I');
         $member->setId(self::ID)
                ->setLegacyId(self::LEGACY_ID)
@@ -43,6 +40,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
                ->setNotes(self::NOTES)
                ->setStatus(self::STATUS)
                ->setType(self::TYPE)
+               ->setVolunteer(self::VOLUNTEER)
                ->setDateTrained(self::DATE_TRAINED)
                ->setAddress($address)
                ->setAssociatedUserId(self::ASSOCIATED_USER_ID)
@@ -67,6 +65,9 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
         return $memberTestCase->getValidMember();
     }
 
+	/**
+	 * @param Member $member
+	 */
     protected function assertValidMember($member)
     {
         $this->assertInstanceOf('STS\Domain\Member', $member);
@@ -75,6 +76,7 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedMember, $member);
         $this->assertEquals(self::TYPE, $member->getType());
         $this->assertEquals(self::STATUS, $member->getStatus());
+        $this->assertEquals(self::VOLUNTEER, $member->isVolunteer());
         $this->assertTrue($member->isDeceased());
         $this->assertInstanceOf('STS\Domain\Location\Address', $member->getAddress());
         $this->assertFalse($member->canBeDeleted());
@@ -90,12 +92,9 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
             self::TYPE,
             self::NOTES,
             self::STATUS,
+            self::VOLUNTEER,
             $this->getValidActivitiesArray(),
-            AddressTestCase::LINE_ONE,
-            AddressTestCase::LINE_TWO,
-            AddressTestCase::CITY,
-            AddressTestCase::STATE,
-            AddressTestCase::ZIP,
+            AddressTestCase::ADDRESS,
             self::ASSOCIATED_USER_ID,
             $this->getValidPresentsForAreasArray(),
             $this->getValidFacilitatesForAreasArray(),
@@ -113,6 +112,10 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
         return $memberDto;
     }
 
+	/**
+	 * @param MemberDto $dto
+	 * @param array $skipCheck
+	 */
     protected function assertValidMemberDto($dto, $skipCheck = array())
     {
         $this->assertInstanceOf('STS\Core\Member\MemberDto', $dto);
@@ -128,12 +131,9 @@ class MemberTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::TYPE, $dto->getType());
         $this->assertEquals(self::NOTES, $dto->getNotes());
         $this->assertEquals(self::STATUS, $dto->getStatus());
+        $this->assertEquals(self::VOLUNTEER, $dto->isVolunteer());
         $this->assertTrue($dto->isDeceased());
-        $this->assertEquals(AddressTestCase::LINE_ONE, $dto->getAddressLineOne());
-        $this->assertEquals(AddressTestCase::LINE_TWO, $dto->getAddressLineTwo());
-        $this->assertEquals(AddressTestCase::CITY, $dto->getAddressCity());
-        $this->assertEquals(AddressTestCase::STATE, $dto->getAddressState());
-        $this->assertEquals(AddressTestCase::ZIP, $dto->getAddressZip());
+        $this->assertEquals(AddressTestCase::ADDRESS, $dto->getAddress());
         if (!in_array('associatedUserId', $skipCheck)) {
             $this->assertEquals(self::ASSOCIATED_USER_ID, $dto->getAssociatedUserId());
         }

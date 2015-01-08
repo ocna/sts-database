@@ -5,16 +5,19 @@ use \Mockery;
 
 class AddressTestCase extends \PHPUnit_Framework_TestCase
 {
-    const LINE_ONE = '123 Main Street';
-    const LINE_TWO = 'Suite 200';
-    const ZIP = '12345';
-    const STATE = 'MI';
-    const CITY = 'Grand Rapids';
+    const ADDRESS = <<<QQQ
+123 Main Street
+Suite 200
+Grand Rapids MI 12345
+QQQ;
+
+    /**
+     * @return Address
+     */
     protected function getValidAddress()
     {
         $address = new Address();
-        $address->setLineOne(self::LINE_ONE)->setLineTwo(self::LINE_TWO)->setZip(self::ZIP)->setState(self::STATE)
-            ->setCity(self::CITY);
+        $address->setAddress(self::ADDRESS);
         return $address;
     }
 
@@ -23,13 +26,13 @@ class AddressTestCase extends \PHPUnit_Framework_TestCase
         $addressTestCase = new AddressTestCase();
         return $addressTestCase->getValidAddress();
     }
+
+    /**
+     * @param Address $address
+     */
     protected function assertValidAddress($address)
     {
         $this->assertInstanceOf('STS\Domain\Location\Address', $address);
-        $this->assertEquals($address->getLineOne(), self::LINE_ONE);
-        $this->assertEquals($address->getLineTwo(), self::LINE_TWO);
-        $this->assertEquals($address->getZip(), self::ZIP);
-        $this->assertEquals($address->getState(), self::STATE);
-        $this->assertEquals($address->getCity(), self::CITY);
+        $this->assertEquals($address->getAddress(), self::ADDRESS);
     }
 }

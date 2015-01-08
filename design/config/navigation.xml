@@ -87,6 +87,14 @@
                 <action>coordinators</action>
                 <resource>member</resource>
             </coordinator>
+            <professional_group>
+                <label>Professional Groups</label>
+                <module>admin</module>
+                <controller>professionalgroup</controller>
+                <action>index</action>
+                <resource>professional_group</resource>
+                <privilege>view</privilege>
+            </professional_group>
         </pages>
     </admin>
 </config>

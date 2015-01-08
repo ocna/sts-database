@@ -3,7 +3,6 @@ namespace STS\Domain;
 
 class EntityWithTypes extends Entity
 {
-
     protected $type;
     public static function getAvailableTypes()
     {

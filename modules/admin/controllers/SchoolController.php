@@ -3,18 +3,29 @@ use STS\Core;
 use STS\Web\Security\AclFactory;
 use STS\Web\Controller\SecureBaseController;
 use STS\Domain\User;
+use STS\Core\Api\ApiException;
+use STS\Core\Api\DefaultLocationFacade;
+use STS\Core\Api\DefaultMemberFacade;
+use STS\Core\Api\DefaultSchoolFacade;
+use STS\Core\School\SchoolDto;
+use STS\Core\Location\RegionDto;
 
 class Admin_SchoolController extends SecureBaseController
 {
     /**
-     * @var STS\Core\Api\DefaultSchoolFacade
+     * @var DefaultSchoolFacade
      */
     protected $schoolFacade;
 
     /**
-     * @var STS\Core\Api\DefaultLocationFacade
+     * @var DefaultLocationFacade
      */
     protected $locationFacade;
+
+    /**
+     * @var DefaultMemberFacade
+     */
+    protected $memberFacade;
 
     /**
      * @var \Zend_Session_Namespace
@@ -29,18 +40,11 @@ class Admin_SchoolController extends SecureBaseController
         $this->locationFacade = $core->load('LocationFacade');
         $this->memberFacade = $core->load('MemberFacade');
         $this->session = new \Zend_Session_Namespace('admin');
-
-        /** @var STS\Core\User\UserDTO $user */
-        $user = $this->getAuth()->getIdentity();
-
-        // permissions
-        $this->view->can_view = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_SCHOOL, 'view');
-        $this->view->can_edit = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_SCHOOL, 'edit');
-        $this->view->can_delete = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_SCHOOL, 'delete');
     }
 
     public function indexAction()
     {
+        $this->setPermissions();
         // filter by role
         $user = $this->getAuth()->getIdentity();
 
@@ -97,31 +101,26 @@ class Admin_SchoolController extends SecureBaseController
 
         $headers = array(
             'Name',
+            'Inactive?',
             'Type',
             'Notes',
             'Region',
             'Area',
-            'Address Line 1',
-            'Address Line 2',
-            'City',
-            'State',
-            'ZIP/PostalCode'
+            'Address'
         );
 
         $data = array();
 
+        /** @var SchoolDto $school */
         foreach ($schools as $school) {
             $data[] = array(
                 $school->getName(),
+                $school->isInactive() ? 'Inactive' : ' ',
                 $school->getType(),
                 $school->getNotes(),
                 $school->getRegionName(),
                 $school->getAreaName(),
-                $school->getAddressLineOne(),
-                $school->getAddressLineTwo(),
-                $school->getAddressCity(),
-                $school->getAddressState(),
-                $school->getAddressZip()
+                $school->getAddress()
             );
         }
 
@@ -155,7 +154,7 @@ class Admin_SchoolController extends SecureBaseController
                             'module' => 'admin', 'controller' => 'school', 'action' => 'index'
                         ));
                 } catch (ApiException $e) {
-                    $this->setFlashMessageAndUpdateLayout('An error occured while saving this information: ' . $e->getMessage(), 'error');
+                    $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage(), 'error');
                 }
             } else {
                 $this
@@ -181,11 +180,8 @@ class Admin_SchoolController extends SecureBaseController
             'notes'=>$dto->getNotes(),
             'area'=>$dto->getAreaId(),
             'schoolType'=>$dto->getTypeKey(),
-            'addressLineOne'=>$dto->getAddressLineOne(),
-            'addressLineTwo'=>$dto->getAddressLineTwo(),
-            'city'=>$dto->getAddressCity(),
-            'state'=>$dto->getAddressState(),
-            'zip'=>$dto->getAddressZip()
+            'isInactive'    => $dto->isInactive(),
+            'address'=>$dto->getAddress()
             )
         );
         if ($this->getRequest()->isPost()) {
@@ -193,17 +189,38 @@ class Admin_SchoolController extends SecureBaseController
             $postData = $request->getPost();
             if ($form->isValid($postData)) {
                 try {
-                    $updatedSchool = $this->schoolFacade->updateSchool($id, $postData['name'], $postData['area'], $postData['schoolType'], $postData['notes'], $postData['addressLineOne'], $postData['addressLineTwo'], $postData['city'], $postData['state'], $postData['zip']);
+                    $updatedSchool = $this->schoolFacade->updateSchool(
+                        $id,
+                        $postData['name'],
+                        $postData['area'],
+                        $postData['schoolType'],
+                        $postData['isInactive'],
+                        $postData['notes'],
+                        $postData['address']
+                    );
                     $this
-                        ->setFlashMessageAndRedirect("The school: \"{$updatedSchool->getName()}\" has been updated!", 'success', array(
-                            'module' => 'admin', 'controller' => 'school', 'action' => 'view', 'params' => array('id'=>$updatedSchool->getId())
-                        ));
+                        ->setFlashMessageAndRedirect(
+                            "The school: \"{$updatedSchool->getName()}\" has been updated!",
+                            'success',
+                            array(
+                                'module' => 'admin',
+                                'controller' => 'school',
+                                'action' => 'view',
+                                'params' => array('id'=>$updatedSchool->getId())
+                            )
+                        );
                 } catch (ApiException $e) {
-                    $this->setFlashMessageAndUpdateLayout('An error occured while saving this information: ' . $e->getMessage(), 'error');
+                    $this->setFlashMessageAndUpdateLayout(
+                        'An error occurred while saving this information: ' . $e->getMessage(),
+                        'error'
+                    );
                 }
             } else {
                 $this
-                    ->setFlashMessageAndUpdateLayout('It looks like you missed some information, please make the corrections below.', 'error');
+                    ->setFlashMessageAndUpdateLayout(
+                        'It looks like you missed some information, please make the corrections below.',
+                        'error'
+                    );
             }
         }
         $this->view->form = $form;
@@ -215,7 +232,14 @@ class Admin_SchoolController extends SecureBaseController
      */
     private function saveSchool($postData)
     {
-        $school = $this->schoolFacade->saveSchool($postData['name'], $postData['area'], $postData['schoolType'], $postData['notes'], $postData['addressLineOne'], $postData['addressLineTwo'], $postData['city'], $postData['state'], $postData['zip']);
+        $school = $this->schoolFacade->saveSchool(
+            $postData['name'],
+            $postData['area'],
+            $postData['schoolType'],
+            $postData['isInactive'],
+            $postData['notes'],
+            $postData['address']
+        );
         return $school;
     }
 
@@ -253,6 +277,7 @@ class Admin_SchoolController extends SecureBaseController
      *
      * Return the filter form for list of all schools
      *
+     * @param User $user
      * @return Admin_MemberFilter
      */
     private function getFilterForm($user)
@@ -280,6 +305,7 @@ class Admin_SchoolController extends SecureBaseController
     private function getRegionsArray()
     {
         $regionsArray = array('');
+        /** @var RegionDto $region */
         foreach ($this->locationFacade->getAllRegions() as $region) {
             $regionsArray[$region->getName()] = $region->getName();
         }
@@ -308,5 +334,16 @@ class Admin_SchoolController extends SecureBaseController
             }
             $criteria[$key] = $params[$key];
         }
+    }
+
+    private function setPermissions()
+    {
+        /** @var STS\Core\User\UserDTO $user */
+        $user = $this->getAuth()->getIdentity();
+
+        // permissions
+        $this->view->can_view = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_SCHOOL, 'view');
+        $this->view->can_edit = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_SCHOOL, 'edit');
+        $this->view->can_delete = $this->getAcl()->isAllowed($user->getRole(), AclFactory::RESOURCE_SCHOOL, 'delete');
     }
 }

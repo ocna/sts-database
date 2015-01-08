@@ -125,25 +125,22 @@ This application is intended to be installed locally for development purposes.
 
 3. Create a virtual host file to point to the `public` folder, example:
 
-
-
+    ```
     <VirtualHost *:80>
-    
         DocumentRoot "/Users/jason/Development/sts-database/public"
         ServerName dev.sts.ovariancancer.org
-        
+
         SetEnv APPLICATION_ENV development
-        
+
         <Directory "/Users/jason/Development/sts-database/public">
             DirectoryIndex index.php index.html
             AllowOverride All
             Order allow,deny
             Allow from all
         </Directory>
-        
-    </VirtualHost>
-   
 
+   </VirtualHost>
+   ```
 
 ####Logs
 
@@ -157,23 +154,14 @@ This application is intended to be installed locally for development purposes.
 Local database connection is used for development purposes, mongo can be simply configured locally using a `mongodb.conf` file such as:
 
 ```
-
-    fork = true
-    
-    bind_ip = 127.0.0.1
-    
-    port = 27017
-    
-    quiet = false
-    
-    dbpath = /data/db/
-    
-    logpath = /tmp/logs/mongod.log
-    
-    logappend = true
-    
-    journal = true
-    
+fork = true
+bind_ip = 127.0.0.1
+port = 27017
+quiet = false
+dbpath = /data/db/
+logpath = /tmp/logs/mongod.log
+logappend = true
+journal = true
 ```
 ###Managing Persistence
 The STS Database Application uses [MongoDB](http://www.mongodb.org/) for persistence.
@@ -181,37 +169,35 @@ The STS Database Application uses [MongoDB](http://www.mongodb.org/) for persist
 Importing Datasets:
 
 ```
+mongoexport -v -d sts-development -c area --jsonArray -o ../collections/area.json
 
-    mongoexport -v -d sts-development -c area --jsonArray -o ../collections/area.json
-    
-    mongoimport -v -h 23.21.64.30:27017 -d sts-production -c area -u sts -p sT6D9tA01 --jsonArray --file area.json
+mongoimport -v -h 23.21.64.30:27017 -d sts-production -c area -u sts -p sT6D9tA01 --jsonArray --file area.json
 
 ```
 
 Running Command Sets:
 
 ```
-    mongo localhost:27017/sts-development data/.../my_commands.js
-    
-    mongo -u sts -p sT6D9tA01 23.21.64.30:27017/sts-production data/.../my_comands.js
+mongo localhost:27017/sts-development data/.../my_commands.js
+
+mongo -u sts -p sT6D9tA01 23.21.64.30:27017/sts-production data/.../my_comands.js
 ```
 
 Connecting to the db on production and listing all collections
 ```
-    mongo -u sts -p sT6D9tA01 sts-production
-    
-    show collections
+mongo -u sts -p sT6D9tA01 sts-production
+show collections
 ```
 
 Export all collections in production database to a directory, one file per collection
 ```
-    mongodump -u sts -p sT6D9tA01 -d sts-production -o ./sts-production-dump
+mongodump -u sts -p sT6D9tA01 -d sts-production -o ./sts-production-dump
 ```
 
 Restore database dump to another instance, assumes you copy the sts-production-dump 
 from production to a local path.
 ```
-    mongorestore -v -d sts-dev /local/path/to/sts-production-dump
+mongorestore -v -d sts-dev /local/path/to/sts-production-dump
 ```
 ## [Deployment](id:deployment)
 Deployment of the application is handled with **ant** and the settings are stored in a `<env>.deploy.properties` file local to the developer that is deploying. If this is set up you can just follow the examples below.
@@ -222,27 +208,24 @@ Deployment is simple, ensure you have an appropriately configured .
 Examples:
 
 ```
-
-    ant -propertyfile stg.deploy.properties -f deploy.xml deploy -Dgit.branch=develop
-
-    ant -propertyfile stg.deploy.properties -f deploy.xml deploy -Dgit.branch=release/1.0
-
-    ant -propertyfile beta.deploy.properties -f deploy.xml deploy -Dgit.branch=release/1.0
+ant -propertyfile stg.deploy.properties -f deploy.xml deploy -Dgit.branch=develop
+ant -propertyfile stg.deploy.properties -f deploy.xml deploy -Dgit.branch=release/1.0
+ant -propertyfile beta.deploy.properties -f deploy.xml deploy -Dgit.branch=release/1.0
 ```
 
 There is a wrapper shell script in `src/build-deploy/` to handle deployments to production/staging so you can do:
 
 The following to deploy from the `develop` branch to the staging site:
 
-```
+~~~~
 ./deploy.sh dev
-```
+~~~~
 
 or the following to deploy from the `master` branch to the production site:
 
-```
+~~~~
 ./deploy.sh prod
-```
+~~~~
 
 ###Environments
 There are two environments that you may deploy to:
