@@ -1,3 +1,4 @@
+*.sh
 .htaccess
 .git
 .DS_Store
@@ -6,10 +7,14 @@
 .project
 .settings
 .zfproject.xml
+.idea
 **/tests/*
 build
 build-deploy
+results
+vagrant
 .templates
 features
 data
 core.xml
+tests
