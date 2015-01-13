@@ -2,7 +2,7 @@
 namespace STS\Domain\School\Specification;
 
 use STS\Domain\Member;
-use STS\Domain\School;
+use STS\Domain\HasArea;
 
 class MemberSchoolSpecification
 {
@@ -16,7 +16,7 @@ class MemberSchoolSpecification
         $this->member = $member;
     }
 
-    public function isSatisfiedBy(School $school)
+    public function isSatisfiedBy(HasArea $school)
     {
         if (in_array($school->getArea(), $this->member->getAllAssociatedAreas())) {
             return true;
