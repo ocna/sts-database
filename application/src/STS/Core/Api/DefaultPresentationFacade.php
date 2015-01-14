@@ -6,6 +6,7 @@ use STS\Domain\Survey\Template;
 use STS\Domain\Member;
 use STS\Domain\Survey;
 use STS\Domain\School;
+use STS\Domain\HasArea;
 use STS\Domain\Presentation;
 use STS\Core\Presentation\MongoPresentationRepository;
 use STS\Core\User\MongoUserRepository;
@@ -332,8 +333,11 @@ class DefaultPresentationFacade implements PresentationFacade
             // count number of students
             $summary->totalStudents += $students;
 
+            /** @var HasArea $location */
+            $location = $presentation->getLocation();
+
             // report by state
-            $state = $presentation->getLocation()->getArea()->getState();
+            $state = $location->getArea()->getState();
             if (!isset($summary->geo->$state)) {
                 $summary->geo->$state = new \StdClass;
             }
@@ -341,21 +345,24 @@ class DefaultPresentationFacade implements PresentationFacade
             $summary->geo->$state->presentations += 1;
 
             // report by region
-            $region = $presentation->getLocation()->getArea()->getRegion();
+            $region = $location->getArea()->getRegion();
             $summary->regions[$region->getName()]['participants'] += $presentation->getNumberOfParticipants();
             $summary->regions[$region->getName()]['presentations'] += 1;
 
-            // report medical schools by type
-            $type = $presentation->getLocation()->getType();
-            if (!isset($summary->schools[$type])) {
-                $summary->schools[$type] = array('presentations' => 0, 'participants' => 0);
-            }
+            // report by school type
+            if ('STS\Domain\School' == get_class($location)) {
+                /** @var School $location */
+                $type = $location->getType();
+                $name = $location->getName();
+                $summary->schoolsUnique[$name] = $name;
+                $summary->schools[$type]['unique'][$name] = $name;
+                $summary->schools[$type]['presentations'] += 1;
+                $summary->schools[$type]['participants'] += $students;
 
-            $name = $presentation->getLocation()->getName();
-            $summary->schoolsUnique[$name] = $name;
-            $summary->schools[$type]['unique'][$name] = $name;
-            $summary->schools[$type]['presentations'] += 1;
-            $summary->schools[$type]['participants'] += $students;
+                if (!isset($summary->schools[$type])) {
+                    $summary->schools[$type] = array('presentations' => 0, 'participants' => 0);
+                }
+            }
 
             // report by member
             foreach ($presentation->getMembers() as $member) {
