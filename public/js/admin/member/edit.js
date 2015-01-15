@@ -59,10 +59,10 @@ function showRightFormPartsForStatus(status){
 
 function showRightFormPartsForRole(role) {
     if(role == 'ROLE_ADMIN'){
-        userDetails('on')
-        presenters('off')
-        facilitators('off')
-        coordinators('off')
+        userDetails('on');
+        presenters('off');
+        facilitators('off');
+        coordinators('off');
     }else if (role == 'ROLE_COORDINATOR'){
         userDetails('on')
         presenters('off')
@@ -92,34 +92,34 @@ function systemUser(flip){
 
 function userDetails(flip){
     if(flip == 'on'){
-        $('#systemUsernameControlGroup').show();
-        $('#tempPasswordControlGroup').show();
-        $('#tempPasswordConfirmControlGroup').show();
+        $('#systemUsername').attr('required', 'required').parent().parent().show();
+        $('#tempPassword').attr('required', 'required').parent().parent().show();
+        $('#tempPasswordConfirm').attr('required', 'required').parent().parent().show();
     }else if (flip == 'off'){
-        $('#systemUsernameControlGroup').hide();
-        $('#tempPasswordControlGroup').hide();
-        $('#tempPasswordConfirmControlGroup').hide();
+        $('#systemUsername').attr('required', false).parent().parent().hide();
+        $('#tempPassword').attr('required', false).parent().parent().hide();
+        $('#tempPasswordConfirm').attr('required', false).parent().parent().hide();
     }
 }
 
 function presenters(flip){
     if(flip == 'on'){
-        $('#presentsForControlGroup').show();
+        $('[name="presentsFor[]"]').attr('required', 'required').parent().parent().parent().parent().show();
     }else if (flip == 'off'){
-        $('#presentsForControlGroup').hide();
+        $('[name="presentsFor[]"]').attr('required', false).parent().parent().parent().parent().hide();
     }
 }
 function facilitators(flip){
     if(flip == 'on'){
-        $('#facilitatesForControlGroup').show();
+        $('[name="facilitatesFor[]"]').attr('required', 'required').parent().parent().parent().parent().show();
     }else if (flip == 'off'){
-        $('#facilitatesForControlGroup').hide();
+        $('[name="facilitatesFor[]"]').attr('required', false).parent().parent().parent().parent().hide();
     }
 }
 function coordinators(flip){
     if(flip == 'on'){
-        $('#coordinatesForControlGroup').show();
+        $('[name="coordinatesFor[]"]').attr('required', 'required').parent().parent().parent().parent().show();
     }else if (flip == 'off'){
-        $('#coordinatesForControlGroup').hide();
+        $('[name="coordinatesFor[]"]').attr('required', false).parent().parent().parent().parent().hide();
     }
 }
