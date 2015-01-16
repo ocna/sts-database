@@ -255,10 +255,6 @@ class Admin_ReportController extends SecureBaseController
 
         if (in_array('schoolAddress', $vars)) {
             $header[] = 'address';
-            $header[] = 'address2';
-            $header[] = 'city';
-            $header[] = 'state';
-            $header[] = 'zip';
         }
 
         if (in_array('region', $vars)) {
@@ -295,36 +291,45 @@ class Admin_ReportController extends SecureBaseController
                 $presentation->getNumberOfFormsReturnedPost(),
             );
 
-            $school = $presentation->getLocation();
+            $location = $presentation->getLocation();
 
             if (in_array('locationName', $vars)) {
-                $row[] = $school->getName();
+                $row[] = $location->getName();
             }
 
             if (in_array('schoolType', $vars)) {
-                $row[] = $school->getType();
+                if ('STS\Domain\School' == get_class($location))
+                {
+                    $row[] = $location->getType();
+                } else {
+                    $row[] = 'Professional Group';
+                }
             }
 
             if (in_array('schoolNotes', $vars)) {
-                $row[] = $school->getNotes();
+                if ('STS\Domain\School' == get_class($location)) {
+                    $row[] = $location->getNotes();
+                } else {
+                    $row[] = '';
+                }
             }
 
             if (in_array('schoolAddress', $vars)) {
-                $row[] = $school->getAddress()->getLineOne();
-                $row[] = $school->getAddress()->getLineTwo();
-                $row[] = $school->getAddress()->getCity();
-                $row[] = $school->getAddress()->getState();
-                $row[] = $school->getAddress()->getZip();
+                if ('STS\Domain\School' == get_class($location)) {
+                    $row[] = $location->getAddress()->getAddress();
+                } else {
+                    $row[] = '';
+                }
             }
 
             if (in_array('region', $vars)) {
-                $row[] = $school->getArea()->getRegion()->getName();
+                $row[] = $location->getArea()->getRegion()->getName();
             }
 
             if (in_array('state', $vars)) {
-                $row[] = $school->getArea()->getState();
-                $row[] = $school->getArea()->getCity();
-                $row[] = $school->getArea()->getName();
+                $row[] = $location->getArea()->getState();
+                $row[] = $location->getArea()->getCity();
+                $row[] = $location->getArea()->getName();
             }
 
             if (in_array('member', $vars)) {
