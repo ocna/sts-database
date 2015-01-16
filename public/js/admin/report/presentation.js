@@ -2,7 +2,7 @@ $(document).ready(function() {
     $("#startDate").datepicker();
     $("#startDateButton").click(function(){
         $("#startDate").datepicker("show");
-    })
+    });
 
     $("#endDate" ).datepicker();
     $("#endDateButton").click(function(){
@@ -10,6 +10,8 @@ $(document).ready(function() {
     });
 
     $('select.chosen').chosen();
+
+    $('[name="vars[]"]').attr('required', false);
 
     if (0 < $('#reportCSVForm').length) {
         $('#reportCSVForm').submit(function() {
@@ -23,4 +25,4 @@ $(document).ready(function() {
             return true;
         })
     }
-})
+});
