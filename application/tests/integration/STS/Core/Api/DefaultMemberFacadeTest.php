@@ -43,11 +43,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
             $facilitatesFor,
             $coordinatesFor,
             'muser',
-            AddressTestCase::LINE_ONE,
-            AddressTestCase::LINE_TWO,
-            AddressTestCase::CITY,
-            AddressTestCase::STATE,
-            AddressTestCase::ZIP,
+            AddressTestCase::ADDRESS,
             self::EMAIL,
             self::DISPLAY_DATE_TRAINED,
             array('date'=>self::DISPLAY_DATE_TRAINED, 'stage'=>'I'),
@@ -60,7 +56,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
         $updatedMemberDto = $facade->getMemberById(self::ID);
         $this->assertInstanceOf('STS\Core\Member\MemberDto', $updatedMemberDto);
         $this->assertEquals($updatedFirstName, $updatedMemberDto->getFirstName());
-        
+
         //reset
         $facade->updateMember(
             self::ID,
@@ -73,11 +69,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
             $facilitatesFor,
             $coordinatesFor,
             'muser',
-            AddressTestCase::LINE_ONE,
-            AddressTestCase::LINE_TWO,
-            AddressTestCase::CITY,
-            AddressTestCase::STATE,
-            AddressTestCase::ZIP,
+            AddressTestCase::ADDRESS,
             self::EMAIL,
             self::DISPLAY_DATE_TRAINED,
             array('date'=>self::DISPLAY_DATE_TRAINED, 'stage'=>'I'),
@@ -108,11 +100,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
             $facilitatesFor,
             $coordinatesFor,
             'muser',
-            AddressTestCase::LINE_ONE,
-            AddressTestCase::LINE_TWO,
-            AddressTestCase::CITY,
-            AddressTestCase::STATE,
-            AddressTestCase::ZIP,
+            AddressTestCase::ADDRESS,
             self::EMAIL,
             self::DISPLAY_DATE_TRAINED,
             array('date'=>self::DISPLAY_DATE_TRAINED, 'stage'=>'I'),
@@ -162,7 +150,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
         //thens
         $this->assertTrue($results);
     }
-    
+
     /**
      * @test
      */

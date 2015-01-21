@@ -518,8 +518,8 @@ class DefaultMemberFacade implements MemberFacade
         $diagnosis = new Diagnosis($diagnosisInfo['date'], $stage);
 
         // prepare address model
-        $address = new Address();
-        $address->setAddress($address);
+        $address_object = new Address();
+        $address_object->setAddress($address);
 
         // hydrate member fields
         $member->setFirstName($firstName)
@@ -528,7 +528,7 @@ class DefaultMemberFacade implements MemberFacade
                 ->setStatus($status)
                 ->setVolunteer($is_volunteer)
                 ->setNotes($notes)
-                ->setAddress($address)
+                ->setAddress($address_object)
                 ->setAssociatedUserId($userId)
                 ->setEmail($email)
                 ->setDateTrained($dateTrained)
