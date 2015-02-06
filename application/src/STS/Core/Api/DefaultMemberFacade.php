@@ -2,10 +2,9 @@
 namespace STS\Core\Api;
 
 use STS\Core\Member\MemberDtoAssembler;
-use STS\Domain\School\Specification\MemberSchoolSpecification;
+use STS\Domain\Location\Specification\MemberLocationSpecification;
 use STS\Domain\Member\Specification\MemberByMemberAreaSpecification;
 use STS\Core\Member\MemberDto;
-use STS\Core\Api\MemberFacade;
 use STS\Core\Member\MongoMemberRepository;
 use STS\Core\Location\MongoAreaRepository;
 use STS\Core\User\MongoUserRepository;
@@ -297,6 +296,11 @@ class DefaultMemberFacade implements MemberFacade
         return PhoneNumber::getAvailableTypes();
     }
 
+    /**
+     * @param $searchString
+     * @param MemberLocationSpecification $spec
+     * @return array
+     */
     public function searchForMembersByNameWithSpec($searchString, $spec)
     {
         $foundMembers = $this->memberRepository->searchByName($searchString);
@@ -329,11 +333,11 @@ class DefaultMemberFacade implements MemberFacade
         return new MemberByMemberAreaSpecification($member);
     }
 
-    public function getMemberSchoolSpecForId($id)
+    public function getMemberLocationSpecForId($id)
     {
         $member = $this->memberRepository->load($id);
 
-        return new MemberSchoolSpecification($member);
+        return new MemberLocationSpecification($member);
     }
 
     public function saveMember(

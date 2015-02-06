@@ -1,9 +1,7 @@
 <?php
-namespace STS\Domain;
+namespace STS\Domain\Location;
 
-use STS\Domain\Location\Area;
-
-interface HasArea {
+interface Locatable {
     /**
      * @return string
      */
@@ -11,7 +9,7 @@ interface HasArea {
 
     /**
      * @param Area $area
-     * @return HasArea
+     * @return Locatable
      */
     public function setArea($area);
 
@@ -19,4 +17,9 @@ interface HasArea {
      * @return Area
      */
     public function getArea();
+
+    /**
+     * @return Address
+     */
+    public function getAddress();
 }

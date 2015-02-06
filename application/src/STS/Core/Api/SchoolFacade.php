@@ -4,7 +4,7 @@ namespace STS\Core\Api;
 interface SchoolFacade
 {
     /**
-     * @param \STS\Domain\School\Specification\MemberSchoolSpecification $spec
+     * @param \STS\Domain\Location\Specification\MemberLocationSpecification $spec
      * @return mixed
      */
     public function getSchoolsForSpecification($spec);

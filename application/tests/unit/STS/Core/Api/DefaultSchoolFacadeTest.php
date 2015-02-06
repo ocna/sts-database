@@ -1,8 +1,8 @@
 <?php
 namespace STS\Core\Api;
 
+use STS\Domain\Location\Specification\MemberLocationSpecification;
 use STS\Domain\Member;
-use STS\Domain\School\Specification\MemberSchoolSpecification;
 use STS\Domain\School;
 use STS\Domain\Location\Area;
 use STS\TestUtilities\SchoolTestCase;
@@ -27,7 +27,7 @@ class DefaultSchoolFacadeTest extends SchoolTestCase
         $facade = new DefaultSchoolFacade($this->getMockSchoolRepository(), $this->getMockAreaRepository());
         $member = new Member();
         $areaA = new Area();
-        $spec = new MemberSchoolSpecification($member->canPresentForArea($areaA->setId(11)));
+        $spec = new MemberLocationSpecification($member->canPresentForArea($areaA->setId(11)));
         $schoolDtos = $facade->getSchoolsForSpecification($spec);
         $this->assertCount(1, $schoolDtos);
         /** @var \STS\Core\School\SchoolDto $dto */

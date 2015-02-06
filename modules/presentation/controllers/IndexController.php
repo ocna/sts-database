@@ -239,7 +239,7 @@ class Presentation_IndexController extends SecureBaseController
         }
 
         $professional_group_array = array();
-	    $professional_groups = $this->professionalGroupFacade->getAllProfessionalGroups();
+	    $professional_groups = $this->getProfessionalGroupsVisibleToMember();
 	    /** @var ProfessionalGroup $professional_group */
 	    foreach ($professional_groups as $professional_group) {
 		    $professional_group_array[$professional_group->getId() . '__' . get_class($professional_group)] =
@@ -260,13 +260,29 @@ class Presentation_IndexController extends SecureBaseController
         return $form;
     }
 
+    /**
+     * @return mixed
+     */
     private function getSchoolsVisibleToMember()
     {
         $schoolSpec = null;
         if ($this->user->getAssociatedMemberId() && $this->user->getRole() != 'admin') {
-            $schoolSpec = $this->memberFacade->getMemberSchoolSpecForId($this->user->getAssociatedMemberId());
+            $schoolSpec = $this->memberFacade->getMemberLocationSpecForId($this->user->getAssociatedMemberId());
         }
         return $this->schoolFacade->getSchoolsForSpecification($schoolSpec);
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getProfessionalGroupsVisibleToMember()
+    {
+        $locationSpec = null;
+        if ($this->user->getAssociatedMemberId() && $this->user->getRole() != 'admin') {
+            $locationSpec = $this->memberFacade->getMemberLocationSpecForId($this->user->getAssociatedMemberId
+            ());
+        }
+        return $this->professionalGroupFacade->getProfessionalGroupsForSpecification($locationSpec);
     }
 
     private function savePresentation($postData)

@@ -17,7 +17,7 @@ interface MemberFacade
 
     public function getMemberByMemberAreaSpecForId($id);
 
-    public function getMemberSchoolSpecForId($id);
+    public function getMemberLocationSpecForId($id);
 
     /**
      * saveMember

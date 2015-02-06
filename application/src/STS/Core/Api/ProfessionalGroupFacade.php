@@ -42,4 +42,10 @@ interface ProfessionalGroupFacade
      * @return boolean
      */
     public function deleteProfessionalGroup($id);
+
+    /**
+     * @param null $spec
+     * @return array
+     */
+    public function getProfessionalGroupsForSpecification($spec = null);
 }

@@ -3,8 +3,9 @@ namespace STS\Domain;
 
 use STS\Domain\Location\Address;
 use STS\Domain\Location\Area;
+use STS\Domain\Location\Locatable;
 
-class School extends EntityWithTypes implements HasArea
+class School extends EntityWithTypes implements Locatable
 {
     const TYPE_NP = 'NP';
     const TYPE_PA = 'PA';

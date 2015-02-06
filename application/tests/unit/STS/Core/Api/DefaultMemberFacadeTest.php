@@ -197,8 +197,9 @@ class DefaultMemberFacadeTest extends MemberTestCase
         $memberA->setId(1);
         $memberRepository->shouldReceive('load')->with('1')->andReturn($memberA);
         $facade = new DefaultMemberFacade($memberRepository, $this->getMockAreaRepository(), $this->getMockUserRepository());
-        $spec = $facade->getMemberSchoolSpecForId(1);
-        $this->assertInstanceOf('STS\Domain\School\Specification\MemberSchoolSpecification', $spec);
+        $spec = $facade->getMemberLocationSpecForId(1);
+        $this->assertInstanceOf('STS\Domain\Location\Specification\MemberLocationSpecification',
+            $spec);
     }
     private function getMockMemberRepository()
     {

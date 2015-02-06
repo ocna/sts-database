@@ -77,18 +77,18 @@ class FeatureContext extends MinkContext {
             $userFacade = $this->core->load('UserFacade');
             $user = $userFacade->findUserById($username);
             $memberFacade = $this->core->load('MemberFacade');
-            $schoolSpec = $memberFacade->getMemberSchoolSpecForId($user->getAssociatedMemberId());
+            $schoolSpec = $memberFacade->getMemberLocationSpecForId($user->getAssociatedMemberId());
             $schools = $schoolFacade->getSchoolsForSpecification($schoolSpec);
         }
         $page = $this->getSession()->getPage();
         $aArray = explode(" ", $page->findField($dropdown)->getText());
         $expectedString = '';
-        
+
         foreach ($schools as $school) {
             $expectedString.= $school->getName();
         }
         $eArray = explode(" ", $expectedString);
-        
+
         foreach ($eArray as $key => $value) {
             assertEquals($value, $aArray[$key], "Issue with $key: e:$value a:{$aArray[$key]}");
         }

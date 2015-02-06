@@ -6,7 +6,7 @@ use STS\Domain\Survey\Template;
 use STS\Domain\Member;
 use STS\Domain\Survey;
 use STS\Domain\School;
-use STS\Domain\HasArea;
+use STS\Domain\Location\Locatable;
 use STS\Domain\Presentation;
 use STS\Core\Presentation\MongoPresentationRepository;
 use STS\Core\User\MongoUserRepository;
@@ -212,7 +212,7 @@ class DefaultPresentationFacade implements PresentationFacade
         $dtos          = array();
         foreach ($presentations as $presentation) {
             /** @var Presentation $presentation */
-            if ($presentation->isAccessableByMemberUser($member, $user)) {
+            if ($presentation->isAccessibleByMemberUser($member, $user)) {
                 $dtos[] = PresentationDtoAssembler::toDTO($presentation);
             }
         }
@@ -333,7 +333,7 @@ class DefaultPresentationFacade implements PresentationFacade
             // count number of students
             $summary->totalStudents += $students;
 
-            /** @var HasArea $location */
+            /** @var \STS\Domain\Location\Locatable $location */
             $location = $presentation->getLocation();
 
             // report by state

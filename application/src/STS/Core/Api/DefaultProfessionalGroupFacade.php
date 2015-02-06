@@ -2,6 +2,7 @@
 namespace STS\Core\Api;
 
 use STS\Core\Location\MongoAreaRepository;
+use STS\Domain\Location\Specification\MemberLocationSpecification;
 use STS\Core\ProfessionalGroup\MongoProfessionalGroupRepository;
 use STS\Domain\Location\AreaRepository;
 use STS\Domain\ProfessionalGroup;
@@ -167,9 +168,33 @@ class DefaultProfessionalGroupFacade implements ProfessionalGroupFacade
     }
 
     /**
-     * getDefaultInstance
+     * getProfessionalGroupsForSpecification
      *
-     * @param $config
+     * NOTE: not sure where this is used.
+     *
+     * @param MemberLocationSpecification $spec
+     * @return array
+     */
+    public function getProfessionalGroupsForSpecification($spec = null)
+    {
+        $allProfessionalGroups = $this->professionalGroupRepository->find();
+        if ($spec !== null) {
+            $professionalGroups = array();
+            foreach ($allProfessionalGroups as $professionalGroup) {
+                if ($spec->isSatisfiedBy($professionalGroup)) {
+                    $professionalGroups[] = $professionalGroup;
+                }
+            }
+        } else {
+            $professionalGroups = $allProfessionalGroups;
+        }
+
+        return $professionalGroups;
+    }
+
+
+    /**
+     * @param $mongoDb
      * @return DefaultProfessionalGroupFacade
      */
     public static function getDefaultInstance($mongoDb)

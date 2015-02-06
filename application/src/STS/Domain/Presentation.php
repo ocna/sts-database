@@ -1,9 +1,9 @@
 <?php
 namespace STS\Domain;
 
-use STS\Domain\School\Specification\MemberSchoolSpecification;
+use STS\Domain\Location\Specification\MemberLocationSpecification;
 use STS\Domain\ProfessionalGroup;
-use STS\Domain\HasArea;
+use STS\Core\Member\MemberDto;
 
 class Presentation extends EntityWithTypes
 {
@@ -23,7 +23,7 @@ class Presentation extends EntityWithTypes
     private $numberOfFormsReturnedPost;
 
     /**
-     * @var HasArea
+     * @var \STS\Domain\Location\Locatable
      */
     private $location;
     /**
@@ -56,6 +56,7 @@ class Presentation extends EntityWithTypes
             'dateUpdated'           => new \MongoDate($this->getUpdatedOn())
         );
         $members = array();
+        /** @var MemberDto $member */
         foreach ($this->members as $member) {
             $members[] = $member->getId();
         }
@@ -201,7 +202,7 @@ class Presentation extends EntityWithTypes
      *
      * @return bool
      */
-    public function isAccessableByMemberUser($member, $user)
+    public function isAccessibleByMemberUser($member, $user)
     {
         if ($user->getRole() == 'admin') {
             return true;
@@ -211,7 +212,7 @@ class Presentation extends EntityWithTypes
             return true;
         }
 
-        $spec = new MemberSchoolSpecification($member);
+        $spec = new MemberLocationSpecification($member);
         return $spec->isSatisfiedBy($this->location);
     }
 

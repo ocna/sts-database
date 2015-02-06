@@ -37,7 +37,7 @@ class PresentationTest extends PresentationTestCase
         $member = \Mockery::mock('Member');
         $user = \Mockery::mock('User', array('getRole'=>'admin'));
         $presentation = $this->getValidObject();
-        $this->assertTrue($presentation->isAccessableByMemberUser($member, $user));
+        $this->assertTrue($presentation->isAccessibleByMemberUser($member, $user));
     }
 
     /**
@@ -48,7 +48,7 @@ class PresentationTest extends PresentationTestCase
         $member = \Mockery::mock('Member');
         $user = \Mockery::mock('User', array('getRole'=>'member', 'getId'=>'jfox'));
         $presentation = $this->getValidObject();
-        $this->assertTrue($presentation->isAccessableByMemberUser($member, $user));
+        $this->assertTrue($presentation->isAccessibleByMemberUser($member, $user));
     }
 
     /**
@@ -61,7 +61,7 @@ class PresentationTest extends PresentationTestCase
         $member->canCoordinateForArea($area);
         $user = \Mockery::mock('User', array('getRole'=>'coordinator', 'getId'=>'cuser'));
         $presentation = $this->getValidObject();
-        $this->assertTrue($presentation->isAccessableByMemberUser($member, $user));
+        $this->assertTrue($presentation->isAccessibleByMemberUser($member, $user));
     }
 
     /**
@@ -72,7 +72,7 @@ class PresentationTest extends PresentationTestCase
         $member = MemberTestCase::createValidMember();
         $user = \Mockery::mock('User', array('getRole'=>'coordinator', 'getId'=>'cuser'));
         $presentation = $this->getValidObject();
-        $this->assertFalse($presentation->isAccessableByMemberUser($member, $user));
+        $this->assertFalse($presentation->isAccessibleByMemberUser($member, $user));
     }
 
 	/**

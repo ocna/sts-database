@@ -2,8 +2,10 @@
 namespace STS\Domain;
 
 use STS\Domain\Location\Area;
+use STS\Domain\Location\Locatable;
+use STS\Domain\Location\Address;
 
-class ProfessionalGroup extends Entity implements HasArea
+class ProfessionalGroup extends Entity implements Locatable
 {
     /**
      * @var string
@@ -67,5 +69,13 @@ class ProfessionalGroup extends Entity implements HasArea
     public function getRegionName()
     {
         return $this->area->getRegion()->getName();
+    }
+
+    /**
+     * @return Address
+     */
+    public function getAddress()
+    {
+        return new Address();
     }
 }

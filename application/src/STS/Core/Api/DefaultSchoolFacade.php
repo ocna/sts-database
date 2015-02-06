@@ -5,7 +5,7 @@ use STS\Domain\Location\Address;
 use STS\Domain\School;
 use STS\Core\School\SchoolDtoAssembler;
 use STS\Core\School\SchoolDto;
-use \STS\Domain\School\Specification\MemberSchoolSpecification;
+use \STS\Domain\Location\Specification\MemberLocationSpecification;
 use STS\Core\School\MongoSchoolRepository;
 use STS\Core\Location\MongoAreaRepository;
 
@@ -44,11 +44,11 @@ class DefaultSchoolFacade implements SchoolFacade
     }
 
     /**
-     * getSchoolsForSpecification
+     * getProfessionalGroupsForSpecification
      *
      * NOTE: not sure where this is used.
      *
-     * @param MemberSchoolSpecification $spec
+     * @param MemberLocationSpecification $spec
      * @return array
      */
     public function getSchoolsForSpecification($spec = null)

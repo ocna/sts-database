@@ -1,10 +1,10 @@
 <?php
-namespace STS\Domain\School\Specification;
+namespace STS\Domain\Location\Specification;
 
 use STS\Domain\Member;
-use STS\Domain\HasArea;
+use STS\Domain\Location\Locatable;
 
-class MemberSchoolSpecification
+class MemberLocationSpecification
 {
     private $member;
 
@@ -16,9 +16,9 @@ class MemberSchoolSpecification
         $this->member = $member;
     }
 
-    public function isSatisfiedBy(HasArea $school)
+    public function isSatisfiedBy(Locatable $location)
     {
-        if (in_array($school->getArea(), $this->member->getAllAssociatedAreas())) {
+        if (in_array($location->getArea(), $this->member->getAllAssociatedAreas())) {
             return true;
         } else {
             return false;

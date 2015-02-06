@@ -1,9 +1,9 @@
 <?php
-use STS\Domain\School\Specification\MemberSchoolSpecification;
-use STS\Domain\Member;
-use \Mockery;
 
-class MemberSchoolSpecificationTest extends \PHPUnit_Framework_TestCase
+use STS\Domain\Member;
+use STS\Domain\Location\Specification\MemberLocationSpecification;
+
+class MemberLocationSpecificationTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
@@ -11,8 +11,9 @@ class MemberSchoolSpecificationTest extends \PHPUnit_Framework_TestCase
     public function createValidObject()
     {
         $member = \Mockery::mock('STS\Domain\Member');
-        $spec = new MemberSchoolSpecification($member);
-        $this->assertInstanceOf('STS\Domain\School\Specification\MemberSchoolSpecification', $spec);
+        $spec = new MemberLocationSpecification($member);
+        $this->assertInstanceOf('STS\Domain\Location\Specification\MemberLocationSpecification',
+            $spec);
     }
     /**
      * @test
@@ -21,7 +22,7 @@ class MemberSchoolSpecificationTest extends \PHPUnit_Framework_TestCase
      */
     public function throwExceptionForNotPassingMember()
     {
-        $spec = new MemberSchoolSpecification(null);
+        $spec = new MemberLocationSpecification(null);
     }
     /**
      * @test
@@ -37,7 +38,7 @@ class MemberSchoolSpecificationTest extends \PHPUnit_Framework_TestCase
             ->andReturn(array(
                 $area, $otherArea
             ));
-        $spec = new MemberSchoolSpecification($member);
+        $spec = new MemberLocationSpecification($member);
         $this->assertTrue(true === $spec->isSatisfiedBy($school));
     }
 }
