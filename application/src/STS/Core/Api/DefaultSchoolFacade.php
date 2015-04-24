@@ -212,15 +212,15 @@ class DefaultSchoolFacade implements SchoolFacade
         $notes,
         $address
     ) {
-        $address = new Address();
-        $address->setAddress($address);
+        $address_object = new Address();
+        $address_object->setAddress($address);
         $area = $this->areaRepository->load($areaId);
         $school = new School();
         $school->setName($name)
             ->setType(School::getAvailableType($schoolType))
             ->setIsInactive($isInactive)
             ->setNotes($notes)
-            ->setAddress($address)
+            ->setAddress($address_object)
             ->setArea($area);
         $savedSchool = $this->schoolRepository->save($school);
         return SchoolDtoAssembler::toDTO($savedSchool);
