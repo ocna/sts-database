@@ -249,14 +249,14 @@ class DefaultSchoolFacade implements SchoolFacade
         $address
     ) {
         $oldSchool = $this->schoolRepository->load($id);
-        $address = new Address();
-        $address->setAddress($address);
+        $address_object = new Address();
+        $address_object->setAddress($address);
         $oldSchool->setName($name)
                   ->setType(School::getAvailableType($schoolType))
                   ->setIsInactive($isInactive)
                   ->setNotes($notes)
                   ->setArea($this->areaRepository->load($areaId))
-                  ->setAddress($address);
+                  ->setAddress($address_object);
         $updatedSchool = $this->schoolRepository->save($oldSchool);
         return SchoolDtoAssembler::toDTO($updatedSchool);
     }
