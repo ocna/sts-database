@@ -4,17 +4,18 @@
     },
     "require":{
       "mandrill/mandrill":"*",
-      "breerly/zf1":"1.11.*",
-      "phpunit/phpunit":"*",
-      "emagister/zend-form-decorators-bootstrap":"*",
-      "mockery/mockery": "*",
-      "behat/behat":"*",
-      "behat/mink":"*",
-      "behat/mink-extension":"*",
-      "behat/mink-goutte-driver":"*",
-      "behat/mink-sahi-driver": "*"
+      "sparkpost/php-sparkpost": "~0.1.1",
+      "breerly/zf1":"~1.11.11",
+      "phpunit/phpunit":"~4.6",
+      "emagister/zend-form-decorators-bootstrap":"dev-master",
+      "mockery/mockery": "~0.9.3",
+      "behat/behat":"~3.0",
+      "behat/mink":"~1.6",
+      "behat/mink-extension":"~2.0",
+      "behat/mink-goutte-driver":"~1.0",
+      "behat/mink-sahi-driver": "~1.2"
    },
-   "minimum-stability":"dev",
+   "prefer-stable":true,
    "config":{
       "bin-dir":"bin/"
    },
