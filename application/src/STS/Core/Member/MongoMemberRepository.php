@@ -55,7 +55,7 @@ class MongoMemberRepository implements MemberRepository
         $results = $this->mongoDb->selectCollection('member')->update(
             array('_id' => new \MongoId($id)),
             $array,
-            array('upsert' => 1, 'safe' => 1)
+            array('upsert' => 1, 'w' => 1)
         );
         if (array_key_exists('upserted', $results)) {
             /** @var \MongoId $id */
@@ -103,7 +103,7 @@ class MongoMemberRepository implements MemberRepository
         $mongoId = new \MongoId($id);
         $results = $this->mongoDb->selectCollection('member')->remove(array(
                 '_id' => $mongoId
-            ), array('justOne'=>true, 'safe'=>true));
+            ), array('justOne'=>true, 'w'=>true));
 
         if ($results['ok']==1) {
             return true;

@@ -17,6 +17,11 @@
                         <sourceEmailAddress></sourceEmailAddress>
                         <api_key></api_key>
                     </mandrill>
+                    <sparkpost>
+                        <sourceEmailAddress></sourceEmailAddress>
+                        <api_key></api_key>
+                        <testEmailAddress></testEmailAddress>
+                    </sparkpost>
                 </email>
 			</default>
 		</modules>

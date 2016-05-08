@@ -578,8 +578,20 @@ class Admin_MemberController extends SecureBaseController
 
                         // test if the username is used by another record
                         $dupe = $this->userFacade->findUserById($postData['systemUsername']);
-                        if (! empty($dupe)) {
+                        if (! empty($dupe) && ! empty($associatedUser)) {
                             $is_self = ($dupe->getAssociatedMemberId() == $associatedUser->getAssociatedMemberId());
+                        }
+
+                        // If there is no associated user but we find one with the same
+                        // username, the username is a duplicate and we should trigger
+                        // an error.
+                        if (! empty($dupe) && empty($associatedUser)) {
+                            $msg = sprintf(
+                                "A system user with the username: %s already exists. System users must have a unique email and username.",
+                                $postData['systemUsername']
+                            );
+
+                            throw new ApiException($msg);
                         }
 
                         if (! empty($dupe) && ! $is_self && $dupe->getAssociatedMemberId()) {
@@ -593,7 +605,7 @@ class Admin_MemberController extends SecureBaseController
 
                         // test if the email is used by another record
                         $dupe = $this->userFacade->findUserByEmail($postData['systemUserEmail']);
-                        if (! empty($dupe)) {
+                        if (! empty($dupe) && ! empty($associatedUser)) {
                             $is_self = ($dupe->getAssociatedMemberId() == $associatedUser->getAssociatedMemberId());
                         }
 
@@ -665,7 +677,7 @@ class Admin_MemberController extends SecureBaseController
                         'params'     => array('id' => $updatedMemberDto->getId())
                     ));
                 } catch (ApiException $e) {
-                    $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage(),
+                    $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage() . ' ' . $e->getPrevious()->getMessage(),
                         'error');
                 }
             } else {
