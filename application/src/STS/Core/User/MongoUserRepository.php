@@ -73,7 +73,7 @@ class MongoUserRepository implements UserRepository
         $results = $this->getCollection()->update(
             array('_id' => $array['_id']),
             $array,
-            array('upsert' => 1, 'safe' => 1)
+            array('upsert' => 1, 'w' => 1)
         );
 
         if (array_key_exists('upserted', $results)) {
@@ -93,7 +93,7 @@ class MongoUserRepository implements UserRepository
     {
         $results = $this->getCollection()->remove(
             array('_id' => $id),
-            array('justOne' => true, 'safe' => true)
+            array('justOne' => true, 'w' => 1)
         );
 
         if (1 == $results['ok']) {

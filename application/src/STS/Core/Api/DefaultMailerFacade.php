@@ -2,9 +2,10 @@
 namespace STS\Core\Api;
 
 use STS\Core\Api\MailerFacade;
-use STS\Core\Service\MandrillEmailMessageService;
+use SparkPost\SparkPost;
 use STS\Core\Service\MessageService\EmailMessage;
-use STS\Core\Servies\MessageService\MessageServiceException;
+use STS\Core\Service\SparkPostEmailMessageService;
+use STS\Core\Service\MessageService\MessageServiceException;
 
 class DefaultMailerFacade implements MailerFacade
 {
@@ -46,9 +47,9 @@ class DefaultMailerFacade implements MailerFacade
 
     public static function getDefaultInstance($config)
     {
-        $emailConfig = $config->modules->default->email->mandrill;
-        $mandrill = new \Mandrill($emailConfig->api_key);
-        $messageService = new MandrillEmailMessageService($mandrill->messages, $emailConfig->sourceEmailAddress);
+        $emailConfig = $config->modules->default->email->sparkpost;
+        SparkPost::setConfig(array('key'=> $emailConfig->api_key));
+        $messageService = new SparkPostEmailMessageService($emailConfig->sourceEmailAddress, $emailConfig->testEmailAddress);
         return new DefaultMailerFacade($messageService);
     }
 }
