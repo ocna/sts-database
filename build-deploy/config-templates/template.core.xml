@@ -13,14 +13,10 @@
                     </mongodb>
 				</db>
                 <email>
-                    <mandrill>
-                        <sourceEmailAddress></sourceEmailAddress>
-                        <api_key></api_key>
-                    </mandrill>
                     <sparkpost>
-                        <sourceEmailAddress></sourceEmailAddress>
-                        <api_key></api_key>
-                        <testEmailAddress></testEmailAddress>
+                        <sourceEmailAddress>tech@ocrfa.org</sourceEmailAddress>
+                        <api_key>3632f480399310c7a27a03f966568beefc24f7c5</api_key>
+                        <testEmailAddress>developer@example.copm</testEmailAddress>
                     </sparkpost>
                 </email>
 			</default>
