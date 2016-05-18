@@ -150,6 +150,8 @@ In your hosts file (`/etc/hosts` on Mac and Linux), enter the following rule:
 192.168.33.101    dev.sts.ovariancancer.org
 ```
 
+To test, visit [http://dev.sts.ovariancancer.org](http://dev.sts.ovariancancer.org)
+
 ####Logs
 
 - MongoDB Log: `/var/log/mongod.log`
