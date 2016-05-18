@@ -28,7 +28,8 @@ The main environments are located on an AWS EC2 Instance. The server directories
 
 ####SSH Access to the Server
 - If your public key is added: `ssh ubuntu@23.21.64.30`
-- If you have a key file: `ssh -i deploy.pem ubuntu@23.21.64.30`
+- If you have a key file: `ssh -i ocnasts.pem ubuntu@23.21.64.30`
+- You need to have an existing admin add your key to the server for either of these work.
 
 ####Accessing the Zend Server Management Console
 The server is running an instance of Zend Server CE
@@ -134,6 +135,14 @@ sudo apt-get install ant
 
 Answer "y" when it asks if you're sure.
 
+##### Set config files
+Copy `build-deploy/template.core.xml` to `application/config/core.xml`. The SparkPost configuration should be done for you, but you will need to enter your MongoDB information. By default, the `host` is `localhost` and the `port` is `27017`.
+
+##### Run Composer Install
+From the top level of the project, run `composer install`. This is much faster than `composer update` and gets you versions of everything in `composer.lock`.
+
+If you update the requirements in `composer.json`, you'll want to do `composer update` to get the latest versions of everything that match the rules in `composer.json`.
+
 ####Logs
 
 - MongoDB Log: `/var/log/mongod.log`
@@ -142,19 +151,6 @@ Answer "y" when it asks if you're sure.
 - Apache Access Log: `/tmp/apache-access.log`
 - Application Log: `/var/log/sts-database/application.log`
 
-####MongoDB
-Local database connection is used for development purposes, mongo can be simply configured locally using a `mongodb.conf` file such as:
-
-```
-fork = true
-bind_ip = 127.0.0.1
-port = 27017
-quiet = false
-dbpath = /data/db/
-logpath = /tmp/logs/mongod.log
-logappend = true
-journal = true
-```
 ###Managing Persistence
 The STS Database Application uses [MongoDB](http://www.mongodb.org/) for persistence.
 
