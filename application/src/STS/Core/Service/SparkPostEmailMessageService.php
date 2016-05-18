@@ -8,6 +8,7 @@
  */
 namespace STS\Core\Service;
 
+use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use STS\Core\Service\EmailMessageService;
 use STS\Core\Service\MessageService\MessageServiceException;
 use STS\Core\Service\MessageService\EmailMessage;
@@ -26,6 +27,10 @@ class SparkPostEmailMessageService implements EmailMessageService
      */
     public function __construct($sourceEmailAddress, $testEmailAddress)
     {
+        if (null == $sourceEmailAddress || null == $testEmailAddress) {
+            throw new InvalidArgumentException('Must have email addresses in configuration.');
+        }
+        
         $this->sourceEmailAddress = $sourceEmailAddress;
         $this->testEmailAddress = $testEmailAddress;
     }

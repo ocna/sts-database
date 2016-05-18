@@ -1,0 +1,24 @@
+---
+server:
+    install: '1'
+    packages: [vim, git]
+    timezone: America/New_York
+    locale: en_US.UTF-8
+vagrant_local:
+    install: '1'
+    vm: { base_box: trusty64, hostname: dev.sts.ovariancancer.org, ip: 192.168.33.101, memory: '1024', sharedfolder: ./, syncType: nfs }
+apache:
+    install: '1'
+    docroot: /vagrant/public
+    servername: sts-database
+mongodb:
+    install: '1'
+php:
+    install: '1'
+    ppa: php5-5.6
+    packages: [php5-cli, php5-intl, php5-mcrypt, php5-curl, php5-mongo]
+xdebug:
+    install: '1'
+composer:
+    install: '1'
+

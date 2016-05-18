@@ -6,10 +6,6 @@ This document details the development and maintenance of the [STS Database Appli
 - [Deployment](#deployment)
 
 ## [Resources](id:resources)
-###Project Management
-The project is managed using a Trello board here: [https://trello.com/board/sts-database/5050b7c870f409436916693b](https://trello.com/board/sts-database/5050b7c870f409436916693b).
-
-Other relevant files are shared in dropbox here: [https://www.dropbox.com/sh/bmmwnqhdlc4xpes/HDz2bwupfa](https://www.dropbox.com/sh/bmmwnqhdlc4xpes/HDz2bwupfa)
 
 ###Code Hosting
 The code is hosted at GitHub under an OCNA account. The account details are:
@@ -28,8 +24,7 @@ The main environments are located on an AWS EC2 Instance. The server directories
 
 [https://console.aws.amazon.com](https://console.aws.amazon.com)
 
-- Username: `jason.robertfox@gmail.com`
-- Password: `@wS40Cn@`
+- Get access from Alison Silberman: `asilberman@ocrfa.org`
 
 ####SSH Access to the Server
 - If your public key is added: `ssh ubuntu@23.21.64.30`
@@ -79,68 +74,65 @@ username: `24845043`
 password: `ocna2010`
 
 ###Transactional Email
-This is managed by [Mandrill](https://mandrillapp.com/)
+This is managed by [SparkPost](https://www.sparkpost.com)
 
-username: `jason.robertfox@gmail.com`
-password: `0Cn@MnDr11`
+username: `ocna@ocrfa.org`
+password: `Ocrfa2016!`
 
-> **Note**: This line must be added in the Mandrill `call` function if there are ssl problems:
-> 
->     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+## [Development](id:development)
 
 The STS Database Application has the following environments:
 
 - Local Development
 - Staging
-- Beta
 - Production
 
-## [Development](id:development)
-###Developing Features
-The project uses [gitflow](https://github.com/nvie/gitflow) and the [gitflow branching model](http://nvie.com/posts/a-successful-git-branching-model/) to manage feature development and release preparation. 
-
-> **Note:** You should set up gitflow with the version prefix `v` and the trello card number for commits, for example: `tr-123`.
-
-Example:
-
-```
-git flow feature start tr-123
-git flow feature finish tr-123
-
-git flow release start 1.0.0
-git flow release finish 1.0.0
-```
-
-> **Note:** Releases should be named `<major>.<minor>.<fix>`. During the release process you must update the `/design/scripts/partials/app-footer.phtml` with the current version number prior to deployment.
-
 ###Local Development
-This application is intended to be installed locally for development purposes.
 
-1. Clone the repository
-2. Use the target `install` to install dependencies and configure the application:
+This application is intended to be installed on a Vagrant-based virtual machine for development purposes
 
-    ```
-    ant install -Denv=dev
-    ```
+- Clone the project
+- Make sure you have Vagrant and VirtualBox installed.
+    - [Vagrant](https://www.vagrantup.com)
+    - [VirtualBox](https://www.virtualbox.org)
+- In the top-level directory of the project (sts-database), issue
+ 
+```
+vagrant up
+```
 
-3. Create a virtual host file to point to the `public` folder, example:
+    - If prompted, enter your administrator password to enable NFS mounts.
+- Vagrant will download the appropriate box and run the Ansible playbooks to install the various packages.
 
-    ```
-    <VirtualHost *:80>
-        DocumentRoot "/Users/jason/Development/sts-database/public"
-        ServerName dev.sts.ovariancancer.org
+Once everything is installed (this may take several minutes the first time), SSH to your new box:
 
-        SetEnv APPLICATION_ENV development
+```
+vagrant ssh
+```
 
-        <Directory "/Users/jason/Development/sts-database/public">
-            DirectoryIndex index.php index.html
-            AllowOverride All
-            Order allow,deny
-            Allow from all
-        </Directory>
+#### First Time Only
+##### Import Database
+The first time you launch your VM, you'll need to import the production database.
 
-   </VirtualHost>
-   ```
+```
+cd /vagrant/build-deploy/
+tar xzf sts-production.tgz
+mongorestore dump/sts-production
+```
+
+##### Copy SSH Key
+
+```
+cd ~/
+cp /vagrant/build-deploy/ocnasts.pem ./
+```
+
+##### Install Ant
+```
+sudo apt-get install ant
+```
+
+Answer "y" when it asks if you're sure.
 
 ####Logs
 
@@ -165,15 +157,6 @@ journal = true
 ```
 ###Managing Persistence
 The STS Database Application uses [MongoDB](http://www.mongodb.org/) for persistence.
-
-Importing Datasets:
-
-```
-mongoexport -v -d sts-development -c area --jsonArray -o ../collections/area.json
-
-mongoimport -v -h 23.21.64.30:27017 -d sts-production -c area -u sts -p sT6D9tA01 --jsonArray --file area.json
-
-```
 
 Running Command Sets:
 
@@ -209,23 +192,10 @@ Examples:
 
 ```
 ant -propertyfile stg.deploy.properties -f deploy.xml deploy -Dgit.branch=develop
-ant -propertyfile stg.deploy.properties -f deploy.xml deploy -Dgit.branch=release/1.0
-ant -propertyfile beta.deploy.properties -f deploy.xml deploy -Dgit.branch=release/1.0
+ant -propertyfile stg.deploy.properties -f deploy.xml deploy -Dgit.branch=master
+ant -propertyfile beta.deploy.properties -f deploy.xml deploy -Dgit.branch=master
 ```
 
-There is a wrapper shell script in `src/build-deploy/` to handle deployments to production/staging so you can do:
-
-The following to deploy from the `develop` branch to the staging site:
-
-~~~~
-./deploy.sh dev
-~~~~
-
-or the following to deploy from the `master` branch to the production site:
-
-~~~~
-./deploy.sh prod
-~~~~
 
 ###Environments
 There are two environments that you may deploy to:
