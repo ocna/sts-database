@@ -143,6 +143,13 @@ From the top level of the project, run `composer install`. This is much faster t
 
 If you update the requirements in `composer.json`, you'll want to do `composer update` to get the latest versions of everything that match the rules in `composer.json`.
 
+##### Update your hosts file
+In your hosts file (`/etc/hosts` on Mac and Linux), enter the following rule:
+
+```
+192.168.33.101    dev.sts.ovariancancer.org
+```
+
 ####Logs
 
 - MongoDB Log: `/var/log/mongod.log`
