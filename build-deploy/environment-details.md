@@ -130,13 +130,29 @@ cp /vagrant/build-deploy/ocnasts.pem ./
 
 ##### Install Ant
 ```
-sudo apt-get install ant
+sudo apt-get install -y ant
 ```
 
 Answer "y" when it asks if you're sure.
 
 ##### Set config files
-Copy `build-deploy/template.core.xml` to `application/config/core.xml`. The SparkPost configuration should be done for you, but you will need to enter your MongoDB information. By default, the `host` is `localhost` and the `port` is `27017`.
+
+1. Copy `build-deploy/config-templates/template.core.xml` to `application/config/core.xml`. 
+1. Copy `build-deploy/config-templates/dev.application.ini` to `application/config/application.ini`. 
+1. The SparkPost configuration should be done for you.
+1. Tou will need to enter your MongoDB information in `core.xml`. By default, the `host` is `localhost` and the `port` is `27017`. Your local configuration may look like:
+
+```
+<db>
+    <mongodb>
+        <host>localhost</host>
+        <port>27017</port>
+        <username></username>
+        <password></password>
+        <dbname>sts-production</dbname>
+    </mongodb>
+</db>
+```
 
 ##### Run Composer Install
 From the top level of the project, run `composer install`. This is much faster than `composer update` and gets you versions of everything in `composer.lock`.
