@@ -16,7 +16,7 @@ class DefaultMailerFacadeTest extends \PHPUnit_Framework_TestCase
      */
     public function validConstructionWithEmailService()
     {
-        $messageService = \Mockery::mock('STS\Core\Service\MandrillEmailMessageService');
+        $messageService = \Mockery::mock('STS\Core\Service\SparkPostEmailMessageService');
         $facade = new DefaultMailerFacade($messageService);
         $this->assertInstanceOf('STS\Core\Api\DefaultMailerFacade', $facade);
     }
@@ -47,7 +47,7 @@ class DefaultMailerFacadeTest extends \PHPUnit_Framework_TestCase
      */
     public function validSendNewAccountNotification()
     {
-        $messageService = \Mockery::mock('STS\Core\Service\MandrillEmailMessageService');
+        $messageService = \Mockery::mock('STS\Core\Service\SparkPostEmailMessageService');
         $messageService->shouldReceive('sendMessageToEmail')->once()->andReturn(true);
         $facade = new DefaultMailerFacade($messageService);
         $results = $facade->sendNewAccountNotification(self::VALID_NAME, self::VALID_USERNAME, self::VALID_EMAIL, self::VALID_PASSWORD);

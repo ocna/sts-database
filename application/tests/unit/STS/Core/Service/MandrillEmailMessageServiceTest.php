@@ -1,24 +1,37 @@
 <?php
 namespace STS\Core\Service;
 
-use STS\Core\Service\MandrillEmailMessageService;
+use Behat\Mink\Exception\Exception;
+use STS\Core\Service\SparkPostEmailMessageService;
 use STS\Core\Service\MessageService\EmailMessage;
 use STS\Core\Service\MessageService\MessageServiceException;
+use Zend_Config;
+use Zend_Registry;
+use SparkPost\SparkPost;
 
 class MandrillEmailMessageServiceTest extends \PHPUnit_Framework_TestCase
 {
 
-    const VALID_SOURCE_EMAIL = 'tech@ovariancancer.org';
+    const VALID_SOURCE_EMAIL = 'tech@ocrfa.org';
     const VALID_EMAIL = 'success@simulator.amazonses.com';
+
+    public function setUp()
+    {
+        parent::setUp();
+        $config = new Zend_Config(['env' => 'test'], true);
+        Zend_Registry::set('config', $config);
+
+        SparkPost::setConfig(array('key'=> '3632f480399310c7a27a03f966568beefc24f7c5'));
+    }
 
     /**
      * @test
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Requires Configured Mandrill_Messages
+     * @expectedExceptionMessage Must have email addresses in configuration.
      */
-    public function itShouldThrowExceptionForNotGettingMandrill()
+    public function itShouldThrowExceptionForNotGettingSparkPost()
     {
-        $service = new MandrillEmailMessageService(null, null);
+        $service = new SparkPostEmailMessageService(null, null);
     }
 
     /**
@@ -27,9 +40,9 @@ class MandrillEmailMessageServiceTest extends \PHPUnit_Framework_TestCase
     public function itShouldAcceptAnMandrillAndSource()
     {
         $mandrill = $this->getMockMandrillMessages();
-        $service = new MandrillEmailMessageService($mandrill, self::VALID_SOURCE_EMAIL);
+        $service = new SparkPostEmailMessageService(self::VALID_SOURCE_EMAIL, self::VALID_EMAIL);
         $this->assertInstanceOf('STS\Core\Service\EmailMessageService', $service);
-        $this->assertInstanceOf('STS\Core\Service\MandrillEmailMessageService', $service);
+        $this->assertInstanceOf('STS\Core\Service\SparkPostEmailMessageService', $service);
     }
 
     /**
@@ -39,24 +52,9 @@ class MandrillEmailMessageServiceTest extends \PHPUnit_Framework_TestCase
     {
         $mandrill = $this->getMockMandrillMessages();
         $mandrill->shouldReceive('send')->withAnyArgs()->andReturn(array(array('email'=>self::VALID_EMAIL, 'status'=>'sent')));
-        $service = new MandrillEmailMessageService($mandrill, self::VALID_SOURCE_EMAIL);
+        $service = new SparkPostEmailMessageService(self::VALID_SOURCE_EMAIL, self::VALID_EMAIL);
         $message = new EmailMessage('Test', 'Test');
         $this->assertTrue($service->sendMessageToEmail($message, self::VALID_EMAIL));
-    }
-
-    /**
-     * @test
-     * @expectedException STS\Core\Service\MessageService\MessageServiceException
-     * @expectedExceptionMessage Error occurred while sending message: Invalid API key
-     * @expectedExceptionCode -1
-     */
-    public function itShouldThrowExceptionOnSendFailure()
-    {
-        $mandrill = $this->getMockMandrillMessages();
-        $mandrill->shouldReceive('send')->withAnyArgs()->andReturn(array('status'=>'error', 'code'=>-1, 'message'=> 'Invalid API key'));
-        $service = new MandrillEmailMessageService($mandrill, self::VALID_SOURCE_EMAIL);
-        $message = new EmailMessage('Test', 'Test');
-        $service->sendMessageToEmail($message, self::VALID_SOURCE_EMAIL);
     }
 
     /**
@@ -67,7 +65,7 @@ class MandrillEmailMessageServiceTest extends \PHPUnit_Framework_TestCase
     public function itShouldThrowExceptionForNotMessage()
     {
         $mandrill = $this->getMockMandrillMessages();
-        $service = new MandrillEmailMessageService($mandrill, self::VALID_SOURCE_EMAIL);
+        $service = new SparkPostEmailMessageService(self::VALID_SOURCE_EMAIL, self::VALID_EMAIL);
         $service->sendMessageToEmail(null, null);
     }
 
@@ -79,7 +77,7 @@ class MandrillEmailMessageServiceTest extends \PHPUnit_Framework_TestCase
     public function itShouldThrowExceptionForNotEmail()
     {
         $mandrill = $this->getMockMandrillMessages();
-        $service = new MandrillEmailMessageService($mandrill, self::VALID_SOURCE_EMAIL);
+        $service = new SparkPostEmailMessageService(self::VALID_SOURCE_EMAIL, self::VALID_EMAIL);
         $message = new EmailMessage('Test', 'Test');
         $service->sendMessageToEmail($message, null);
     }
