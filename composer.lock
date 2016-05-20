@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8b64c671a3a3baf2ae33f54bf3b805c5",
-    "content-hash": "bbe2155ef8ed865fc6c581c1d0203037",
+    "hash": "e0469801d4a053b83c9f88da5246b1b6",
+    "content-hash": "7bf12414d5de5b4403a4f40b7298b60a",
     "packages": [
         {
             "name": "behat/behat",
@@ -519,47 +519,6 @@
                 "transliterator"
             ],
             "time": "2015-09-28 16:26:35"
-        },
-        {
-            "name": "breerly/zf1",
-            "version": "1.11.11",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/breerly/zf1",
-                "reference": "1.11.11"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://github.com/breerly/zf1/zipball/1.11.11",
-                "reference": "1.11.11",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.2.4"
-            },
-            "bin": [
-                "bin/zf.php"
-            ],
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Zend_": "library/",
-                    "ZendX_": "extras/library/"
-                }
-            },
-            "include-path": [
-                "library/"
-            ],
-            "description": "Zend Framework 1",
-            "homepage": "https://github.com/breerly/zf1",
-            "keywords": [
-                "ZF1",
-                "Zend Framework",
-                "zend",
-                "zend framework 1",
-                "zf"
-            ],
-            "time": "2012-05-31 06:45:44"
         },
         {
             "name": "doctrine/instantiator",
@@ -2649,16 +2608,16 @@
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.1.1",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "1289d16209491b584839022f29257ad859b8532d"
+                "reference": "dff51f72b0706335131b00a7f49606168c582594"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/1289d16209491b584839022f29257ad859b8532d",
-                "reference": "1289d16209491b584839022f29257ad859b8532d",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/dff51f72b0706335131b00a7f49606168c582594",
+                "reference": "dff51f72b0706335131b00a7f49606168c582594",
                 "shasum": ""
             },
             "require": {
@@ -2670,7 +2629,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.1-dev"
+                    "dev-master": "1.2-dev"
                 }
             },
             "autoload": {
@@ -2704,7 +2663,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2016-01-20 09:13:37"
+            "time": "2016-05-18 14:26:46"
         },
         {
             "name": "symfony/process",
@@ -2867,6 +2826,53 @@
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
             "time": "2016-03-04 07:55:57"
+        },
+        {
+            "name": "zendframework/zendframework1",
+            "version": "1.12.18",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zendframework/zf1.git",
+                "reference": "bc3f2652f305fc43565af1570db83dda05578e4f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zendframework/zf1/zipball/bc3f2652f305fc43565af1570db83dda05578e4f",
+                "reference": "bc3f2652f305fc43565af1570db83dda05578e4f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.11"
+            },
+            "require-dev": {
+                "phpunit/dbunit": "1.3.*",
+                "phpunit/phpunit": "3.7.*"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.12.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Zend_": "library/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "include-path": [
+                "library/"
+            ],
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Zend Framework 1",
+            "homepage": "http://framework.zend.com/",
+            "keywords": [
+                "ZF1",
+                "framework"
+            ],
+            "time": "2016-04-13 15:32:30"
         }
     ],
     "packages-dev": [

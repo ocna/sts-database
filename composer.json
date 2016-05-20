@@ -5,7 +5,7 @@
     "require":{
       "mandrill/mandrill":"*",
       "sparkpost/php-sparkpost": "~0.1.1",
-      "breerly/zf1":"~1.11.11",
+      "zendframework/zendframework1":"~1.12",
       "phpunit/phpunit":"~5.3",
       "emagister/zend-form-decorators-bootstrap":"dev-master",
       "mockery/mockery": "~0.9",
