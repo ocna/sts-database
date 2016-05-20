@@ -3,7 +3,6 @@ use STS\Domain\Member\Specification\MemberByMemberAreaSpecification;
 use STS\Domain\Member;
 use STS\Core\Api\DefaultMemberFacade;
 use STS\Domain\Location\Area;
-use \Mockery;
 use STS\TestUtilities\MemberTestCase;
 use STS\TestUtilities\Location\AddressTestCase;
 
