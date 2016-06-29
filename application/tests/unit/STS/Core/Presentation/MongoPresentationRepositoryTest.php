@@ -25,7 +25,8 @@ class MongoPresentationRepositoryTest extends \PHPUnit_Framework_TestCase
     private function getValidMockedRepo()
     {
         $mongoDb = Mockery::mock('MongoDB');
-        $repo = new MongoPresentationRepository($mongoDb);
+        $cache = Mockery::mock('STS\Core\Cache');
+        $repo = new MongoPresentationRepository($mongoDb, $cache);
         return $repo;
     }
 }

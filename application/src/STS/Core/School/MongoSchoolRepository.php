@@ -1,6 +1,7 @@
 <?php
 namespace STS\Core\School;
 
+use STS\Core\Cacheable;
 use STS\Domain\Location\Address;
 use STS\Domain\School;
 use STS\Domain\School\SchoolRepository;
@@ -9,10 +10,15 @@ use STS\Core\Location\MongoAreaRepository;
 class MongoSchoolRepository implements SchoolRepository
 {
     private $mongoDb;
+    /**
+     * @var
+     */
+    private $cache;
 
-    public function __construct($mongoDb)
+    public function __construct($mongoDb, Cacheable $cache)
     {
         $this->mongoDb = $mongoDb;
+        $this->cache = $cache;
     }
 
     /**
@@ -22,6 +28,16 @@ class MongoSchoolRepository implements SchoolRepository
      */
     public function load($id)
     {
+        if (null !== $this->cache->getFromCache($id)) {
+            return $this->cache->getFromCache($id);
+        }
+
+        $school = $this->loadFromMongo($id);
+        $this->cache->addToCache($id, $school);
+        return $school;
+    }
+
+    private function loadFromMongo($id) {
         $schoolData = $this->mongoDb->school->findOne(
             array('_id' => new \MongoId($id))
         );

@@ -1,6 +1,7 @@
 <?php
 namespace STS\Core\Api;
 
+use STS\Core\Cacheable;
 use STS\Domain\Location\Address;
 use STS\Domain\School;
 use STS\Core\School\SchoolDtoAssembler;
@@ -265,11 +266,12 @@ class DefaultSchoolFacade implements SchoolFacade
      * getDefaultInstance
      *
      * @param $mongoDb
+     * @param Cacheable $cache
      * @return DefaultSchoolFacade
      */
-    public static function getDefaultInstance($mongoDb)
+    public static function getDefaultInstance($mongoDb, Cacheable $cache)
     {
-        $schoolRepository = new MongoSchoolRepository($mongoDb);
+        $schoolRepository = new MongoSchoolRepository($mongoDb, $cache);
         $areaRepository = new MongoAreaRepository($mongoDb);
         return new DefaultSchoolFacade($schoolRepository, $areaRepository);
     }

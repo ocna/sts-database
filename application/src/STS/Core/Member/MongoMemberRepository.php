@@ -1,6 +1,7 @@
 <?php
 namespace STS\Core\Member;
 
+use STS\Core\Cacheable;
 use STS\Domain\Location\Address;
 use STS\Domain\Member;
 use STS\Domain\Member\MemberRepository;
@@ -19,9 +20,10 @@ class MongoMemberRepository implements MemberRepository
     /**
      * @param \MongoDb $mongoDb
      */
-    public function __construct($mongoDb)
+    public function __construct($mongoDb, Cacheable $cache)
     {
         $this->mongoDb = $mongoDb;
+        $this->cache = $cache;
     }
 
     public function find($query = array())
@@ -87,10 +89,20 @@ class MongoMemberRepository implements MemberRepository
      */
     public function load($id)
     {
+        if (null !== $this->cache->getFromCache($id)) {
+            return $this->cache->getFromCache($id);
+        }
+
+        $member = $this->loadFromMongo($id);
+        $this->cache->addToCache($id, $member);
+        return $member;
+    }
+
+    private function loadFromMongo($id) {
         $mongoId = new \MongoId($id);
         $memberData = $this->mongoDb->selectCollection('member')->findOne(array(
-                '_id' => $mongoId
-            ));
+            '_id' => $mongoId
+        ));
         if (is_null($memberData)) {
             throw new \InvalidArgumentException('Member not found for given id.');
         }

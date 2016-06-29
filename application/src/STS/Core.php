@@ -10,8 +10,10 @@ use STS\Core\Api\DefaultPresentationFacade;
 use STS\Core\Api\DefaultLocationFacade;
 use STS\Core\Api\DefaultUserFacade;
 use STS\Core\Api\DefaultMailerFacade;
+use STS\Core\Cache;
 use STS\Core\DbFactory;
 use STS\Core\MongoFactory;
+use Symfony\Component\DependencyInjection\Tests\Compiler\C;
 
 class Core
 {
@@ -19,33 +21,36 @@ class Core
 
     private $config;
     private $dbFactory;
+    private $cache;
 
     protected static $default;
 
-    public function __construct(\Zend_Config $config, DbFactory $factory)
+    public function __construct(\Zend_Config $config, DbFactory $factory, Cache $cache)
     {
         $this->config = $config;
         $this->dbFactory = $factory;
+        $this->cache = $cache;
     }
     public function load($key)
     {
         $db = $this->dbFactory->getDb($this->config);
+        $cache = $this->cache;
 
         switch ($key) {
             case 'AuthFacade':
                 $facade = DefaultAuthFacade::getDefaultInstance($db);
                 break;
             case 'SchoolFacade':
-                $facade = DefaultSchoolFacade::getDefaultInstance($db);
+                $facade = DefaultSchoolFacade::getDefaultInstance($db,$cache);
                 break;
             case 'MemberFacade':
-                $facade = DefaultMemberFacade::getDefaultInstance($db);
+                $facade = DefaultMemberFacade::getDefaultInstance($db, $cache);
                 break;
             case 'SurveyFacade':
                 $facade = DefaultSurveyFacade::getDefaultInstance($db);
                 break;
             case 'PresentationFacade':
-                $facade = DefaultPresentationFacade::getDefaultInstance($db);
+                $facade = DefaultPresentationFacade::getDefaultInstance($db, $cache);
                 break;
             case 'LocationFacade':
                 $facade = DefaultLocationFacade::getDefaultInstance($db);
@@ -84,7 +89,8 @@ class Core
             $configPath = APPLICATION_PATH . self::CORE_CONFIG_PATH;
             $config = new \Zend_Config_Xml($configPath, 'all');
             $factory = new MongoFactory();
-            self::$default = new Core($config, $factory);
+            $cache = new Cache();
+            self::$default = new Core($config, $factory, $cache);
         }
 
         return self::$default;

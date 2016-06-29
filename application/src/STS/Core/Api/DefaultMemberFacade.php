@@ -1,6 +1,7 @@
 <?php
 namespace STS\Core\Api;
 
+use STS\Core\Cacheable;
 use STS\Core\Member\MemberDtoAssembler;
 use STS\Domain\Location\Specification\MemberLocationSpecification;
 use STS\Domain\Member\Specification\MemberByMemberAreaSpecification;
@@ -445,9 +446,9 @@ class DefaultMemberFacade implements MemberFacade
      * @param $mongoDb
      * @return DefaultMemberFacade
      */
-    public static function getDefaultInstance($mongoDb)
+    public static function getDefaultInstance($mongoDb, Cacheable $cache)
     {
-        $memberRepository = new MongoMemberRepository($mongoDb);
+        $memberRepository = new MongoMemberRepository($mongoDb, $cache);
         $areaRepository = new MongoAreaRepository($mongoDb);
         $userRepository = new MongoUserRepository($mongoDb);
         return new DefaultMemberFacade($memberRepository, $areaRepository, $userRepository);
