@@ -25,4 +25,9 @@ interface Cacheable
      * @return mixed
      */
     public function getFromCache($id);
+
+    /**
+     * @return void
+     */
+    public function bust();
 }

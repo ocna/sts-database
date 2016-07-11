@@ -3,9 +3,11 @@ namespace STS\Core\Api;
 
 use STS\Core\Cacheable;
 use STS\Core\Member\MemberDtoAssembler;
+use STS\Domain\Location\AreaRepository;
 use STS\Domain\Location\Specification\MemberLocationSpecification;
 use STS\Domain\Member\Specification\MemberByMemberAreaSpecification;
 use STS\Core\Member\MemberDto;
+use STS\Domain\Member\MemberRepository;
 use STS\Core\Member\MongoMemberRepository;
 use STS\Core\Location\MongoAreaRepository;
 use STS\Core\User\MongoUserRepository;
@@ -13,6 +15,7 @@ use STS\Domain\Member;
 use STS\Domain\Location\Address;
 use STS\Domain\Member\Diagnosis;
 use STS\Domain\Member\PhoneNumber;
+use STS\Domain\User\UserRepository;
 
 class DefaultMemberFacade implements MemberFacade
 {
@@ -34,9 +37,9 @@ class DefaultMemberFacade implements MemberFacade
 
 
     public function __construct(
-        MongoMemberRepository $memberRepository,
-        MongoAreaRepository $areaRepository,
-        MongoUserRepository $userRepository
+        MemberRepository $memberRepository,
+        AreaRepository $areaRepository,
+        UserRepository $userRepository
     ) {
         $this->memberRepository = $memberRepository;
         $this->areaRepository = $areaRepository;

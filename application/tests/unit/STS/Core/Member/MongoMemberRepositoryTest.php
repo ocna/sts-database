@@ -1,6 +1,7 @@
 <?php
 namespace STS\Core\Member;
 
+use STS\Core\Cache;
 use STS\TestUtilities\MemberTestCase;
 
 class MongoMemberRepositoryTest extends MemberTestCase
@@ -11,7 +12,8 @@ class MongoMemberRepositoryTest extends MemberTestCase
     public function createValidObject()
     {
         $mongoDb = \Mockery::mock('MongoDB');
-        $repo    = new MongoMemberRepository($mongoDb);
+        $cache = \Mockery::mock('STS\Core\Cache');
+        $repo    = new MongoMemberRepository($mongoDb, $cache);
         $this->assertInstanceOf('STS\Core\Member\MongoMemberRepository', $repo);
     }
 
@@ -22,6 +24,7 @@ class MongoMemberRepositoryTest extends MemberTestCase
     {
         //givens
         $mockMongoDb = \Mockery::mock('MongoDB');
+        $cache = new Cache();
         $mockMongoDb->shouldReceive('selectCollection')->andReturn($mockMongoDb);
         $mockMongoDb->shouldReceive('findOne')
                     ->andReturn(array(
@@ -35,11 +38,12 @@ class MongoMemberRepositoryTest extends MemberTestCase
                     );
         $mockMongoDb->shouldReceive('find')->andReturn($mockMongoDb);
         $mockMongoDb->shouldReceive('count')->andReturn(1);
-        $repo = new MongoMemberRepository($mockMongoDb);
+        $repo = new MongoMemberRepository($mockMongoDb, $cache);
         //whens
         $member = $repo->load(self::ID);
         //thens
         $this->assertFalse($member->canBeDeleted());
+        $cache->bust();
     }
 
     /**
@@ -48,6 +52,7 @@ class MongoMemberRepositoryTest extends MemberTestCase
     public function itCanBeDeletedWithNoPresentationAssociation()
     {
         $mockMongoDb = \Mockery::mock('MongoDB');
+        $cache = new Cache();
         $mockMongoDb->shouldReceive('selectCollection')->andReturn($mockMongoDb);
         $mockMongoDb->shouldReceive('findOne')
                     ->andReturn(array(
@@ -61,11 +66,12 @@ class MongoMemberRepositoryTest extends MemberTestCase
                     );
         $mockMongoDb->shouldReceive('find')->andReturn($mockMongoDb);
         $mockMongoDb->shouldReceive('count')->andReturn(0);
-        $repo = new MongoMemberRepository($mockMongoDb);
+        $repo = new MongoMemberRepository($mockMongoDb, $cache);
         //whens
         $member = $repo->load(self::ID);
         //thens
         $this->assertTrue($member->canBeDeleted());
+        $cache->bust();
     }
 
     /**
@@ -74,12 +80,14 @@ class MongoMemberRepositoryTest extends MemberTestCase
     public function validDeleteMember()
     {
         $mockMongoDb = \Mockery::mock('MongoDB');
+        $cache = new Cache();
         $mockMongoDb->shouldReceive('selectCollection->remove')->andReturn(array('ok' => 1));
-        $repo = new MongoMemberRepository($mockMongoDb);
+        $repo = new MongoMemberRepository($mockMongoDb, $cache);
         //whens
         $results = $repo->delete(self::ID);
         //thens
         $this->assertTrue($results);
+        $cache->bust();
     }
 
 
@@ -90,6 +98,7 @@ class MongoMemberRepositoryTest extends MemberTestCase
     {
         //givens
         $mockMongoDb = \Mockery::mock('MongoDB');
+        $cache = new Cache();
         $mockMongoDb->shouldReceive('selectCollection')->andReturn($mockMongoDb);
         $areas = $this->getTestAreaData();
         $mockMongoDb->shouldReceive('findOne')
@@ -98,11 +107,12 @@ class MongoMemberRepositoryTest extends MemberTestCase
                         $areas[1], $areas[0], $areas[1], $this->getOlderUserDataSet());
         $mockMongoDb->shouldReceive('find')->andReturn($mockMongoDb);
         $mockMongoDb->shouldReceive('count')->andReturn(1);
-        $repo = new MongoMemberRepository($mockMongoDb);
+        $repo = new MongoMemberRepository($mockMongoDb, $cache);
         //whens
         $member = $repo->load(self::ID);
         //thens
         $this->assertEquals(self::EMAIL, $member->getEmail());
+        $cache->bust();
     }
 
     /**

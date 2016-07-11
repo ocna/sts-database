@@ -32,4 +32,11 @@ class Cache implements Cacheable
     public function getFromCache($id) {
         return isset(self::$cache[$id]) ? self::$cache[$id] : null;
     }
+
+    /**
+     * Busts the cache
+     */
+    public function bust() {
+        self::$cache = array();
+    }
 }
