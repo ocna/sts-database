@@ -676,8 +676,9 @@ class Admin_MemberController extends SecureBaseController
                         'action'     => 'view',
                         'params'     => array('id' => $updatedMemberDto->getId())
                     ));
-                } catch (ApiException $e) {
-                    $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage() . ' ' . $e->getPrevious()->getMessage(),
+                } catch (Exception $e) {
+                    $previous = $e->getPrevious() ?: new Exception();
+                    $this->setFlashMessageAndUpdateLayout('An error occurred while saving this information: ' . $e->getMessage() . ' ' . $previous->getMessage(),
                         'error');
                 }
             } else {
