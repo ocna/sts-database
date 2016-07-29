@@ -38,8 +38,8 @@ apache::dotconf { 'custom':
 
 apache::module { 'rewrite': }
 
-apache::vhost { 'dev.sts.ovariancancer.org':
-  server_name   => 'dev.sts.ovariancancer.org',
+apache::vhost { 'legacy.sts.ovariancancer.org':
+  server_name   => 'legacy.sts.ovariancancer.org',
   serveraliases => [
 ],
   docroot       => '/var/www/sts-database/public',
