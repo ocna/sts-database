@@ -1,5 +1,4 @@
 *.sh
-.htaccess
 .git
 .DS_Store
 .buildpath
@@ -8,6 +7,7 @@
 .settings
 .zfproject.xml
 .idea
+.vagrant
 **/tests/*
 build
 build-deploy
@@ -18,3 +18,10 @@ features
 data
 core.xml
 tests
+temp
+old_vagrant
+Vagrantfile
+ansible
+sts-database
+sts-production-dump
+watchr.rb
