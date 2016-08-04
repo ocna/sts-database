@@ -27,15 +27,9 @@ The main environments are located on an AWS EC2 Instance. The server directories
 - Get access from Alison Silberman: `asilberman@ocrfa.org`
 
 ####SSH Access to the Server
-- If your public key is added: `ssh ubuntu@23.21.64.30`
-- If you have a key file: `ssh -i ocnasts.pem ubuntu@23.21.64.30`
+- If your public key is added: `ssh ubuntu@54.210.34.83`
+- If you have a key file: `ssh -i sts.pem ubuntu@54.210.34.83`
 - You need to have an existing admin add your key to the server for either of these work.
-
-####Accessing the Zend Server Management Console
-The server is running an instance of Zend Server CE
-
-- Administration Console: [http://23.21.64.30:10081/](http://23.21.64.30:10081/)
-- Password: `0cn@z3nD`
 
 ####Logs
 
@@ -50,7 +44,7 @@ The server is running an instance of Zend Server CE
 ####MongoDB
 The production database running on the AWS instance is MongoDb.
 
-Configuration `/etc/mongodb.conf`:
+Configuration `/etc/mongod.conf`:
 
 ```
 fork = true
@@ -61,7 +55,7 @@ journal = true
 auth = true
 ```
 
-- host: `23.21.64.30:27017`
+- host: `54.210.34.83:27017`
 - Admin Username: `admin`
 - Admin Password: `0cn@M0nG0`
 - Database: `sts-production`
@@ -184,7 +178,7 @@ Running Command Sets:
 ```
 mongo localhost:27017/sts-development data/.../my_commands.js
 
-mongo -u sts -p sT6D9tA01 23.21.64.30:27017/sts-production data/.../my_comands.js
+mongo -u sts -p sT6D9tA01 54.210.34.83:27017/sts-production data/.../my_comands.js
 ```
 
 Connecting to the db on production and listing all collections
@@ -214,7 +208,7 @@ Examples:
 ```
 ant -propertyfile stg.deploy.properties -f deploy.xml deploy -Dgit.branch=develop
 ant -propertyfile stg.deploy.properties -f deploy.xml deploy -Dgit.branch=master
-ant -propertyfile beta.deploy.properties -f deploy.xml deploy -Dgit.branch=master
+ant -propertyfile production.deploy.properties -f deploy.xml deploy -Dgit.branch=master
 ```
 
 
@@ -225,7 +219,7 @@ There are two environments that you may deploy to:
 ####Staging
 The staging location is a http auth protected public server for previewing updates, it points to its own database "sts-stage" but should /not be used for production.
 
-***Location:*** [http://23.21.64.30:8080/](http://23.21.64.30:8080/)
+***Location:*** [http://54.210.34.83:8080/](http://54.210.34.83:8080/)
 
 - HTTP Auth Username: `admin`
 - HTTP Auth Password: `stsdemo`
@@ -237,7 +231,7 @@ The staging location is a http auth protected public server for previewing updat
 ***Deployment Details:***
 
 - rsync.user:   `ubuntu`
-- rsync.host:   `23.21.64.30`
+- rsync.host:   `54.210.34.83`
 - rsync.dest:   `/var/www/sts-stg-01`
 - env:          `stg`
 
@@ -258,7 +252,7 @@ At some point, the paths calling this "beta" should be renamed to production.
 ***Deployment Details:***
 
 - rsync.user:   `ubuntu`
-- rsync.host:   `23.21.64.30`
+- rsync.host:   `54.210.34.83`
 - rsync.dest:   `/var/www/sts-beta-01`
 - env:          `beta`
 
