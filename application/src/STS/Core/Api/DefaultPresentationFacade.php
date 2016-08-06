@@ -209,9 +209,9 @@ class DefaultPresentationFacade implements PresentationFacade
     {
         $user = $this->userRepository->load($userId);
         $member        = $this->memberRepository->load($user->getAssociatedMemberId());
-        $limit = new \MongoDate(strtotime('2016-01-01 00:00:00'));
-        $presentations = $this->presentationRepository->find(array('date' => array('$gte' =>
-        $limit)));
+        // $limit = new \MongoDate(strtotime('2016-01-01 00:00:00'));
+        $presentations = $this->presentationRepository->find(); // array('date' => array('$gte' =>
+        // $limit)));
         $dtos          = array();
         foreach ($presentations as $presentation) {
             /** @var Presentation $presentation */
