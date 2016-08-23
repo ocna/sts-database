@@ -14,7 +14,7 @@ Billing Email: `asilberman@ovariancancer.org`
 Owners: TBD
 Password: TBD
 
-The code is hosted at GitHub here: [https://github.com/ocna/sts-database](https://github.com/ocna/sts-database)
+The code is hosted at GitHub here: [https://github.com/ocrfa1/sts-database](https://github.com/ocrfa1/sts-database)
 
 
 ###Server
