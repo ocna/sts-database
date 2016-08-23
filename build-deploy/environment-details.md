@@ -8,7 +8,7 @@ This document details the development and maintenance of the [STS Database Appli
 ## [Resources](id:resources)
 
 ###Code Hosting
-The code is hosted at GitHub under an OCNA account. The account details are:
+The code is hosted at GitHub under an OCRFA account. The account details are:
 
 Billing Email: `asilberman@ovariancancer.org`
 Owners: TBD
@@ -24,7 +24,7 @@ The main environments are located on an AWS EC2 Instance. The server directories
 
 [https://console.aws.amazon.com](https://console.aws.amazon.com)
 
-- Get access from Alison Silberman: `asilberman@ocrfa.org`
+- Get access from Emily Hickey: `ehickey@ocrfa.org`
 
 ####SSH Access to the Server
 - If your public key is added: `ssh ubuntu@54.210.34.83`
