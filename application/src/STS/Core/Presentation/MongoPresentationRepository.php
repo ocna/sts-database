@@ -2,6 +2,7 @@
 namespace STS\Core\Presentation;
 
 use STS\Core\Api\DefaultPresentationFacade;
+use STS\Core\Cacheable;
 use STS\Core\ProfessionalGroup\MongoProfessionalGroupRepository;
 use STS\Domain\Presentation;
 use STS\Domain\ProfessionalGroup;
@@ -14,14 +15,16 @@ use STS\Domain\Survey\Template;
 class MongoPresentationRepository implements PresentationRepository
 {
     private $mongoDb;
+    private $cache;
 
     /**
      * __construct
      *
      * @param $mongoDb
      */
-    public function __construct($mongoDb)
+    public function __construct($mongoDb, Cacheable $cache)
     {
+        $this->cache = $cache;
         $this->mongoDb = $mongoDb;
     }
 
@@ -73,6 +76,15 @@ class MongoPresentationRepository implements PresentationRepository
      */
     public function load($id)
     {
+        if (null !== $this->cache->getFromCache($id)) {
+            return $this->cache->getFromCache($id);
+        }
+
+        $presentation = $this->loadFromMongo($id);
+        return $presentation;
+    }
+
+    private function loadFromMongo($id) {
         $data = $this->mongoDb->presentation->findOne(
             array(
                 '_id' => new \MongoId($id)
@@ -112,10 +124,15 @@ class MongoPresentationRepository implements PresentationRepository
      */
     private function mapData($data)
     {
-        $presentation = new Presentation();
         /** @var \MongoId $id */
         $id = $data['_id'];
-        $presentation->setId($id->__toString())
+        $id = $id->__toString();
+        if (null !== $this->cache->getFromCache($id)) {
+            return $this->cache->getFromCache($id);
+        }
+
+        $presentation = new Presentation();
+        $presentation->setId($id)
                      ->setNumberOfParticipants($data['nparticipants'])
                      ->setDate(date('Y-M-d h:i:s', $data['date']->sec))
                      ->setNotes($data['notes'])
@@ -139,7 +156,7 @@ class MongoPresentationRepository implements PresentationRepository
         }
 
         if (DefaultPresentationFacade::locationTypeSchool == $data['location_class']) {
-            $schoolRepository = new MongoSchoolRepository($this->mongoDb);
+            $schoolRepository = new MongoSchoolRepository($this->mongoDb, $this->cache);
             $location = $schoolRepository->load($data['location_id']);
         } else {
             $professionalGroupRepository = new MongoProfessionalGroupRepository($this->mongoDb);
@@ -147,7 +164,7 @@ class MongoPresentationRepository implements PresentationRepository
         }
 
         $presentation->setLocation($location);
-        $memberRepository = new MongoMemberRepository($this->mongoDb);
+        $memberRepository = new MongoMemberRepository($this->mongoDb, $this->cache);
         $members = array();
         foreach ($data['members'] as $memberId) {
             if ($memberId) {
@@ -155,6 +172,8 @@ class MongoPresentationRepository implements PresentationRepository
             }
         }
         $presentation->setMembers($members);
+
+        $this->cache->addToCache($id, $presentation);
         return $presentation;
     }
 

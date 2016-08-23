@@ -6,19 +6,15 @@ This document details the development and maintenance of the [STS Database Appli
 - [Deployment](#deployment)
 
 ## [Resources](id:resources)
-###Project Management
-The project is managed using a Trello board here: [https://trello.com/board/sts-database/5050b7c870f409436916693b](https://trello.com/board/sts-database/5050b7c870f409436916693b).
-
-Other relevant files are shared in dropbox here: [https://www.dropbox.com/sh/bmmwnqhdlc4xpes/HDz2bwupfa](https://www.dropbox.com/sh/bmmwnqhdlc4xpes/HDz2bwupfa)
 
 ###Code Hosting
-The code is hosted at GitHub under an OCNA account. The account details are:
+The code is hosted at GitHub under an OCRFA account. The account details are:
 
 Billing Email: `asilberman@ovariancancer.org`
 Owners: TBD
 Password: TBD
 
-The code is hosted at GitHub here: [https://github.com/ocna/sts-database](https://github.com/ocna/sts-database)
+The code is hosted at GitHub here: [https://github.com/ocrfa1/sts-database](https://github.com/ocrfa1/sts-database)
 
 
 ###Server
@@ -28,18 +24,12 @@ The main environments are located on an AWS EC2 Instance. The server directories
 
 [https://console.aws.amazon.com](https://console.aws.amazon.com)
 
-- Username: `jason.robertfox@gmail.com`
-- Password: `@wS40Cn@`
+- Get access from Emily Hickey: `ehickey@ocrfa.org`
 
 ####SSH Access to the Server
-- If your public key is added: `ssh ubuntu@23.21.64.30`
-- If you have a key file: `ssh -i deploy.pem ubuntu@23.21.64.30`
-
-####Accessing the Zend Server Management Console
-The server is running an instance of Zend Server CE
-
-- Administration Console: [http://23.21.64.30:10081/](http://23.21.64.30:10081/)
-- Password: `0cn@z3nD`
+- If your public key is added: `ssh ubuntu@54.210.34.83`
+- If you have a key file: `ssh -i sts.pem ubuntu@54.210.34.83`
+- You need to have an existing admin add your key to the server for either of these work.
 
 ####Logs
 
@@ -54,7 +44,7 @@ The server is running an instance of Zend Server CE
 ####MongoDB
 The production database running on the AWS instance is MongoDb.
 
-Configuration `/etc/mongodb.conf`:
+Configuration `/etc/mongod.conf`:
 
 ```
 fork = true
@@ -65,7 +55,7 @@ journal = true
 auth = true
 ```
 
-- host: `23.21.64.30:27017`
+- host: `54.210.34.83:27017`
 - Admin Username: `admin`
 - Admin Password: `0cn@M0nG0`
 - Database: `sts-production`
@@ -79,68 +69,98 @@ username: `24845043`
 password: `ocna2010`
 
 ###Transactional Email
-This is managed by [Mandrill](https://mandrillapp.com/)
+This is managed by [SparkPost](https://www.sparkpost.com)
 
-username: `jason.robertfox@gmail.com`
-password: `0Cn@MnDr11`
+username: `ocna@ocrfa.org`
+password: `Ocrfa2016!`
 
-> **Note**: This line must be added in the Mandrill `call` function if there are ssl problems:
-> 
->     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+## [Development](id:development)
 
 The STS Database Application has the following environments:
 
 - Local Development
 - Staging
-- Beta
 - Production
 
-## [Development](id:development)
-###Developing Features
-The project uses [gitflow](https://github.com/nvie/gitflow) and the [gitflow branching model](http://nvie.com/posts/a-successful-git-branching-model/) to manage feature development and release preparation. 
-
-> **Note:** You should set up gitflow with the version prefix `v` and the trello card number for commits, for example: `tr-123`.
-
-Example:
-
-```
-git flow feature start tr-123
-git flow feature finish tr-123
-
-git flow release start 1.0.0
-git flow release finish 1.0.0
-```
-
-> **Note:** Releases should be named `<major>.<minor>.<fix>`. During the release process you must update the `/design/scripts/partials/app-footer.phtml` with the current version number prior to deployment.
-
 ###Local Development
-This application is intended to be installed locally for development purposes.
 
-1. Clone the repository
-2. Use the target `install` to install dependencies and configure the application:
+This application is intended to be installed on a Vagrant-based virtual machine for development purposes
 
-    ```
-    ant install -Denv=dev
-    ```
+- Clone the project
+- Make sure you have Vagrant and VirtualBox installed.
+    - [Vagrant](https://www.vagrantup.com)
+    - [VirtualBox](https://www.virtualbox.org)
+- In the top-level directory of the project (sts-database), issue
+ 
+```
+vagrant up
+```
 
-3. Create a virtual host file to point to the `public` folder, example:
+    - If prompted, enter your administrator password to enable NFS mounts.
+- Vagrant will download the appropriate box and run the Ansible playbooks to install the various packages.
 
-    ```
-    <VirtualHost *:80>
-        DocumentRoot "/Users/jason/Development/sts-database/public"
-        ServerName dev.sts.ovariancancer.org
+Once everything is installed (this may take several minutes the first time), SSH to your new box:
 
-        SetEnv APPLICATION_ENV development
+```
+vagrant ssh
+```
 
-        <Directory "/Users/jason/Development/sts-database/public">
-            DirectoryIndex index.php index.html
-            AllowOverride All
-            Order allow,deny
-            Allow from all
-        </Directory>
+#### First Time Only
+##### Import Database
+The first time you launch your VM, you'll need to import the production database.
 
-   </VirtualHost>
-   ```
+```
+cd /vagrant/build-deploy/
+tar xzf sts-production.tgz
+mongorestore dump/sts-production
+```
+
+##### Copy SSH Key
+
+```
+cd ~/
+cp /vagrant/build-deploy/ocnasts.pem ./
+```
+
+##### Install Ant
+```
+sudo apt-get install -y ant
+```
+
+Answer "y" when it asks if you're sure.
+
+##### Set config files
+
+1. Copy `build-deploy/config-templates/template.core.xml` to `application/config/core.xml`. 
+1. Copy `build-deploy/config-templates/dev.application.ini` to `application/config/application.ini`. 
+1. The SparkPost configuration should be done for you.
+1. Tou will need to enter your MongoDB information in `core.xml`. By default, the `host` is `localhost` and the `port` is `27017`. Your local configuration may look like:
+
+```
+<db>
+    <mongodb>
+        <host>localhost</host>
+        <port>27017</port>
+        <username></username>
+        <password></password>
+        <dbname>sts-production</dbname>
+    </mongodb>
+</db>
+```
+
+##### Run Composer Install
+From the top level of the project, run `composer install`. This is much faster than `composer update` and gets you versions of everything in `composer.lock`.
+
+If you update the requirements in `composer.json`, you'll want to do `composer update` to get the latest versions of everything that match the rules in `composer.json`.
+
+##### Update your hosts file
+In your hosts file (`/etc/hosts` on Mac and Linux), enter the following rule:
+
+```
+192.168.33.101    dev.sts.ovariancancer.org
+```
+
+To test, visit [http://dev.sts.ovariancancer.org](http://dev.sts.ovariancancer.org)
 
 ####Logs
 
@@ -150,37 +170,15 @@ This application is intended to be installed locally for development purposes.
 - Apache Access Log: `/tmp/apache-access.log`
 - Application Log: `/var/log/sts-database/application.log`
 
-####MongoDB
-Local database connection is used for development purposes, mongo can be simply configured locally using a `mongodb.conf` file such as:
-
-```
-fork = true
-bind_ip = 127.0.0.1
-port = 27017
-quiet = false
-dbpath = /data/db/
-logpath = /tmp/logs/mongod.log
-logappend = true
-journal = true
-```
 ###Managing Persistence
 The STS Database Application uses [MongoDB](http://www.mongodb.org/) for persistence.
-
-Importing Datasets:
-
-```
-mongoexport -v -d sts-development -c area --jsonArray -o ../collections/area.json
-
-mongoimport -v -h 23.21.64.30:27017 -d sts-production -c area -u sts -p sT6D9tA01 --jsonArray --file area.json
-
-```
 
 Running Command Sets:
 
 ```
 mongo localhost:27017/sts-development data/.../my_commands.js
 
-mongo -u sts -p sT6D9tA01 23.21.64.30:27017/sts-production data/.../my_comands.js
+mongo -u sts -p sT6D9tA01 54.210.34.83:27017/sts-production data/.../my_comands.js
 ```
 
 Connecting to the db on production and listing all collections
@@ -209,23 +207,10 @@ Examples:
 
 ```
 ant -propertyfile stg.deploy.properties -f deploy.xml deploy -Dgit.branch=develop
-ant -propertyfile stg.deploy.properties -f deploy.xml deploy -Dgit.branch=release/1.0
-ant -propertyfile beta.deploy.properties -f deploy.xml deploy -Dgit.branch=release/1.0
+ant -propertyfile stg.deploy.properties -f deploy.xml deploy -Dgit.branch=master
+ant -propertyfile production.deploy.properties -f deploy.xml deploy -Dgit.branch=master
 ```
 
-There is a wrapper shell script in `src/build-deploy/` to handle deployments to production/staging so you can do:
-
-The following to deploy from the `develop` branch to the staging site:
-
-~~~~
-./deploy.sh dev
-~~~~
-
-or the following to deploy from the `master` branch to the production site:
-
-~~~~
-./deploy.sh prod
-~~~~
 
 ###Environments
 There are two environments that you may deploy to:
@@ -234,7 +219,7 @@ There are two environments that you may deploy to:
 ####Staging
 The staging location is a http auth protected public server for previewing updates, it points to its own database "sts-stage" but should /not be used for production.
 
-***Location:*** [http://23.21.64.30:8080/](http://23.21.64.30:8080/)
+***Location:*** [http://54.210.34.83:8080/](http://54.210.34.83:8080/)
 
 - HTTP Auth Username: `admin`
 - HTTP Auth Password: `stsdemo`
@@ -246,7 +231,7 @@ The staging location is a http auth protected public server for previewing updat
 ***Deployment Details:***
 
 - rsync.user:   `ubuntu`
-- rsync.host:   `23.21.64.30`
+- rsync.host:   `54.210.34.83`
 - rsync.dest:   `/var/www/sts-stg-01`
 - env:          `stg`
 
@@ -267,7 +252,7 @@ At some point, the paths calling this "beta" should be renamed to production.
 ***Deployment Details:***
 
 - rsync.user:   `ubuntu`
-- rsync.host:   `23.21.64.30`
+- rsync.host:   `54.210.34.83`
 - rsync.dest:   `/var/www/sts-beta-01`
 - env:          `beta`
 

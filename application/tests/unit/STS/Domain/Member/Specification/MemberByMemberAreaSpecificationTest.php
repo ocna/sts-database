@@ -1,7 +1,6 @@
 <?php
 use STS\Domain\Member\Specification\MemberByMemberAreaSpecification;
 use STS\Domain\Member;
-use \Mockery;
 
 class MemberByMemberAreaSpecificationTest extends \PHPUnit_Framework_TestCase
 {

@@ -1,3 +1,5 @@
+/old_vagrant
+/.vagrant
 # These files are ignored by git
 
 # Build #
@@ -46,8 +48,8 @@ Thumbs.db
 prepend.php
 append.php
 #.htaccess
+/build-deploy/musketeers-ocna.pem
 .ant-targets-build.xml
-*.pem
 *.ant-targets-*.xml
 data
 sts-production-dump

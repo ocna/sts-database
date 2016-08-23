@@ -27,7 +27,8 @@ class CoreTest extends PHPUnit_Framework_TestCase
     {
         $config = $this->getMockBuilder('Zend_Config')->disableOriginalConstructor()->getMock();
         $factory = $this->getMockBuilder('STS\Core\MongoFactory')->getMock();
-        $core = new Core($config, $factory);
+        $cache = $this->getMockBuilder('STS\Core\Cache')->getMock();
+        $core = new Core($config, $factory, $cache);
         return $core;
     }
 }

@@ -10,7 +10,8 @@ class MongoSchoolRepositoryTest extends SchoolTestCase
     public function createValidObject()
     {
         $mongoDb = Mockery::mock('MongoDB');
-        $repo = new MongoSchoolRepository($mongoDb);
+        $cache = Mockery::mock('STS\Core\Cache');
+        $repo = new MongoSchoolRepository($mongoDb, $cache);
         $this->assertInstanceOf('STS\Core\School\MongoSchoolRepository', $repo);
     }
 }

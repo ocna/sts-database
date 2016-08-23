@@ -3,7 +3,6 @@ use STS\Domain\Member\Specification\MemberByMemberAreaSpecification;
 use STS\Domain\Member;
 use STS\Core\Api\DefaultMemberFacade;
 use STS\Domain\Location\Area;
-use \Mockery;
 use STS\TestUtilities\MemberTestCase;
 use STS\TestUtilities\Location\AddressTestCase;
 
@@ -20,7 +19,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
         $oldMember = $this->getValidMember();
         $member = $this->getValidMember();
         $member->setFirstName($updatedFirstName);
-        $memberRepository = \Mockery::mock('STS\Core\Member\MongoMemberRepository', array('load'=>$oldMember, 'save'=>$member));
+        $memberRepository = \Mockery::mock('STS\Domain\Member\MemberRepository', array('load'=>$oldMember, 'save'=>$member));
         $areaRepository = $this->getMockAreaRepository();
         $userRepository = $this->getMockUserRepository();
         $activities = $this->getValidActivitiesArray();
@@ -51,7 +50,7 @@ class DefaultMemberFacadeTest extends MemberTestCase
                 'cell'=>'555-123-9999'
             )
         );
-        //thens
+        //then
         $this->assertInstanceOf('STS\Core\Member\MemberDto', $updatedMemberDto);
         $this->assertEquals($updatedFirstName, $updatedMemberDto->getFirstName());
     }

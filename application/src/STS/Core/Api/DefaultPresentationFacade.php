@@ -1,6 +1,7 @@
 <?php
 namespace STS\Core\Api;
 
+use STS\Core\Cacheable;
 use STS\Core\ProfessionalGroup\MongoProfessionalGroupRepository;
 use STS\Domain\Survey\Template;
 use STS\Domain\Member;
@@ -208,12 +209,14 @@ class DefaultPresentationFacade implements PresentationFacade
     {
         $user = $this->userRepository->load($userId);
         $member        = $this->memberRepository->load($user->getAssociatedMemberId());
-        $presentations = $this->presentationRepository->find();
+        // $limit = new \MongoDate(strtotime('2016-01-01 00:00:00'));
+        $presentations = $this->presentationRepository->find(); // array('date' => array('$gte' =>
+        // $limit)));
         $dtos          = array();
         foreach ($presentations as $presentation) {
             /** @var Presentation $presentation */
             if ($presentation->isAccessibleByMemberUser($member, $user)) {
-                $dtos[] = PresentationDtoAssembler::toDTO($presentation);
+                $dtos[] = PresentationDtoAssembler::toDto($presentation);
             }
         }
 
@@ -639,12 +642,12 @@ class DefaultPresentationFacade implements PresentationFacade
      * @param $mongoDb
      * @return DefaultPresentationFacade
      */
-    public static function getDefaultInstance($mongoDb)
+    public static function getDefaultInstance($mongoDb, Cacheable $cache)
     {
-        $presentationRepository = new MongoPresentationRepository($mongoDb);
+        $presentationRepository = new MongoPresentationRepository($mongoDb, $cache);
         $userRepository = new MongoUserRepository($mongoDb);
-        $memberRepository = new MongoMemberRepository($mongoDb);
-        $schoolRepository = new MongoSchoolRepository($mongoDb);
+        $memberRepository = new MongoMemberRepository($mongoDb, $cache);
+        $schoolRepository = new MongoSchoolRepository($mongoDb,$cache);
         $surveyRepository = new MongoSurveyRepository($mongoDb);
         $professionalGroupRepository = new MongoProfessionalGroupRepository($mongoDb);
         return new DefaultPresentationFacade(
