@@ -829,7 +829,7 @@ class Admin_MemberController extends SecureBaseController
         }
 
         $activities = array();
-        if ($data['memberActivity']) {
+        if (!empty($data['memberActivity'])) {
             $activities = array_values($data['memberActivity']);
         }
 
