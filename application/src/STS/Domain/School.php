@@ -65,6 +65,8 @@ class School extends EntityWithTypes implements Locatable
     {
         if ($isInactive) {
             $this->isInactive = true;
+        } else {
+            $this->isInactive = false;
         }
         return $this;
     }
